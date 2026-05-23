@@ -1,0 +1,220 @@
+Speaker 1  0:12  
+Nice.assessment of assessment about the full call causes like visualization and design a story and fast cause data.Too close.Individual group the individual work is simple for me the group work is a little bit hard to urge time.To be honest, I think it is nodded relative to personal data nothing. Maybe it is no risk, but. am afraid that maybe someday source this set will relate it to the hardest is some should it to pay for the data so I applied for a low risk
+
+Speaker 2  2:40  
+Yeah,
+
+Speaker 3  2:41  
+ I
+
+Speaker 2  2:41  
+ think he chose to correct selection, so no risk would be if it was full publicly available data, but I think you wanted to use some private data sets, and you also mentioned that you will need to pull like new spots from mind and normally than was like risk so that you feel democratic.
+
+Speaker 1  3:02  
+So
+
+Speaker 2  3:07  
+ for the next few months we'll have.So for the next few months we'll have meetings every few weeks
+
+Speaker 1  3:26  
+ where
+
+Speaker 2  3:26  
+ we can discuss your dissertation project, and I guess my role is I can help you try and troublesheet and problems that you have, and I can also help you in terms of writing a lot of the project. So projectile. schedule meetings every sort of two to three weeks, roughly, but the plan, and how I find it works best is if you have things you want to show me the each meeting, so for example, if you jump at coding or you've got some initial results, you want to show them to me, and then we can discuss any problems you might come course, so if you bring something to meeting you and we can discuss some good, I normally send an email after meetings with just what we discussed on someone.So Emily, yeah, I like to send emails with just bit of summary before we discussed it helps me to remember. And then as it gets towards closer to the dessection of life, I think it's you and of July sort of design.Say.
+
+Speaker 1  5:18  
+Ok.饱
+
+Speaker 2  5:27  
+Happy to look at one full draft of your project, but if you want me to look at a full draft or need it at least to
+
+Speaker 1  5:53  
+ come with a
+
+Speaker 2  5:54  
+ line, but just as a sort of described expectation sound and how to look at more full
+
+Speaker 1  6:00  
+ draft
+
+Speaker 2  6:01  
+ needed a few weeks in the months.
+
+Speaker 1  6:36  
+My delication.
+
+Speaker 2  7:03  
+Good outcome from the dissertation project. What would you want, for example?For example, what job would you like to get afterwards? Would you want to say in research?
+
+Speaker 1  7:27  
+ No, I want to get some job about the data science. Okay,
+
+Speaker 2  7:34  
+ sorry, I just might take nice and meeting. you want the, do you want the project to showcase data science related skills without being helpful if you can demonstrate specific data science skill set through project?
+
+Speaker 1  7:56  
+ Yeah, I want to show some methods or the models I could use about the insights
+
+Speaker 2  8:13  
+ perfect, that's just a bit of a view of how old you meetings and forwards should we talk about your project. So you were saying you no longer want to use private data sets
+
+Speaker 1  8:33  
+ I try to avoid avoiding the try what to be assessed, but I'm offering that some deans about the shipping it is hard to get if I do not use privilege so I am not sure weather or how to get someday aside about shipping if I do now use
+
+Speaker 2  9:10  
+ that she do have your screen.
+
+Speaker 3  9:46  
+OK。
+
+Speaker 1  10:17  
+可以。我
+
+Speaker 2  11:10  
+Cools, right, which looks at every late two poles in the courses
+
+Speaker 1  11:35  
+ I focus. I remember that song shipping.There is
+
+Speaker 4  11:49  
+ some
+
+Speaker 1  11:56  
+ desiredThere is something set of shipy.
+
+Speaker 3  12:24  
+嗯，欢迎
+
+Speaker 1  13:10  
+There is no what is provided in the big dit cause.Just mentioned about shipping itself
+
+Speaker 2  13:37  
+ to look at fail.
+
+Speaker 1  13:57  
+我去星星里面去
+
+Speaker 2  14:35  
+Publicly accessible assessment imagery of ships coming into polls.
+
+Speaker 1  14:53  
+ Yeah, but I wanted about the protein.It.。
+
+Speaker 2  15:47  
+Ok, what about your other days that see happy otherwise of what data youths are you saying you want? about the shipping or poor activity data because you pool aloe, it wasn't publicly accessible. What about for
+
+Speaker 1  16:15  
+ your other data? Yeah, the other day is public.Is public market set we can use some the brain all your public.We can use.We can use market tax about the official report. I try to avoid the politics I only use report about. prices on the supply chain. I am afraid that I would mention some politics in the in the dedication, but I would not use the.I want to.First of all, I want to figure out every point of every sport of sub banking to figure out what they are doing or if they are working and then I will to forecast the price of the next week or next month. So I want to use the report of airing Iry sporto self branching your life the shape. shift like all your factory and like the market not only about all your price maybe.Do you
+
+Speaker 2  19:38  
+ have a playlist of this?It
+
+Speaker 1  19:45  
+ may be is good.的shift.But some of these
+
+Speaker 2  20:35  
+ we could
+
+Speaker 1  20:35  
+ hit a form
+
+Speaker 2  20:37  
+ for the is
+
+Speaker 1  20:41  
+ public right.多把铁
+
+Speaker 2  21:05  
+So do you have an idea of how to get started on your project?
+
+Speaker 1  21:12  
+ Yeah, I would download all that first. Maybe I would to clean the dataset and I should organize this data into.What character I should use. should use or to figure out the connection of these data and then I should to how to say I should class date in to foreclasses like some word data, some image data and maybe use different models to. use different models for different data, but I am not sure what models should use for physical. I have not当了 data you
+
+Speaker 2  23:03  
+ actually have. Yeah, he wants a big first step. So that's what he could be working on before we
+
+Speaker 1  23:16  
+ meet
+
+Speaker 2  23:17  
+ next time. Oh yeah, so for...Before the
+
+Speaker 1  23:33  
+ next time meeting.Before the next time meeting
+
+Speaker 2  23:43  
+ more but I think might be a good goal. Please have an idea of exactly what's available in each piece of state. Yeah, so for example, like, what? How many years of data do you have?
+
+Speaker 1  24:04  
+ Yeah, how
+
+Speaker 2  24:06  
+ regulars of timestamp
+
+Speaker 1  24:07  
+ is it
+
+Speaker 2  24:08  
+ global or is it specific regions?
+
+Speaker 1  24:11  
+ Yeah, I think you
+
+Speaker 2  24:12  
+ need to know these things before you can.
+
+Speaker 1  24:14  
+ Yeah, before I do cross as yes
+
+Speaker 2  24:18  
+ withday, I think you're just answering these questions.So what I'd really like to see is if
+
+Speaker 1  24:34  
+ and
+
+Speaker 2  24:35  
+ this is like which is we good to put in your report to. to put in your report to most papers or reports who have this included is to have a table and have example like so named data set.Worry the URL or say like who maintains it timestamp whatever information you think is whatever. whatever help you to the anion for data you could have shipped this dataset, so it's. it's remote sensing it looks like it's being maintained by speaker individual and times. when they engage from.For example, data from twenty twenty four to twenty twenty five and let's say it's global, and so if you fill out a date of table like that's included sets of not appearing as soonBecause it will be a really clear summary
+
+Speaker 1  27:25  
+ of
+
+Speaker 2  27:25  
+ the data speering to
+
+Speaker 1  27:30  
+ do so good is very similar, like the like the submission of the insights of the. in
+
+Speaker 2  27:52  
+ size of the world surely just
+
+Speaker 1  27:59  
+ like specific in more details
+
+Speaker 2  28:02  
+ as much. The more detail you have, so even if just this would be really helpful, which is kind of what you got here, because it tells you the name for those set what's in it and want to find it. But when you add these
+
+Speaker 1  28:19  
+ things,
+
+Speaker 2  28:20  
+ it's been going to make it easier just.
+
+Speaker 1  28:33  
+我yes I should.
+
+Speaker 2  28:57  
+To what youthing so is there anything else which would be helpful to discuss
+
+Speaker 1  29:13  
+ today好What problems I would
+
+Speaker 2  29:32  
+ see
+
+Speaker 1  29:36  
+ have from all afternoon, maybe I should.
+
+Speaker 2  29:47  
+ Do you have to wait for the full ethics? Maybe wait for that first. We don't need.
+
+Transcribed by https://otter.ai

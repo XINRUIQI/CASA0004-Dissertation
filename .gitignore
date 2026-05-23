@@ -1,0 +1,27 @@
+# Data — raw data should not be committed
+03_data/raw/
+
+# Literature PDFs — copyrighted material
+01_literature/papers_pdf/
+
+# Large binary files
+*.zip
+*.tar.gz
+*.h5
+*.pkl
+*.parquet
+
+# Office temp files
+~$*
+
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Environment
+.env
+.venv/
