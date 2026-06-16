@@ -1,0 +1,363 @@
+Meeting02.m4a
+ 
+转写结果
+说话人1 00:05
+I think you could do something maybe more like. This is simplify a bit for your first model. You look at financial data to predictable process. Then you could look at what if you add in some remote sensing data, unpredictable process, and then some shipping data. And then what happens if you add in remote sensing and shipping data?
+
+我觉得你可以做些更像。这是为您的第一个模型简化了一点。你看财务数据到可预测的过程。然后你可以看看如果你加入一些遥感数据，不可预测的过程，然后一些航运数据。如果你加入遥感和航运数据，会发生什么？
+说话人2 00:24
+I got that. Let's look at how.
+
+我明白了。让我们看看如何。
+说话人1 00:27
+if your model improves.
+
+如果你的模型改进了。
+说话人2 00:29
+Yeah, I doubt that. So.
+
+是的，我很怀疑。那么。
+说话人1 00:32
+I then personally i'd probably forget about the tax data, because I think that's gonna make it much harder. Yeah, that's a whole new data modality. So i've removed the text data,
+
+就我个人而言，我可能会忘记税收数据，因为我认为这会使它变得更加困难。是的，这是一种全新的数据形态。所以我删除了文本数据，
+说话人2 00:45
+okay?
+
+好的？
+说话人1 00:46
+I'd remove some of the additional financial data. What I think you should also do for each of these data sets is choose from the literature, some clear variables. For example, I don't know the literature, but for financial days, you might go. The financial data is gonna consist of, let's say, five variables. And this is gonna be like, I don't know, import, export price a week ago, et cetera, but choose just a subset. Because I think currently you're listing every possible variable, I would limit it down to just a subset. And I do the same for remote sensing and shipping. So again, for remote sensing, maybe go,
+
+我会删除一些额外的财务数据。我认为你还应该为这些数据集做的是从文献中选择一些明确的变量。例如，我不知道文学，但对于金融的日子，你可能会去。财务数据由五个变量组成。这就像，我不知道，一周前的进出口价格，等等，但只选择一个子集。因为我认为目前你列出了每一个可能的变量，我会把它限制在一个子集内。我也为遥感和航运做同样的工作。再一次，对于遥感，也许去，
+
+maybe you're just gonna use the lancer data set. Then for shipping, maybe you're just going to use, I don't know,
+
+也许你会用兰瑟大学的数据集。那么对于运输，也许你只会使用，我不知道，
+
+port arrivals, things arriving in ports. Do you see what I mean? And I think this would be still a really interesting project, because you'll still be comparing how adding in remote sensing data improves your prediction. That would be a lot easier.
+
+到达港口，到达港口的东西。你明白我的意思吗？我认为这仍然是一个非常有趣的项目，因为你仍然会比较如何加入遥感数据来改善你的预测。那就容易多了。
+说话人2 02:27
+Yeah. But there is one problem in that. I read some literature about the perfect output of their literature is about only 50 %, mhm. Accuracy. It is a little low for yeah, the machine learning. But.
+
+是啊。但这里面有一个问题。我看过一些文献，他们的文献的完美产量大概只有50%，嗯。准确性。对于机器学习来说，这有点低。但是。
+说话人1 02:56
+so I guess a lot of literature about is trying to predict oil prices for stock trading, which is a task you want really high levels of accuracy for. Right? Would you want to trade your stock against predicted oil prices? Yeah, but you're not trying, as far as my way, you're not trying to trade stock of your model productions. Instead, you could frame your model around what data improves it. You could look at the improvement change in the root mean squared error across models,
+
+所以我猜很多文献都试图预测股票交易中的石油价格，这是一项你需要非常高的准确性的任务。对的？你想根据预测的油价交易你的股票吗？是的，但你没有尝试，就我而言，你没有尝试交易你的模型产品的股票。相反，您可以围绕改进模型的数据来构建模型。您可以查看模型中均方根误差的改进变化，
+说话人2 03:35
+rather.
+
+而是
+说话人1 03:38
+than trying to make the most accurate model possible.
+
+而不是试图制造最精确的模型。
+说话人2 03:41
+I got that the the key of this program is to find out which data sets program better rather than the accuracy or the
+
+我知道这个程序的关键是找出哪个数据集程序更好，而不是准确性或
+说话人1 04:00
+my suspicion is predicting future oil prices is quite a difficult problem. So trying to build a model to do that really accurately is gonna be quite hard.
+
+我怀疑预测未来的石油价格是一个相当困难的问题。因此，试图建立一个模型来真正准确地做到这一点是相当困难的。
+说话人2 04:12
+Yeah.
+
+是啊。
+说话人1 04:14
+Because this is what every bank in the world is trying to do.
+
+因为这是世界上每一家银行都在努力做的事情。
+说话人2 04:17
+Aa. I want to do this program in advocacy.
+
+AA。我想在宣传中做这个节目。
+说话人1 04:24
+So I think this was still because I know you said you're interested in modeling these oil prices because you can be interesting for a future job. Yeah, I think even doing this will still be valuable for a future job, because you're showing that you understand what affects all prices and how different data might affect that.
+
+所以我认为这仍然是因为我知道你说你对模拟这些石油价格感兴趣，因为你可以对未来的工作感兴趣。是的，我认为即使这样做对未来的工作仍然是有价值的，因为你正在展示你了解什么影响所有的价格，以及不同的数据可能会如何影响。
+说话人2 04:44
+Ii I got that. When I looked into the data set about the shipping, you provided last meeting, I can't came up with an idea. Should I use some like computer vision to to find the sheep mouse or like the oil stock from the.
+
+我明白了。当我查看你上次会议提供的关于运输的数据集时，我想不出一个主意。我应该使用一些像计算机视觉来找到绵羊老鼠或像石油股票。
+说话人1 05:16
+remote sensing. They said, I think you're going to need to if you want to use, because you've said you'll choose a red sensing and shipping data, so you're probably gonna need a computer vision model to interpret those images.
+
+遥感。他们说，如果你想使用，我认为你需要这样做，因为你已经说过你会选择红色传感和运输数据，所以你可能需要一个计算机视觉模型来解释这些图像。
+说话人2 05:33
+Yeah, but there is one problem in that. It's the remote and things feature. It is not but enough clear. Iii have not looked too much literature about that. So it's just only about an idea.
+
+是的，但有一个问题。这是遥控器和东西的功能。这是不够的，但足够清楚。我没有看过太多关于这方面的文献。所以这只是一个想法。
+说话人1 05:57
+Okay? Risk might become clear from reading the literature, because I assume you need to started reading right now, not. So I think continue reading the literature for now, and we can talk about it next time, maybe. But you've used assume some machine learning models with shipping and sensing data in the modules. You could use the same models again. I think. Okay. I don't know what would you use, do you remember?
+
+好的？通过阅读文献，风险可能会变得清晰，因为我认为你需要现在就开始阅读，而不是。所以我想现在继续阅读文献，也许我们可以下次再讨论。但是你已经假设了一些机器学习模型，在模块中有运输和传感数据。你可以再次使用相同的模型。我认为。好的。我不知道你会用什么，你还记得吗？
+说话人2 06:36
+Like the remote sensing, I first try to use like the charity boost some true models. It is not perform good. It's only about 42 of.
+
+就像遥感一样，我首先尝试使用像慈善助推一些真实的模型。它表现得不好。它只有大约42。
+说话人1 06:56
+% 40 % accuracy.
+
+%40%的准确度。
+说话人2 07:01
+And I think it is not enough data for the machine learning.
+
+我认为它没有足够的数据来进行机器学习。
+说话人1 07:09
+See.
+
+看吧。
+说话人2 07:11
+you. And it's about 30 meters. And I think it is not enough to for the machine learning the arrivals. If.
+
+你。大约30米。我认为这对于机器学习到达是不够的。如果。
+说话人1 07:36
+did you mean you think it's not granular enough? Like it's not so small enough? Yeah. When you say, why do you think so? Have you already tried constructing the model?
+
+你的意思是你认为它不够细？就像它不够小？是啊。当你说，你为什么这么想？你已经试过构建模型了吗？
+说话人2 07:50
+Is that why I I trust the china most model, use this a these four variables or features. It is not too good. I think that so.
+
+这就是为什么我最信任中国模型，使用这四个变量或特征。它不是太好。我想是的。
+说话人1 08:09
+you've already done more creative models,
+
+你已经做了更多有创意的模型，
+说话人2 08:12
+not whole of this, because I have not download all the text data. I only use some of these data like the remote sensing. I have used all of these and shipping and markets. Just to try one spot is and I have done some on edabfina.
+
+不是全部，因为我还没有下载所有的文本数据。我只使用其中的一些数据，比如遥感。我已经使用了所有这些以及航运和市场。只是为了尝试一个地方，我在Edabfina上做了一些。
+说话人1 08:56
+cs.
+
+CS。
+说话人2 09:00
+Yes,
+
+是的，
+说话人1 09:08
+I see.
+
+我明白了。
+说话人2 09:09
+And the face for the viii enlightened cpi is not to cover the whole.
+
+而面对第八次开明的CPI是不能一网打尽的。
+说话人1 09:26
+time. So during the first part time frame,
+
+时间。所以在第一部分时间范围内，
+说话人2 09:30
+it's only like a short time part. This is on the text, is about the report in the gdlt
+
+这只是一个很短的时间部分。这是关于文本的，是关于GDLT中的报告
+说话人1 09:55
+this is the sharp feature importance.
+
+这就是尖锐特征的重要性。
+说话人2 09:58
+Okay?
+
+好的？
+说话人1 10:02
+I don't think I completely understand what you've done for. Can you tell me what model have you used here? Is this using xg boost?
+
+我不认为我完全理解你所做的一切。你能告诉我你用的是什么型号吗？这是使用XG Boost吗？
+说话人2 10:13
+Yeah, I first explore the the really relation between the features. Okay? I try to construct the charging boost about. It's not per perform. Well, so I try to add more features.
+
+是的，我首先探索了特征之间的真正关系。好的？我试着构建充电助推器。这不是每次表演。嗯，所以我尝试添加更多的功能。
+说话人1 10:38
+I understand,
+
+我明白，
+
+I think honestly, it's never going to perform that well, because I think predicting oil prices is really difficult. Yeah. I don't know if just adding loads more features is going to help, because I think it becomes very hard to analyze your model. Yes, you keep adding features.
+
+老实说，我认为它永远不会表现得那么好，因为我认为预测油价真的很难。是啊。我不知道仅仅添加负载和更多的特性是否会有帮助，因为我认为分析你的模型会变得非常困难。是的，你一直在增加功能。
+说话人2 11:09
+I have not try to build the charge both model again after adding these features. But some literature said, maybe it's there is a limitation of the accuracy to predict the oil prices. Yes.
+
+在添加这些功能后，我没有再次尝试构建Charge Both模型。但也有文献认为，预测油价的准确性可能存在一定的局限性。是的。
+说话人1 11:35
+It's great that you've done all of this, but my suggestion would be to mhm. Maybe go back and read some the literature, try and figure out these variables a little bit more clearly and then have another go, because I think you've done the thing which i'm always tempted to do when I start analysis, and it's to throw everything in and see what a model spits out. But it's been quite hard to interpret what the results mean. Yeah.
+
+你已经做了所有这些，这很好，但我的建议是。也许回去读一些文献，试着更清楚地弄清楚这些变量，然后再试一次，因为我认为你已经做了我开始分析时一直想做的事情，那就是把所有东西都放进去，看看模型会吐出什么。但很难解释这些结果意味着什么。是啊。
+说话人2 12:07
+So I I should to figure out the most used or the most important variables in the literature,
+
+所以我应该找出文献中最常用或最重要的变量，
+说话人1 12:18
+exactly.
+
+确切地。
+说话人2 12:19
+And just only use the limited numbers of variety, I think so.
+
+只使用有限数量的品种，我想是这样的。
+说话人1 12:27
+It's great that you've got these tables. Now data sets, but what might be really helpful to do next would be to look at the literature and understand what we're doing. So for example, if you could go through and look at people, let's say, paper one published tonight, twenty, twenty, they used model xg boost. The variables were, I don't know, xyz and then have a look at what the next paper does to get a bit more of a concrete idea of what other people are doing, so that you can choose your variables. That's a yeah.
+
+你有这些桌子真是太好了。现在是数据集，但下一步可能真正有帮助的是查看文献并了解我们正在做什么。举个例子，如果你可以浏览一下人们，比如说，今晚发表的一篇论文，20，20，他们使用的是XG Boost模型。变量是，我不知道，XYZ，然后看看下一篇论文做了什么，以更具体地了解其他人在做什么，这样你就可以选择你的变量。那是个好主意。
+说话人2 13:22
+And should I try to build a small model to text, to test the variables.
+
+我是否应该尝试建立一个小模型来测试变量。
+说话人1 13:36
+Or I think you don't need to yet. I'd say, if if we meet again in about 3 weeks, if in that time, you focus on really understanding the literature, you've got all of your data there, but you've got maybe too many variables. So next step is really understand what other people have done, and more variables they included. And then the next step after that will be choose your variables and then rerun the models. Just a little bit more systematic.
+
+或者我认为你现在还不需要。我会说，如果我们在大约3周后再次见面，如果在这段时间内，你专注于真正理解文献，你已经得到了所有的数据，但你可能有太多的变量。所以下一步是真正了解其他人做了什么，以及他们包括的更多变量。下一步是选择变量，然后重新运行模型。只是更系统一点。
+说话人2 14:11
+Iii if that's enough for the progress, idea about the how to say I want to use more team.
+
+如果这对进步来说足够了，关于如何说我想使用更多团队的想法。
+说话人1 14:39
+Sorry, it's okay.
+
+对不起，没关系。
+说话人2 14:51
+Yeah, ii wanna show you what they are true in the oil program is not used to much in the in the literature. Also, it's enough only used.
+
+是的，我想向你们展示它们在石油项目中的真实性，这在文献中并不常见。而且，只要用过就够了。
+说话人1 15:08
+I think using multi modal data is great. Mhm.
+
+我认为使用多模态数据是很棒的。嗯。
+说话人2 15:12
+I.
+
+我。
+说话人1 15:14
+think see what other people have done in the literature. So I doubt people would have used every modality, but people might combined a few different modalities. So you might find more paper which is used remote sensing. You might find more paper which is used news reports. So you can kind of get an idea of what different people are doing.
+
+想一想，看看其他人在文献中做了什么。所以我怀疑人们会使用每一种方式，但人们可能会结合几种不同的方式。所以你可能会发现更多用于遥感的纸张。你可能会发现更多用于新闻报道的纸张。所以你可以了解不同的人在做什么。
+说话人2 15:40
+Yeah. If I look some literature, I I modify the data set like, maybe I will delete the shipping and add some other variables.
+
+是啊。如果我看一些文献，我会修改数据集，也许我会删除运输并添加一些其他变量。
+说话人1 16:03
+Potentially, I probably wouldn't add any more variables. I've got about 200. Yeah, so it wouldn't worry too much about adding them more using the literature to select which ones, yeah,
+
+我可能不会添加更多的变量。我有大约200个。是的，所以它不会太担心添加更多的使用文献来选择哪些，是的，
+说话人2 16:17
+like about 20 years + 52 weeks. What's number of the features is proper for like 2000?
+
+大概20年+52周。对于像2000这样的情况，功能的数量是多少？
+说话人1 16:32
+It's about 2,000, right? Two thousand and one one twenty times, no more, right? It's really hard to say. Honestly, I guess you want a sensible amount because you want to be able to interpret it. You could look at doing principal component analysis on your variables. Principal component analysis is a way of reducing your variables into single like vector components. But I think what the principal component, as this will show you, is that your variables are highly correlated. For example, if you apply, the principal component allows us to your table, you have of data sets related to shipping, they'd probably collapse into only one or two possible components, because they're so highly correlated. You could consider doing that. I might be a way of producing the number of variables in your model. I got that lines people are thinking about.
+
+大约2000人，对吗？两千零一一二十次，不能再多了，对吗？这真的很难说。老实说，我猜你想要一个合理的数额，因为你希望能够解释它。你可以考虑对变量进行主成分分析。主成分分析是一种将变量简化为单个向量成分的方法。但我认为主成分，正如这将向你展示的，你的变量是高度相关的。例如，如果你申请，主成分允许我们进入你的表，你有与航运相关的数据集，它们可能只有一个或两个可能的成分，因为它们是高度相关的。你可以考虑这么做。我可能是一种在你的模型中产生变量数量的方法。我得到了人们正在思考的台词。
+说话人2 17:51
+Okay, yeah. Anyway, I should explore more literature of.
+
+好的，是的。无论如何，我应该探索更多的文学。
+说话人1 18:03
+more, I think. So. Are you happy with how to go about searching for the literature? How are you finding relevant papers.
+
+更多，我想。那么。你对如何搜索文献感到满意吗？你是怎么找到相关文件的？
+说话人2 18:16
+of at the beginning, I put some words like oil price, like prediction in google.
+
+一开始，我在谷歌上放了一些词，比如油价，比如预测。
+说话人1 18:29
+nature, integral score.
+
+性质，积分。
+说话人2 18:31
+And I will find the literature that's.
+
+我会找到那些文学作品。
+说话人1 18:37
+paper use. Let me show you gets up. Film scholar, for example, you search like machines learning. All price revealed sensing. So maybe this, and then what can be helpful as you can limit the time frame? Yeah, so especially when you're looking at stuff related to machine learning, you might only want the most recent papers. And then the other thing which is really helpful is looking at how many papers have cited them. So papers with more citations are generally a good place to start. Yeah. Here, although it looks kind of interesting, right? So they've compared six machine learning algorithms to look at that it doesn't have any soup oil. Maybe this is better. This is predicting pollution, petrol pollution, but not oil prices. This might be relevant. It's definitely predicting oil prices. Yeah, so going through and trying to find what might be rather, and then looking at what else decided. There are some things like us. It's giving you a bit of an idea of what sorts of variables that you think. Yeah, so that's a good way to start looking at the literature.
+
+纸张使用。我来教你起床。比如电影学者，你像机器学习一样搜索。所有价格显示感应。所以也许这个，然后什么可以帮助你限制时间框架？是的，特别是当你在看与机器学习相关的东西时，你可能只想要最新的论文。另一件非常有帮助的事情是看有多少论文引用了它们。因此，引用次数较多的论文通常是一个很好的起点。是的。这里，虽然看起来很有趣，对吧？所以他们比较了六种机器学习算法，看看它没有任何汤油。也许这样更好。这是预测污染，汽油污染，而不是石油价格。这可能是相关的。这绝对是在预测油价。是的，所以仔细检查并试图找到可能更好的东西，然后看看其他决定。有些东西和我们一样。它给了你一些关于你所想的变量的想法。是的，所以这是一个开始看文献的好方法。
+说话人2 20:49
+And I have asked ai to find some to find more literature and It's provided a list of like 40, 50.
+
+我已经要求人工智能找到一些，以找到更多的文献，它提供了大约40，50个列表。
+说话人1 21:12
+treasures. And.
+
+珍宝。和。
+说话人2 21:15
+I I find it is exist is not wrong. Should I read this literature at first?
+
+我发现它的存在并没有错。我应该先读这些文学作品吗？
+说话人1 21:25
+So I think asking like church PT to suggest literature isn't a bad place to start, but then I'd go and I'd search them in scholar, check their real, read them. Are they relevant? Are other people citing it? So don't just use more tragedy is telling you, make sure you go and have a look at these papers yourself and understand if other papers also using.
+
+所以我认为，像Church PT这样要求推荐文学作品并不是一个坏的开始，但之后我会去，我会在学者中搜索它们，检查它们的真实性，阅读它们。它们相关吗？其他人在引用它吗？所以不要只是使用更多的悲剧告诉你，确保你自己去看看这些论文，并了解其他论文是否也在使用。
+说话人2 21:50
+them. What I got is I can find out the relation of this literature and have a more clear sense about the.
+
+他们。我所得到的是，我可以找出这些文献的关系，并对这些文献有一个更清晰的认识。
+说话人1 22:04
+I think so. And if you make a document like a markdown file or a word document, and you just writing up like a bit of a summary of what each paper is about in your own words is really good, because then when you come to write your report, you have something to reference back to. Yeah, so just make lots of nights or should go.
+
+我想是的。如果你做了一个文档，比如Markdown文件或Word文档，你只是用自己的话写了一些关于每篇论文的摘要，这真的很好，因为当你写报告的时候，你就有了可以参考的东西。是啊，所以多做几个晚上或者该走了。
+说话人2 22:21
+I got that. Yeah, so I should read more literature and write down this, the variables and models. Yeah. And like organize this into a file, that's real. And I think.
+
+我明白了。是的，所以我应该阅读更多的文献，并写下这些变量和模型。是啊。就像把它组织成一个文件一样，这是真的。而我认为。
+说话人1 22:44
+it'll be really helpful, because then you'll know what sorts of models you could consider using and what sorts of variables you might want to use. Yeah.
+
+这真的很有帮助，因为这样你就会知道你可以考虑使用什么样的模型，以及你可能想要使用什么样的变量。是啊。
+
+Perfect. I think that's about us done for today. What are any other questions you want to ask.
+
+完美的。我想我们今天就到此为止了。你还想问什么问题？
+说话人2 23:03
+them?
+
+他们？
+说话人1 23:05
+No, not yet. I could EMAIL her, and i'll send you an EMAIL later today. You just my notes on what we've discussed. Yeah.
+
+不，还没有。我可以给她发电子邮件，今天晚些时候我会给你发一封电子邮件。你只是我关于我们讨论的笔记。是啊。
+说话人2 23:16
+I maybe should we.
+
+我也许我们应该。
+说话人1 23:20
+I can choose the time for next meeting.
+
+我可以选择下次会议的时间。
+
+Would believe.
+
+会相信。
+说话人2 23:43
+it's a yes.
+
+这是肯定的。
+说话人1 23:50
+With the 17 foot 1, pm Mark, 17, i'll send you a meeting online, okay?
+
+17英尺1英寸，下午马克，17，我会给你一个在线会议，好吗？
+说话人2 23:59
+If we go like this piece, it's, I will how to say, maybe is the cracked piece of the whole prime? I think so.
+
+如果我们像这一块，它是，我会怎么说，也许是整个质数的裂片？我想是的。
+说话人1 24:28
+I'm not worried about. I think you're definitely gonna be finished in time because you've already showed me model results and it's a mixed up the project.
+
+我不担心。我认为你肯定会及时完成，因为你已经向我展示了模型结果，这是一个混乱的项目。
+说话人2 24:37
+Yeah, like my classmates, they have like clean the data and have starts write coding. So I'm not sure, but you have to. But I just not sure if I done too little or I have to,
+
+是的，就像我的同学一样，他们已经清理了数据，并开始编写代码。所以我不确定，但你必须这么做。但我不确定是我做得太少还是我必须做，
+说话人1 25:04
+I think it's good. I think it's gonna be important on some literature. You might, in the next 3 weeks, reach a point what variables a model you want to start using. And there's nothing you can go ahead and start having a go. But just I'd start by really looking into the literature and trying to understand that. First, I'm trying to narrow down those variables for you. 200. Yeah. Thank you. You're welcome. Thank.
+
+我认为它很好。我认为它对一些文学作品很重要。在接下来的3周内，你可能会达到一个点，即你想要开始使用模型的变量。没有什么是你可以开始尝试的。但我会从真正研究文献并试图理解它开始。首先，我试着为你缩小变量范围。200。是的。谢谢。不客气。谢谢。
+说话人2 25:48
+you. If you want somewhere with that condition for you more,
+
+你。如果你更想要一个有这种条件的地方，
+说话人1 25:54
+CK.
+
+CK。

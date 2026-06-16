@@ -26,7 +26,15 @@
     "dollar_index",
     "treasury_10y",
     "fed_funds_rate",
-    "sp500_return_pct"
+    "sp500_return_pct",
+    "ovx",
+    "gpr",
+    "gold_return",
+    "global_econ_activity",
+    "nonoil_industrial_commodity",
+    "futures_spread",
+    "commodity_fx",
+    "dgs10_change"
   ],
   "M2_add_text": [
     "gdelt_oil_geo_event_count",

@@ -14,7 +14,9 @@ Output:
 
 from __future__ import annotations
 
+import argparse
 import os
+import sys
 import warnings
 from pathlib import Path
 from typing import Union
@@ -72,7 +74,7 @@ def align_weekly_to_friday(df: pd.DataFrame) -> pd.DataFrame:
     return df[~df.index.duplicated(keep="last")]
 
 
-def main():
+def main(build_extra: bool = True):
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
     # ------------------------------------------------------------------
@@ -80,7 +82,7 @@ def main():
     # ------------------------------------------------------------------
     print("Reading Brent daily price...")
     brent_daily = read_eia_xls(
-        RAW_DIR / "1A Oil Price" / "EIA_brent_spot_price_daily205051987_18052026_raw.xls",
+        RAW_DIR / "1A Oil Price" / "EIA_brent_spot_price_daily205051987_18052026.xls",
         "brent_price",
     )
 
@@ -98,7 +100,10 @@ def main():
     price_weekly["brent_return_pct"] = price_weekly["brent_price"].pct_change() * 100
     price_weekly["wti_return_pct"] = price_weekly["wti_price"].pct_change() * 100
     price_weekly["brent_log_return"] = np.log(price_weekly["brent_price"] / price_weekly["brent_price"].shift(1))
-    price_weekly["brent_direction"] = (price_weekly["brent_return_pct"] > 0).astype(int)
+    price_weekly["brent_direction"] = np.where(
+        price_weekly["brent_return_pct"] > 0.5, 1,
+        np.where(price_weekly["brent_return_pct"] < -0.5, -1, 0)
+    )
     price_weekly["brent_vol_4w"] = price_weekly["brent_log_return"].rolling(4).std()
     price_weekly["brent_vol_12w"] = price_weekly["brent_log_return"].rolling(12).std()
 
@@ -209,9 +214,36 @@ def main():
         pct = non_null / len(weekly) * 100
         print(f"  {col:35s}  {non_null:5d} / {len(weekly):5d}  ({pct:5.1f}%)")
 
+    # ------------------------------------------------------------------
+    # 7. Build & merge M1 "to-build" variables (one pipeline)
+    #    Downloads OVX/GPR/gold/Kilian/CRB/futures-spread/commodity-FX/ΔDGS10
+    #    and merges them back into weekly_time_index.csv.
+    # ------------------------------------------------------------------
+    if build_extra:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        try:
+            import build_m1_to_build
+            import merge_m1_to_build
+
+            print(f"\n{'='*60}")
+            print("Building M1 to-build variables (FRED / yfinance)...")
+            build_m1_to_build.main()
+            print("\nMerging M1 to-build variables into weekly anchor...")
+            merge_m1_to_build.main()
+        except Exception as e:  # noqa: BLE001
+            print(f"\n[warn] M1 to-build step failed/skipped: {e}")
+            print("       Retry later: python build_m1_to_build.py && python merge_m1_to_build.py")
+
     print(f"\n{'='*60}")
     print("Done.")
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="Build the weekly Brent anchor (and optionally the M1 to-build variables).")
+    parser.add_argument(
+        "--skip-m1-extra",
+        action="store_true",
+        help="Only build the base anchor; skip downloading/merging the M1 to-build variables.",
+    )
+    args = parser.parse_args()
+    main(build_extra=not args.skip_m1_extra)
