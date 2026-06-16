@@ -72,7 +72,7 @@ def plot_return_distribution(df: pd.DataFrame):
     """Fig 2: Distribution of weekly Brent returns."""
     fig, axes = plt.subplots(1, 2, figsize=(12, 4))
 
-    returns = df["brent_return_pct"].dropna()
+    returns = (df["brent_price"].pct_change() * 100).dropna()
 
     axes[0].hist(returns, bins=80, color="#2ca02c", alpha=0.7, edgecolor="white")
     axes[0].axvline(0, color="black", linestyle="--", linewidth=0.8)
@@ -80,7 +80,8 @@ def plot_return_distribution(df: pd.DataFrame):
     axes[0].set_ylabel("Frequency")
     axes[0].set_title(f"Distribution (mean={returns.mean():.2f}%, std={returns.std():.2f}%)")
 
-    axes[1].plot(df.index, df["brent_vol_12w"], linewidth=0.7, color="#d62728")
+    vol12 = np.log(df["brent_price"] / df["brent_price"].shift(1)).rolling(12).std()
+    axes[1].plot(df.index, vol12, linewidth=0.7, color="#d62728")
     axes[1].set_ylabel("12-week Rolling Volatility")
     axes[1].set_title("Brent Realised Volatility")
     axes[1].xaxis.set_major_locator(mdates.YearLocator(4))
@@ -93,23 +94,24 @@ def plot_return_distribution(df: pd.DataFrame):
 
 
 def plot_eia_fundamentals(df: pd.DataFrame):
-    """Fig 3: Key EIA weekly fundamentals."""
-    eia_cols = {
-        "crude_stocks_excl_spr": "Commercial Crude Stocks (k bbl)",
-        "crude_production": "Crude Production (k bpd)",
-        "refinery_utilisation": "Refinery Utilisation (%)",
-        "net_crude_trade": "Net Crude Imports - Exports (k bpd)",
+    """Fig 3: M1 supply / demand mechanism variables (kept set)."""
+    cols = {
+        "crude_stocks_change": "Crude Stocks Change (k bbl)",
+        "global_econ_activity": "Global Economic Activity (Kilian REA)",
+        "nonoil_industrial_commodity": "Non-oil Industrial Commodity Index",
+        "futures_spread": "Brent Futures-Spot Spread",
     }
 
     fig, axes = plt.subplots(2, 2, figsize=(14, 8))
-    for ax, (col, title) in zip(axes.flat, eia_cols.items()):
-        ax.plot(df.index, df[col], linewidth=0.7)
+    for ax, (col, title) in zip(axes.flat, cols.items()):
+        if col in df.columns:
+            ax.plot(df.index, df[col], linewidth=0.7)
         ax.set_title(title, fontsize=10)
         ax.xaxis.set_major_locator(mdates.YearLocator(4))
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
         ax.grid(alpha=0.3)
 
-    fig.suptitle("EIA Weekly Petroleum Fundamentals (2006–2025)", fontsize=12, y=1.02)
+    fig.suptitle("M1 Supply / Demand Mechanism Variables (2006–2025)", fontsize=12, y=1.02)
     fig.tight_layout()
     fig.savefig(FIG_DIR / "03_eia_fundamentals.png")
     plt.close(fig)
@@ -117,26 +119,27 @@ def plot_eia_fundamentals(df: pd.DataFrame):
 
 
 def plot_macro_indicators(df: pd.DataFrame):
-    """Fig 4: Macro-financial indicators vs Brent."""
+    """Fig 4: M1 macro / risk indicators (kept set)."""
     fig, axes = plt.subplots(3, 2, figsize=(14, 10))
 
     pairs = [
-        ("sp500", "S&P 500"),
-        ("vix", "VIX"),
-        ("dollar_index", "USD Index (DXY)"),
-        ("treasury_10y", "10Y Treasury Yield (%)"),
-        ("fed_funds_rate", "Fed Funds Rate (%)"),
-        ("brent_wti_spread", "Brent-WTI Spread (USD)"),
+        ("ovx", "OVX (oil-specific uncertainty)"),
+        ("gpr", "Geopolitical Risk (GPR)"),
+        ("dgs10_change", "10Y Treasury Yield Change (ΔDGS10)"),
+        ("gold_return", "Gold Return"),
+        ("commodity_fx", "Commodity FX (CAD/AUD)"),
+        ("global_econ_activity", "Global Economic Activity"),
     ]
 
     for ax, (col, title) in zip(axes.flat, pairs):
-        ax.plot(df.index, df[col], linewidth=0.7)
+        if col in df.columns:
+            ax.plot(df.index, df[col], linewidth=0.7)
         ax.set_title(title, fontsize=10)
         ax.xaxis.set_major_locator(mdates.YearLocator(4))
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
         ax.grid(alpha=0.3)
 
-    fig.suptitle("Macro-Financial Indicators (2006–2025)", fontsize=12, y=1.01)
+    fig.suptitle("M1 Macro / Risk Indicators (2006–2025)", fontsize=12, y=1.01)
     fig.tight_layout()
     fig.savefig(FIG_DIR / "04_macro_indicators.png")
     plt.close(fig)
@@ -146,40 +149,36 @@ def plot_macro_indicators(df: pd.DataFrame):
 def plot_correlation_heatmap(df: pd.DataFrame):
     """Fig 5: Cross-modality correlation heatmap (representative features vs target)."""
     rep_cols = [
-        "brent_return_pct", "brent_vol_4w",
-        "crude_stocks_change", "refinery_utilisation", "net_crude_trade",
-        "sp500_return_pct", "vix", "dollar_index",
+        "brent_price", "crude_stocks_change", "futures_spread",
+        "ovx", "gpr", "gold_return", "commodity_fx", "dgs10_change",
+        "global_econ_activity", "nonoil_industrial_commodity",
         "gdelt_oil_geo_event_count", "gdelt_oil_geo_avg_tone",
         "gdelt_chokepoint_event_count", "gdelt_combined_event_count",
-        "opt_NDBI_P003", "opt_NDBI_P005",
-        "ntl_ntl_avg_rad_mean_P003", "ntl_ntl_avg_rad_mean_P006",
+        "ntl_anomaly_ras_tanura", "ntl_anomaly_us_gulf",
+        "s2_cloud_fraction_fujairah",
         "gfw_hormuz_total_hours", "gfw_suez_total_hours",
         "pw_hormuz_n_tanker", "pw_suez_n_tanker",
-        "target_brent_return_next_1w",
+        "target_brent_price_next_1w",
     ]
     available = [c for c in rep_cols if c in df.columns]
     corr = df[available].corr()
 
     short_names = {
-        "brent_return_pct": "brent_ret",
-        "brent_vol_4w": "brent_vol4w",
         "crude_stocks_change": "crude_stk_chg",
-        "refinery_utilisation": "refinery_util",
-        "net_crude_trade": "net_trade",
-        "sp500_return_pct": "sp500_ret",
+        "nonoil_industrial_commodity": "nonoil_ind",
+        "global_econ_activity": "global_econ",
         "gdelt_oil_geo_event_count": "gdelt_geo_cnt",
         "gdelt_oil_geo_avg_tone": "gdelt_geo_tone",
         "gdelt_chokepoint_event_count": "gdelt_choke_cnt",
         "gdelt_combined_event_count": "gdelt_combined",
-        "opt_NDBI_P003": "NDBI_RasTanura",
-        "opt_NDBI_P005": "NDBI_Houston",
-        "ntl_ntl_avg_rad_mean_P003": "NTL_RasTanura",
-        "ntl_ntl_avg_rad_mean_P006": "NTL_Ningbo",
+        "ntl_anomaly_ras_tanura": "NTLanom_RasTanura",
+        "ntl_anomaly_us_gulf": "NTLanom_USGulf",
+        "s2_cloud_fraction_fujairah": "S2cloud_Fujairah",
         "gfw_hormuz_total_hours": "gfw_hormuz_hrs",
         "gfw_suez_total_hours": "gfw_suez_hrs",
         "pw_hormuz_n_tanker": "pw_hormuz_tanker",
         "pw_suez_n_tanker": "pw_suez_tanker",
-        "target_brent_return_next_1w": "TARGET",
+        "target_brent_price_next_1w": "TARGET",
     }
     corr = corr.rename(index=short_names, columns=short_names)
 
@@ -197,28 +196,27 @@ def plot_correlation_heatmap(df: pd.DataFrame):
 
 
 def plot_remote_sensing_timeseries(df: pd.DataFrame):
-    """Fig 6: Remote sensing indices for selected AOIs."""
-    sites = ["P001", "P003", "P005", "P006"]
-    site_names = {
-        "P001": "Rotterdam", "P003": "Ras Tanura",
-        "P005": "Houston", "P006": "Ningbo-Zhoushan",
-    }
+    """Fig 6: Clean M2 NTL anomaly vs S2 cloud fraction for selected AOIs."""
+    aois = ["rotterdam", "ras_tanura", "us_gulf", "ningbo"]
+    names = {"rotterdam": "Rotterdam", "ras_tanura": "Ras Tanura",
+             "us_gulf": "Houston / US Gulf", "ningbo": "Ningbo-Zhoushan"}
 
     fig, axes = plt.subplots(2, 2, figsize=(14, 8))
-    for ax, site in zip(axes.flat, sites):
-        ndvi_col = f"opt_NDVI_{site}"
-        ndbi_col = f"opt_NDBI_{site}"
-        if ndvi_col in df.columns:
-            ax.plot(df.index, df[ndvi_col], linewidth=0.6, label="NDVI", alpha=0.8)
-        if ndbi_col in df.columns:
-            ax.plot(df.index, df[ndbi_col], linewidth=0.6, label="NDBI", alpha=0.8)
-        ax.set_title(f"{site}: {site_names.get(site, site)}", fontsize=10)
+    for ax, aoi in zip(axes.flat, aois):
+        anom_col = f"ntl_anomaly_{aoi}"
+        cloud_col = f"s2_cloud_fraction_{aoi}"
+        if anom_col in df.columns:
+            ax.plot(df.index, df[anom_col], linewidth=0.6, label="NTL anomaly (z)", alpha=0.8)
+        if cloud_col in df.columns:
+            ax.plot(df.index, df[cloud_col], linewidth=0.6, label="S2 cloud fraction", alpha=0.8)
+        ax.axhline(0, color="black", linewidth=0.4, linestyle="--")
+        ax.set_title(f"{names.get(aoi, aoi)}", fontsize=10)
         ax.legend(fontsize=8)
         ax.xaxis.set_major_locator(mdates.YearLocator(4))
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
         ax.grid(alpha=0.3)
 
-    fig.suptitle("Optical Remote Sensing Indices at Oil Infrastructure AOIs", fontsize=12, y=1.02)
+    fig.suptitle("Clean M2 Remote Sensing (NTL anomaly / S2 cloud) at Oil AOIs", fontsize=12, y=1.02)
     fig.tight_layout()
     fig.savefig(FIG_DIR / "06_remote_sensing_timeseries.png")
     plt.close(fig)
@@ -226,21 +224,20 @@ def plot_remote_sensing_timeseries(df: pd.DataFrame):
 
 
 def plot_nightlight_timeseries(df: pd.DataFrame):
-    """Fig 7: VIIRS nightlight radiance by AOI."""
-    sites = ["P001", "P003", "P004", "P005", "P006", "P007"]
-    site_names = {
-        "P001": "Rotterdam", "P003": "Ras Tanura", "P004": "Singapore",
-        "P005": "Houston", "P006": "Ningbo", "P007": "Jamnagar",
-    }
+    """Fig 7: VIIRS nightlight anomaly (z-score) by AOI."""
+    aois = ["rotterdam", "ras_tanura", "jurong", "us_gulf", "ningbo", "jamnagar"]
+    names = {"rotterdam": "Rotterdam", "ras_tanura": "Ras Tanura", "jurong": "Singapore",
+             "us_gulf": "Houston / US Gulf", "ningbo": "Ningbo", "jamnagar": "Jamnagar"}
 
     fig, ax = plt.subplots(figsize=(14, 5))
-    for site in sites:
-        col = f"ntl_ntl_avg_rad_mean_{site}"
+    for aoi in aois:
+        col = f"ntl_anomaly_{aoi}"
         if col in df.columns:
-            ax.plot(df.index, df[col], linewidth=0.7, label=site_names.get(site, site), alpha=0.8)
+            ax.plot(df.index, df[col], linewidth=0.7, label=names.get(aoi, aoi), alpha=0.8)
 
-    ax.set_ylabel("Mean Radiance (nW/cm²/sr)")
-    ax.set_title("VIIRS Nightlight Radiance at Oil Infrastructure Sites")
+    ax.axhline(0, color="black", linewidth=0.4, linestyle="--")
+    ax.set_ylabel("NTL Anomaly (site z-score)")
+    ax.set_title("VIIRS Nightlight Anomaly at Oil Infrastructure Sites")
     ax.legend(fontsize=8, ncol=3)
     ax.xaxis.set_major_locator(mdates.YearLocator(2))
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
@@ -434,15 +431,17 @@ def print_summary_stats(df: pd.DataFrame):
     print(f"  Median: ${df['brent_price'].median():.2f}")
     print(f"  Min:    ${df['brent_price'].min():.2f} ({df['brent_price'].idxmin().date()})")
     print(f"  Max:    ${df['brent_price'].max():.2f} ({df['brent_price'].idxmax().date()})")
+    weekly_ret = df["brent_price"].pct_change() * 100
     print(f"\nWeekly return:")
-    print(f"  Mean:  {df['brent_return_pct'].mean():.3f}%")
-    print(f"  Std:   {df['brent_return_pct'].std():.3f}%")
-    print(f"  Skew:  {df['brent_return_pct'].skew():.3f}")
-    print(f"  Kurt:  {df['brent_return_pct'].kurtosis():.3f}")
-    print(f"\nDirection balance:")
+    print(f"  Mean:  {weekly_ret.mean():.3f}%")
+    print(f"  Std:   {weekly_ret.std():.3f}%")
+    print(f"  Skew:  {weekly_ret.skew():.3f}")
+    print(f"  Kurt:  {weekly_ret.kurtosis():.3f}")
+    print(f"\nNext-week direction balance:")
     direction = df["target_brent_direction_next_1w"].value_counts(normalize=True) * 100
     print(f"  Up:   {direction.get(1, 0):.1f}%")
-    print(f"  Down: {direction.get(0, 0):.1f}%")
+    print(f"  Flat: {direction.get(0, 0):.1f}%")
+    print(f"  Down: {direction.get(-1, 0):.1f}%")
 
 
 def main():

@@ -45,12 +45,14 @@ M1_VARS = [
     "gpr", "dgs10_change", "gold_return", "commodity_fx",
 ]
 
+# Clean M2 set: dynamic NTL anomaly (not raw radiance) per AOI, per
+# beatrice_task_literature_matrix.md §②.
 M2_RS_VARS = [
-    "ntl_ntl_avg_rad_mean_P001",  # Rotterdam
-    "ntl_ntl_avg_rad_mean_P002",  # Fujairah
-    "ntl_ntl_avg_rad_mean_P003",  # Ras Tanura
-    "ntl_ntl_avg_rad_mean_P005",  # Houston
-    "ntl_ntl_avg_rad_mean_P006",  # Ningbo
+    "ntl_anomaly_rotterdam",   # Rotterdam (import / refining)
+    "ntl_anomaly_fujairah",    # Fujairah (offshore tanker storage)
+    "ntl_anomaly_ras_tanura",  # Ras Tanura (crude export)
+    "ntl_anomaly_us_gulf",     # Houston / US Gulf
+    "ntl_anomaly_ningbo",      # Ningbo (China demand proxy)
 ]
 
 M3_SHIP_VARS = [
@@ -71,7 +73,10 @@ def pretty(col: str) -> str:
     for code, name in AOI_NAMES.items():
         col = col.replace(f"_{code}", f"\n({name})")
     return (col
-        .replace("ntl_ntl_avg_rad_mean", "NTL")
+        .replace("ntl_anomaly_", "NTL anom ")
+        .replace("ntl_valid_obs_count_", "NTL validobs ")
+        .replace("s2_cloud_fraction_", "S2 cloudfrac ")
+        .replace("s2_clear_obs_count_", "S2 clearobs ")
         .replace("pw_", "PW ")
         .replace("gfw_", "GFW ")
         .replace("target_brent_", "Target:")
@@ -280,11 +285,11 @@ def distributions(df: pd.DataFrame) -> None:
 # ── 9. Rolling correlation with brent ───────────────────────────
 def rolling_corr(df: pd.DataFrame) -> None:
     key_features = {
-        "M1: VIX": "vix",
-        "M1: DXY": "dollar_index",
+        "M1: OVX": "ovx",
+        "M1: GPR": "gpr",
         "M1: Stocks Δ": "crude_stocks_change",
-        "M2: NTL Rotterdam": "ntl_ntl_avg_rad_mean_P001",
-        "M2: NTL Fujairah": "ntl_ntl_avg_rad_mean_P002",
+        "M2: NTL anom Rotterdam": "ntl_anomaly_rotterdam",
+        "M2: NTL anom Fujairah": "ntl_anomaly_fujairah",
         "M3: PW Hormuz tanker": "pw_hormuz_n_tanker",
         "M3: PW Suez tanker": "pw_suez_n_tanker",
     }

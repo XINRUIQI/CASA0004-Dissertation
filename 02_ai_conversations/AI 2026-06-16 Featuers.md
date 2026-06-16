@@ -94,127 +94,55 @@
 | 外部扰动 / 事件指数 | `gpr`                                                                                                     | Caldara–Iacoviello 基于新闻报道构建的风险指数，属于文本聚合和外部扰动风险层面，严格来说不是金融变量 |
 
 
-## 两点需要注意
+## 数据池 vs 实验子集（重要区分）
 
-### 1. M1 不等于纯金融变量
+"旧变量"有两个不同含义，必须区分：
 
-原有第 ① 节的标题为“M1 金融变量”，但文献精读后的实际设计已经扩展为：
+| 层面 | 指什么 | 内容 | 是否"读文献前" |
+| --- | --- | --- | --- |
+| ① 数据列总池（data inventory） | `feature_groups_old.json` / 自动生成的 `feature_groups.json` 的 `M1_market_macro` | 最初 **27** 个市场/宏观列；精读后补下载 8 个 → 现 **35** 列 | 27 列是读文献前构建；该文件已含新增 8 列，是合并后的快照 |
+| ② 旧实验喂给模型的 M1 子集 | 旧 `config.py` / EDA 硬编码的 `M1_VARS` | **9 个**（见下） | ✅ 是，凭经验从 27 列池子里挑的第一版 |
+| ③ 新实验的 M1 子集（精读后） | 现 `config.py` / EDA 的 `M1_VARS` | **10 个**机制化（见下） | 精读后按 Kilian 三类机制重选 |
 
-```text
-市场 + 宏观 + 石油基本面 + 风险
-```
+- **旧 M1（9 个，pre-精读）**：`brent_price, brent_log_return, crude_stocks_change, crude_production, refinery_utilisation, vix, dollar_index, sp500_return_pct, treasury_10y`
+- **新 M1（10 个，post-精读）**：`brent_price, crude_stocks_change, global_econ_activity, nonoil_industrial_commodity, futures_spread, ovx, gpr, dgs10_change, gold_return, commodity_fx`
 
-这也是使用 `market_macro` 命名，而不是直接命名为 `financial` 的原因。
-
-如果 Beatrice 强调“financial variables”，可以解释为：
-
-> M1 is organised around economic mechanisms rather than strict data types. It combines market, macroeconomic, oil-fundamental and risk indicators to represent the main supply, demand and precautionary-demand channels identified in the oil-price literature.
-
-因此，更准确的中文名称可以改为：
-
-```text
-M1：市场、宏观与石油基本面变量
-```
-
-或：
-
-```text
-M1：市场—宏观基础变量
-```
-
-不建议继续将其简单称为：
-
-```text
-M1：金融变量
-```
-
-### 2. `gpr` 的模块归属存在歧义
-
-`gpr` 是基于新闻文本聚合形成的外部扰动风险指数，因此它与 M2 的文本/NLP 模块在概念上存在一定重叠。
-
-P076 将其作为 M1 中的战略风险变量使用，但文献精读结果同时表明：
-
-- `gpr` 可以作为现成的低频外部扰动风险基准；
-- `gpr` 不能替代项目自行构建的高频 NLP 事件特征；
-- 如果同时将 `gpr` 放入 M1，并将 GDELT/NLP 特征放入 M2，M1 与 M2 之间可能出现信息重叠；
-- 这种重叠可能削弱消融实验对 M2 独立贡献的识别能力。
-
-因此，有两种处理方案。
-
-#### 方案 A：将 `gpr` 保留在 M1
-
-将 `gpr` 定义为现成的、低频的外部扰动风险代理变量。
-
-```text
-M1 = 市场 + 宏观 + 石油基本面 + 标准化风险指数
-M2 = 自建高频文本与扰动事件特征
-```
-
-优点：
-
-- 与 P076 的变量设置一致；
-- M1 能够覆盖 Kilian 框架中的预防性需求机制；
-- 可以将 `gpr` 作为传统风险指数基准；
-- M2 代表在传统指数基础上新增的高频文本信息。
-
-缺点：
-
-- M1 与 M2 在事件风险信息上存在一定概念重叠；
-- M1 → M2 的增量不再代表“是否加入文本信息”，而是代表“高频自建文本特征能否在低频 GPR 基础上提供额外信息”。
-
-#### 方案 B：将 `gpr` 归入 M2
-
-将所有来源于新闻文本或事件报道的变量统一归入文本模块。
-
-```text
-M1 = 市场 + 宏观 + 石油基本面
-M2 = GPR + GDELT + NLP 事件特征
-```
-
-优点：
-
-- M1 和 M2 的数据类型边界更清晰；
-- 消融实验更容易解释；
-- M1 → M2 可以直接理解为加入文本与事件信息后的预测增益。
-
-缺点：
-
-- M1 将缺少明确的预防性需求或外部风险代理；
-- 与 P076 将 GPR 作为基础外生风险变量的设计不完全一致；
-- M2 的增益可能部分来自加入一个已经成熟的 GPR 指数，而不完全来自项目自行构建的 NLP 特征。
-
-## 建议方案
-
-建议将 `gpr` 保留在 M1，但需要明确区分其与 M2 的作用：
+精读带来两件事：① 给数据池补了 8 个变量（27 → 35）；② 重选 M1 实验子集（旧 9 个凭经验 → 新 10 个按机制，并用优选项 OVX 替 VIX、ΔDGS10 替水平、商品货币替宽美元，移除被降级的 crude_production/refinery_utilisation/dollar_index/sp500_return_pct）。
 
 
-| 模块                 | 风险信息的角色                   |
-| ------------------ | ------------------------- |
-| M1 中的 `gpr`        | 传统、现成、低频的外部扰动风险基准         |
-| M2 中的 GDELT/NLP 特征 | 项目自行构建的高频、细粒度、可分类型的扰动事件信号 |
+## 新旧 M1 实验结果对比（XGBoost / RandomForest / Ridge 为主，深度模型两版均不稳定故略）
+
+> 数据：`01_literature/Test/results/all_results_combined.csv`（新）与 git HEAD 版（旧）。
+> ⚠️ 注意：旧组样本自 2006 起、新组自 2007-08 起（因 ovx/futures_spread 起始较晚），测试窗口略有差异，差异中混入少量样本期因素；但提升在"全模型 × 全 target"上高度一致，基本可判定为变量本身更优。
+
+**Price（R²，越高越好）**
+
+| 模型 | 旧 | 新 | Δ |
+| --- | --- | --- | --- |
+| Ridge | 0.835 | 0.867 | +0.032 |
+| XGBoost | 0.748 | 0.835 | +0.087 |
+| RandomForest | 0.825 | 0.833 | +0.008 |
+
+**Volatility（R²）— 提升最显著**
+
+| 模型 | 旧 | 新 | Δ |
+| --- | --- | --- | --- |
+| XGBoost | −0.25 | +0.076 | +0.33 |
+| RandomForest | −0.84 | +0.10 | +0.94 |
+| Ridge | −1.36 | −0.15 | +1.21 |
+
+XGBoost/RandomForest 从负 R²（不如猜均值）转为正 R²，很可能由新增的 `ovx`/`gpr`/`gold_return` 等不确定性类变量驱动。
+
+**Direction（directional_acc）**
+
+| 模型 | 旧 | 新 | Δ |
+| --- | --- | --- | --- |
+| RandomForest | 0.448 | 0.529 | +0.081 |
+| XGBoost | 0.407 | 0.485 | +0.078 |
+| SVM | 0.476 | 0.515 | +0.039 |
+
+**结论**：新 10 变量组在 price / volatility / direction 上对所有可信模型均优于旧 9 变量组。
+
+**遗留 caveat**：当前实验仍缺随机游走/Naive 基准 → price 的高 R² 受价格持续性影响，不能直接解读为预测能力（P053/P001 警告），后续需补 RW 基准并报告相对 RW 的样本外 R² 与 DM 检验。
 
 
-在这种设计下，M2 的研究问题应表述为：
-
-> Do high-frequency and disaggregated event-text features provide additional predictive information beyond conventional market, macroeconomic, oil-fundamental and aggregate risk indicators?
-
-对应中文为：
-
-> 在传统市场、宏观经济、石油基本面及聚合风险指标之外，高频、细粒度的事件文本特征能否进一步提高石油价格预测表现？
-
-为了进一步检查 `gpr` 与 M2 的重叠问题，可以增加一组补充消融实验：
-
-```text
-M1a：M1，不包含 GPR
-M1b：M1，包含 GPR
-M2：M1b + GDELT/NLP
-```
-
-通过比较：
-
-```text
-M1a vs M1b：检验 GPR 的增量价值
-M1b vs M2：检验自建高频文本特征在 GPR 基础上的额外价值
-```
-
-这样既可以保留 P076 对 GPR 的理论支持，也能够清晰识别项目自建 NLP 特征的独立贡献。

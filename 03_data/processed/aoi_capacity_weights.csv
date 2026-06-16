@@ -1,0 +1,12 @@
+aoi,site_id,ntl_longrun_mean_radiance,aoi_capacity_weight,weight_basis
+kharg,P010,107.37008461219574,0.23762811621033206,longrun_mean_viirs_radiance (P024 scale proxy)
+yanbu,P011,70.2914802579344,0.15556690766947057,longrun_mean_viirs_radiance (P024 scale proxy)
+us_gulf,P005,65.29853537313753,0.14451667806779314,longrun_mean_viirs_radiance (P024 scale proxy)
+jurong,P004,64.35187737871485,0.14242156417529128,longrun_mean_viirs_radiance (P024 scale proxy)
+rotterdam,P001,57.984766053715674,0.12833007234750923,longrun_mean_viirs_radiance (P024 scale proxy)
+fujairah,P002,35.78564961505183,0.07919968151372643,longrun_mean_viirs_radiance (P024 scale proxy)
+ulsan,P009,31.236351289664828,0.06913131661446155,longrun_mean_viirs_radiance (P024 scale proxy)
+ningbo,P006,9.953682836013718,0.022029179824343673,longrun_mean_viirs_radiance (P024 scale proxy)
+ras_tanura,P003,7.016059667295547,0.015527724020898815,longrun_mean_viirs_radiance (P024 scale proxy)
+basra,P008,1.5018952847590115,0.0033239477136625646,longrun_mean_viirs_radiance (P024 scale proxy)
+jamnagar,P007,1.0504449061780063,0.002324811842510794,longrun_mean_viirs_radiance (P024 scale proxy)

@@ -129,9 +129,7 @@
 | 7   | `GPR` 地缘政治风险                                | 预防性需求    | **P076【最重要外部变量】**, P072              | Caldara-Iacoviello | P072: **EPU**（经济政策不确定性，与 GPR 高相关，GPR 优先）                          |
 | 8   | `ΔDGS10` 10Y 收益率**变化/一阶差分**                 | 利率/持有成本  | P076(水平未过单位根→用差分), P004              | FRED               | P072: 更宽**利率/收益率曲线**族（315 维中筛选，M1 只保留 10Y 变化）                     |
 | 9   | `gold_price` / `gold_return`                | 商品联动/避险  | P004                                 | 衍生                 | —                                                                 |
-| 10  | `commodity_fx`（CAD/AUD，优先于宽美元）              | 汇率渠道     | P053(商品货币【中】, 宽美元【证据有限】), P004       | FRED               | P004: **美元指数 DXY**（宽美元，证据弱→改用商品货币）；P053: **通胀/货币**总量指标（未单独列）      |
-|     |                                             |          |                                      |                    |                                                                   |
-
+| 10  | `commodity_fx`（CAD/AUD，优先于宽美元）              | 汇率渠道     | P053(商品货币【中】, 宽美元【证据有限】), P004       | FRED               | P004: **美元指数 DXY**（宽美元，证据弱→改用商品货币）；P053: **通胀/货币**总量指标（未单独列）      |                                                   |
 
 **未采纳变量汇总（7 篇逐篇对照，M1 相关）**
 
@@ -175,15 +173,25 @@
 
 ## ②  M2 遥感：选哪些 RS 变量（5 篇）
 
+> **读完目标（已精读 5 篇，含修正）：** ① 确定 M2 在 M1 之上**增量加入哪些遥感特征**——以 **VIIRS 夜光的"动态异常/变化"** + **观测质量变量**为主，按石油相关 AOI（出口枢纽/进口·炼化港/储油区）组织；② 明确遥感是**上游信息/需求侧代理**，须经"M1 vs M1+M2"消融验证其增量，而非直接预测油价。
+>
+> ⚠️ **精读后的关键修正（推翻原摘要推断）：**
+>
+> 1. **NTL 不是油轮代理**——P024 在 Santos 港实测 NTL↔油轮数量相关仅 **Rs=−0.07**、↔月度船舶数 Rs=0.51（中等）→ 不能把锚泊区原始夜光当成"石油运输量"；应改用**站点内部异常/变化**并结合油轮占比/AIS；
+> 2. **P055 估算的是油罐"结构/名义容量"（V=πr²h），不是"充填率/库存"**——它用的是**外壁阴影 + Hough 圆**，**明确无法支撑 `frt_fill_level`**（需浮顶内部阴影/SAR 文献），且需亚米级影像（Sentinel-2 10 m 不能复现）→ 仅支持**静态基础设施变量 + 容量加权**；
+> 3. **P025 的"信息可得性"机制对应 Sentinel-2 白天光学的无云观测**，而 **VIIRS `valid_obs` 应先定位为数据质量变量**（夜间云量安慰剂检验不显著）；且其研究覆盖**美国 8 个储油区（非仅 Cushing）**、目标是**周频 WTI 收益率**；
+> 4. **P069 验证的是大气 NO₂（与 NTL/光学不同源），模型为 OLS/SVR/ANN（非 XGBoost/SHAP）、逐国估计（非面板）**；NO₂ 的边际增益在非线性模型中骤降（ANN 内部仅约 1.7%），且预测的是**石油需求而非油价**；
+> 5. **NTL 更擅长横截面差异、不擅长短期时间变化**（P032）→ M2 须用 **VIIRS（非 DMSP）+ AOI 内部异常/变化**，并限定 VIIRS 可用期子样本。
 
-| 列              | P069 · Bricongne, Meunier et al. (2026)                                                                                                                                                                                                                    |
+
+| 列              | P069 · Bricongne, Macalos, Meunier et al. (2026)                                                                                                                                                                                                                    |
 | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Full title** | Can Satellites Predict Oil Demand? (ECB Working Paper 3198)                                                                                                                                                                                                |
-| **Dataset**    | Sentinel-5P TROPOMI 卫星 NO₂ 数据（日频）, 官方石油需求数据; 多国面板                                                                                                                                                                                                          |
-| **Variables**  | **卫星 NO₂ 浓度**（daily → monthly aggregate）+ 传统预测因子（industrial production, energy prices, weather, vehicle registrations）                                                                                                                                     |
-| **Model**      | AR benchmarks, linear panel models, **neural networks**（非线性模型表现最好）                                                                                                                                                                                         |
-| **Target**     | Oil demand nowcasting（月频）                                                                                                                                                                                                                                  |
-| **M1–M4 启示**   | **M2 核心理论依据。** ① 证明"卫星数据可以预测石油需求" → 直接支撑 M2 加入 RS 的研究动机。② 他们用 NO₂（大气遥感），你用 NTL + 光学指数（地表遥感）→ 不同 RS 源头、相似逻辑。③ 加入 NO₂ 后预测误差下降 ~25% → 说明 RS 变量有实质边际贡献。④ 非线性模型更好 → 支撑 XGBoost 而非 OLS。⚠️ **注意：他们预测 oil demand 而非 oil price → 你需在论文中说明 demand 是 price 的中间传导机制。** |
+| **Full title** | Can Satellites Predict Oil Demand? (ECB Working Paper Series No. 3198)                                                                                                                                                                                                |
+| **Dataset**    | Sentinel-5P TROPOMI 对流层 NO₂（日频，起 2018-07）+ 官方石油消费/控制变量；**10 个发达与新兴经济体（约占全球 GDP/NO₂ 60%）**；**逐国分别建模（非面板）**；样本外评估 2020-01–2024-12（疫情占比大）                                                                                                                                                          |
+| **Variables**  | **卫星 NO₂ 月度国家指数**（QA≥0.75 质量筛选 + 城市 40 km 缓冲 + 28 日移动平均 + 日→月聚合）；传统预测因子：滞后石油消费、工业生产、PPI、新车注册量、温度；稳健性变量：PMI、Google Mobility/Trends、牛津疫情严格指数、油价                                                                                     |
+| **Model**      | AR 基准、多变量 **OLS**、**SVR（RBF 核）**、**ANN（5 网络集成）**；递归实时样本外 + RMSE + **Clark–West 检验**。⚠️ **未用 XGBoost、未用 SHAP、非面板回归**                                                                                                                                                                                         |
+| **Target**     | **月度国家石油需求/消费 nowcasting（非油价、非周频）**                                                                                                                                                                                                                                  |
+| **M1–M4 启示**   | **M2 需求侧研究动机的核心文献（须谨慎迁移）。** ① 证明高频卫星指标含官方统计滞后未捕捉的需求信息 → 支撑加入 RS 的动机。② ⚠️ **不同源**：本文是**大气 NO₂**，本项目用 **NTL + 地表光学**，逻辑相似但证据不能直接照搬。③ **增量幅度修正**：NO₂ 使**线性模型** RMSE 降约 26%（vs AR）/22%（vs 多变量基准），但**非线性模型内部边际增益骤降**（SVR≈3%、ANN≈1.7%，部分国家甚至略负）→ RS 边际价值必须靠消融验证、不可宣称"降 25%"。④ 改善**高度异质**（中国/西班牙近 60%、日本/韩国约 5%）且**危机期最强**。⑤ ⚠️ 非线性模型更优支持"用非线性 ML"，但本文测的是 SVR/ANN **不能作为 XGBoost 最优的证据**。⑥ ⚠️ 预测 oil demand 而非 price → 须写明"卫星活动→石油需求→供需预期→油价"的间接传导链；NO₂ 在发达经济体信息价值可能减弱，提示 NTL 也须单独验证。 |
 
 
 ---
@@ -191,12 +199,12 @@
 
 | 列              | P024 · Polinov, Bookman & Levin (2022)                                                                                                                                                                                                                                                                                                                             |
 | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Full title** | A Global Assessment of Night Lights as an Indicator for Shipping Activity in Anchorage Areas                                                                                                                                                                                                                                                                       |
-| **Dataset**    | VIIRS DNB nighttime lights (monthly composites), AIS-derived vessel counts at 30 个全球港口锚泊区                                                                                                                                                                                                                                                                          |
-| **Variables**  | NTL radiance（avg_rad）at anchorage zones → 与 AIS 船舶计数做相关验证                                                                                                                                                                                                                                                                                                          |
-| **Model**      | Correlation analysis / regression validation（非预测模型）                                                                                                                                                                                                                                                                                                                |
-| **Target**     | 验证 NTL 能否代理航运活动（validation study）                                                                                                                                                                                                                                                                                                                                  |
-| **M1–M4 启示**   | **M2 NTL 变量的合法性依据。** ① 证明 VIIRS NTL radiance ↔ 船舶活动存在显著正相关 → 支撑你 plan 里 `ntl_avg_rad_{aoi}` 进入 M2。② 但也指出 NTL noisy、不区分船舶类型 → **建议只选 3–5 个关键 AOI 的 NTL 均值，而非全 11 个 AOI × 多指标。** ③ 锚泊区（anchorage）比港口区（port）NTL 信号更纯 → 你的 AOI 定义可参考。**推荐 M2 NTL 变量：** `ntl_avg_rad_rotterdam`, `ntl_avg_rad_fujairah`, `ntl_avg_rad_ras_tanura`（供给侧）+ `ntl_avg_rad_ningbo`（需求侧）= 4 个。 |
+| **Full title** | A Global Assessment of Night Lights as an Indicator for Shipping Activity in Anchorage Areas (*Remote Sensing*, 14(5), 1079)                                                                                                                                                                                                                                                                       |
+| **Dataset**    | Suomi NPP **VIIRS DNB 月度合成**（2012-04–2020-03，约 742 m，GEE）；**601 个锚泊区 / 97 国 / 96 个月**；锚泊点来自 GFW public anchorages；Santos 港用 Sentinel-1 SAR 船舶计数做月度验证                                                                                                                                                                                                                          |
+| **Variables**  | `avg_rad`（月均辐亮度）、`SOL = avg_rad × area`（灯光总量）、`cf_cfg`（无云观测）；与锚泊点数/吞吐/油轮数等做 Spearman 相关                                                                                                                                                                                                                                                                                                          |
+| **Model**      | **Spearman 秩相关 + 插值 t 检验（非预测、非因果、无样本外）**                                                                                                                                                                                                                                                                                                                                |
+| **Target**     | **验证 NTL 能否代理锚泊区航运活动（construct validity，不是预测）**                                                                                                                                                                                                                                                                                                                                  |
+| **M1–M4 启示**   | **M2 NTL 变量的合法性依据，但石油特异性弱。** ① 锚泊点↔SOL（Rs=0.69）、国家级（Rs=0.84）相关主要反映**长期规模差异**，不等于短期预测力。② ⚠️ **关键修正**：Santos 月度 NTL↔船舶数仅 **Rs=0.51（中等）**，**NTL↔油轮数 Rs=−0.07（近乎零）** → **NTL 不能当油轮/石油运输代理**；含义近似 `NTL≈船舶数×等待时间×照明强度`。③ ⚠️ 因此应**用动态特征（mom/yoy/anomaly）而非原始 `avg_rad` 水平**，并与油轮占比/AIS 结合；`SOL` 受 AOI 面积机械影响、慎用。④ 离岸锚泊区比港口/城市范围信号更纯，**Fujairah 是最相关的石油案例**（离岸 ~10 km、主要为油轮）。⑤ ⚠️ 论文的"前后各 6 月插值"会造成**前视泄漏** → 改用仅历史插补；VIIRS 起 2012 → 用 post-2012 子样本。**推荐 M2 NTL（动态异常）AOI：** Fujairah、Ras Tanura（出口枢纽）、Rotterdam（进口/炼化）、US Gulf/Houston。 |
 
 
 ---
@@ -204,118 +212,164 @@
 
 | 列              | P025 · Hao & Wang (2023)                                                                                                                                                                                                                                             |
 | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Full title** | Cloud Cover and Expected Oil Returns                                                                                                                                                                                                                                 |
-| **Dataset**    | Cloud cover（NASA/NOAA）above Cushing OK oil storage area, Brent/WTI returns                                                                                                                                                                                           |
-| **Variables**  | `cloud_cover_cushing`（云覆盖率） → 信息不确定性代理（云多 → 看不到油罐 → 信息不透明 → 影响油价预期）                                                                                                                                                                                                  |
-| **Model**      | Regression / predictive model（控制 macro factors）                                                                                                                                                                                                                      |
-| **Target**     | Expected oil returns                                                                                                                                                                                                                                                 |
-| **M1–M4 启示**   | **RS → oil price 直接关联的少数文献之一。** ① 逻辑链：satellite observability → information uncertainty → expected returns。② 你 plan 里的 `valid_obs_count`（云-free 观测次数）可作为类似代理。③ **但你不需要复制 cloud cover 本身** — 你的 VIIRS/S2 已隐含了 cloud-free 筛选。→ M2 中 `ntl_valid_obs_{aoi}` 可保留 1 个汇总变量。 |
+| **Full title** | Cloud Cover and Expected Oil Returns (*Humanities and Social Sciences Communications*, 10:605)                                                                                                                                                                                                 |
+| **Dataset**    | NASA Terra **MODIS Cloud Mask**（日→周，约 250 m）覆盖**美国 8 个主要储油区（非仅 Cushing：Cushing + Gulf Coast 等，PADD 2/3）**；油罐坐标用 YOLOv5 逐年更新；WTI 现货/期货，2014-01–2021-12（周频，周二对周二）                                                                                                                                           |
+| **Variables**  | `K_{i,t}`：浮顶油罐 footprint 加权云量 → **卫星可观测性下降 → 库存信息缺口 → 信息不确定性**（预期符号 β_K<0）；控制变量：EPU、VIX、宏观不确定性 MU、意外库存变化 OI、滞后收益 OR、非对称收益 AR                                                                                                                                                  |
+| **Model**      | 样本内预测回归（OLS + Newey–West）+ 递归样本外（vs 历史均值，R²_OOS）+ **Clark–West / 预测包含 / HLN 检验**；安慰剂（固定顶罐、夜间云量、2007–2013 早期）；均值-方差组合经济价值                                                                                                                                                                                                      |
+| **Target**     | **下一周 WTI 收益率（非 Brent、非价格水平）**                                                                                                                                                                                                                                                                                                                                |
+| **M1–M4 启示**   | **遥感"信息可得性"→油价的少数直接证据。** ① 机制：白天光学可观测性↓→库存信息↓→不确定性↑→短期收益率变化；总体云量 R²_OOS≈0.889%（CW=2.185，显著但**幅度有限、且仅 2–3 周短效**）。② ⚠️ **关键区分**：该机制对应 **Sentinel-2 白天无云观测**（`s2_clear_obs_count`、`s2_cloud_fraction`）→ 这才是"信息缺口"代理；**VIIRS `valid_obs` 应先定位为数据质量变量**（夜间云量安慰剂检验不显著，不共享浮顶库存机制）。③ ⚠️ **必须区分"遥感活动信号"与"遥感观测质量"两类变量**，不可混为一类经济活动指标。④ 安慰剂/前视对齐/Clark–West 评价框架可借鉴；目标是 WTI 周收益，迁移到 Brent 需作外部有效性扩展。 |
 
 
 ---
 
 
-| 列              | P032 · Gibson, Olivia & Rozenberg (2021)                                                                                                                                                                                                                                                                              |
+| 列              | P032 · Gibson, Olivia, Boe-Gibson & Li (2021)                                                                                                                                                                                                                                                                              |
 | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Full title** | Which Night Lights Data Should We Use in Economics, and Where?                                                                                                                                                                                                                                                        |
-| **Dataset**    | DMSP-OLS (1992–2013), VIIRS DNB (2012+), GDP/economic indicators for comparison                                                                                                                                                                                                                                       |
-| **Variables**  | NTL radiance metrics（total, mean, median, sum of lights）from different products                                                                                                                                                                                                                                       |
-| **Model**      | Comparison / validation（数据选择指南，非预测模型）                                                                                                                                                                                                                                                                                 |
-| **Target**     | N/A — 指导 NTL 数据产品选择                                                                                                                                                                                                                                                                                                   |
-| **M1–M4 启示**   | **数据选择决策依据。** ① VIIRS DNB > DMSP for post-2012 → 你已用 VIIRS ✓。② VIIRS monthly composite（VNP46A3）适合月频→周频 pipeline。③ DMSP 有 saturation 问题（亮区饱和），VIIRS 无此问题。④ **建议：** 若研究期含 2006–2013（你的 study period 从 2006 开始），NTL 只能用 DMSP 前半段 + VIIRS 后半段 → 可能存在断点。→ M2 NTL 变量可限定在 VIIRS 可用期（2014+），前半段 NTL 设 missing + ffill 或建模时标注。 |
+| **Full title** | Which Night Lights Data Should We Use in Economics, and Where? (*Journal of Development Economics*, 149, 102602)                                                                                                                                                                                                                                                                                                                       |
+| **Dataset**    | DMSP-OLS (1992–2013) vs VIIRS DNB (2012+)；印尼（497 区）/中国（288 地级 + 重庆 38 区县）/南非（234 市）地区 GDP、就业、人口密度做比较                                                                                                                                                                                                                                                                                       |
+| **Variables**  | 多种 NTL 汇总（sum/mean/median/p90/p95/lit-pixel share）；DMSP=DN(0–63)、VIIRS=校准辐射值；IHS–log 回归                                                                                                                                                                                                                                       |
+| **Model**      | 计量回归 + 跨产品/跨尺度比较 + Gini/Theil 不平等（**数据选择指南，非预测、非因果**）                                                                                                                                                                                                                                                                                 |
+| **Target**     | N/A — 指导 NTL 数据产品选择与适用边界                                                                                                                                                                                                                                                                                                   |
+| **M1–M4 启示**   | **M2 数据选择/特征工程的核心方法依据。** ① **VIIRS ≫ DMSP**，且空间尺度越小优势越大（重庆区县 R² 0.81 vs 0.53）→ 设施级 AOI **必须用 VIIRS、禁止直接拼接 DMSP 原始值**。② ⚠️ **NTL 更擅长横截面差异、不擅长短期时间变化**（within-unit R²≈0、年份虚拟不显著）→ M2 须用 **AOI 内部异常/变化（mom/yoy/z-score/seasonal anomaly）而非原始辐射水平**。③ NTL 主要反映工业/服务/交通/集中用电，**不代表农业/低密度活动**。④ 月度 VIIRS 必须清洗（mask 去噪），并保留 `valid_obs`/`cloud_free_fraction` 等质量变量；多种空间统计（核心-缓冲差值减城市污染）。⑤ ⚠️ 石油场景下 **gas flare 可能含信息、不应机械删除**；VIIRS 起 2012 → 用 post-2012 子样本（VCMSLCFG 2014+），前期单独标注/分样本。⑥ ⚠️ 高 SHAP 重要性≠真实石油机制，须先用 AIS/炼厂/库存验证 NTL。 |
 
 
 ---
 
 
-| 列              | P055 · Wang et al. (2019)                                                                                                                                                                                                                                |
+| 列              | P055 · Wang, Li, Yu & Liu (2019)                                                                                                                                                                                                                                |
 | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Full title** | Estimating Oil Tank Volume from High-Resolution Optical Remote Sensing via Shadow Analysis ⚠️ 精读核实确切标题                                                                                                                                                   |
-| **Dataset**    | 高分辨率光学卫星影像（WorldView/GeoEye 级别），已知容量的浮顶油罐                                                                                                                                                                                                                |
-| **Variables**  | Tank shadow area → fill-level ratio（阴影面积比 → 油罐充填率估算）                                                                                                                                                                                                     |
-| **Model**      | 几何阴影分析 + 图像处理（非 ML 预测模型）                                                                                                                                                                                                                                 |
-| **Target**     | Floating roof tank (FRT) 油罐体积/液位估算                                                                                                                                                                                                                       |
-| **M1–M4 启示**   | **M2 可选 RS 特征（FRT fill-level）的技术依据。** ① 如果做 FRT → 需要 Sentinel-2 (10m)，对大型罐（直径 >60m）勉强可用。② 你 plan 已标注 FRT 为 optional（5–7 天工作量）。③ **建议 6/17 前不做 FRT** → 先用 NTL 作为 M2 RS 变量。④ 若最终做了 FRT，可加入 `frt_fill_level_fujairah` 和 `frt_fill_level_rotterdam` 共 2 个变量。 |
+| **Full title** | Estimating the Volume of Oil Tanks Based on High-Resolution Remote Sensing Images (*Remote Sensing*, 11(7), 793)                                                                                                                   |
+| **Dataset**    | **Gaofen-2（全色 0.81 m / 多光谱 3.2 m）单期影像**（2015-04-16），中国某国家石油储备基地；24 个罐测高、22 个测半径                                                                                                                                                                                |
+| **Variables**  | **外壁月牙形阴影 → 罐高**（h=S·tanα，HSV 比值 + Otsu + 亚像元中位数法）+ **Hough 圆 → 半径** → **结构/名义容量 V=πr²h**（⚠️ **不是充填率/库存/浮顶液位**）                                                                                                                                                                     |
+| **Model**      | HSV 阴影分割 + Otsu + 形态学 + Hough 圆检测（**传统计算机视觉，未实现 ML**）                                                                                                                                                                                                 |
+| **Target**     | **大型油罐结构/名义容量估算**（高度 RMSE≈0.23 m、半径误差≈0.69%、容积相对误差 0.38–2.78%）                                                                                                                                                                                       |
+| **M1–M4 启示**   | **M2 静态基础设施变量 + 容量加权的技术依据（非充填率！）。** ① ⚠️ **关键修正**：本文估的是**结构容量（V=πr²h）**，用的是**外壁地面阴影 + Hough 圆**，**明确不能支撑 `frt_fill_level`**（浮顶液位需罐内阴影/立体几何/SAR 文献）。② 支持 `tank_count`、`estimated_storage_capacity`、`mean_tank_radius` 等**静态/低频**变量，但其变化缓慢 → 在周频油价序列里**直接预测力弱**，更适合做 **AOI 容量权重**（`capacity_weighted_ntl/optical/shipping`）与库存交互项。③ ⚠️ 需**亚米级**影像，**Sentinel-2 10 m 无法复现单罐测量**（仅可做粗粒度储区识别）。④ 单基地/单影像验证，外推性有限；建议 FRT 液位列为独立可选扩展、6/17 前不做。 |
 
 
 ---
 
-### ② 小结：M2 推荐变量（M1 的 10 个 + 以下 RS 变量）
+### ② 小结：M2 推荐变量（按"信号 / 质量 / 权重"分层组织，精读后修正）
+
+> **组织原则（来自 P024/P025/P032/P055）：** M2 不堆叠"全 AOI × 多指标"的原始夜光，而按**三层**设计——① **遥感活动信号**：用 **VIIRS 夜光的站点内部异常/变化**（非原始辐射水平，因 NTL 横截面强、时间弱且不识别油轮），覆盖石油相关 AOI；② **遥感观测质量**：`valid_obs`/无云观测（**先定位为数据质量**，VIIRS 夜间不享有 P025 的库存信息机制）；③ **静态/容量权重**：用 P055 的结构容量做 **AOI 加权**而非高频特征。遥感的增量价值须靠 **M1 vs M1+M2 消融** + Clark–West/DM 检验，并先用 AIS/库存/炼厂验证机制。
+>
+> ⚠️ **覆盖度说明：** 5 篇文献的 Variables 字段**并未全部**进入 M2 推荐表——下表只列**已采纳**变量；论文中出现但本项目暂不采用的项统一见文末**「未采纳变量汇总（5 篇逐篇对照，M2 相关）」**。
 
 
-| 序   | 变量                              | 文献支撑                    | 来源             |
-| --- | ------------------------------- | ----------------------- | -------------- |
-| 1   | `ntl_avg_rad_rotterdam`         | P024, P032              | VIIRS DNB      |
-| 2   | `ntl_avg_rad_fujairah`          | P024                    | VIIRS DNB      |
-| 3   | `ntl_avg_rad_ras_tanura`        | P024                    | VIIRS DNB      |
-| 4   | `ntl_avg_rad_ningbo`            | P024 (demand proxy)     | VIIRS DNB      |
-| 5   | `ntl_avg_rad_houston`           | P024                    | VIIRS DNB      |
-| 6   | `ndvi_mean_jamnagar` ⚠️ 可选      | P069 逻辑（activity proxy） | GEE S2/Landsat |
-| 7   | `frt_fill_level_fujairah` ⚠️ 可选 | P055                    | Sentinel-2     |
+| 序   | 变量                                              | 类型/机制       | 文献支撑（已精读修正）             | 来源              |
+| --- | ----------------------------------------------- | ----------- | ----------------------- | --------------- |
+| 1   | `ntl_anomaly_fujairah`（站点 z-score/同比）            | RS 活动信号（供给侧·油轮主导锚泊） | **P024【最相关石油案例·离岸】**, P032 | VIIRS DNB       |
+| 2   | `ntl_anomaly_ras_tanura`（出口枢纽）                  | RS 活动信号（供给侧） | P024, P069（活动→需求逻辑）      | VIIRS DNB       |
+| 3   | `ntl_anomaly_rotterdam`（进口/炼化）                  | RS 活动信号（需求侧） | P024, P032              | VIIRS DNB       |
+| 4   | `ntl_anomaly_us_gulf`（Houston/储油带）              | RS 活动信号（库存/需求） | P024, P025              | VIIRS DNB       |
+| 5   | `ntl_valid_obs_count_{aoi}`                     | RS 观测质量（非信息不确定性代理） | **P032, P025（VIIRS 限质量）** | VIIRS DNB       |
+| 6   | `s2_clear_obs_count` / `s2_cloud_fraction`（储油区）⚠️ 可选 | RS 信息可得性（白天光学） | **P025【信息缺口机制】**         | GEE Sentinel-2  |
+| 7   | `aoi_capacity_weight`（容量加权聚合，非高频特征）⚠️ 可选        | 静态结构权重      | **P055**                | 高分影像/公开设施库      |
 
 
-> **核心 5 个 NTL** + 可选 1–2 个光学/FRT。总计 M2 = M1(10) + RS(5–7) ≈ 15–17 个。
+> **核心：4 个 NTL 动态异常 + 1 个 NTL 质量变量**，可选 1–2 个 S2 光学可得性 / 容量权重。总计 M2 = M1(~10) + RS(5–7) ≈ 15–17 个。⚠️ **变量名由 `ntl_avg_rad_{aoi}` 改为 `ntl_anomaly_{aoi}`**——精读后用动态异常而非原始水平。
+
+**未采纳变量汇总（5 篇逐篇对照，M2 相关）**
+
+
+| 文献       | 文中 Variables / 启示提及          | 未采纳原因                                          | M2 处置                          |
+| -------- | --------------------------- | ---------------------------------------------- | ------------------------------ |
+| **P069** | 卫星 **NO₂**（大气遥感）            | 与本项目 NTL/光学**不同源**；样本仅 2018+、且预测 demand 非 price | 仅作需求侧动机引用，不进 M2 特征             |
+| **P069** | 新车注册量 / PPI / 温度（传统需求控制）    | 属宏观需求控制，非遥感                                     | 归 M1 / 控制变量                    |
+| **P024** | 原始 `ntl_avg_rad` 水平         | 横截面规模驱动、NTL↔油轮 Rs=−0.07                        | 改用 `ntl_anomaly_{aoi}`（#1–4）   |
+| **P024** | `SOL`（=avg_rad×area）        | 与 AOI 面积机械相关                                    | 不单列（可作面积控制）                    |
+| **P024** | 国家级 NTL 汇总                  | 反映长期规模、非短期预测                                    | 不纳入（AOI 级足够）                   |
+| **P024** | NTL 作油轮/石油运输代理              | 实测近零相关                                          | 须结合油轮占比/AIS，不独立用               |
+| **P025** | `cloud_cover` 原始云量          | 项目用无云观测替代该信息机制                                  | 改用 `s2_clear_obs`/`cloud_fraction`（#6） |
+| **P025** | 固定顶罐 / 夜间云量变量              | 安慰剂检验不显著（无浮顶库存机制）                              | 不纳入                            |
+| **P025** | 把 VIIRS `valid_obs` 当信息不确定性代理 | 夜间不享有白天浮顶机制                                     | 仅作数据质量变量（#5）                   |
+| **P032** | **DMSP-OLS** 夜光             | 饱和 + 空间模糊，设施级不可靠                               | 仅用 VIIRS，禁止拼接 DMSP             |
+| **P032** | 原始辐射水平（横截面）                | NTL 时间维度弱                                       | 改用站点内部异常/变化                    |
+| **P032** | 农业/低密度 AOI 夜光              | NTL 不代表农业活动                                     | 不纳入（只取石油基础设施 AOI）             |
+| **P055** | `frt_fill_level`（浮顶充填率）     | **本文估结构容量、非液位，明确不支撑**                          | 列独立可选扩展（需 SAR/罐内阴影文献）         |
+| **P055** | 单罐精确高度/半径/容积测量             | 需亚米级（S2 10 m 不可复现）                             | 仅用公开设施库 + 容量权重（#7）            |
+| **P055** | 结构容量作高频预测特征                | 变化缓慢、周频序列直接预测力弱                                | 改作 AOI 容量权重 / 库存交互项            |
+
+
+> **修正说明（精读 vs 原推断）：**
+>
+> - ⚠️ **`ntl_avg_rad_{aoi}` → `ntl_anomaly_{aoi}`**：P024/P032 表明 NTL 横截面强、短期时间变化弱，且原始水平受 AOI 规模与城市污染影响 → 用站点内部异常/变化。
+> - ⚠️ **删除 `ntl_avg_rad_ningbo`（需求侧）**：宁波非石油专用枢纽、NTL 不识别油轮（P024 Rs=−0.07）→ 需求侧改用炼化/进口港（Rotterdam）并结合 AIS。
+> - ⚠️ **删除 `frt_fill_level_fujairah`**：P055 估的是**结构容量非充填率**，**明确不能支撑**该变量；液位需另找浮顶内部阴影/SAR 文献，列为独立可选扩展。
+> - ⚠️ **`ndvi_*` 降级**：P069 是 NO₂ 大气遥感，不能直接为地表 NDVI 背书 → NDVI 仅作探索性"活动代理"，非核心。
+> - 🔹 **新增 `s2_clear_obs/cloud_fraction`（储油区）**：P025 的"信息可得性→收益率"机制对应白天光学无云观测，是更贴合的可选信号。
+> - 🔹 **`valid_obs` 定位修正**：VIIRS 夜间有效观测先作**数据质量**变量，不默认其为市场信息不确定性代理。
+>
+> **数据/方法注意：** VIIRS（非 DMSP）+ post-2012 子样本（VCMSLCFG 2014+）；月度合成须 mask 清洗；仅历史插补（避免 P024 双向插值的前视泄漏）；遥感模态价值靠"M1 vs M1+M2"消融 + Clark–West/DM 检验 + 机制验证（先验 NTL↔AIS/库存/炼厂）。
 
 ---
 
-## ③ M3 航运：选哪些 shipping 变量（5 篇）
+## ③ M3 航运：选哪些 shipping 变量（5 篇；已精读 P016/P017/P018，P070/P084 待核实）
 
-> **读完目标：** 从 ~100 个 shipping 特征中筛出 5–10 个进入 M3
-
-
-| 列              | P016 · Mi et al. (2022)                                                                                                                                                                                                                                    |
-| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Full title** | The Impact of the Crude Oil Price on Tankers' Port-Call Features                                                                                                                                                                                           |
-| **Dataset**    | AIS 数据 + Brent/WTI 价格; 2017–2021 ⚠️ 精读核实                                                                                                                                                                                                                   |
-| **Variables**  | 从 AIS 提取的 tanker port-call 特征：① port-call frequency ② dwell time ③ turnaround time ④ tanker size distribution                                                                                                                                              |
-| **Model**      | Statistical analysis（相关分析 / 回归）                                                                                                                                                                                                                            |
-| **Target**     | 探索 oil price → port-call 特征的因果方向                                                                                                                                                                                                                           |
-| **M1–M4 启示**   | **M3 航运变量定义的核心参考。** ① port-call frequency 和 dwell time 是 oil price 最相关的航运指标。② 但注意因果方向是 price → shipping（反向），你的任务是 shipping → price prediction（正向）→ 需在 lit review 中讨论双向因果/内生性。③ **推荐 M3 变量：** `pw_hormuz_n_tanker`（tanker transit count 类似 port-call freq）。 |
-
-
----
+> **读完目标（已精读 P016/P017/P018）：** 从 PortWatch/AIS 的上百个候选航运特征中，按**经济维度**筛出 7–10 个进入 M3——以 **tanker-specific（油轮专属）的流量强度 + 运力加权(DWT) + 咽喉/区域拆分 + 变化/异常**为核心，全部**严格滞后、按发布时点对齐**；航运的增量价值须靠 **M1 vs M1+M3 消融 + DM 检验**验证，并先用官方石油流量/库存/吞吐量做机制验证。
+>
+> ⚠️ **精读后的关键修正（推翻原摘要推断）：**
+>
+> 1. **航运与油价是反向因果方向**——P016/P017 研究的都是 **油价 → 航运活动**（P017 的 Granger 亦为 *过去油价 → 未来靠港*），**不是** *航运 → 油价*；本项目方向相反，故 M3 变量必须**严格滞后**、控制历史油价，并在文中讨论内生性/双向因果；
+> 2. **不能只用"油轮数量"单一指标**——P016 证明航运须用 **频率 / 独立船数 / 运力 / 停留 / 变化** 多维刻画；P018 进一步显示 **运力(DWT)+吃水变化** 的"货运量指标"优于单纯船数；
+> 3. **`pw_{choke}_n_tanker` ≠ 港口靠港频率**——P016 明确区分"咽喉航道通行量"与"港口靠港次数"两种构念，前者应描述为 **油轮交通强度 / 原油海运流量代理**，不能等同于论文的 port-call frequency；
+> 4. **咽喉通行量 ≠ 精确石油贸易量**——P018 指出"上一个港口 ≠ 货物来源"，且原油可在海上转售/STS/混合/再出口，故 chokepoint transit 只是**粗代理**，须先与官方石油流量验证（两阶段：先测量验证、再预测）；
+> 5. **油价—航运关系非线性且地区异质**（P017）——支持用 XGBoost/LightGBM 等非线性模型并做**区域拆分**（全球、欧洲、美洲有门槛，亚洲、非洲无；欧洲方向反转最明显；单一全球指标可能使反向区域信号相互抵消），但**不可直接复制论文门槛值**（84.52 / 115.29 / 114.36）；
+> 6. ⚠️ **不可照搬论文统计口径**：P016/P017 的百分比解释疑似把弹性放大约 100 倍（-0.0353 应读作 0.0353% 而非 3.53%），且 P016 模型 R² 仅 0.003–0.008（**统计显著 ≠ 预测价值**）；P018 的 r=0.65 / 0.75 是**样本内相关**而非样本外预测精度（原表"~0.78"有误）。
 
 
-| 列              | P017 · Mi & Zang (2023)                                                                                                                                                                               |
-| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Full title** | The Nonlinear Relationship between Oil Prices and the Number of Tankers' Port Calls                                                                                                                   |
-| **Dataset**    | Oil prices, tanker port-call counts; ⚠️ 精读核实时间段                                                                                                                                                       |
-| **Variables**  | Tanker port-call count + oil price                                                                                                                                                                    |
-| **Model**      | Nonlinear analysis（可能 NARDL / threshold regression）⚠️ 精读核实                                                                                                                                            |
-| **Target**     | 刻画 oil price ↔ port-call 的非线性关系                                                                                                                                                                       |
-| **M1–M4 启示**   | **支撑 XGBoost 而非线性回归。** ① 油价与航运的关系是**非线性**的 → tree-based models（XGBoost）天然适合。② 对 Beatrice 解释为什么选 XGBoost：" 文献已证明 oil-shipping 关系非线性（Mi & Zang 2023），tree-based 模型可捕捉"。③ 也说明简单相关系数可能低估 shipping 变量的预测力。 |
+| 列              | P016 · Mi et al. (2022)                                                                                                                                                                                                                                                                                                                          |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Full title** | The Impact of the Crude Oil Price on Tankers' Port-Call Features: Mining the Information in AIS (*JMSE*, 10(10), 1559)                                                                                                                                                                                                                          |
+| **Dataset**    | AIS（Lloyd's Register）+ 月度原油期货价格；**2010-01–2020-12**，月频；26 出口国 / 545 原油装载港；约 39 万条船舶记录、60,540 港口-月观测                                                                                                                                                                                                                                                  |
+| **Variables**  | **4 类 port-call 特征**：① 靠港频率 `freq` ② 平均靠泊时间 `duration` ③ 靠港油轮总吨位 `GT`（≈船型×频率，**≠DWT≠货量**）④ 新增活跃油轮 `new_add`（二值，仅表示独立船数比上月多，**非真"新船"**）；控制：储量 `reserve`、原油贸易 `nx`、油轮运价 `BTI=(BCTI+BDTI)/2`                                                                                                                                                                |
+| **Model**      | 港口固定效应面板回归（log-log）+ 二元 Logit（**非预测、无样本外**）                                                                                                                                                                                                                                                                                                          |
+| **Target**     | **油价 → port-call 特征**（解释性 / 反向；全模型 R² 仅 0.003–0.008）                                                                                                                                                                                                                                                                                                |
+| **M1–M4 启示**   | **M3 航运变量定义的核心参考。** ① 航运须**多维**刻画（频率 / 独立船数 / 运力 / 停留 / 变化），**不能只用油轮数量**。② ⚠️ **方向是 price→shipping（反向）** → 本项目须严格滞后、控制历史油价、讨论双向因果。③ ⚠️ **`pw_{choke}_n_tanker` ≠ 论文 port-call frequency**：前者是咽喉"交通强度 / 海运流量代理"，后者是港口靠港事件 → 不能直接等同。④ ⚠️ 论文百分比解释疑似放大约 100 倍（-0.0353 应读 0.0353%），R² 极低 → **统计显著 ≠ 预测价值**，引用只取系数符号 / 方向。⑤ 支持加入**运力加权**（DWT、VLCC/Suezmax 占比）与**异常/变化**特征（z-score、mom、yoy）。⑥ `GT` 用 DWT 运力替代；`new_add` 改用独立船数变化 / z-score。 |
 
 
 ---
 
 
-| 列              | P070 · Arslanalp, Verschuur et al. (IMF WP/26/99, 2026)                                                                                                                                                                                                                                                      |
+| 列              | P017 · Mi, Zang, Lo & Chen (2023)                                                                                                                                                                                                                                                                                                                                                |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Full title** | The Nonlinear Relationship between Oil Prices and the Number of Tankers' Port Calls: Evidence from AIS Data (*Procedia CS*, 221, 870–877)                                                                                                                                                                                                                                        |
+| **Dataset**    | 月度 AIS（Lloyd's Register）**2010-01–2021-06**；370,949 raw；1,419 油轮码头/港口（亚 563 / 欧 304 / 美 378 / 非 174）；Brent(EIA)、USD 指数(Wind)、全球 EPU、COVID dummy                                                                                                                                                                                                                                       |
+| **Variables**  | 因变量=月度油轮靠港频率（全球 + 亚/欧/美/非）；解释变量=**Δln(实际油价)，实际油价=Brent/USD 指数**；门槛变量=ln(实际油价)；控制 EPU、COVID、趋势                                                                                                                                                                                                                                                                                       |
+| **Model**      | **门槛回归**（数据驱动分段线性）+ 区域回归 + VAR(3) + Granger 因果（**非预测、无样本外**）                                                                                                                                                                                                                                                                                                                          |
+| **Target**     | **油价 → 靠港活动**（刻画非线性门槛 + 地区异质，反向）                                                                                                                                                                                                                                                                                                                                                   |
+| **M1–M4 启示**   | **支撑非线性建模 + 区域拆分。** ① 关系**非线性/门槛 + 地区异质**（全球 84.52、欧 115.29、美 114.36 有门槛；亚/非无；欧洲方向反转最明显）→ 支持比较线性基准 vs **XGBoost/LightGBM**，并做**区域拆分**（单一全球指标可能使反向区域信号相互抵消）。② ⚠️ Granger 是**过去油价 → 未来靠港**，**不**证明航运领先油价 → 反向因果警示。③ 优先 **tanker-specific** 指标（油轮专属优于全船型）。④ ⚠️ **不复制门槛值**（名义价、月频、口径不同）→ 在训练窗口内估计 regime。⑤ 严格滞后（1/2/4/8/13 周）+ release-aware；可做 regime / 区域交互项。⑥ EPU 归 M1 控制（与 GPR 重叠）。 |
+
+
+---
+
+
+| 列              | P070 · Arslanalp, Verschuur et al. (IMF WP/26/99, 2026) ⚠️ **精读笔记待补**（现有 `P070.md` 误存为 P017 副本）                                                                                                                                                                                                                                                                                       |
 | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Full title** | Nowcasting Country-Level Trade Estimates Using IMF PortWatch                                                                                                                                                                                                                                                 |
 | **Dataset**    | IMF PortWatch AIS vessel movements（日频）, official trade statistics for Brazil/Jamaica/Japan/Samoa/US                                                                                                                                                                                                          |
 | **Variables**  | Port-level vessel transit counts, vessel capacity (DWT), by vessel type (tanker / container / bulk / total); 国家级汇总                                                                                                                                                                                           |
 | **Model**      | Nowcasting regression → 月度贸易估计（7 个工作日内发布）                                                                                                                                                                                                                                                                    |
-| **Target**     | Country-level trade values & volumes (monthly nowcast)                                                                                                                                                                                                                                                       |
-| **M1–M4 启示**   | **你正在使用的 PortWatch 数据的官方方法论。** ① 证明 transit count + capacity 是有效的贸易代理指标。② tanker-specific 指标优于 total vessel → **M3 应优先用 `pw_{choke}_n_tanker` 和 `pw_{choke}_capacity_tanker`，而非 total**。③ 6 个 chokepoint × 2 指标（tanker count + tanker capacity）= 12 个 → 进一步缩减：只选 Hormuz + Suez + Malacca（占全球 ~60%）× 2 = 6 个。 |
+| **Target**     | Country-level trade **values & volumes**（月度 nowcast，**非油价**）                                                                                                                                                                                                                                                  |
+| **M1–M4 启示**   | **本项目所用 PortWatch 数据的官方方法论（启示基于元数据，待精读核实）。** ① 支持 transit count + capacity(DWT) 作为贸易/流量代理。② tanker-specific 指标优于 total vessel → **M3 优先用 `pw_{choke}_n_tanker` 与 `pw_{choke}_capacity_tanker`，而非 total**。③ 6 chokepoint × 2 指标=12 → 缩减为 Hormuz + Suez + Malacca × 2 = 6 个核心。④ ⚠️ 目标是**贸易量而非油价** → 仅作机制/测量验证依据；结合 P018，chokepoint transit 只是粗代理，须先与官方石油流量验证。 |
 
 
 ---
 
 
-| 列              | P018 · Marini et al. (2019)                                                                                                                                                                                        |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Full title** | Big Data on Vessel Traffic: Nowcasting Trade Flows in Real Time (IMF Working Paper)                                                                                                                                |
-| **Dataset**    | AIS vessel traffic data, bilateral trade statistics                                                                                                                                                                |
-| **Variables**  | Vessel count, aggregate capacity (DWT), port arrivals/departures                                                                                                                                                   |
-| **Model**      | Nowcasting regression（OLS / panel）                                                                                                                                                                                 |
-| **Target**     | Bilateral trade flows                                                                                                                                                                                              |
-| **M1–M4 启示**   | **PortWatch 的理论前身。** ① 验证了 AIS vessel traffic → trade flow 代理关系（correlation ~0.78 ⚠️ 核实）。② 支撑你 M3 用 chokepoint transit 作为 oil trade proxy 的合理性。③ capacity (DWT) 比 vessel count 更好地代理贸易量 → **M3 优先保留 capacity 变量。** |
+| 列              | P018 · Arslanalp, Marini & Tumbarello (2019, IMF WP/19/275)                                                                                                                                                                                                                                                                                                                                            |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Full title** | Big Data on Vessel Traffic: Nowcasting Trade Flows in Real Time (IMF Working Paper WP/19/275)                                                                                                                                                                                                                                                                                                          |
+| **Dataset**    | AIS（MarineTraffic）港口靠泊记录；**马耳他（Marsaxlokk + Valletta），2015-01–2018-12，周频**；原始 52,863 次靠泊、过滤后 40,813；对照 Eurostat / IMF DOTS / 官方贸易量指数                                                                                                                                                                                                                                                                       |
+| **Variables**  | ① 船舶数量指标 `CN`（计数，全船型等权）② **货运量指标 `CWI = Σ DWT×\|到/离港吃水变化\|/max吃水`**（运力 × 载货变化）；字段含船型、DWT、GT、到/离港吃水、停留时长、上/下一港                                                                                                                                                                                                                                                                                            |
+| **Model**      | **规则过滤（去锚地/加油/STS、匹配到离港、停留 5–60h）+ 指标构造 + 相关验证**（无回归、无样本外、无 ML）                                                                                                                                                                                                                                                                                                                                          |
+| **Target**     | 实体贸易量 nowcasting（**贸易量，非价格**）                                                                                                                                                                                                                                                                                                                                                                            |
+| **M1–M4 启示**   | **M3 数据清洗 / 容量加权 / 验证的核心方法依据。** ① **运力(DWT)+吃水变化** 的货运量指标优于单纯船数 → 支持 M3 同时保留 count 与 capacity。② **过滤非贸易活动**是有效性前提（锚地/加油/STS/停留阈值）。③ ⚠️ **r=0.65（货运量↔官方贸易量）、r=0.75（船数↔官方船数）是样本内相关、非样本外预测精度**（原表"~0.78"有误）。④ ⚠️ **"上一个港口 ≠ 货物来源"**，原油更会海上转售/STS/混合/再出口 → chokepoint transit 只是**粗代理**，须先与官方石油流量验证（两阶段：先测量验证、再预测）。⑤ ⚠️ 论文用**5 期中心移动平均**含前视泄漏 → 本项目改用**后向滚动**。⑥ AIS 更适合**贸易量（非价值）**与同质商品（石油）→ 支持油轮专属、方向性流量。 |
 
 
 ---
 
 
-| 列              | P084 · Port Congestion + XGBoost + SHAP ⚠️ 精读核实作者/年份                                                                                                                                                      |
+| 列              | P084 · Port Congestion + XGBoost + SHAP ⚠️ **未精读，作者/年份/变量均待核实**                                                                                                                                          |
 | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Full title** | Prediction of Port Congestion Status Using AIS Data + XGBoost + SHAP ⚠️                                                                                                                                   |
 | **Dataset**    | AIS 数据, 港口拥堵状态指标                                                                                                                                                                                          |
@@ -327,28 +381,71 @@
 
 ---
 
-### ③ 小结：M3 推荐变量（M1 的 10 个 + 以下 shipping 变量）
+### ③ 小结：M3 推荐变量（按"流量 / 运力 / 区域 / 拥堵"分维度组织，精读后修正）
+
+> **组织原则（来自 P016/P017/P018/P070）：** M3 不堆叠"上百个航运特征"，而按**经济维度**设计——① **流量强度**：tanker-specific 咽喉通行量（定位为油轮交通强度 / 海运流量代理，**非港口靠港频率、非精确石油贸易量**）；② **运力加权**：tanker DWT 容量（P018 证明运力优于单纯船数）；③ **区域/咽喉拆分**：全球汇总易掩盖反向区域信号（P017 地区异质）→ 保留咽喉级 + 全球/区域不对称；④ **拥堵/停留**（可选）：受 PortWatch 字段限制，列可选扩展。**所有变量严格滞后（1/2/4/8/13 周）、按发布时点对齐、用后向滚动变换**（避免 P018 中心 MA 前视泄漏）；航运增量价值靠 **M1 vs M1+M3 消融 + DM 检验** + 先验机制验证（先与官方石油流量/库存/吞吐量对齐）。
+>
+> ⚠️ **覆盖度说明：** 5 篇文献的 Variables 字段**并未全部**进入 M3 推荐表——下表只列**已采纳**变量；论文中出现但本项目暂不采用的项统一见文末**「未采纳变量汇总（5 篇逐篇对照，M3 相关）」**。
 
 
-| 序   | 变量                                          | 文献支撑       | 来源         |
-| --- | ------------------------------------------- | ---------- | ---------- |
-| 1   | `pw_hormuz_n_tanker`                        | P016, P070 | PortWatch  |
-| 2   | `pw_hormuz_capacity_tanker`                 | P018, P070 | PortWatch  |
-| 3   | `pw_suez_n_tanker`                          | P070       | PortWatch  |
-| 4   | `pw_suez_capacity_tanker`                   | P018, P070 | PortWatch  |
-| 5   | `pw_malacca_n_tanker`                       | P070       | PortWatch  |
-| 6   | `pw_malacca_capacity_tanker`                | P018, P070 | PortWatch  |
-| 7   | `pw_global_tanker_total` (3 choke 汇总)       | P018       | 衍生         |
-| 8   | `gfw_hormuz_vessel_hours` ⚠️ 2012–2018 only | P016, P017 | GFW 4Wings |
-| 9   | `port_congestion_hormuz` ⚠️ 可选              | P084       | GFW SAR    |
-| 10  | `port_congestion_suez` ⚠️ 可选                | P084       | GFW SAR    |
+| 序   | 变量                                            | 维度 / 机制              | 文献支撑（已精读修正）                         | 来源         |
+| --- | --------------------------------------------- | -------------------- | ----------------------------------- | ---------- |
+| 1   | `pw_hormuz_n_tanker`（油轮交通强度，**非靠港频率**）         | 流量强度（供给·最大咽喉）        | **P070**, P016（区分构念）, P017          | PortWatch  |
+| 2   | `pw_hormuz_capacity_tanker`（DWT 运力加权）          | 运力加权                 | **P018（运力优于船数）**, P070, P016        | PortWatch  |
+| 3   | `pw_suez_n_tanker`（欧洲—亚洲航线）                    | 流量强度（出口/转运）          | P070, P017（欧洲门槛最明显）                  | PortWatch  |
+| 4   | `pw_suez_capacity_tanker`                      | 运力加权                 | P018, P070                          | PortWatch  |
+| 5   | `pw_malacca_n_tanker`（东亚进口侧）                   | 流量强度（需求侧）            | P070, P017（亚洲需求刚性）                   | PortWatch  |
+| 6   | `pw_malacca_capacity_tanker`                   | 运力加权                 | P018, P070                          | PortWatch  |
+| 7   | `pw_global_tanker_total`（全球汇总，已有 `pw_all_n_tanker_sum`） | 全球规模               | **P017（区域异质）**, P018                | PortWatch  |
+| 8   | **`pw_tanker_exp_imp_asym` 出口-进口不对称** ✅已构建        | 方向性（供给装载 vs 需求卸货）  | **P070（方向性 import/export）**, P017, P018 | PortWatch ports |
+| 9   | **`gfw_{choke}_dwell_hours_per_vessel` 拥堵/停留代理** ✅已构建 | 拥堵 / 停留            | **P016（dwell-time）**, P084           | GFW presence |
+| 10  | `pw_{choke}_avg_tanker_size`（平均船型）+ `tanker_share` ✅已构建 | 船型结构（防泄漏）          | **P070（概念优先级）**, P018              | PortWatch  |
+| 11  | `gfw_{choke}_total_hours` / `total_vessels` ✅已构建    | 流量强度补充（2012+）       | P016, P017                          | GFW 4Wings |
 
 
-> **核心 7 个 PortWatch** + 可选 1–3 个 GFW/congestion。总计 M3 = M1(10) + Ship(7–10) ≈ 17–20 个。
+> **核心：3 咽喉 × (count + capacity) tanker-specific + 全球汇总 + 平均船型/占比 + 方向性不对称 + 拥堵代理**。**所有变量再做 mom / yoy / z-score + 多滞后扩展**（属特征工程，不单列）。⚠️ **变量定位修正**：`pw_{choke}_n_tanker` 描述为"油轮交通强度 / 原油海运流量代理"，**不等同**于 P016 的 port-call frequency，也**不是**精确石油贸易量。
+>
+> ✅ **构建状态（2026-06，已落地到数据）：** 全部 M3 推荐项均已生成并写入 `03_data/processed/weekly_features.csv` 与 `feature_groups.json["M3_add_shipping"]`（共 119 个候选航运特征，覆盖 6 个咽喉 cape/hormuz/malacca/mandeb/panama/suez）。其中 **#8 出口-进口不对称**由新下载的 **PortWatch 港口级 `import_tanker`/`export_tanker` 吨位**构建（出口枢纽 Ras Tanura/Juaymah/Yanbu/Ras Laffan/Primorsk/Novorossiysk/Corpus Christi/Sidi Kerir/Bonny vs 进口/炼化枢纽 Rotterdam/Singapore/Ningbo/Chiba/Ulsan）；**#9 拥堵代理**由 GFW presence 派生 `total_hours / total_vessels`（每船停留时长）。数据源与构建脚本见 `03_data/external_sources.md` §M3。⚠️ PortWatch 系列覆盖 2019+、GFW 系列覆盖 2012+，建模须严格滞后并注意样本期对齐。
+
+**未采纳变量汇总（5 篇逐篇对照，M3 相关）**
+
+
+| 文献       | 文中 Variables / 启示提及        | 未采纳原因                                   | M3 处置                          |
+| -------- | ------------------------- | --------------------------------------- | ------------------------------ |
+| **P016** | `duration` 平均靠泊时间          | PortWatch transit 不直接提供逐船靠泊时长           | ✅已构建 GFW dwell 代理 `gfw_{choke}_dwell_hours_per_vessel`（#9） |
+| **P016** | `GT` 靠港油轮总吨位               | GT≠DWT≠货量，混入船型与频率                       | 改用 DWT 运力 `capacity_tanker`（#2/4/6） |
+| **P016** | `new_add` 新增活跃油轮（二值）       | 含义模糊（"独立船数增加"非真新船）                      | 改用独立船数变化 / z-score，不照搬二值       |
+| **P016** | `reserve` / `nx` 储量 / 贸易控制 | 属油价回归控制，且与 M1 基本面重叠                     | 归 M1 / 控制变量                    |
+| **P016** | `BTI` 油轮运价指数               | 混合成品油(BCTI)+原油(BDTI)；属运价非物流活动           | 可选航运成本控制（优先 BDTI），非核心          |
+| **P017** | 大洲级汇总（亚/欧/美/非月度靠港）         | 尺度过粗、合并异质功能港口                           | 改用咽喉 + 关键港 AOI + 区域不对称（#1–7）   |
+| **P017** | 门槛值 84.52 / 115.29 / 114.36 | 名义价、月频、口径不同，不可外推                       | 不复制，改在训练窗口内估计 regime          |
+| **P017** | `EPU` 经济政策不确定性             | 属宏观控制，与 GPR 重叠                          | 归 M1（GPR 优先）                   |
+| **P017** | COVID dummy / 时间趋势         | 控制项，非航运信号                               | 建模控制，不计入 M3                    |
+| **P018** | `CN` 全船型船数指标               | 非 tanker-specific                        | 改用 tanker-only（#1/3/5）         |
+| **P018** | `CWI` 吃水变化货运量指标            | 需逐船到/离港吃水，PortWatch transit 不提供吃水       | 列独立可选扩展（仅原始 AIS 可构造）          |
+| **P018** | last port → 贸易伙伴/来源国       | "上一个港口≠来源"，石油海上转售/STS/混合/再出口            | 不用于来源归属                        |
+| **P018** | 5 期中心移动平均                  | 含未来值 → 前视泄漏                              | 改用后向滚动变换                       |
+| **P018** | 方向性流量（in/out、east/west）    | PortWatch 咽喉为双向无方向；改用港口级 import/export   | ✅已构建 `pw_tanker_exp_imp_asym`（PortWatch 港口级吨位，#8） |
+| **P070** | total vessel（全船型 transit/capacity） | 非 tanker-specific，混入集装箱/散货             | 仅用 tanker 类指标                  |
+| **P070** | 国家级贸易量 nowcast 目标          | 目标是贸易量而非油价                              | 仅作机制 / 测量验证依据                  |
+| **P084** | berth utilisation / queue length 等 | **未精读**、专用拥堵数据不可得                       | ✅已用 GFW dwell 代理替代（#9）；P084 本身仍待精读 |
+
+
+> **修正说明（精读 vs 原推断）：**
+>
+> - ⚠️ **`pw_{choke}_n_tanker` 定位修正**：P016 区分"咽喉通行量"与"港口靠港次数"两种构念，P018 指出"上一个港口≠来源"且原油可海上转售 → 该变量是**交通强度/海运流量粗代理**，非 port-call frequency、非精确石油贸易量，须先与官方石油流量验证。
+> - ⚠️ **`GT` → DWT 运力**：P016 的 gross tonnage 混入船型与频率、不等于载货量；P018 证明 DWT 运力加权优于单纯船数 → 用 `capacity_tanker`。
+> - ⚠️ **大洲汇总 → 咽喉 + 区域不对称**：P017 显示地区异质（欧/美有门槛、亚/非无、欧洲方向反转），全球单一指标会抵消反向区域信号 → 保留咽喉级并构造出口-进口不对称。
+> - ⚠️ **删/降 `duration`、`new_add`、`CWI` 吃水指标**：受 PortWatch transit 字段限制（无逐船靠泊时长 / 吃水变化），列为可选扩展（仅在使用原始 AIS 时才能构造）。
+> - ⚠️ **严格滞后 + release-aware + 后向滚动**：P016/P017 方向为 price→shipping，且 P018 中心 MA 含前视泄漏 → 所有 M3 特征严格滞后、按发布时点对齐、仅用后向滚动统计。
+>
+> **模型基准（呼应 ④）：** 线性基准（含价格滞后）→ **XGBoost 与 LightGBM 并列核心**（P017 非线性/门槛/地区异质支持非线性模型）→ 用 **DM 检验**判定 M1+M3 是否显著优于 M1，并做区域 / regime 交互与 SHAP 解释。**消融设计：** M1 → M1+全球 count → M1+区域 count → M1+capacity → M1+count+capacity → M1+完整 M3，逐步检验增量。
 
 ---
 
 ## ④ 评估方法：M2/M3/M4 vs M1 怎么比（2 篇）
+
+> ⚠️ **样本期口径（结论必须标注）：** M3/M4 含 PortWatch 航运变量，PortWatch 仅覆盖 **2019+**；经 `data_loader.dropna()` 后，**含 PortWatch 的层只在 2019+ 评估**（实测 M3/M4 测试期约 2024-11 ~ 2025-12，仅约 1 年、约 54 周），而 M1/M2 可用 2006+ 全样本。**当前采用 2019+ 短窗口方案**（未做全局窗口对齐）。因此：① M3/M4 vs M1 的差异**混入样本期/测试集不同**，不能简单归因于"加了航运变量"；② DM 检验须在**同一对齐的样本与预测期**上进行才有效；③ 报告 M3/M4 结果时**必须显式标注"评估窗口 = 2019+ / 测试期 ≈ 2024-11–2025-12、N≈54 周"**，并将其列为局限。稳健做法是补一版"全 layer 同裁到 2019+ 公共窗口"的对照。
 
 
 | 列              | P058 · Diebold & Mariano (1995)                                                                                                                                                          |
@@ -414,10 +511,12 @@
 | 模态                 | 变量数    | 构成                                                    | Beatrice 要求              |
 | ------------------ | ------ | ----------------------------------------------------- | ------------------------ |
 | **M1 Financial**   | ~10    | Price lags + EIA + FRED macro                         | ✅ 5–10 个                 |
-| **M2 = M1 + RS**   | ~15–17 | M1(10) + NTL(5) + 可选光学/FRT(0–2)                       | ✅ 每模态增量 5–7 个            |
-| **M3 = M1 + Ship** | ~17–20 | M1(10) + PortWatch tanker(7) + 可选 GFW/congestion(0–3) | ✅ 每模态增量 7–10 个           |
+| **M2 = M1 + RS**   | ~15–17 | M1(10) + NTL 动态异常(4) + NTL 质量(1) + 可选 S2 光学/容量权重(0–2)   | ✅ 每模态增量 5–7 个            |
+| **M3 = M1 + Ship** | ~17–19 | M1(10) + PortWatch tanker count+capacity(6) + 全球/区域汇总(1) + 可选拥堵/GFW(0–2) | ✅ 每模态增量 7–9 个            |
 | **M4 = M2 + M3**   | ~22–27 | M1(10) + RS(5–7) + Ship(7–10)                         | 可接受；若 >25 个用 SHAP 筛或 PCA |
 
 
 > **对比当前 plan：** M1=27, RS=110, Ship=100, 总计 ~237 → 缩减到 ~22–27 → 降低 **90%**。
+>
+> ⚠️ **评估窗口口径：** 含 PortWatch 的 M3/M4 仅在 **2019+** 评估（测试期 ≈ 2024-11–2025-12、N≈54 周；PortWatch 数据起点 2019 + dropna 所致），M1/M2 为 2006+ 全样本。**当前接受 2019+ 短窗口方案**，所有 M3/M4 结论须显式标注该窗口与样本量，并将"短测试期"列为局限（见 §④）。
 

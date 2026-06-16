@@ -1,10 +1,18 @@
 """
 Build the unified weekly feature matrix by merging all modality files.
 
+This applies the literature-aligned curation (see
+01_literature/beatrice_task_literature_matrix.md):
+  - M1 is restricted to the new 10-variable mechanism set (M1_KEEP); the old /
+    downgraded / raw-extra market, EIA and financial columns are dropped.
+  - M2 uses the clean 11-AOI remote-sensing set (weekly_m2_clean_features.csv,
+    built by 03_data/raw/04_sentinel2/build_m2_clean_features.py) — dynamic NTL
+    anomalies + observation-quality variables — NOT the old 110 raw RS columns.
+
 Merges:
-  - weekly_time_index.csv         (market + macro + EIA fundamentals)
-  - weekly_remote_sensing_features.csv  (optical + VIIRS nightlights)
-  - weekly_shipping_features.csv  (PortWatch chokepoints, if available)
+  - weekly_time_index.csv         (market + macro + EIA; filtered to M1_KEEP)
+  - weekly_m2_clean_features.csv  (clean M2: ntl_anomaly / valid_obs / s2_*)
+  - weekly_shipping_features.csv  (GFW + PortWatch chokepoints, if available)
   - weekly_text_features.csv      (GDELT + NLP, if available)
 
 Adds target variables and modality availability flags.
@@ -12,6 +20,7 @@ Adds target variables and modality availability flags.
 Output:
   03_data/processed/weekly_features.parquet
   03_data/processed/weekly_features.csv
+  03_data/processed/feature_groups.json
 
 Usage:
     python build_feature_matrix.py
@@ -27,6 +36,25 @@ import numpy as np
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 PROC_DIR = PROJECT_ROOT / "03_data" / "processed"
 RAW_MARKET_DIR = PROJECT_ROOT / "03_data" / "raw" / "01_market_financial"
+
+# ── M1: new 10-variable mechanism set (post-close-reading) ───────────
+# Everything else in weekly_time_index.csv (wti_price, brent_* derivatives,
+# raw EIA supply/product series, sp500/vix/dollar_index/treasury_10y/
+# fed_funds_rate, sp500_return_pct, ...) is intentionally dropped.
+M1_KEEP = [
+    "brent_price",
+    "crude_stocks_change",
+    "global_econ_activity",
+    "nonoil_industrial_commodity",
+    "futures_spread",
+    "ovx",
+    "gpr",
+    "dgs10_change",
+    "gold_return",
+    "commodity_fx",
+]
+# Availability flags retained from the market anchor (others dropped).
+MARKET_AVAIL_KEEP = ["avail_market", "avail_eia_weekly"]
 
 
 def load_weekly(filename: str) -> pd.DataFrame:
@@ -131,9 +159,19 @@ def main():
     print("Loading weekly feature files...\n")
 
     market = load_weekly("weekly_time_index.csv")
-    rs = load_weekly("weekly_remote_sensing_features.csv")
+    rs = load_weekly("weekly_m2_clean_features.csv")
     shipping = load_weekly("weekly_shipping_features.csv")
     text = load_weekly("weekly_text_features.csv")
+
+    # Curate M1: keep only the new 10-variable set + retained availability flags
+    if not market.empty:
+        keep = [c for c in (M1_KEEP + MARKET_AVAIL_KEEP) if c in market.columns]
+        dropped = [c for c in market.columns if c not in keep]
+        market = market[keep]
+        print(f"  M1 curated: kept {len(keep)} cols, dropped {len(dropped)} old/raw cols")
+        missing = [c for c in M1_KEEP if c not in market.columns]
+        if missing:
+            raise SystemExit(f"ERROR: expected M1 columns missing from anchor: {missing}")
 
     # ------------------------------------------------------------------
     # Merge all modalities on the market time index
@@ -168,12 +206,10 @@ def main():
     # ------------------------------------------------------------------
     # Define feature groups for ablation experiments
     # ------------------------------------------------------------------
-    market_cols = [c for c in market.columns if not c.startswith("avail_")]
     feature_groups = {
-        "M1_market_macro": [c for c in market_cols if c != "brent_direction"],
-        "M2_add_text": text_cols,
-        "M3_add_rs": rs_cols,
-        "M4_add_shipping": ship_cols,
+        "M1_market_macro": [c for c in M1_KEEP if c in market.columns],
+        "M2_rs_clean": rs_cols,
+        "M3_add_shipping": ship_cols,
     }
 
     # Save feature group definitions

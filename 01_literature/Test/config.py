@@ -36,35 +36,60 @@ M1_VARS = [
     "commodity_fx",                 # FX channel — CAD/AUD (P053>broad USD)
 ]
 
+# Clean M2 set (post-close-reading, see beatrice_task_literature_matrix.md §②):
+# dynamic NTL anomaly (not raw radiance, per P024/P032) + observation-quality
+# variables, on the four petroleum-core AOIs. Full 11-AOI panel is available in
+# feature_groups.json["M2_rs_clean"] / weekly_m2_clean_features.csv.
 M2_RS_ADD = [
-    "ntl_ntl_avg_rad_mean_P001",  # Rotterdam
-    "ntl_ntl_avg_rad_mean_P002",  # Fujairah
-    "ntl_ntl_avg_rad_mean_P003",  # Ras Tanura
-    "ntl_ntl_avg_rad_mean_P005",  # Houston
-    "ntl_ntl_avg_rad_mean_P006",  # Ningbo
-    "frt_fill_level_fujairah",    # FRT fill level (CV-derived)
+    "ntl_anomaly_rotterdam",          # import / refining hub
+    "ntl_anomaly_fujairah",           # offshore tanker-dominated storage
+    "ntl_anomaly_ras_tanura",         # crude export terminal
+    "ntl_anomaly_us_gulf",            # Houston / US Gulf storage belt
+    "ntl_valid_obs_count_rotterdam",  # VIIRS data-quality (P032/P025)
+    "ntl_valid_obs_count_fujairah",
+    "ntl_valid_obs_count_ras_tanura",
+    "ntl_valid_obs_count_us_gulf",
+    "s2_cloud_fraction_rotterdam",    # S2 information-availability (P025)
+    "s2_cloud_fraction_fujairah",
+    "s2_cloud_fraction_ras_tanura",
+    "s2_cloud_fraction_us_gulf",
 ]
 
+# M3 shipping set (post-close-reading, see beatrice_task_literature_matrix.md §③).
+# Organised by economic dimension: tanker-specific flow intensity + DWT-capacity
+# weighting + average vessel size + global aggregate + export-vs-import directional
+# asymmetry + GFW dwell-time congestion proxy.
+# ⚠️ PortWatch series start 2019; GFW series start 2012. data_loader.dropna()
+# means any layer containing PortWatch features is evaluated on 2019+ only — keep
+# this in mind for M1-vs-M3 / before-vs-after comparisons (align the window).
+
+# PortWatch chokepoint transits (tanker-specific): count + DWT-capacity + avg size
 M3_SHIP_PW = [
-    "pw_hormuz_n_tanker", "pw_hormuz_capacity_tanker",
-    "pw_suez_n_tanker", "pw_suez_capacity_tanker",
-    "pw_malacca_n_tanker", "pw_malacca_capacity_tanker",
+    "pw_hormuz_n_tanker", "pw_hormuz_capacity_tanker", "pw_hormuz_avg_tanker_size",
+    "pw_suez_n_tanker", "pw_suez_capacity_tanker", "pw_suez_avg_tanker_size",
+    "pw_malacca_n_tanker", "pw_malacca_capacity_tanker", "pw_malacca_avg_tanker_size",
     "pw_all_n_tanker_sum",
 ]
 
+# PortWatch port-level export-vs-import tanker-volume asymmetry (directional, P070)
+M3_SHIP_PW_DIR = [
+    "pw_tanker_exp_imp_asym",   # (export_hubs - import_hubs)/(sum)  ∈ [-1, 1]
+    "pw_tanker_exp_imp_net",    # export-hub loadings − import-hub discharges (tonnes)
+]
+
+# GFW AIS presence (2012+): activity intensity + dwell-time congestion proxy (P016)
 M3_SHIP_GFW = [
-    "gfw_hormuz_total_hours", "gfw_hormuz_total_vessels",
-    "gfw_suez_total_hours", "gfw_suez_total_vessels",
-    "gfw_malacca_total_hours", "gfw_malacca_total_vessels",
+    "gfw_hormuz_total_hours", "gfw_suez_total_hours", "gfw_malacca_total_hours",
+    "gfw_hormuz_dwell_hours_per_vessel",   # congestion / dwell proxy = hours/vessel
+    "gfw_suez_dwell_hours_per_vessel",
+    "gfw_malacca_dwell_hours_per_vessel",
     "gfw_all_total_hours_sum",
 ]
 
-M3_SHIP_EMODNET = [
-    "emodnet_mean_rotterdam", "emodnet_max_rotterdam",
-    "emodnet_mean_suez", "emodnet_max_suez",
-]
+# NOTE: previous M3_SHIP_EMODNET (emodnet_*) removed — those columns are not in
+# weekly_features.csv and were silently dropped by data_loader.
 
-M3_SHIP_ADD = M3_SHIP_GFW + M3_SHIP_EMODNET  # GFW (2012+) + EMODnet density (2017+)
+M3_SHIP_ADD = M3_SHIP_PW + M3_SHIP_PW_DIR + M3_SHIP_GFW
 
 # ── M5 supplementary: GDELT NLP/event features (Discussion/Appendix) ─
 M5_GDELT_ADD = [
@@ -122,6 +147,15 @@ LAG_MA_SPECS: dict[str, list[dict]] = {
     ],
 }
 
+# ⚠️ REPORTING CAVEAT — EVALUATION WINDOW (2019+ short window, accepted):
+# M3/M4/M5 include PortWatch shipping features, which only cover 2019+. After
+# data_loader.dropna(), any layer containing PortWatch is evaluated on 2019+ only
+# (observed test period ≈ 2024-11 to 2025-12, N≈54 weeks), whereas M1/M2 use the
+# full 2006+ sample. We DO NOT align layers to a common window here. Therefore any
+# M3/M4/M5-vs-M1 difference is confounded by sample-period/test-set differences and
+# MUST be reported with the explicit caveat "M3/M4/M5 evaluated on 2019+ only
+# (test ≈ 2024-11–2025-12, N≈54)". DM tests are only valid on the aligned sample.
+# See beatrice_task_literature_matrix.md §④.
 LAYER_FEATURES: dict[str, list[str]] = {
     "M1": M1_VARS,
     "M2": M1_VARS + M2_RS_ADD,
