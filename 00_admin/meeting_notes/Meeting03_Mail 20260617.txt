@@ -1,0 +1,27 @@
+Hi Xinrui, 
+
+Here are my notes from todays meeting: 
+Discussed adding in model 0 - where p(t+1)=p(t)
+Currently have three dependent variables: price, direction (up, down, flat), and volatility (p(t+1)-p(t))/p(t+1)
+Recommended adding another column to each table describing each variable in more detail - this will help when it comes to writing the report. Example: variable name - 'dgs10_change', description - 'change in USD exchange rate'
+Currently using time lag of 4 weeks - as this is consistently available in the data. Most of the literature using daily time lag. Discussed tyring model with different time lags. 
+Model 2 - plan to remove sentinel 2 cloud fraction - cite literature/papers to support this decision. 
+Choice of 4 AOIs - chosen as others having missing data 
+Discussed  mechanistic validation of the remote sensing and shipping data. My suggestion to compare these to oil prices, and can include this as exploratory data analysis. However the relevance of these variables in predicting oil prices will be based on whether the model performance improves when these variables are added. 
+Discussed initial model results. Recommend adding in model 0 for comparison. Important to use the same timeframe for all models (2019-2026, as this is the timeframe all data is available for) 
+Ahead of next meeting start drafting the literature review. 
+
+We'll have our next dissertation meeting on July 8th at 1pm - I will send you a meeting invite now. 
+
+If you have any questions, or if you want me to clarify anything just let me know. 
+
+Best, 
+Bea 
+
+
+Beatrice Taylor (She/Her)
+Research Fellow in Artificial Intelligence for Collective Intelligence – Smart Cities
+UCL CASA (Centre for Advanced Spatial Analysis)
+5th Floor - Maple House
+149 Tottenham Court Road
+London, W1T 7NF

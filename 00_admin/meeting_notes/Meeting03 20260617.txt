@@ -1,0 +1,323 @@
+Meeting03
+ 
+转写结果
+说话人1 00:37
+Nasa. Are you doing? Generally, first of all, sorry, how's life? I'm good, but I found that I my case of reading is very slow. We can talk about that.
+
+美国太空总署。你在做什么？一般来说，首先，对不起，生活怎么样？我很好，但是我发现我的阅读速度很慢。我们可以谈谈这个。
+说话人2 01:08
+To, can I ask you? Please? Ii guess.
+
+我能问你吗？请？我猜。
+说话人1 01:37
+let's check is plugged in.
+
+让我们检查一下是否插上了电源。
+说话人2 01:39
+We want to do this.
+
+我们想这么做。
+说话人1 01:44
+It's definitely on.
+
+绝对开始了。
+说话人2 01:46
+It is that one, i'm sure, connect the type of components and we can't access it. Do you have a patient? Do you mind? What is that treatment?
+
+它是一个，我敢肯定，连接组件的类型，我们无法访问它。你有病人吗？你介意吗？那是什么治疗？
+说话人1 02:08
+I I might be able to do is i'm gonna be able to.
+
+我也许能做的是我将能够。
+说话人2 02:11
+team city and you can change things.
+
+城市团队，你可以改变事情。
+说话人1 02:14
+Or maybe this.
+
+或者这个。
+说话人2 02:15
+share. Thank you. And this,
+
+分享。谢谢。还有这个，
+说话人1 02:50
+how mysterious? I don't do it. Can I get this.
+
+有多神秘？我不做。我能得到这个吗。
+说话人2 02:54
+to work?
+
+去工作？
+说话人1 02:57
+It's not anything. Is it? Maybe i'll just sit next to you, and you can show me a screen. Let's do it like that. So do you want to talk me for what you've been doing since last time? I have read about 20 paper parts. I found that ii have decided the features and construction and decrease the number of the feature number. Is this informed by what you've been reading? Yeah. General before it, and then we can discuss anything as it comes up. First of all, I think maybe I should add the model zero like baseline, cause the literature said it, but no change prediction is very important. We should compare every model with the noting, predict that means maybe the no change prediction. And that's the next week's price is equal with the current price. I see, so you've got it here. So it's saying that time step + one is the same, the previous step. Okay? I'll just make some notes. Sorry. I remember what was zero and I no change.
+
+什么都不是。是吗？也许我就坐在你旁边，你可以给我看一个屏幕。让我们就这样做吧。所以你想和我谈谈自从上次以来你一直在做的事情吗？我已经阅读了大约20个纸质部分。我发现II已经决定了特征和结构，并减少了特征数量。这是根据你所读到的内容得出的结论吗？是啊。将军在它之前，然后我们可以讨论它出现的任何事情。首先，我想也许我应该加上零模型，就像基线一样，因为文献上说过，但没有变化的预测是非常重要的。我们应该将每个模型与注释进行比较，预测可能意味着无变化预测。那就是下周的价格等于现在的价格。我明白了，所以你在这里得到了它。所以它说时间步长+1是相同的，前一步。好的？我只是做些笔记。抱歉。我记得什么是零，我没有改变。
+说话人2 04:29
+t.
+
+测试。
+说话人1 04:31
+plus one two. But yeah. And then on the target is about the direct direction. And the price, maybe this is from the price. Only the direction price is the most important. I'll make sure I understand. So these are free features all relating to, essentially, to oil price. Is this the raw price? This is the volatility of it. That's in the data set. How is volatility measured? Do you know? Or is it the next week's price? We with the part price and pass the part price? So it's gonna be the difference between 2 weeks ago price, t plus one minus the price of tea. And that's the do I buy the price that this week the price too, okay? That's volatility. And you have the price and direction. So that's the time you ever. It's gone up or down. It's about three classification is decrease. And maybe keep current. It's boss. Now let's hang out. So if i'm correct, it's going to send my best over time. And so the price is gonna estimate to be, this is p so prices, its value. Volatility is telling you how much it's changed, 2 × 1, let's say, I guess, and then direction is telling you whether it's going to make that that they still have. That's fine. I just want to make sure on the same page, but i'm not sure should I choose the flat, because after the models, it's hard to to make it clear. Maybe it's false in down or.
+
+加12。但是是的。然后关于目标是关于直接的方向。还有价格，也许这是从价格上来看。只有方向价格才是最重要的。我会确保我明白的。所以这些都是免费的功能，本质上都与石油价格有关。这是原料价格吗？这就是它的波动性。这是在数据集中。如何衡量波动性？你知道吗？还是下周的价格？我们与部分价格和通过部分价格？所以这将是两周前价格的差额，T加上1减去茶叶的价格。这就是我买的价格，这周的价格也是，好吗？这就是波动性。你有价格和方向。所以那是你曾经的时间。它上升或下降。大约有三种分类是递减的。也许保持最新。是老板。现在我们出去玩吧。因此，如果我是正确的，它将随着时间的推移发送我最好的。所以价格估计是，这是P，所以价格，它的价值。波动性告诉你它改变了多少，2×1，让我们说，我猜，然后方向告诉你它是否会使他们仍然拥有。那很好。我只是想确定在同一页上，但我不确定我是否应该选择公寓，因为在模型之后，很难弄清楚。也许它在唐或中是错误的。
+说话人2 07:03
+up. So.
+
+向上的。那么。
+说话人1 07:05
+you might almost not need direction at all, because it might be enough to just predict price and volatility. Okay, just one topics essentially might be easier. Cctv ui. If price and volatility, then I think you also know direction. Yeah. Because if if it's gone up, then this value is larger than this value. This is positive. If it's gone down, this is smaller than this value. So I think direction, it does this make sense? It's not exactly additional information. Boss. Maybe the price is not so accurate, but the direction, maybe it's accurate, maybe it's high. I see in the actual life, maybe we know the direction is enough to make the decision. Lots. Okay. What do people only predict in the literature? Are people trying to predict or free or just one thing? No, the literature also pretty in the price and the direction, price, and direction. Okay? Okay, that's fine. We can determine it the model, one, a yeah. It's about ten the features, but i'm not sure about the gpi is about the geopolitics, political risk. Maybe it's we can you for political? I think that's okay, I guess. Is this like aa data set which is published by someone? It's not okay, it was.
+
+你可能根本不需要方向，因为仅仅预测价格和波动性就足够了。好的，只有一个主题本质上可能更容易。CCTV用户界面。如果价格和波动，那么我想你也知道方向。是啊。因为如果它上升了，那么这个值比这个值大。这是积极的。如果它下降了，它就比这个值小。所以我认为方向，这有意义吗？这不完全是额外的信息。老板。也许价格不是那么准确，但方向，也许是准确的，也许是高的。我在现实生活中看到，也许我们知道方向就足以做出决定。很多。好的。人们只在文献中预测什么？人们试图预测或免费或只是一件事？不，文学在价格和方向上也很漂亮，价格和方向。好的？好吧，那很好。我们可以确定它的模型，一，一是的。这是关于十个特征，但我不确定GPI是关于地缘政治，政治风险的。也许这是我们可以你的政治？我想这是好的，我猜。这是不是像别人发布的AA数据集？这不好，这是。
+
+it's an index, and I can or we can use the data from the data set, perfect. So it's all there really. I think it's fine. Hang on. Can you quickly told me for the others? So you've got the price, the stocks change, and maybe the global demand about these two. What's the difference there? What is killian? Rea versus industrial materials?
+
+这是一个索引，我可以或者我们可以使用数据集中的数据，非常好。所以这一切都是真的。我觉得很好。坚持住。你能快点告诉我其他人的情况吗？所以你已经知道了价格，股票的变化，也许还有全球对这两个的需求。有什么区别吗？基利安是什么？REA与工业材料？
+说话人2 10:09
+Byebye.
+
+拜拜。
+说话人1 10:12
+It's from the different data side. I think maybe it running it from the eia about print. The other is about the factory. They are the about is not directly liquid oil. Okay, life. So this is specifically demand for oil and this demand for other terms. Okay? Both of it's directly from the internet and it's no use to compute.
+
+它来自不同的数据端。我想也许它是从关于印刷的EIA中运行的。另一个是关于工厂的。它们大约不是直接的液体油。好吧，生活。这就是对石油的需求和对其他术语的需求。好的？两者都是直接从互联网上来的，而且对计算毫无用处。
+
+single. Can I ask about the future spread? This is telling you market expectations of where oil prices are gonna go. It's not just about oil, is about the whole market. This is a measure of the whole economic system, okay? Nana. Byebye. This is a computer. Unlike the reason, it's not directly from the data set. Can you explain to me what is raised on it by carry cost? Is that oil break soon?
+
+单身的。我能问一下未来的传播吗？这是在告诉你市场对油价走向的预期。这不仅关系到石油，也关系到整个市场。这是对整个经济体系的衡量，好吗？娜娜。拜拜。这是一台电脑。与原因不同的是，它不是直接来自数据集。你能给我解释一下持有成本增加了什么吗？那个油快断了吗？
+
+It's a good one. It's not about the oil price. It's like the dollar price. It's to talk compare the dollar dollar street in the whole colombo in the global money is so there is like exchange rate of dollars. Yeah. This is about good, like it's just to compare the monies. It's compared money's price, or I understand gold is a good predictor, right? For the economic fluctuation. This above as canadian and australian dollars. Yeah. So can I suggest that because this would be helpful when you start writing your report? It is, i'd ask just another column and put a slightly more.
+
+这是一个很好的。这与油价无关。就像美元价格一样。在全球货币中，美元在整个科伦坡的街道上是如此，就像美元的汇率一样。是啊。这是关于好的，就像它只是比较金钱。它比较的是货币的价格，或者我知道黄金是一个很好的预测指标，对吗？对于经济波动。上面是加元和澳元。是啊。所以我可以建议，因为当你开始写你的报告时，这会很有帮助。是的，我只想问另一个专栏，然后再多写一点。
+说话人2 13:10
+descriptive.
+
+描述性的。
+说话人1 13:10
+So as another column to your table, mhm. And write a more descriptive definition for it is because I think it will help when you come to write your report. So, for example, here you could write. This is fluctuation in exchange rate of usd it just seems a bit more descriptive. Does that make sense? Yeah. It makes the feature more clear, exactly. And then when you write your report, you can it'll be easier to explain why you chosen each one. Okay, yeah. There is one more thing that I showed you the leg, because maybe the price is released. How to say this week's this week, we'll released the brands price of the last 4 weeks price. So maybe I would like to how to oki see. So you're saying that the timing that you want to take into account essentially. But i'm not sure maybe I should use 1 week, 4 week, or 8, or 12. Maybe I will choose one of the. What does the literature does? Have you seen what people do in the literature? Is that it's very different from 1 to 12. I can imagine. So I think maybe I show you the byebye. I should find I show you this price how to.
+
+作为表的另一列，mhm。并为它写一个更具描述性的定义，因为我认为它会在你写报告时有所帮助。例如，在这里你可以写。这是美元汇率的波动，只是看起来更具描述性。这有道理吗？是啊。确切地说，它使特征更加清晰。然后当你写报告的时候，你可以更容易地解释你为什么选择每一个。好的，是的。还有一件事，我给你看了腿，因为可能价格已经公布了。如何说这周的这周，我们将发布过去4周的品牌价格。所以也许我想怎么去OKI看看。所以你说的是你想要考虑的时间。但我不确定我是否应该使用1周、4周、8周或12周。也许我会选择其中一个。文学是做什么的？你见过人们在文学作品中做什么吗？从1到12有很大的不同。我可以想象。所以我想也许我可以给你看看再见。我应该找到我告诉你这个价格如何。
+
+their cost. This price is released about 4 weeks ago. So I think I should first use 4 week at the lab and to try the accuracy or something else, I think that's gonna do it. I also see what other people have done is when you read the literature, is there a specific time and spoken? Are you saying? Did you come across or next? No, the literature is the daily data, not the weekly data. It's not a specific number. No, I but so 4 weeks, you're saying is a good choice, because you have consistent data that sounds like a good choice to me. And thats the model one. And then about the model two, I increase it to may be just to feature this. First at the beginning, I choose s two and the vis but I found that this is from 2017, but this is from 2014 or twenty twelve ok so I think maybe I could delete this. Just use the vivir so this one are sensible to the case. It's cloud fraction. It's not directly linked with the oil price. So I think it's not so useful. So this variable to me sounds more like it's telling you about the quality of your images, often what's actually in the images. Yeah, but I can just use this to measure the quality of water. I agree. I think one is probably sufficient. This is telling you one of us being activity at the oil site, then understands you wanna add in an additional variable to say, essentially how many to sort of say, say, i've spotted anomalies 3 days in a month, and then this is telling you there was actually cloud cover for 20 days, so we don't know. Yeah, am I understanding correctly? Yeah. Yeah, i'd say just one of these is plenty. I agree. So I think you could remove these ahead. Yeah. Only one literature use this. Dss I see other literature use this both from all of these from the literature. Yeah, so I think it's fine I don't, but make a note just i'd make a note of this you can put into your report saying like yes, they seem like I considered using cloud fraction from sentinel tvok as her. It's like literature but decided but the valid observation phase was sufficient as used in. And then it's like the other papers. Yeah.
+
+他们的成本。这个价格是大约4周前发布的。所以我想我应该先在实验室用4周的时间来尝试准确性或其他东西，我想这就可以了。我也看到别人做的是什么，当你读文献的时候，有没有具体的时间和说法？你是说？你遇到了还是下一个？不，文献是每天的数据，不是每周的数据。这不是一个具体的数字。不，我只是4周，你说这是一个很好的选择，因为你有一致的数据，听起来对我来说是一个很好的选择。那就是模型一。然后关于模型二，我把它增加到可能只是为了突出这一点。首先，在开始的时候，我选择了S 2和VIS，但我发现这是2017年的，但这是2014年或2012年的，所以我想也许我可以删除这个。只要使用Vivir，这样这个就能适应这种情况。这是云的分数。它与石油价格没有直接联系。所以我认为它不是那么有用。所以对我来说，这个变量听起来更像是在告诉你图像的质量，通常是图像中的实际内容。是的，但我可以用这个来测量水的质量。我同意。我认为一个可能就足够了。这是告诉你我们中的一个人在石油现场的活动，然后理解你想要添加一个额外的变量，也就是说，本质上有多少，比如说，我在一个月内发现了3天的异常，然后这是告诉你实际上有20天的云层覆盖，所以我们不知道。是的，我理解的对吗？是啊。是的，我想说只要其中一个就足够了。我同意。所以我想你可以提前把这些拿掉。是啊。只有一种文献使用这个。DSS：我看到其他文献都使用了这一点，从所有这些文献中。是的，所以我认为这是好的，我没有，但请注意，我会注意到这一点，你可以在你的报告中说，是的，他们看起来像我考虑使用来自哨兵TVOK的云部分作为她。它就像文献一样，但决定了有效的观察阶段是足够的。然后它就像其他论文一样。是啊。
+说话人2 18:33
+Okay.
+
+好的。
+说话人1 18:34
+I'm not sure I just choose four aos or can I choose the more aos i'm not sure if it is sufficient or it's enough. So why have you chosen these four? The data from this for is this four has enough data set, but the others may be not cover the whole. So they have more missing data. Yeah. Again, what do they do in the literature? It's what I say. Do you only choose one or two? The I just remember maybe the most literature is about three. In which case, if most of introducing free, then I think four is probably sufficient. But, again, I cite the literature. So say, these papers used free for similar number. I got that. Now many literature said that maybe I should do the validation before you the a remote sensing data. I should to validate the these features is relevant with oil price or something else. Maybe I should add this validation before the model true.
+
+我不确定我只选择了四个AO，或者我可以选择更多的AO吗？我不确定它是否足够。那你为什么选择这四个呢？从这个数据来看，这四个有足够的数据集，但其他的可能不能覆盖全部。所以他们有更多的缺失数据。是啊。再问一次，他们在文学中做了什么？我就是这么说的。你只选一个还是两个？我只记得可能最多的文学作品是关于三个。在这种情况下，如果大部分是免费的，那么我认为四个可能就足够了。但是，我再次引用文献。所以说，这些论文免费使用的数量差不多。我明白了。现在很多文献说，也许我应该在你之前做一个遥感数据的验证。我应该验证这些特征与石油价格或其他东西有关。也许我应该在模型为真之前添加这个验证。
+
+I guess this is, I think you can try and validate these, but I guess this is exactly what your model is trying to do, right? Is trying to understand if there is a good correlation, if adding in the aerial imagery improvement model, nasa? Sorry, let me read a second. I know. So can I just how to prove the night time light and normally really reflects oil activity? Yeah. It's a proxy for activity. I understand this.
+
+我想这是，我认为你可以尝试验证这些，但我想这正是你的模型想要做的，对吧？正在试图了解是否存在良好的相关性，如果加入航空图像改进模型，NASA？对不起，让我读一下。我知道。那么，我能不能证明夜间的光线和正常情况下确实反映了石油的活动？是啊。它是活动的代理。我明白这个。
+
+So I think you could validate, but I guess my . is, this is exactly your research question. Because as I understand it, you're trying to look at whether adding in the remote sensing improves prediction of oil price. At first, I I wonder maybe I add this validation into the model to it is so familiar. We with the model three cost, this is the model three feature. If the but I think maybe the model two and model three could help to with out the remote sensing is more different, is it's more important of the shipping data is more important.
+
+所以我认为你可以验证，但我想我的。这正是你的研究问题。因为据我所知，你想看看加入遥感是否能改善对油价的预测。首先，我想也许我把这个验证添加到模型中是如此熟悉。我们用模型三的成本，这是模型三的特点。但是，我认为模型二和模型三可能有助于摆脱遥感的更多不同之处，因为航运数据更重要。
+
+And in the model for.
+
+在模型中。
+
+I can show us only one or sorry, so.
+
+我只能给我们看一个或者抱歉，所以。
+
+But if without the validation, how should I how should I write in my dissertation to prove this feature is linked with the audio? I think your model results will answer that question, because if you add this to your model, and your prediction improves, know that you're adding additional information. All of the literature that's the remoteness is useless. It's no difference. They all found that the remote sensing is no use to help with the price oil price. What you're saying is from the literature, this doesn't add any additional information, okay? About but the shipping it does help. Okay, so I think it's maybe the validation is a great way to separate remote sensing with shaping data. The models. Three could tell us the shipping data is useful. It's no link is not about the emotions. I think i'd still say. So I think you don't need to separately validate this, because I think you're gonna have something like, I don't know how you're gonna model your a lot of performance, but you send that route into the air when I say and say your model zero, it's like this. I don't know. Yeah, can I make up a number? And then services and more ones first financial? Yeah. It's like that, maybe. So it improves a bit and then you added your remote sensing. And I think it's like a snitch better. The base spaces model to financial. I just to recruit until then maybe model free, though, improves a lot. So this one's a lot better. This is financially plus shipping.
+
+但是如果没有验证，我应该如何在我的论文中证明这个功能与音频有关？我认为你的模型结果会回答这个问题，因为如果你把它加到你的模型中，你的预测就会提高，你就会知道你在添加额外的信息。所有遥远的文学都是无用的。这没什么区别。他们都发现遥感对石油价格没有帮助。你所说的是从文献中来的，这并没有增加任何额外的信息，好吗？但是运输确实有帮助。好的，所以我认为验证可能是一种将遥感与整形数据分开的好方法。模特们。三个可以告诉我们航运数据是有用的。这是没有联系的，与情感无关。我想我还是会说。所以我认为你不需要单独验证这一点，因为我认为你会有这样的东西，我不知道你将如何模拟你的很多性能，但当我说你的模型为零时，你会把这条路线发送到空中，就像这样。我不知道。是啊，我能编个数字吗？然后是服务和更多的第一金融？是啊。就像那样，也许。所以它提高了一点，然后你增加了你的遥感。我觉得这更像是告密者。基础空间模型到财务。我只是在那之前招募，也许是免费的模型，虽然，提高了很多。所以这个好多了。这是财政加上航运。
+
+That result is validate is validation that this is not that informative.
+
+这个结果是验证，是验证这不是那么有用。
+
+I I can just see the night.
+
+我我只能看到夜晚。
+说话人2 26:43
+night.
+
+夜。
+说话人1 26:45
+If I understand what you're telling me is, mhm. You want to add in the night time light in a way, but from the literature, you think it's not very informative. It's not very useful. It's like, all right, it's not useful, call the literature. All of the literature use the validation to link the a kind of remorse sensing with the or your activity to figure out me to the remote sensing. To figure out the remote sensing could have a influence about the oil price.
+
+如果我明白你在告诉我什么，嗯。你想在某种程度上加入夜间灯光，但从文献来看，你认为它信息量不大。它不是很有用。这就像，好吧，这是没有用的，打电话给文献。所有的文献都使用验证来将一种悔恨的感觉与你的活动联系起来，以找出我的遥感。弄清楚遥感可能对石油价格产生的影响。
+
+If I do not do the validation, how could I.
+
+如果我不做验证，我怎么能。
+说话人2 27:45
+prove the.
+
+证明。
+说话人1 27:48
+how could I prove the remote sensing could reflect the oil price? Or so? Ii guess the validation would be nice if you can do the validation. But I guess what i'm trying to say is that it might also be apparent from the model results. Maybe how about, I think, maybe do the validation and see what you find. You want to validate it by checking to see if there is a correlation between and oil price initially. I think that's fine, but can still be preliminary data analysis.
+
+我如何证明遥感可以反映油价？或者是这样？我想如果你能做验证的话，验证会很好。但我想说的是，从模型结果中也可以明显看出这一点。也许，我想，也许做验证，看看你发现了什么。你想通过检查和石油价格之间是否存在相关性来验证它。我认为这很好，但仍然可以进行初步的数据分析。
+
+Sorry, iii it's okay. Or should I to make a validation with every source? Are we able, I all just do a.
+
+对不起，我没事。或者我应该对每个来源进行验证？我们能不能，我都只是做一个。
+
+validate them against oil price. I think that's what i'm saying.
+
+对照石油价格进行验证。我想这就是我要说的。
+
+Nasa. Ok. Is this what you mean? This validation procedure?
+
+NASA，好的这是你的意思吗？这个验证程序？
+说话人2 29:43
+Yeah.
+
+是啊。
+说话人1 29:46
+I think that's fine. To me, what you're suggesting is that before you run the full module, you want to do some data validation to be before the one more. I think it's fine. But because I use the model, three state is it's fine. It's permitted products. Yes, because I guess it's sort of exploratory data analysis. You're doing. I I got that. Julian, should we look at model three? This is model two. This is model three. Model three, you look at three shipping, essentially, and shipping. I first two or three of the 2 points, because this is the most important three in the world. Yeah. And it's from 2 days at the port watch and gfwa global fishing watch. What's that? And it's what the tank counts and the capacity. And this about the 32 points and is.
+
+我想那很好。对我来说，你的建议是，在运行整个模块之前，你需要做一些数据验证，然后再运行一个。我觉得很好。但因为我使用的模型，三个状态是好的。这是允许的产品。是的，因为我想这是一种探索性的数据分析。我我知道了。朱利安，我们应该看看模型三吗？这是模型二。这是模型三。模型三，你看三个运输，本质上，和运输。我首先是2分中的2分或3分，因为这是世界上最重要的3分。是啊。这是在港口观察和GFWA全球渔业观察的两天。那是什么？这就是坦克的价值和容量。这是关于32点的。
+说话人2 31:29
+the.
+
+那。
+说话人1 31:30
+whole town of the world. It's about two directions, about the import and export.
+
+世界的整个城镇。它是关于两个方向的，关于进口和出口。
+
+There is also a validation about the shipping data with the oil supply the literature. So I review I should do very different. I'm to date with the shipping date, the tank data and shipping data with all your supply data. Yeah, so I think this idea of a mechanism validation is that you want to check what information is in these other variables of either night, time, lights or shipping. Nana. It's how do I mix it? Let me think so. The first model is financial. And then financial and night time, light and then financial relationship. When you're talking about this idea of validation, you're saying taking my nighttime light. I want to check, but it is linked to oil price or taking shipping. I want to check this link to oil price. You're proposing a separate validation. I think that's okay. Mhm. Ii you should it is in if you do that it's fine. But your models going to also be doing that. Because each model is trying to predict next week's oil price. Yeah. If this one's this model, which is just financial is okay, and then financial plus night time light is really good. Yeah, then that tells me that nighttime light is linked to oil price, because it's improved my model. So the mechanism, there is implicit. Yeah. But like the the lights, it's not just directly linked with the oil price. How to say it's linked like the activities. What is of the oil factory, french raise? And this link to the oil price? Should I to prove this link? I don't think you need to. You can, but I don't think it's necessary. Okay, I do not explain the machine needs between these two, I think, determine explain it in words, but I don't think you need to do validation. Only sold out the monetary like that, like the.
+
+还有一个关于航运数据与石油供应的验证文献。所以我复习我应该做的很不一样。我有最新的船运日期，油罐数据和船运数据，以及你所有的供应数据。是的，所以我认为这个机制验证的想法是，你想要检查夜晚、时间、灯光或运输的其他变量中的信息。娜娜。它是我如何混合它？让我这么想。第一种模式是金融。然后是财务和夜间时间，然后是财务关系。当你谈论这个验证的想法时，你是在说拿着我的夜灯。我想查一下，但它与油价或运费挂钩。我想查一下这个油价链接。你提出了一个单独的验证。我认为这是可以的。嗯。你应该这样做，如果你这样做，那很好。但你的模特也会这么做。因为每个模型都试图预测下周的油价。是啊。如果这个是这个模型，只是财务是可以的，然后财务加上夜间灯光是非常好的。是的，这告诉我夜间灯光与油价有关，因为它改进了我的模型。所以这个机制是隐含的。是啊。但就像灯一样，它不仅仅与油价直接挂钩。怎么说呢，它与活动挂钩。弗伦奇饲养的油厂是什么？这与油价有关吗？我应该证明这种联系吗？我不认为你需要。你可以，但我认为没有必要。好的，我不解释这两者之间的机器需求，我认为，用语言来解释它，但我不认为你需要做验证。只卖出了像这样的货币，就像。
+说话人2 35:32
+shh.
+
+嘘嘘。
+说话人1 35:33
+shipping data is related to the oil supply or it is like to price. I can just delete this. And pretty, I think. So okay,
+
+航运数据与石油供应或价格有关。我可以把这个删了。而且很漂亮，我觉得。所以好吧，
+说话人2 35:54
+nasa.
+
+美国太空总署。
+说话人1 35:56
+I've done that. So I guess you you might do some exploratory data analysis. In your exploratory data analysis, you might want to look at this versus this. Maybe I don't.
+
+我已经做过了。所以我猜你可能会做一些探索性的数据分析。在你的探索性数据分析中，你可能想看看这个和这个。也许我不知道。
+说话人2 36:16
+know you.
+
+认识你。
+说话人1 36:18
+you have some values.
+
+你有一些价值观。
+
+Let's say this is shipping.
+
+让我们假设这是航运。
+
+You have a bunch of values and a nicely correlated. You can do this a sort of exploratory data analysis,
+
+你有一堆价值和一个很好的相关性。你可以用一种探索性的数据分析来做这件事，
+说话人2 36:43
+aa.
+
+AA。
+说话人1 36:47
+but the really informative thing is going to be whether it improves your models, prediction, vc.
+
+但真正有用的是它是否能改善你的模型，预测，风险投资。
+
+I so i'd say maybe go ahead with your proposal is you can do the mechanistic validation, but I think it would also be apparent from the model results. Yeah, so there's nothing wrong with what you're currently proposing. Okay? I got I ii can choose to use it in the final education, right? Nasa. Just making a note. So i'll send you my notes of goods. And about the model for, i'm not decided to, i'm not decide which feature I should use for the literature set,
+
+所以我想说，也许继续你的建议，你可以做机械验证，但我认为从模型结果中也很明显。是啊，所以你现在的提议没有错。好的？我得到了我可以选择在最后的教育中使用它，对吗？美国太空总署。只是做个笔记。所以我会把我的货物记录寄给你。关于模型，我还没有决定，我还没有决定我应该为文献集使用哪个功能，
+说话人2 38:23
+maybe.
+
+也许。
+说话人1 38:24
+after the model results. Yeah, I will choose one of, maybe I should decrease the number to like 20 about 20 features. That makes sense. I expect I try to write the initial model and just like compare it casually. It's not very formally. And I found that like these models is mention in the literature. The literature says, maybe this, too, is very useful, but.
+
+在模型结果之后。是的，我会选择其中一个，也许我应该把数字减少到20个大约20个功能。很有道理。我希望我试着写出最初的模型，并随意地比较它。不是很正式。我发现文献中提到了这些模型。文献说，也许这也是非常有用的，但是。
+
+it's not, I think my date is not enough for this tomorrow. And the a random force is perfect, the best and think about.
+
+不是的，我想我明天的约会还不够。而一个随机的力量是完美的，最好的和思考。
+说话人2 39:33
+the change. And.
+
+改变。和。
+说话人1 39:34
+so does model two improve on model one? I'm not sure why this logic is perfect, best course. I think it is not.
+
+那么模型二比模型一有改进吗？我不知道为什么这个逻辑是完美的，当然是最好的。我认为它不是。
+
+Maybe the notes of the gm model is too too less, or I think this model is not very accurate in my code. Yeah.
+
+也许GM模型的注释太少了，或者我认为这个模型在我的代码中不是很准确。是啊。
+说话人2 40:19
+Can.
+
+可以。
+说话人1 40:23
+I see what the can I scroll up tomorrow? I'm sorry. Model one, brandon forrest is getting you almost 50 % accuracy. Model two. Accuracy is worse and models change. Interesting. This is the literature said, may be the most useful prediction model is in the model zero? No. Do you have the results of model zero or not? I guess most, how do you know how to be good to add in results of model zero? If you just use the same results last week, how accurate is it? Iii have not read that yet.
+
+我明白了，我明天可以向上滚动吗？对不起。模型一，布兰登·福雷斯特的准确率接近50%。模型二。准确性更差，模型也会发生变化。有趣的。这是文献上说的，可能最有用的预测模型是零中模型。不。你到底有没有零号模型的结果？我想大多数人，你怎么知道如何很好地添加零模型的结果？如果你只是使用上周相同的结果，它的准确性如何？我还没读过。
+说话人2 41:25
+Like.
+
+喜欢。
+说话人1 41:27
+the food and the model three is also the random forest and charity boss is perfect. That has improved. Now that's a bit over half, I see. But the price is the really perfect, nice. Okay, well, this in the model for the tft is it's useful. But it's it's not as far as the model three. I guess the remote sensing is not enoceotmoeenertomeopisem I there is one thing that's the model. One is for like 2012. But the model to it from trying to ap, the model three is too much. So this is amount the time series of data you're putting in. Nasa. Ii this is 2019 ~ 2026. I use the same window for all of them for all models. I should narrow my projects time, but I eighteen,
+
+食物和模型三也是随机森林和慈善老板是完美的。情况有所改善。我明白了，现在已经超过一半了。但价格真的很完美，很好。好的，这个在TFT的模型中是有用的。但它不像型号3那么远。我想遥感并不是一种能量，有一件事就是模型。一个是像2012年。但模型从尝试到AP，模型三太多了。这是你输入的数据的时间序列的数量。美国太空总署。II这是2019~2026。我对所有型号都使用相同的窗口。我应该缩小我的项目时间，但我18岁了，
+说话人2 43:15
+nineteen. Ok, byebye.
+
+十九好的，再见。
+说话人1 43:22
+Maybe it's too small, like it's only 7 years. But your model performance hasn't got worse for because this is a smaller window than model one. But your performance isn't worse. I to be able to compare the models, you need to be running them all on the same time series. That's first step is make sure they're all on the same time frame. You're using the 4 week lag data, all of the same to use them all twenty, nineteen to 26, 4 week time lag and adding model zero. And then compare your results. And then you could consider changing from the 4 week lab to the 1 week lag being discussed. Vr. But it's enough for the model like it's only 7 year plan. Alex, I i'm not sure should I use more the tf ts?
+
+也许它太小了，好像只有7年。但是你的模型性能并没有变得更差，因为这是一个比模型1更小的窗口。但你的表现并不差。为了能够比较这些模型，你需要在相同的时间序列上运行它们。第一步是确保他们都在同一时间框架内。你使用的是4周的滞后数据，所有的数据都是一样的，20，19到26，4周的时间滞后，加上模型0。然后比较你的结果。然后你可以考虑从4周的实验改为1周的延迟。虚拟现实。但这对模型来说已经足够了，就像它只有7年的计划一样。亚历克斯，我不确定我是否应该使用更多的TF TS？
+说话人2 44:41
+Byebye.
+
+拜拜。
+说话人1 44:44
+to see where the tft is over fitting in just 7 years. I don't know anything about tft did you choose this from the literature? Okay. At the beginning, I do not use the tft but the literature that is very useful. So I this model into the model is what i'd say is as in model zero, do more than the same time frame. And then I think what might be good as if you look in the literature and see why people have used for different models.
+
+看看TFT在短短7年内的过度安装情况。我对TFT一无所知，你是从文献中选择的吗？好的。开始的时候，我用的不是TFT，而是非常有用的文献。所以我把这个模型变成了我所说的模型，就像在模型0中一样，在相同的时间框架内做更多的事情。然后我想，如果你看看文献，看看为什么人们使用不同的模型，这可能是好的。
+
+Why does the literature use tft in the They use the daily data. So it's enough for in the literature. The daily data is enough for the TFT but the weekly, I think it's not enough. Okay? So I but it's okay because it can still be a comparison, right? Is use you to me what you're presenting here is a comparison between the models. Yeah, so maybe it's okay to leave it in. Can you find the at this stage, the TFT is perfect in model form. So I think maybe it's not true about the accuracy at all. I'd check back for your code and try to understand why different models are performing better on different data sets. Is there a reason why maybe was thinking the literature which might justify that? I don't know off Top of my head, why? But the first thing is make sure your because currently, it's quite hard to compare them when they're being run on different time, because then you're using different training data, each one make sure you're using the same training data.
+
+为什么文献中使用TFT？他们使用每日数据。所以在文献中这就足够了。每天的数据对TFT来说是足够的，但每周的数据，我认为是不够的。好的？但是没关系，因为它仍然可以是一个比较，对吗？你在这里展示的是模型之间的比较。是啊，所以也许把它留在里面是可以的。你能在这个阶段找到吗，TFT在模型形式上是完美的。所以我想也许关于准确性的说法根本不正确。我会检查你的代码，并尝试理解为什么不同的模型在不同的数据集上表现得更好。有没有一个原因，也许是认为文学可以证明这一点？我也不知道，为什么？但第一件事是确保你的，因为目前，当它们在不同的时间运行时，很难比较它们，因为你使用不同的训练数据，每一个都要确保你使用相同的训练数据。
+说话人2 46:59
+So.
+
+那么。
+说话人1 47:01
+the same time frame across all of them, could I like in the model like in the more model, one I use to detail and 22 and to compare these models? And like I if I choose rf model two, like I choose like rfr almost like gnn MHM. I'm honestly like I and in the final stage, how to say when I choose the best model, I use 2012. And when I compare the different data set, I use 2019. Yes. I'd start off by using 2019 ~ 2026 and comparing the models. And then if one model performs really well, say, xg boost performs really well for model Free, and you then want to run it with a larger time series of data, ececefecececececececececececececececececececececececececececed could I use mod it to test the best model you could? And? Yes, but first do first run it all on the same time. So compare them. That would be like part one. And then say you've got one really good model. You could then look at a larger time series for it and see how it performs. There is a secondary result, but the aim of the state part two is to check the model. I guess part two would be looking at, I know, it performs really well from twenty, nineteen to 20, 2006. Does it inform even better with more data? You don't necessarily need to do it. I'm saying if you want to you, could. My problem is that why should I first use the more time data to test which model is best like in model one? In model two, and then compare in this. So I think the most important thing is compatible on the same time zone. So that would be the thing to do before our next meeting is look at them all on the same time zone, because then we can actually compare them. Okay? And then we could discuss whether to look at different times. I'm fine. Ii got that. I got that. So II should first test in this 7 years, first test in recent years. And then next time we can look again at model results. Almost at the end of the time, how are you getting on with the reading of the literature? Whole night, how is the literature reading? Because the first part of your report is going to be a review of the literature. Correct? Have you been reading the literature? Yeah, have you found papers to read? Called this is from the literature reading. Should I write down the literature or you? Yes. So you start just make lots of notes as you read it, and then you can start drafting your literature review. That would be the first part of your report. Ii have made a found. No sports. I have not started writing, so start by just trying to draft it. So write taking your notes and writing into the paragraphs. That's not, but the word numbers about the literature over you. Internet like one, iOS. How many words? Ii I'm not sure about how many words I think it will say in the it's coming to terms. It's normally it's much to do with what's needed to cover it.
+
+在相同的时间框架内，我可以在模型中，就像在更多的模型中一样，我用来详细描述和22，并比较这些模型？如果我选择RF模型2，我会选择RFR，就像GNN MHM一样。老实说，我喜欢我，在最后阶段，怎么说呢，当我选择最好的模型时，我使用2012。当我比较不同的数据集时，我使用2019。是的。我将从使用2019~2026和比较模型开始。然后，如果一个模型表现得非常好，比如说，XG Boost在模型自由的情况下表现得非常好，然后你想用更大的时间序列数据运行它，我可以使用它来测试最好的模型吗？和？是的，但首先要在同一时间运行。所以比较一下。那就像第一部分。然后说你有一个非常好的模型。然后，您可以查看它的更大的时间序列，看看它的表现如何。有一个次要的结果，但第二部分的目的是检查模型。我想第二部分将会看到，我知道，它从20，19到20，2006年表现得非常好。如果有更多的数据，它会提供更好的信息吗？你不一定需要做这件事。我是说，如果你想你，可以。我的问题是，为什么我应该首先使用更多的时间数据来测试哪个模型最像模型一？在模型二中，然后在这个中比较。所以我认为最重要的是在同一时区兼容。所以在我们下一次会议之前要做的事情是在同一时区查看它们，因为这样我们就可以对它们进行比较。好的？然后我们可以讨论是否要看不同的时间。我没事。我明白了。我明白了。所以我应该在这7年里第一次测试，最近几年的第一次测试。下一次我们可以再看看模型的结果。几乎在最后的时间里，你对文献的阅读进展如何？整个晚上，文学作品读得怎么样？因为你报告的第一部分是对文献的回顾。正确的？你读过文献吗？是啊，你找到要看的报纸了吗？这是从文献阅读中得来的。我写文献还是你写？是的。所以当你读它的时候，你开始做大量的笔记，然后你可以开始起草你的文献综述。这是你报告的第一部分。我有一个发现。没有运动。我还没有开始写作，所以先试着起草它。所以，写下你的笔记并写进段落中。那不是，而是关于文学的文字数字超过了你。互联网就像一个，IOS。多少字？我不确定我认为它在达成协议时会说多少话。通常情况下，这与覆盖它所需要的东西有很大关系。
+
+So on your measurable, there's previous samples. And if you look at these, they have of a section on the literature review. Here's about 4 or 5 pages and it's split into categories. That's what I recommend doing. Okay, I got it. Yeah, right. Okay. Sorry. For that. No, it's good. It looks you've made really good progress. Yeah, it's good. And i'll write up my notes and send them to you. So hopefully, if anything i've said is unclear, it will be clear in the EMAIL. Yeah, thank you. You're welcome and just EMAIL me if you have any questions. Okay, yeah. Let me find a time for our next meeting.
+
+所以在你的测量中，有以前的样本。如果你看看这些，他们有一个关于文献综述的部分。这里大约有4到5页，它被分成了几个类别。这就是我建议做的。好的，我知道了。是啊，对。好的。抱歉。为了那个。不，很好。看起来你取得了很大的进步。是啊，很好。我会把我的笔记写好寄给你。所以，如果我说的有什么不清楚的地方，希望能在电子邮件中说清楚。是的，谢谢你。欢迎你，如果你有任何问题，请给我发电子邮件。好的，是的。让我为我们的下一次会议找个时间。
+说话人2 53:18
+15. So that's 12 must be too nice.
+
+15.所以12岁一定太好了。
+说话人1 53:30
+So on the eight, are you Free at 1:00 pm ok i'll send you something like that.
+
+所以在八点，你下午一点有空吗？好的，我会给你发一些类似的东西。
+说话人2 53:41
+Thank.
+
+谢谢。
+说话人1 53:52
+you. You're making really good progress. So keep going. Yeah, I think I have lots done too much in this stage. It seems like you've done plenty. Yeah. Okay. The same thing you start trying to write it up and have a go at writing a literature review. See you soon take care.
+
+你。你的进步很大。所以继续前进。是的，我想我在这个阶段做得太多了。看起来你已经做了很多了。好的，好的同样的事情，你开始尝试把它写下来，并尝试写一篇文献综述。再见，保重。
