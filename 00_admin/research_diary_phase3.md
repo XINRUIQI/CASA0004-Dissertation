@@ -95,7 +95,7 @@
 **研究方案与项目结构**
 
 - 撰写 `00_admin/2026-06-22_research_plan_e2e_multimodal.md`：端到端模态感知融合框架（Financial / EO / Shipping 三编码器 + Gated Fusion），区分**核心实证层**（M0–M4 表格消融）与**方法创新层**（表示级融合 vs 扁平特征融合）。
-- 更新 `00_admin/File Structure20260622.md`：反映 M1/M2/M3 分层 processed 目录、Phase 03 数据流、关键文档索引。
+- 更新 `00_admin/File Structure20260703.md`：反映 M1/M2/M3 分层 processed 目录、Phase 03 数据流、关键文档索引。
 
 ### Decisions made
 
@@ -164,7 +164,7 @@
 - `03_data/processed/M1/py/build_m1_weekly.py`：删除 `brent_vol_4w/12w` 计算（两行）+ 更新目标块注释。
 - `03_data/processed/M1/outputs/m1_weekly_features.csv`：删除两列波动率（40 → 38 列，1043 周不变）。
 - `03_data/Dataset/Dataset_Overview4.ipynb` M1 词典：删除两行波动率词条 + 目标说明改为「已删除」+ 列数 40 → 38。
-- `03_data/Dataset/external_sources.md`、`00_admin/File Structure20260622.md`：列数 40 → 38（含删除说明）。
+- `03_data/Dataset/external_sources.md`、`00_admin/File Structure20260703.md`：列数 40 → 38（含删除说明）。
 
 ### M3 航运聚合修复 + 全模态无泄漏合并（数据管线）
 
@@ -201,7 +201,7 @@
 
 ### Decisions made（续 2026-06-23）
 
-- **锁定扁平对照基线**：主对照 = `L4_tuned`（lookback=4 + 内层验证调参，与导师 4 周设定一致、当前最强扁平基线）；轻量 sanity = `L1`。协议写入研究方案 §6.2.1，后续 M2/M3/M4 与方法创新层均以此为标尺。完整记录见 `00_admin/2026-06-23_flat_baseline_log.md`。
+- **锁定扁平对照基线**：主对照 = `L4_tuned`（lookback=4 + 内层验证调参，与导师 4 周设定一致、当前最强扁平基线）；轻量 sanity = `L1`。协议写入研究方案 §6.2.1，后续 M2/M3/M4 与方法创新层均以此为标尺。完整记录见 `00_admin/待整理/flat_baseline_log.md`。
 - **模态自滞后统一原则**：EIA +1w 下沉到 M1 源头，使三模态「各自在自己聚合脚本完成发布滞后、merge 仅复查」分工一致。
 
 ### merge 层 EIA 双重滞后修复（2026-06-23，P0 已解决）
@@ -246,7 +246,7 @@
 - 公平回测：`run_baseline.py --modality M2` 三套 RS 合约（anom 55 / literature 4 / level 55）+ leave-one-AOI-out；DM(vs M0) + Clark-West(vs M1) 已实现并产出。
 - SHAP：`m2/shap_m2.py` 固定 holdout（train≤2023-12，test=2024-01–2025-12）；按 RS 指数与 AOI 分组；产物 `05_outputs/baselines/m2/shap_*.csv` + `shap_anom.png`。
 - C2 降维对照：`m2/robustness_m2.py` 四臂并列（all-55 / pca-90 / elastic / shap-top20），回应 P058「SHAP≠PCA」；产物 `c2_summary.csv` + `c2_overview.png`。
-- 文件结构重组：`05_outputs/baselines/m1|m2|m3`；M2 结果独立文档 `2026-06-23_m2_baseline_results.md`（从 `flat_baseline_log.md` §8–10 迁出）。
+- 文件结构重组：`05_outputs/baselines/m1|m2|m3`；M2 结果暂迁出至独立文档（后于 **2026-07-03 合并回** `00_admin/待整理/flat_baseline_log.md` §8）。
 - M1 数据源确认统一：所有建模脚本只读 `weekly_feature_matrix.csv`（M1=34 列 merge），不混用 `m1_weekly_features.csv`（38 列）。
 
 **M2 关键数字（L4_tuned，257 测试周）**
@@ -289,8 +289,7 @@
 - `04_code/scripts/m2/shap_m2.py` / `robustness_m2.py` / `sweep_m2.py`
 - `04_code/scripts/m3/sweep_m3.py` / `robustness_m3.py` / `shap_m3.py`（骨架）
 - `05_outputs/baselines/m1/` / `m2/` — 产物迁移 + SHAP + C2
-- `00_admin/2026-06-23_m2_baseline_results.md` — 新建
-- `00_admin/2026-06-23_flat_baseline_log.md` — 精简为协议 + M0/M1
+- `00_admin/待整理/flat_baseline_log.md` — M2 完整结果写入 §8（2026-06-23 曾暂拆独立文档，2026-07-03 已合并回）
 
 ### Next tasks
 
@@ -307,7 +306,7 @@
 ### Decisions made
 
 - **贡献措辞统一更新为「方法集成与实证检验层」**（原「方法创新层」）：明确本研究**不提出新的融合算子 / 网络层 / 损失**，而是把既有方法（冻结 EO 基础模型 + 模态专属编码器 + 门控 / 交叉注意力 + 缺失模态 / 不规则时间建模）**集成**，并**首次**在原油周频价格预测中系统检验「表示级融合 vs 扁平特征融合」；贡献定位 = **application + integration + 系统实证比较**，非方法学创新。
-- 已对齐文档：`2026-06-22_research_plan_e2e_multimodal.md`（§0/§1/§2/§6.2.1/§7）、`literature_matrix.md` §⑥、`external_sources.md`、`2026-06-23_flat_baseline_log.md`。**本日记 2026-06-17/22/23 旧条目保留原「方法创新层」措辞作历史记录**（不回改）。
+- 已对齐文档：`2026-06-22_research_plan_e2e_multimodal.md`（§0/§1/§2/§6.2.1/§7）、`literature_matrix.md` §⑥、`external_sources.md`、`00_admin/待整理/flat_baseline_log.md`。**本日记 2026-06-17/22/23 旧条目保留原「方法创新层」措辞作历史记录**（不回改）。
 
 ### What I did
 
@@ -388,6 +387,10 @@
 - （可选）深度基线稳健性：`--arch gru`、hidden/dropout sweep、`returns` 特征模式、多 seed 平均。
 - 推进写作（§2.4 / Ch3 / Ch4）或启动创新层原型（Prithvi/SatMAE embedding → 门控融合 → flat vs modality-aware）。
 
+### 文档整理
+- 合并 `2026-06-23_m2_baseline_results.md` → `00_admin/待整理/flat_baseline_log.md` §8；删除独立 M2 文档，基线记录恢复为单一主文件。
+- 同步更新 `File Structure20260703.md`、`Meeting04_prep_20260703.md` 中的交叉引用。
+
 ---
 
 # Task List
@@ -410,7 +413,7 @@
 
 **建模 / 评估（阶段 0 — 公平 M0–M4）**
 - [x] 实现 M0（\(\hat p_{t+1}=p_t\) / 预测 log return = 0）
-- [x] 扁平 M0/M1 基线回测 + lookback 稳健性 + 调优 sweep；锁定 `L4_tuned` 对照（`2026-06-23_flat_baseline_log.md`、`05_outputs/baselines/m1/`）
+- [x] 扁平 M0/M1 基线回测 + lookback 稳健性 + 调优 sweep；锁定 `L4_tuned` 对照（`00_admin/待整理/flat_baseline_log.md`、`05_outputs/baselines/m1/`）
 - [x] 修复 merge 层 EIA 双重滞后（`EIA_WPSR_LAG_WEEKS=0`，仅复查；重跑自检全 OK）
 - [x] M2 B0–B2：审计 + 周频构建 + 机制 EDA
 - [x] M2 B3：公平回测 + DM/CW + LOAO + SHAP + C2 降维
@@ -484,7 +487,7 @@ python 04_code/scripts/run_baseline.py \
 - Test pipeline 迁移至 `04_code/`
 - ~~leave-one-AOI-out 敏感性测试~~（M2 已完成）
 - ~~M2 子期间稳健性（COVID、红海）~~（决策：写 Discussion，不单独跑）
-- ~~**M2 水体掩膜回测**~~ ✅（已完成 2026-06-23；`build_feature_matrix.py --m2-csv` + `run_baseline.py --matrix`；XGB RMSE −1.69%，CW_p 0.006→0.0001；详见 `2026-06-23_m2_baseline_results.md` §7b）
+- ~~**M2 水体掩膜回测**~~ ✅（已完成 2026-06-23；`build_feature_matrix.py --m2-csv` + `run_baseline.py --matrix`；XGB RMSE −1.69%，CW_p 0.006→0.0001；详见 `00_admin/待整理/flat_baseline_log.md` §8.8）
 - M2 lookback sweep（可选，`sweep_m2.py` 骨架已备，审稿人追问时再跑）
 - Meeting 04 汇报材料
 
@@ -492,13 +495,13 @@ python 04_code/scripts/run_baseline.py \
 
 - Meeting 03 笔记结构化（`meeting_notes/Meeting03 2020260617.md`）
 - 端到端多模态研究方案（`2026-06-22_research_plan_e2e_multimodal.md`）
-- 项目结构总览更新（`File Structure20260622.md`）
+- 项目结构总览更新（`File Structure20260703.md`）
 - M1 离线构建管线 + 38 列周频输出
 - Dataset Overview v4 + 变量描述字典
 - M3 航运聚合脚本归位
 - S2 Channel B 11 AOI 月度 indices CSV（2017-04 – 2025-12）
 - M2 B0–B3：公平回测 + DM/CW + LOAO + SHAP + C2 降维；方法论决策（lookback/子期间跳过）
-- **M2 B4 水体掩膜全流程**（GEE CSV 验收 ✓ → `build_m2_weekly.py --watermask` ✓ → `build_feature_matrix.py --m2-csv` ✓ → `run_baseline.py --matrix` ✓；XGB CW_p 0.006 → 0.0001，结论强化；`m2_baseline_results.md` §7b 完整记录）
+- **M2 B4 水体掩膜全流程**（GEE CSV 验收 ✓ → `build_m2_weekly.py --watermask` ✓ → `build_feature_matrix.py --m2-csv` ✓ → `run_baseline.py --matrix` ✓；XGB CW_p 0.006 → 0.0001，结论强化；`00_admin/待整理/flat_baseline_log.md` §8.8 完整记录）
 
 
 

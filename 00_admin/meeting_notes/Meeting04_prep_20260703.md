@@ -87,4 +87,4 @@
 - 扁平基线：`05_outputs/baselines/{m1..m4}/baseline_metrics*.csv` ← `run_baseline.py`
 - 深度基线：`05_outputs/baselines/{m1..m4}/baseline_deep_metrics*.csv` ← `run_deep_baseline.py`（2026-07-03）
 - SHAP：`shap_m4_by_modality.csv` / `shap_m4.png`；稳健性：`baseline_loao_anom.csv` / `baseline_metrics_watermask.csv`
-- 结果记录：`00_admin/待整理/2026-06-23_m2_baseline_results.md`、`research_diary_phase3.md`（2026-06-23 / 06-30 / 07-03 条目）
+- 结果记录：`00_admin/待整理/flat_baseline_log.md`（M0–M4 扁平 + 深度 LSTM；M2 详见 §8，水体掩膜 §8.8）、`research_diary_phase3.md`（2026-06-23 / 06-30 / 07-03 条目）

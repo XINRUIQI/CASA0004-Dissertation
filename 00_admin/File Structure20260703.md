@@ -43,7 +43,7 @@ casa0004 Dissertation/
 
 ```text
 00_admin/
-├── File Structure20260622.md          # 本文件（项目结构总览）
+├── File Structure20260703.md          # 本文件（项目结构总览）
 ├── research_diary_phase1.md           # 研究日志 Phase 1
 ├── research_diary_phase2.md           # 研究日志 Phase 2
 ├── research_diary_phase3.md           # 研究日志 Phase 3（当前活跃）
@@ -62,8 +62,7 @@ casa0004 Dissertation/
 ├── 待整理/                              # 进行中方案与实验日志（待归档）
 │   ├── 2026-06-22_research_plan_e2e_multimodal.md
 │   ├── 2026-06-22_channelB_mechanism_plan.md
-│   ├── 2026-06-23_m2_baseline_results.md
-│   └── flat_baseline_log.md           # M1–M4 扁平基准实验全记录
+│   └── flat_baseline_log.md           # M0–M4 扁平 + 深度基准实验唯一主记录（M2 §8）
 └── Inactive/                          # 归档旧版文档
     ├── File Structure20260506.md
     ├── Meeting_KLP_20260609/
@@ -76,6 +75,8 @@ casa0004 Dissertation/
 ```
 
 **说明：** 研究方案与基准实验日志暂存于 `待整理/`；活跃管理文件保留在根级；旧版文档在 `Inactive/`。
+
+**文档变更（2026-07-03）：** 原 `2026-06-23_m2_baseline_results.md` 已合并入 `flat_baseline_log.md` §8 并删除；基线协议、M1–M4 结果、深度 LSTM、M2 完整分析现均指向单一文件。
 
 ---
 
@@ -339,7 +340,7 @@ casa0004 Dissertation/
         └── sweep_m4_{overview.png,summary.csv}
 ```
 
-**说明：** 完整实验记录见 `00_admin/待整理/flat_baseline_log.md`。
+**说明：** 完整实验记录见 `00_admin/待整理/flat_baseline_log.md`（§7 M1 sweep · §8 M2 · §9 M3 · §12 M4 · §13 深度 LSTM · §11 复现命令）。
 
 ---
 
@@ -408,7 +409,7 @@ casa0004 Dissertation/
 | `04_code/`                     | ~21   | tracked（backtest 框架 + 脚本）      |
 | `05_outputs/baselines/`        | ~65   | tracked（M1–M4 基准结果）             |
 | `06_writing/`                  | 7     | tracked                         |
-| `00_admin/`                    | ~27   | tracked                         |
+| `00_admin/`                    | ~26   | tracked（含 `File Structure20260703.md`） |
 | `02_ai_conversations/`         | ~17   | tracked                         |
 | `07_submission/`               | 0     | 占位                              |
 

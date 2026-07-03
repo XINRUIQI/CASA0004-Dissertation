@@ -1,0 +1,12 @@
+site_id,site_name,site_type,n_emb,first_month,last_month
+P005,Houston,port,90,2019_01,2026_06
+P006,NingboZhoushan,port,86,2019_01,2026_05
+P001,Rotterdam,port,83,2019_01,2026_06
+P007,Jamnagar,refinery,86,2019_01,2026_06
+P004,Jurong,refinery,84,2019_01,2026_06
+P009,Ulsan,refinery,85,2019_01,2026_06
+P008,Basra,terminal,89,2019_02,2026_06
+P002,Fujairah,terminal,90,2019_01,2026_06
+P010,Kharg,terminal,90,2019_01,2026_06
+P003,RasTanura,terminal,90,2019_01,2026_06
+P011,Yanbu,terminal,90,2019_01,2026_06
