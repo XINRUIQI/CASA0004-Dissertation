@@ -10,7 +10,7 @@
 > **构建分工（两层管线：RAW 按数据提供方分目录 → PROCESSED 单表）：**
 >
 > - **① RAW 原始层**（`03_data/raw/01_market_financial/`，按提供方分 `EIA/`、`FRED/`、`Yahoo/`、`Other/`）：统一入口 `download_m1_raw.py` —— `EIA/` 为手动网站导出 `.xls`（只登记不下载），`FRED/`、`Yahoo/`、`Other/` 自动下载并缓存；落盘后写根目录 `manifest.csv`（字段：`variable, raw_file, kind, category, source, series_id_or_ticker, source_url, frequency, native_unit, download_utc, n_rows, coverage_start, coverage_end, sha256, notes`；其中 `category` 即提供方 `eia/fred/yahoo/other/local`）以便离线复现与来源审计。
-> - **② PROCESSED 构建层**（`03_data/processed/M1/`）：`py/build_m1_weekly.py`（**默认离线，只读本地 raw**）→ `outputs/m1_weekly_features.csv`（**单表 38 列周频**：基础锚点 + 8 个派生变量 + EIA 成品油供应等扩展列，所有列平级，无中间表、无单独 merge 步骤）。`--online` 仅在某原始文件缺失时临时联网；`--refresh-raw` 先调用 `download_m1_raw.py` 再构建；`--base-only` 只建基础锚点、跳过 8 个派生列。
+> - **② PROCESSED 构建层**（`03_data/processed/M1/`）：`py/build_m1_weekly.py`（**默认离线，只读本地 raw**）→ `outputs/m1_weekly_features.csv`（**单表 36 列周频**：基础锚点 + 8 个派生变量 + EIA 成品油供应等扩展列，所有列平级，无中间表、无单独 merge 步骤）。`--online` 仅在某原始文件缺失时临时联网；`--refresh-raw` 先调用 `download_m1_raw.py` 再构建；`--base-only` 只建基础锚点、跳过 8 个派生列。
 > - **本地派生（不另存 raw，manifest 记 `kind=local`）**：`#8 dgs10_change` 由本地 `treasury_10y`（`FRED/` 的 `DGS10`）一阶差分；`#5 futures_spread` 现货端取本地 `brent_price`（`EIA/Brent` 日度），仅期货端 `BZ=F` 落盘 `Yahoo/`。
 
 
@@ -39,7 +39,7 @@
 - `gpr` 为新闻文本聚合指数；文本模态已移除（Meeting 02），归入 M1 作低频地缘政治风险代理。
 - `futures_spread` 为近月连续合约与现货之差的**近似**期限价差。
 - 月频变量（#3, #4, #7）发布滞后为保守估计，避免前视偏差；进入模型前仍须统一滞后处理。
-- **扩展列（不属 Core-10，M1 需求侧扩展特征）**：EIA WPSR 成品油供应 `gasoline_supplied`（汽油）/ `distillate_supplied`（馏分油/柴油）/ `jet_fuel_supplied`（喷气燃料），均为美国周频需求代理（千桶/日），落盘 `EIA/Weekly Petroleum Status Report/`，已并入产出表；连同基础锚点与 8 个派生列，`m1_weekly_features.csv` 共 **38 列**（已移除已实现波动率 `brent_vol_4w` / `brent_vol_12w` 两列——波动率不作预测目标，相关信息由隐含波动率 `ovx` / `vix` 承载；理由见研究日志 2026-06-23）。
+- **扩展列（不属 Core-10，M1 需求侧扩展特征）**：EIA WPSR 成品油供应 `gasoline_supplied`（汽油）/ `distillate_supplied`（馏分油/柴油）/ `jet_fuel_supplied`（喷气燃料），均为美国周频需求代理（千桶/日），落盘 `EIA/Weekly Petroleum Status Report/`，已并入产出表；连同基础锚点与 8 个派生列，`m1_weekly_features.csv` 共 **36 列**（已移除已实现波动率 `brent_vol_4w` / `brent_vol_12w`、方向辅助列 `brent_direction`、简单收益率 `brent_return_pct`，并将 `wti_return_pct` 改为对数收益 `wti_log_return` 以与 `brent_log_return` 统一口径——波动率不作预测目标、方向改由预测价格派生为评估指标；理由见研究日志 2026-06-23 / 2026-07-03）。
 - **原始层（按提供方分目录，离线复现 + 来源审计）**：
   - `EIA/`（手动 `.xls`，只登记不下载）：`EIA/Brent/EIA_brent_spot_price_daily*.xls`、`EIA/WTI/EIA_WTI_cushing_crude_price_daily*.xls`、`EIA/Weekly Petroleum Status Report/EIA_*_weekly*.xls`（库存 / 产量 / 进出口 / 炼厂利用率 + `gasoline_supplied` / `distillate_supplied` / `jet_fuel_supplied`）。
   - `FRED/`（自动下载）：`FRED_*_DGS10_*.csv`（10Y 收益率）、`FRED_*_VIXCLS_*.csv`（VIX）、`FRED_*_DTWEXBGS_*.csv`（美元指数）、`FRED_*_DFF_*.csv`（联邦基金利率）、`FRED_PINDUINDEXM_monthly.csv`（IMF 工业原料）。

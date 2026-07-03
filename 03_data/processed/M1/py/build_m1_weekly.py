@@ -283,13 +283,11 @@ def build_base(idx: pd.DatetimeIndex) -> pd.DataFrame:
         # No volatility columns: volatility is neither predicted (no volatility
         # forecasting) nor needed here as a feature -- implied volatility is
         # already covered by ovx / vix (the literature-preferred vol features).
-        w["brent_return_pct"] = w["brent_price"].pct_change() * 100
+        assert (w["brent_price"].dropna() > 0).all(), "negative weekly Brent price: log-return undefined"
         w["brent_log_return"] = np.log(w["brent_price"] / w["brent_price"].shift(1))  # weekly log-return; its next-week value r_{t+1} is the training target
-        w["brent_direction"] = np.where(                                              # derived auxiliary label (up/flat/down) for direction accuracy
-            w["brent_return_pct"] > 0.5, 1,
-            np.where(w["brent_return_pct"] < -0.5, -1, 0))
     if "wti_price" in w:
-        w["wti_return_pct"] = w["wti_price"].pct_change() * 100
+        assert (w["wti_price"].dropna() > 0).all(), "negative weekly WTI price: log-return undefined"
+        w["wti_log_return"] = np.log(w["wti_price"] / w["wti_price"].shift(1))  # weekly log-return, same log convention as Brent (not ×100)
     if "brent_price" in w and "wti_price" in w:
         w["brent_wti_spread"] = w["brent_price"] - w["wti_price"]
 

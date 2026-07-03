@@ -1,10 +1,8 @@
 feature,modality,group,publication_lag,n_nonnull,pct_nonnull,coverage_start,coverage_end
 brent_price,M1,price (daily->W-FRI),none; week-close,365,100.0,2019-01-04,2025-12-26
 wti_price,M1,price (daily->W-FRI),none; week-close,365,100.0,2019-01-04,2025-12-26
-brent_return_pct,M1,price (daily->W-FRI),none; week-close,365,100.0,2019-01-04,2025-12-26
 brent_log_return,M1,price (daily->W-FRI),none; week-close,365,100.0,2019-01-04,2025-12-26
-brent_direction,M1,price (daily->W-FRI),none; week-close,365,100.0,2019-01-04,2025-12-26
-wti_return_pct,M1,price (daily->W-FRI),none; week-close,365,100.0,2019-01-04,2025-12-26
+wti_log_return,M1,price (daily->W-FRI),none; week-close,365,100.0,2019-01-04,2025-12-26
 brent_wti_spread,M1,price (daily->W-FRI),none; week-close,365,100.0,2019-01-04,2025-12-26
 crude_stocks_excl_spr,M1,EIA WPSR weekly,already lagged in M1 (+1w Wed-release),365,100.0,2019-01-04,2025-12-26
 cushing_stocks,M1,EIA WPSR weekly,already lagged in M1 (+1w Wed-release),365,100.0,2019-01-04,2025-12-26
@@ -24,7 +22,7 @@ dollar_index,M1,market daily,none; week-close,365,100.0,2019-01-04,2025-12-26
 treasury_10y,M1,market daily,none; week-close,365,100.0,2019-01-04,2025-12-26
 fed_funds_rate,M1,market daily,none; week-close,365,100.0,2019-01-04,2025-12-26
 sp500,M1,market daily,none; week-close,365,100.0,2019-01-04,2025-12-26
-sp500_return_pct,M1,market daily,none; week-close,365,100.0,2019-01-04,2025-12-26
+sp500_log_return,M1,market daily,none; week-close,365,100.0,2019-01-04,2025-12-26
 ovx,M1,market daily,none; week-close,365,100.0,2019-01-04,2025-12-26
 gpr,M1,macro monthly,already lagged in M1 (1-5w),365,100.0,2019-01-04,2025-12-26
 gold_return,M1,market daily,none; week-close,365,100.0,2019-01-04,2025-12-26
@@ -37,61 +35,6 @@ avail_market,mask,modality availability,n/a,365,100.0,2019-01-04,2025-12-26
 avail_eia_weekly,mask,modality availability,n/a,365,100.0,2019-01-04,2025-12-26
 avail_sp500,mask,modality availability,n/a,365,100.0,2019-01-04,2025-12-26
 avail_dollar_index,mask,modality availability,n/a,365,100.0,2019-01-04,2025-12-26
-NDVI_anom_Houston,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-NDVI_anom_NingboZhoushan,M2,RS index (anomaly),+15d as-of release (applied in M2),328,89.9,2019-09-20,2025-12-26
-NDVI_anom_Rotterdam,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-NDVI_anom_Jamnagar,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-NDVI_anom_Jurong,M2,RS index (anomaly),+15d as-of release (applied in M2),306,83.8,2020-02-21,2025-12-26
-NDVI_anom_Ulsan,M2,RS index (anomaly),+15d as-of release (applied in M2),341,93.4,2019-06-21,2025-12-26
-NDVI_anom_Basra,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-NDVI_anom_Fujairah,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-NDVI_anom_Kharg,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-NDVI_anom_RasTanura,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-NDVI_anom_Yanbu,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-NDWI_anom_Houston,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-NDWI_anom_NingboZhoushan,M2,RS index (anomaly),+15d as-of release (applied in M2),328,89.9,2019-09-20,2025-12-26
-NDWI_anom_Rotterdam,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-NDWI_anom_Jamnagar,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-NDWI_anom_Jurong,M2,RS index (anomaly),+15d as-of release (applied in M2),306,83.8,2020-02-21,2025-12-26
-NDWI_anom_Ulsan,M2,RS index (anomaly),+15d as-of release (applied in M2),341,93.4,2019-06-21,2025-12-26
-NDWI_anom_Basra,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-NDWI_anom_Fujairah,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-NDWI_anom_Kharg,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-NDWI_anom_RasTanura,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-NDWI_anom_Yanbu,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-NDBI_anom_Houston,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-NDBI_anom_NingboZhoushan,M2,RS index (anomaly),+15d as-of release (applied in M2),328,89.9,2019-09-20,2025-12-26
-NDBI_anom_Rotterdam,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-NDBI_anom_Jamnagar,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-NDBI_anom_Jurong,M2,RS index (anomaly),+15d as-of release (applied in M2),306,83.8,2020-02-21,2025-12-26
-NDBI_anom_Ulsan,M2,RS index (anomaly),+15d as-of release (applied in M2),341,93.4,2019-06-21,2025-12-26
-NDBI_anom_Basra,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-NDBI_anom_Fujairah,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-NDBI_anom_Kharg,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-NDBI_anom_RasTanura,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-NDBI_anom_Yanbu,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-BSI_anom_Houston,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-BSI_anom_NingboZhoushan,M2,RS index (anomaly),+15d as-of release (applied in M2),328,89.9,2019-09-20,2025-12-26
-BSI_anom_Rotterdam,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-BSI_anom_Jamnagar,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-BSI_anom_Jurong,M2,RS index (anomaly),+15d as-of release (applied in M2),306,83.8,2020-02-21,2025-12-26
-BSI_anom_Ulsan,M2,RS index (anomaly),+15d as-of release (applied in M2),341,93.4,2019-06-21,2025-12-26
-BSI_anom_Basra,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-BSI_anom_Fujairah,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-BSI_anom_Kharg,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-BSI_anom_RasTanura,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-BSI_anom_Yanbu,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-NTL_anom_Houston,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-NTL_anom_NingboZhoushan,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-NTL_anom_Rotterdam,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-NTL_anom_Jamnagar,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-NTL_anom_Jurong,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-NTL_anom_Ulsan,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-NTL_anom_Basra,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-NTL_anom_Fujairah,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-NTL_anom_Kharg,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-NTL_anom_RasTanura,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
-NTL_anom_Yanbu,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
 gfw_cape_total_hours,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_cape_total_vessels,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_cape_cargo_hours,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
@@ -218,5 +161,4 @@ avail_shipping,mask,modality availability,n/a,365,100.0,2019-01-04,2025-12-26
 target_price_next,target,label,t+1 (next week),364,99.7,2019-01-04,2025-12-19
 target_log_return_next,target,label,t+1 (next week),364,99.7,2019-01-04,2025-12-19
 avail_m1,mask,modality availability,n/a,365,100.0,2019-01-04,2025-12-26
-avail_m2,mask,modality availability,n/a,365,100.0,2019-01-04,2025-12-26
 avail_m3,mask,modality availability,n/a,365,100.0,2019-01-04,2025-12-26

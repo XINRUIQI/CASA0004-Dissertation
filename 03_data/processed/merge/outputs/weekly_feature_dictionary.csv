@@ -1,10 +1,8 @@
 feature,modality,group,publication_lag,n_nonnull,pct_nonnull,coverage_start,coverage_end
 brent_price,M1,price (daily->W-FRI),none; week-close,365,100.0,2019-01-04,2025-12-26
 wti_price,M1,price (daily->W-FRI),none; week-close,365,100.0,2019-01-04,2025-12-26
-brent_return_pct,M1,price (daily->W-FRI),none; week-close,365,100.0,2019-01-04,2025-12-26
 brent_log_return,M1,price (daily->W-FRI),none; week-close,365,100.0,2019-01-04,2025-12-26
-brent_direction,M1,price (daily->W-FRI),none; week-close,365,100.0,2019-01-04,2025-12-26
-wti_return_pct,M1,price (daily->W-FRI),none; week-close,365,100.0,2019-01-04,2025-12-26
+wti_log_return,M1,price (daily->W-FRI),none; week-close,365,100.0,2019-01-04,2025-12-26
 brent_wti_spread,M1,price (daily->W-FRI),none; week-close,365,100.0,2019-01-04,2025-12-26
 crude_stocks_excl_spr,M1,EIA WPSR weekly,already lagged in M1 (+1w Wed-release),365,100.0,2019-01-04,2025-12-26
 cushing_stocks,M1,EIA WPSR weekly,already lagged in M1 (+1w Wed-release),365,100.0,2019-01-04,2025-12-26
@@ -24,7 +22,7 @@ dollar_index,M1,market daily,none; week-close,365,100.0,2019-01-04,2025-12-26
 treasury_10y,M1,market daily,none; week-close,365,100.0,2019-01-04,2025-12-26
 fed_funds_rate,M1,market daily,none; week-close,365,100.0,2019-01-04,2025-12-26
 sp500,M1,market daily,none; week-close,365,100.0,2019-01-04,2025-12-26
-sp500_return_pct,M1,market daily,none; week-close,365,100.0,2019-01-04,2025-12-26
+sp500_log_return,M1,market daily,none; week-close,365,100.0,2019-01-04,2025-12-26
 ovx,M1,market daily,none; week-close,365,100.0,2019-01-04,2025-12-26
 gpr,M1,macro monthly,already lagged in M1 (1-5w),365,100.0,2019-01-04,2025-12-26
 gold_return,M1,market daily,none; week-close,365,100.0,2019-01-04,2025-12-26

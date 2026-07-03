@@ -7,10 +7,10 @@ Every modality config (M1..M4) reads the SAME matrix and differs only in which
 columns are selected, so the rolling-origin backtest is identical across configs.
 
 Modality column selection (by the dictionary `modality` field):
-  M1 = finance/macro            (34 cols; the 4 avail_* masks are modality='mask',
+  M1 = finance/macro            (32 cols; the 4 avail_* masks are modality='mask',
                                  i.e. zero-variance in-window, so they are NOT M1
-                                 features -- this is exactly why merged-M1 has 34
-                                 cols vs the 38-col single table, which are
+                                 features -- this is exactly why merged-M1 has 32
+                                 cols vs the 36-col single table, which are
                                  equivalent because VarianceThreshold drops them.)
   M2 = M1 + remote sensing
   M3 = M1 + shipping

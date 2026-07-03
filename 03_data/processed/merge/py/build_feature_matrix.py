@@ -99,8 +99,8 @@ M1_MONTHLY_PRESHIFTED = ["gpr", "global_econ_activity", "nonoil_industrial_commo
 
 # M1 price columns (daily -> week-close; no lag; brent_price is the target base).
 M1_PRICE_COLS = [
-    "brent_price", "wti_price", "brent_return_pct", "brent_log_return",
-    "brent_direction", "wti_return_pct", "brent_wti_spread",
+    "brent_price", "wti_price", "brent_log_return", "wti_log_return",
+    "brent_wti_spread",
 ]
 
 # M1 daily market columns (no lag).

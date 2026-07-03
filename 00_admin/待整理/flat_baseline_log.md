@@ -10,8 +10,6 @@
 
 ---
 
-
-
 ## 1. 定位与作用
 
 - **表格扁平融合（flat feature fusion）**：把所选模态的特征拼成一张宽表（lag 0..3 展平）喂给 Ridge / XGBoost。
@@ -361,7 +359,7 @@ M1 RMSE（quick，同周对齐）：L=1 → 4.255 Ridge / 4.568 XGB；L=4 → 4.
 
 ### SHAP Top-10 M3 特征（XGB，2024 holdout）
 
-| 特征 | mean|SHAP| | 来源 |
+| 特征 | mean\|SHAP\| | 来源 |
 |---|---|---|
 | pw_hormuz_tanker_share | 0.00973 | PortWatch |
 | pw_suez_n_tanker_wow_pct | 0.00823 | PortWatch |
@@ -494,7 +492,7 @@ python3 04_code/scripts/run_deep_baseline.py --modality M1 --epochs 40 --retrain
 
 **各模态重要性（XGB，sum mean|SHAP|）**：
 
-| 模态         | sum mean|SHAP| | 占比    |
+| 模态         | sum mean\|SHAP\| | 占比    |
 | ---------- | -------------- | ----- |
 | **M3（航运）** | 0.04542        | 55.6% |
 | M1（金融）     | 0.02477        | 30.3% |
@@ -502,7 +500,7 @@ python3 04_code/scripts/run_deep_baseline.py --modality M1 --epochs 40 --retrain
 
 **M2 遥感 RS 指数（XGB）**：
 
-| 指数        | sum mean|SHAP| |
+| 指数        | sum mean\|SHAP\| |
 | --------- | -------------- |
 | NDWI（水面）  | 0.00352        |
 | NDVI（植被）  | 0.00212        |
@@ -514,7 +512,7 @@ python3 04_code/scripts/run_deep_baseline.py --modality M1 --epochs 40 --retrain
 
 **Top-10 M4 特征（XGB）**：
 
-| 特征                          | mean|SHAP| | 模态  |
+| 特征                          | mean\|SHAP\| | 模态  |
 | --------------------------- | ---------- | --- |
 | pw_hormuz_tanker_share      | 0.01137    | M3  |
 | pw_suez_n_tanker_wow_pct    | 0.00714    | M3  |
@@ -666,15 +664,15 @@ python3 04_code/scripts/run_deep_baseline.py --modality M1 --epochs 40 --retrain
 
 - 写作：Results「M3 增量价值」+ 机制解读（霍尔木兹/苏伊士信号）
 
-~~**M4~~（已完成 2026-06-23）**：
+~~**M4**~~（已完成 2026-06-23）：
 
 - ✅ 主基线 + SHAP + sweep(quick) + LOMO(全量) 全套完成，见 §12
 
-~~**M2 C2 / C3 / B4~~（已完成 2026-06-23）**：
+~~**M2 C2 / C3 / B4**~~（已完成 2026-06-23）：
 
 - ✅ 降维对照、lookback sweep、水体掩膜稳健性，见 §8.6–§8.8
 
-~~**深度 early-fusion~~（已完成 2026-07-03）**：
+~~**深度 early-fusion**~~（已完成 2026-07-03）：
 
 - ✅ LSTM M1–M4 主结果，见 §13
 - （可选）`--arch gru`、hidden/dropout sweep、多 seed 平均
@@ -693,7 +691,7 @@ python3 04_code/scripts/run_deep_baseline.py --modality M1 --epochs 40 --retrain
 | ---------- | ------------------------------------------------------------------------------------------------------------------------- |
 | 2026-06-23 | 建立 M0/M1 扁平回测骨架 + 稳健性/调优 sweep；锁定主对照 `L4_tuned`；修复 merge 层 EIA 双重滞后                                                       |
 | 2026-06-23 | M2 全套结果 + CW + LOAO + SHAP + C2 + C3 + B4 水体掩膜；M2 完整记录于 §8 |
-| 2026-06-23 | 文件结构重组：`05_outputs/baselines/m1|m2|m3` |
+| 2026-06-23 | 文件结构重组：`05_outputs/baselines/m1, m2, m3` |
 | 2026-06-23 | M3 主基线 + sweep + SHAP 全套完成；修复 `shap_m3.py` 绘图小 bug；结果记录于 §9                                                               |
 | 2026-06-23 | M3 LOCHO 稳健性（robustness_m3.py）完成；portwatch-only Ridge CW p=0.026 唯一显著；XGB 所有 arm 均显著                                      |
 | 2026-06-23 | M4 全套完成：主基线（CW p=0.0002 XGB）+ SHAP（M3 55.6% > M1 30.3% > M2 13.1%）+ sweep(quick) + LOMO(quick)；脚本写入 `04_code/scripts/m4/` |
