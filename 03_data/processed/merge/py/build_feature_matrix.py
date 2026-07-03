@@ -91,7 +91,6 @@ EIA_WPSR_COLS = [
     "crude_imports", "crude_exports", "refinery_crude_input",
     "refinery_utilisation", "gasoline_supplied", "distillate_supplied",
     "jet_fuel_supplied", "crude_stocks_change", "cushing_stocks_change",
-    "net_crude_trade",
 ]
 
 # M1 monthlies already lagged inside build_m1_weekly.py (re-check only).
@@ -103,11 +102,12 @@ M1_PRICE_COLS = [
     "brent_wti_spread",
 ]
 
-# M1 daily market columns (no lag).
+# M1 daily market columns (no lag). brent_roll_week is a contract-roll control
+# dummy (0/1) carried with the basis; kept as an M1 feature, not a mask.
 M1_MARKET_DAILY = [
-    "vix", "dollar_index", "treasury_10y", "fed_funds_rate", "sp500",
-    "sp500_return_pct", "ovx", "gold_return", "futures_spread",
-    "commodity_fx", "dgs10_change",
+    "vix", "dollar_index", "treasury_10y", "fed_funds_rate", "sp500_log_return",
+    "ovx", "gold_return", "brent_f1_spot_log_basis", "brent_roll_week",
+    "cadusd_log_return", "dgs10_change",
 ]
 
 # M2 main-analysis contract (channelB_mechanism_plan.md §3/§4; 04_code/src/backtest/data.py).

@@ -1,6 +1,6 @@
 # 文献分类总表（Post-Meeting 02 + GNN + TFT + CV）
 
-> **Last updated:** 2026-07-03（编号 P001–P103；P102–P103 = M1 `crude_exports` / WTI–Brent 制度断点；P094–P101 = ⑥ 创新/集成层）
+> **Last updated:** 2026-07-03（编号 P001–P135 + R001–R021；R = M1 数据字典 §4.6 业界/机构 Report 层）
 >
 > 对应最新项目方案：M1(Fin) → M2(Fin+RS) → M3(Fin+Ship) → M4(All)
 > 模型：XGBoost (必做) / LSTM + TFT (推荐) / ST-GNN (进阶) / Baselines (对照)
@@ -18,6 +18,60 @@
 | **P054**                                         | ✅ **A 核心** | **核心-油价预测**   | Baumeister & Kilian 2015 — 基本面+实时数据预测，补强 EIA/FRED/Brent 变量逻辑  |
 | **P102**                                         | ✅ B 重要     | **重要-油价/WTI-Brent** | Büyükşahin et al. 2013 — 物理/纸面市场与 WTI–Brent 价差机制，支撑 `brent_wti_spread` 经济含义 |
 | **P103**                                         | ✅ B 重要     | **重要-油价/出口禁令**   | Agerton & Upton 2019 — 分解原油价差（国内运输约束 vs 出口禁令），支撑 `crude_exports` 制度断点说明 |
+| **P104**                                         | ✅ B 重要     | **重要-油价预测**   | Yu, Wang & Lai 2008 — EMD+NN 集成预测 WTI/Brent 现货价，支撑 `brent_price`/`wti_price` 作预测目标 |
+| **P105**                                         | ✅ B 重要     | **重要-油价预测**   | Abdollahi & Ebrahimi 2020 — 混合模型预测 Brent 价格水平 |
+| **P106**                                         | ✅ B 重要     | **重要-油价预测**   | Ye, Zyren & Shore 2005 — WTI 现货月频预测（相对库存），EIA 经典库存—价格方法 |
+| **P107**                                         | ⚠️ C 方法     | **方法-油价/收益**   | Chen, Chiu & Hsiao 2021 — Brent 投资辅助指数（收益/波动风险度量） |
+| **P108**                                         | ⚠️ B/C 备用  | **重要-油价/事件**   | Ma, Xiong & Bao 2021 — 俄沙油价战事件研究（WTI/Brent/Oman 现货与期货收益） |
+| **P109**                                         | ✅ B 重要     | **方法-波动率**    | Chen, Zerilli & Baum 2019 — WTI/Brent **现货**对数收益随机波动率与 VaR/CVaR |
+| **P110**                                         | ⚠️ C 方法     | **方法-波动率**    | Zhang, Yao, He & Ripple 2019 — 原油市场波动率 regime-switching GARCH（日/周 WTI & Brent） |
+| **P111**                                         | ⚠️ C 方法     | **方法-油价预测 ML** | Wang & Chen 2025 — XGBoost 等 ML 预测 WTI 收益 |
+| **P112**                                         | ✅ B 重要     | **重要-油价/WTI-Brent** | Scheitrum, Carter & Revoredo-Giha 2018 — WTI–Brent 价差 2011 结构断点 |
+| **P113**                                         | ✅ B 重要     | **重要-油价/WTI-Brent** | Bravo Caro et al. 2020 — WTI–Brent 价差 FCVAR/长记忆与全球化测度 |
+| **P114**                                         | ⚠️ C 方法     | **方法-波动率**    | Charles & Darné 2017 — 原油市场波动率预测（GARCH/GAS/MSM + 跳跃） |
+| **P115**                                         | ✅ B 重要     | **重要-EIA/库存**  | Bu 2014 — 库存公告与油价波动（库存信息冲击） |
+| **P116**                                         | ✅ B 重要     | **重要-EIA/库存**  | Armstrong et al. 2021 — 库存意外、分歧与价格漂移 |
+| **P117**                                         | ✅ B 重要     | **重要-EIA/库存**  | Kim, Baek & Heo 2020 — Cushing/Global/US 库存 SVAR |
+| **P118**                                         | ✅ B 重要     | **重要-EIA/炼厂**  | Kaufmann et al. 2008 — 炼厂开工率与实际油价（月频） |
+| **P119**                                         | ✅ B 重要     | **重要-EIA/基本面** | Zagaglia 2010 — FAVAR 能源数量信息集（进出口/炼厂/成品油） |
+| **P120**                                         | ⚠️ C 方法     | **重要-EIA/基本面** | Malliaris & Malliaris 2021 — 微观基本面驱动油价（1986–2020） |
+| **P121**                                         | ⚠️ C 方法     | **方法-油价预测 ML** | Wei 2026 — LASSO/ML 预测原油期货（含产量/进口增长） |
+| **P122**                                         | ✅ B 重要     | **方法-油价预测 ML** | Tissaoui et al. 2023 — XGBoost+SHAP；VIX/OVX 预测 WTI |
+| **P123**                                         | ✅ B 重要     | **重要-宏观/油价**  | He, Wang & Lai 2010 — 美元、全球经济活动与油价协整 |
+| **P124**                                         | ⚠️ C 方法     | **方法-宏观/油价**  | Qadan & Cohen 2024 — 利率不确定性与油价收益/波动 |
+| **P125**                                         | ⚠️ C 方法     | **重要-宏观/油价**  | Basistha & Kurov 2015 — 货币政策意外与能源价格 |
+| **P126**                                         | ✅ B 重要     | **重要-宏观/油股**  | Kilian & Park 2009 — 油价冲击对美国股市的影响 |
+| **P127**                                         | ✅ B 重要     | **重要-宏观/油股**  | Sadorsky 1999 — 油价冲击与股市；S&P 500 连续复合收益 |
+| **P128**                                         | ⚠️ C 方法     | **重要-宏观/油股**  | Lu et al. 2021 — WTI 与 S&P 500 股指期货 log-returns |
+| **P129**                                         | ⚠️ C 方法     | **重要-宏观/油股**  | Hussain et al. 2022 — 油价与欧洲工业股指（含 S&P 500/Brent 收益） |
+| **P130**                                         | ⚠️ C 方法     | **重要-宏观/油股**  | Roy et al. 2023 — 油市互联与统一对数收益口径 |
+| **P131**                                         | ✅ B 重要     | **重要-宏观/GPR**  | Caldara & Iacoviello 2022 — GPR 指数原始论文，支撑 `gpr` |
+| **P132**                                         | ⚠️ C 方法     | **重要-跨资产**    | Kang, McIver & Yoon 2017 — 金/油/农产品期货溢出 |
+| **P133**                                         | ✅ B 重要     | **重要-宏观/商品**  | Kilian & Zhou 2018 — 全球商品需求波动；工业原料价格 |
+| **P134**                                         | ✅ B 重要     | **重要-期限结构**   | Valenti 2022 — Brent 期货–现货价差进入 SVAR |
+| **P135**                                         | ✅ B 重要     | **重要-宏观/汇率**  | Chen, Rogoff & Rossi 2010 — 商品货币预测商品价格 |
+| **— 业界/机构 Report 层（M1 数据字典 §4.6 · 非学术论文）—** |            |               |                                                           |
+| **R001**                                         | 📄 Report  | **EIA/价格**    | EIA 原油现货价表（Brent–Europe / WTI–Cushing） |
+| **R002**                                         | 📄 Report  | **EIA/价差**    | EIA Today in Energy — Brent–WTI 价差扩大 |
+| **R003**                                         | 📄 Report  | **EIA/价格**    | EIA Today in Energy — Daily Prices |
+| **R004**                                         | 📄 Report  | **OPEC/月报**   | OPEC Monthly Oil Market Report |
+| **R005**                                         | 📄 Report  | **CME/WTI**   | CME WTI Insights 周报 |
+| **R006**                                         | 📄 Report  | **ICE/风险**    | ICE Risk Model 2.0 Methodology |
+| **R007**                                         | 📄 Report  | **EIA/WPSR**  | EIA Weekly Petroleum Status Report |
+| **R008**                                         | 📄 Report  | **EIA/WPSR**  | EIA Today in Energy — WPSR 概述 |
+| **R009**                                         | 📄 Report  | **EIA/需求**    | EIA FAQ — product supplied |
+| **R010**                                         | 📄 Report  | **EIA/需求**    | EIA 馏分油周度 product supplied 序列 |
+| **R011**                                         | 📄 Report  | **CME/交割**    | CME WTI 期货 Cushing 交割说明 |
+| **R012**                                         | 📄 Report  | **CME/EIA**   | CME Econoday — EIA 周报日历 |
+| **R013**                                         | 📄 Report  | **Reuters/EIA** | Reuters EIA 周度市场报道（例证） |
+| **R014**                                         | 📄 Report  | **Cboe/VIX**  | Cboe VIX 指数说明 |
+| **R015**                                         | 📄 Report  | **EIA/宏观**    | EIA Markets & Finance（美元计价） |
+| **R016**                                         | 📄 Report  | **CME/宏观**    | CME Economic Data and Crude Oil |
+| **R017**                                         | 📄 Report  | **MSCI/风险**   | RiskMetrics Technical Document（log returns） |
+| **R018**                                         | 📄 Report  | **Cboe/OVX**  | Cboe OVX 原油波动率指数 |
+| **R019**                                         | 📄 Report  | **Dallas Fed** | Kilian REA 指数（igrea）数据页 |
+| **R020**                                         | 📄 Report  | **IMF/商品**    | IMF Primary Commodity Prices |
+| **R021**                                         | 📄 Report  | **GPR/数据**    | Caldara–Iacoviello GPR 数据页（≠ P131 论文） |
 | **P058**                                         | ✅ **A 核心** | **核心-评估方法**   | Diebold & Mariano 1995 — 预测精度比较检验，M2/M3/M4 vs M1 显著性检验依据     |
 | **P059**                                         | ✅ **A 核心** | **核心-可解释性**   | Lundberg & Lee 2017 — SHAP 原始论文，XGBoost+SHAP 解释方法必引            |
 | **— 油价预测 ML 方法（支持 Tier 1 XGBoost + Baselines）—** |            |               |                                                           |
@@ -140,11 +194,12 @@
 
 | 状态                     | 数量    | 涉及论文                                                                          |
 | ---------------------- | ----- | ----------------------------------------------------------------------------- |
-| ✅ 核心/重要/方法             | 91 篇  | P001–P006, P014–P033, P036–P037, P039, P041–P050, P062–P067, P068–P093, P094–P101, P102–P103, P052–P060（去重） |
+| ✅ 核心/重要/方法             | 112 篇 | P001–P006, P014–P033, P036–P037, P039, P041–P050, P062–P067, P068–P093, P094–P101, P102–P135, P052–P060（去重） |
 | ⚠️ 边缘/备用               | 9 篇   | P034, P035, P038, P046, P051, P082, P083, P087, P088, P090                    |
 | 📋 备查（Text/NLP，不在核心范围） | 8 篇   | P007–P013, P040                                                               |
 | 📦 纯数据集                 | 4 项   | P021, P028, P029, P046                              |
-| **合计**                    | **103** | P001–P103 连续编号；按 Tier 1–7 重要性排序（P094–P101 = ⑥ 创新/集成层；P102–P103 = M1 WTI–Brent/出口禁令）         |
+| 📄 业界/机构 Report         | 21 项  | R001–R021（M1 数据字典 §4.6；按 URL 去重） |
+| **合计**                    | **156** | P001–P135（135 篇论文）+ R001–R021（21 项 Report）         |
 
 
 ---
@@ -195,11 +250,11 @@ P007–P013 和 P040 共 8 篇 Text/NLP 论文，根据 Meeting 02 决策（移�
 
 ---
 
-# 论文阅读优先级清单（按重要性排序，共 103 篇）
+# 论文阅读优先级清单（按重要性排序，共 135 篇）
 
 > **排序逻辑：** 油价理论基础 → 核心模型与评估方法 → 三模态变量锚点 → 模型架构原始论文 → 模态补充 → 方法参考 → 背景/数据集/备查
 >
-> **编号说明：** P001–P103 连续编号（P018 = Marini/IMF vessel traffic nowcasting；P061 = GFW SAR 方法 + 数据文档；P094–P101 = ⑥ 创新/集成层；P102–P103 = M1 WTI–Brent 价差 / 美国原油出口禁令）
+> **编号说明：** P001–P135 连续编号（P102–P135 = M1 数据字典支撑文献；P094–P101 = ⑥ 创新/集成层）
 
 ## Tier 1 — 最优先精读（直接定义研究框架，序 1–15）
 
@@ -245,7 +300,7 @@ P007–P013 和 P040 共 8 篇 Text/NLP 论文，根据 Meeting 02 决策（移�
 | 30  | P018   | Marini et al. (2019) — Vessel Traffic Big Data | IMF 早期 AIS nowcasting 经典文献           |
 
 
-## Tier 3 — 重要补充（航运/遥感理论/GNN 应用，序 31–50）
+## Tier 3 — 重要补充（航运/遥感理论/GNN 应用，序 31–52）
 
 
 | 序   | ID   | 论文                                              | 理由                       |
@@ -257,89 +312,91 @@ P007–P013 和 P040 共 8 篇 Text/NLP 论文，根据 Meeting 02 决策（移�
 | 35  | P033 | IMF (2024) — Satellite Monitoring               | 卫星衍生经济指标概览               |
 | 36  | P080 | Dasgupta (2022) — NTL Supply–Demand Shocks      | NTL 短期供需冲击 proxy         |
 | 37  | P049 | Kruitwagen et al. (2021) — Global Oil Assets    | 遥感识别全球石油基础设施             |
-| 38  | P030 | Henderson et al. (2012) — NTL Economic Growth   | NTL 经济增长理论基础             |
-| 39  | P072 | Costa (2021) — ML Oil Price Point & Density     | XGBoost/RF/SVR baseline  |
-| 40  | P073 | Daneshvar (2022) — LSTM/Bi-LSTM Brent           | 直接预测 Brent               |
-| 41  | P076 | Yılmaz (2026) — Strategic Risk Brent Returns  | GPR/VIX/美元等 M1 变量        |
-| 42  | P077 | Chung (2024) — GARCH + ML Energy Volatility     | target_brent_vol 波动率支撑   |
-| 43  | P002 | Luo et al. (2024) — ML Crude Volatility         | ML 波动率评估指标参考             |
-| 44  | P064   | BiLSTM-GCN (2023)                               | GCN+RNN 预测原油价格           |
-| 45  | P065   | Russian Oil GNN (2025)                          | GNN 预测石油贸易（制裁场景）         |
-| 46  | P067   | ITSG-LSTM (2025)                                | 贸易相似性图 + 港口吞吐量预测         |
-| 47  | P085 | Carlini (2025) — Port Networks ML               | AIS+WPI 全球港口网络           |
-| 48  | P086 | AIS-TGNN (2026) — Port Congestion TGAT          | ST-GNN+AIS 港口拥堵          |
-| 49  | P041 | EMAT (2025)                                     | 多方面注意力 Transformer 金融预测  |
-| 50  | P092 | ST-GRAT (2019)                                  | 时空图注意力，动态空间依赖            |
+| 38  | P112 | Scheitrum et al. (2018) — WTI–Brent Spread      | 价差 2011 结构断点，M1 `brent_wti_spread` |
+| 39  | P113 | Bravo Caro et al. (2020) — WTI–Brent FCVAR      | 价差长记忆/全球化测度，与 P112/P102 联读 |
+| 40  | P030 | Henderson et al. (2012) — NTL Economic Growth   | NTL 经济增长理论基础             |
+| 41  | P072 | Costa (2021) — ML Oil Price Point & Density     | XGBoost/RF/SVR baseline  |
+| 42  | P073 | Daneshvar (2022) — LSTM/Bi-LSTM Brent           | 直接预测 Brent               |
+| 43  | P076 | Yılmaz (2026) — Strategic Risk Brent Returns  | GPR/VIX/美元等 M1 变量        |
+| 44  | P077 | Chung (2024) — GARCH + ML Energy Volatility     | target_brent_vol 波动率支撑   |
+| 45  | P002 | Luo et al. (2024) — ML Crude Volatility         | ML 波动率评估指标参考             |
+| 46  | P064   | BiLSTM-GCN (2023)                               | GCN+RNN 预测原油价格           |
+| 47  | P065   | Russian Oil GNN (2025)                          | GNN 预测石油贸易（制裁场景）         |
+| 48  | P067   | ITSG-LSTM (2025)                                | 贸易相似性图 + 港口吞吐量预测         |
+| 49  | P085 | Carlini (2025) — Port Networks ML               | AIS+WPI 全球港口网络           |
+| 50  | P086 | AIS-TGNN (2026) — Port Congestion TGAT          | ST-GNN+AIS 港口拥堵          |
+| 51  | P041 | EMAT (2025)                                     | 多方面注意力 Transformer 金融预测  |
+| 52  | P092 | ST-GRAT (2019)                                  | 时空图注意力，动态空间依赖            |
 
 
-## Tier 4 — 方法参考（ST-GNN/ML/CV 补充，序 51–65）
+## Tier 4 — 方法参考（ST-GNN/ML/CV 补充，序 53–67）
 
 
 | 序   | ID   | 论文                             | 理由                       |
 | --- | ---- | ------------------------------ | ------------------------ |
-| 51  | P047 | STGAT — 时空图注意力                 | STGAT 架构可迁移              |
-| 52  | P093 | STGAT (2020) — Traffic Flow    | 时空图注意力交通流参考              |
-| 53  | P043 | GNN Supply Chain               | 供应链图构建参考                 |
-| 54  | P048 | ST-GNN Electricity Price       | 能源价格 ST-GNN 可迁移          |
-| 55  | P003 | Directional Forecasting (2025) | 多模型方向预测对比（SVM/RF 等）      |
-| 56  | P005 | Hybrid ML (2025)               | 混合 ML 方法参考               |
-| 57  | P006 | MLP/CNN/Transformer (2024)   | 深度学习对比实验设计               |
-| 58  | P075 | Cohen (2025) — Short-Term Oil  | 短期油价综合实验与评价指标            |
-| 59  | P074 | Qin (2023) — ML + Google Search | 外部高频信息对照背景               |
-| 60  | P020 | ShipRSImageNet Paper           | 船舶检测数据集论文                |
-| 61  | P022 | Self-Supervised Ship ID (2026) | 卫星船舶识别                   |
-| 62  | P081 | Li (2025) — Optical+SAR Dark Ship | 光学+SAR 协同暗船检测            |
-| 63  | P026 | YOLOX Oil Tank (2022)          | SAR 油罐检测，FRT 补充          |
-| 64  | P023 | Airbus Ship Detection          | 卫星船舶检测                   |
-| 65  | P031 | Nordhaus & Chen (2015) — NTL   | NTL 精度评估                 |
+| 53  | P047 | STGAT — 时空图注意力                 | STGAT 架构可迁移              |
+| 54  | P093 | STGAT (2020) — Traffic Flow    | 时空图注意力交通流参考              |
+| 55  | P043 | GNN Supply Chain               | 供应链图构建参考                 |
+| 56  | P048 | ST-GNN Electricity Price       | 能源价格 ST-GNN 可迁移          |
+| 57  | P003 | Directional Forecasting (2025) | 多模型方向预测对比（SVM/RF 等）      |
+| 58  | P005 | Hybrid ML (2025)               | 混合 ML 方法参考               |
+| 59  | P006 | MLP/CNN/Transformer (2024)   | 深度学习对比实验设计               |
+| 60  | P075 | Cohen (2025) — Short-Term Oil  | 短期油价综合实验与评价指标            |
+| 61  | P074 | Qin (2023) — ML + Google Search | 外部高频信息对照背景               |
+| 62  | P020 | ShipRSImageNet Paper           | 船舶检测数据集论文                |
+| 63  | P022 | Self-Supervised Ship ID (2026) | 卫星船舶识别                   |
+| 64  | P081 | Li (2025) — Optical+SAR Dark Ship | 光学+SAR 协同暗船检测            |
+| 65  | P026 | YOLOX Oil Tank (2022)          | SAR 油罐检测，FRT 补充          |
+| 66  | P023 | Airbus Ship Detection          | 卫星船舶检测                   |
+| 67  | P031 | Nordhaus & Chen (2015) — NTL   | NTL 精度评估                 |
 
 
-## Tier 5 — 背景与边缘（序 66–80）
+## Tier 5 — 背景与边缘（序 68–82）
 
 
 | 序   | ID   | 论文                          | 理由                       |
 | --- | ---- | --------------------------- | ------------------------ |
-| 66  | P079 | Doll (2008) — NTL Guide     | 早期 NTL 专题指南              |
-| 67  | P036 | World Bank — NTL Proxy      | NTL 方法论总结                |
-| 68  | P019 | Bayes — AIS & Freight Rates | AIS 与运费关系                |
-| 69  | P090 | Informer (2021)             | 长序列 Transformer 备选（TFT 过重时） |
-| 70  | P087 | Gouareb (2022) — Vessel Destination Graph ML | AIS 图结构背景               |
-| 71  | P088 | TransES-ETA (2025)          | 航运 Transformer ETA 背景    |
-| 72  | P082 | GFW — Dark Vessels Project  | AIS 盲区背景                 |
-| 73  | P083 | GFW — VIIRS Dark Vessels    | VIIRS 暗船，Future Work     |
-| 74  | P027 | YOLOv7 Storage Tank (2024)  | 大尺度遥感储罐检测                |
-| 75  | P044 | Graph Neural Poisson        | GNN 供应链预测架构              |
-| 76  | P045 | GAT-LSTM Supply Chain       | GAT+LSTM 时空融合            |
-| 77  | P034 | Urban Markets Satellite     | 背景-卫星经济分析                |
-| 78  | P035 | NTL & Export Growth         | 背景-NTL 与出口               |
-| 79  | P038 | 50 Years NTL (2022)         | 背景-NTL 历史综述              |
-| 80  | P051 | Downstream Oil Supply Chain | 图拓扑参考，优先级低               |
+| 68  | P079 | Doll (2008) — NTL Guide     | 早期 NTL 专题指南              |
+| 69  | P036 | World Bank — NTL Proxy      | NTL 方法论总结                |
+| 70  | P019 | Bayes — AIS & Freight Rates | AIS 与运费关系                |
+| 71  | P090 | Informer (2021)             | 长序列 Transformer 备选（TFT 过重时） |
+| 72  | P087 | Gouareb (2022) — Vessel Destination Graph ML | AIS 图结构背景               |
+| 73  | P088 | TransES-ETA (2025)          | 航运 Transformer ETA 背景    |
+| 74  | P082 | GFW — Dark Vessels Project  | AIS 盲区背景                 |
+| 75  | P083 | GFW — VIIRS Dark Vessels    | VIIRS 暗船，Future Work     |
+| 76  | P027 | YOLOv7 Storage Tank (2024)  | 大尺度遥感储罐检测                |
+| 77  | P044 | Graph Neural Poisson        | GNN 供应链预测架构              |
+| 78  | P045 | GAT-LSTM Supply Chain       | GAT+LSTM 时空融合            |
+| 79  | P034 | Urban Markets Satellite     | 背景-卫星经济分析                |
+| 80  | P035 | NTL & Export Growth         | 背景-NTL 与出口               |
+| 81  | P038 | 50 Years NTL (2022)         | 背景-NTL 历史综述              |
+| 82  | P051 | Downstream Oil Supply Chain | 图拓扑参考，优先级低               |
 
 
-## Tier 6 — 纯数据集 📦（序 81–85）
+## Tier 6 — 纯数据集 📦（序 83–87）
 
 
 | 序   | ID   | 数据集                         | 用途           |
 | --- | ---- | --------------------------- | ------------ |
-| 81  | P037 | NASA Black Marble           | 数据源产品文档      |
-| 82  | P021 | ShipRSImageNet GitHub       | 船舶检测图像数据集    |
-| 83  | P028 | Robinson/Meng — AST Dataset | 地上储油罐遥感数据集   |
-| 84  | P029 | Rizk & Chehade — Oil Tank   | 油罐检测数据集      |
-| 85  | P046 | SupplyGraph Benchmark       | 供应链 GNN 基准数据集 |
+| 83  | P037 | NASA Black Marble           | 数据源产品文档      |
+| 84  | P021 | ShipRSImageNet GitHub       | 船舶检测图像数据集    |
+| 85  | P028 | Robinson/Meng — AST Dataset | 地上储油罐遥感数据集   |
+| 86  | P029 | Rizk & Chehade — Oil Tank   | 油罐检测数据集      |
+| 87  | P046 | SupplyGraph Benchmark       | 供应链 GNN 基准数据集 |
 
 
-## Tier 7 — 备查 Text/NLP（已移出核心范围）📋（序 86–93）
+## Tier 7 — 备查 Text/NLP（已移出核心范围）📋（序 88–95）
 
 
 | 序   | ID   | 论文                               | 在论文中的使用方式            |
 | --- | ---- | -------------------------------- | --------------------- |
-| 86  | P007 | LLM Sentiment WTI (2026)         | Lit Review 提及 LLM 方向  |
-| 87  | P009 | OPEC+ News Predictor (2024)      | Lit Review 提及新闻信号     |
-| 88  | P008 | News Sentiment Oil (2025)        | Discussion 未纳入文本可能是局限 |
-| 89  | P011 | Global News Oil (2025)           | Future Work 文本模态      |
-| 90  | P012 | News Volatility Direction (2025) | Discussion / Future Work |
-| 91  | P013 | Temporal Semantic Fusion (2025)  | 同上                    |
-| 92  | P010 | News + LLM Time Series (2024)    | 方法参考（未来加入 LLM）        |
-| 93  | P040 | MM-iTransformer Text (2025)      | 多模态+文本融合备查            |
+| 88  | P007 | LLM Sentiment WTI (2026)         | Lit Review 提及 LLM 方向  |
+| 89  | P009 | OPEC+ News Predictor (2024)      | Lit Review 提及新闻信号     |
+| 90  | P008 | News Sentiment Oil (2025)        | Discussion 未纳入文本可能是局限 |
+| 91  | P011 | Global News Oil (2025)           | Future Work 文本模态      |
+| 92  | P012 | News Volatility Direction (2025) | Discussion / Future Work |
+| 93  | P013 | Temporal Semantic Fusion (2025)  | 同上                    |
+| 94  | P010 | News + LLM Time Series (2024)    | 方法参考（未来加入 LLM）        |
+| 95  | P040 | MM-iTransformer Text (2025)      | 多模态+文本融合备查            |
 
 

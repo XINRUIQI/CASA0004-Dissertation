@@ -186,8 +186,8 @@ out-of-sample value over a financial baseline (and over the random walk)?
 fusion on identical data? **RQ3** — do gating/attention weights reveal which
 modality the model relies on in different market regimes? Preliminary baseline
 evidence already motivates RQ2: high-dimensional shipping features yield a
-significant nested increment under a tree model but not under a flat deep
-early-fusion LSTM, suggesting that *how* heterogeneous modalities are combined,
+significant nested increment under a tree model but not under a flat linear
+model, suggesting that *how* heterogeneous modalities are combined,
 not merely whether they are included, matters.
 
 ---

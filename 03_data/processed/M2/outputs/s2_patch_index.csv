@@ -733,14 +733,14 @@ P009,Ulsan,refinery,2021_10,2021,S2_P009_Ulsan_2021_10.tif,1,0,1,1,4,16.87660625
 P009,Ulsan,refinery,2021_11,2021,S2_P009_Ulsan_2021_11.tif,1,0,1,1,4,16.833405250000002,512,EPSG:32652,
 P009,Ulsan,refinery,2021_12,2021,S2_P009_Ulsan_2021_12.tif,1,0,1,1,6,20.124382,512,EPSG:32652,
 P009,Ulsan,refinery,2022_01,2022,S2_P009_Ulsan_2022_01.tif,1,0,1,1,3,15.398103,512,EPSG:32652,
-P009,Ulsan,refinery,2022_02,2022,S2_P009_Ulsan_2022_02.tif,1,0,0,0,2,44.158268,512,EPSG:32652,
+P009,Ulsan,refinery,2022_02,2022,S2_P009_Ulsan_2022_02.tif,1,1,0,0,2,44.158268,512,EPSG:32652,SCL median composite sparse after cloud mask (n_scenes=2 mean_cloud=44.2; 0.23% nonzero pixels); treat as missing in pipeline
 P009,Ulsan,refinery,2022_03,2022,S2_P009_Ulsan_2022_03.tif,1,0,1,1,2,31.311051,512,EPSG:32652,
 P009,Ulsan,refinery,2022_04,2022,S2_P009_Ulsan_2022_04.tif,1,0,1,1,4,2.8239080000000003,512,EPSG:32652,
 P009,Ulsan,refinery,2022_05,2022,S2_P009_Ulsan_2022_05.tif,1,0,1,1,5,20.656877,512,EPSG:32652,
 P009,Ulsan,refinery,2022_06,2022,S2_P009_Ulsan_2022_06.tif,1,0,1,1,2,18.148656,512,EPSG:32652,
 P009,Ulsan,refinery,2022_07,2022,S2_P009_Ulsan_2022_07.tif,1,0,1,1,1,45.347792,512,EPSG:32652,
 P009,Ulsan,refinery,2022_08,2022,S2_P009_Ulsan_2022_08.tif,1,0,1,1,3,23.632389,512,EPSG:32652,
-P009,Ulsan,refinery,2022_09,2022,S2_P009_Ulsan_2022_09.tif,1,0,0,0,1,25.867018,512,EPSG:32652,
+P009,Ulsan,refinery,2022_09,2022,S2_P009_Ulsan_2022_09.tif,1,1,0,0,1,25.867018,512,EPSG:32652,SCL median composite sparse after cloud mask (n_scenes=1 mean_cloud=25.9; 0.03% nonzero pixels); treat as missing in pipeline
 P009,Ulsan,refinery,2022_10,2022,S2_P009_Ulsan_2022_10.tif,1,0,1,1,5,27.076140600000002,512,EPSG:32652,
 P009,Ulsan,refinery,2022_11,2022,S2_P009_Ulsan_2022_11.tif,1,0,1,1,4,18.245032000000002,512,EPSG:32652,
 P009,Ulsan,refinery,2022_12,2022,S2_P009_Ulsan_2022_12.tif,1,0,1,1,5,9.9627272,512,EPSG:32652,

@@ -3,15 +3,15 @@
 > **目的：** 按 Beatrice Meeting 02 要求，提取每篇论文的 datasets、variables、model、target，
 > 指导 M1–M4 变量筛选与模型选择。
 >
-> **Last updated:** 2026-07-03（+P102/P103：M1 `crude_exports` / WTI–Brent 制度断点）
+> **Last updated:** 2026-07-03（P001–P135 + R001–R021；R = M1 §4.6 Report 层）
 >
 > ⚠️ 标注 = 基于论文摘要/元数据推断，精读时需核实
 
 ---
 
-## ① 研究框架 + M1 金融变量（9 篇）
+## ① 研究框架 + M1 金融变量（43 篇）
 
-> **读完目标（已精读 6 篇，含修正；P102/P103 为 M1 数据字典支撑文献，⚠️ 待精读）：** ① 确定 M1 financial 变量的**经济机制覆盖**（供给 / 全球需求 / 石油特定·预防性需求 + 油价自身动态）；② 确立**模型基准层级**：随机游走/不变预测（必备基准）→ 正则化线性（Ridge/LASSO/Adaptive LASSO/Elastic Net）→ XGBoost 等树模型。
+> **读完目标（已精读 6 篇，含修正；P102–P135 为 M1 数据字典支撑文献，⚠️ 待精读）：** ① 确定 M1 financial 变量的**经济机制覆盖**（供给 / 全球需求 / 石油特定·预防性需求 + 油价自身动态）；② 确立**模型基准层级**：随机游走/不变预测（必备基准）→ 正则化线性（Ridge/LASSO/Adaptive LASSO/Elastic Net）→ XGBoost 等树模型。
 >
 > ⚠️ **精读后的关键修正（推翻原摘要推断）：**
 >
@@ -119,7 +119,7 @@
 | **Variables**  | WTI–Brent 价差（水平与动态）、**物理市场**（库存/管输/区域现货）与**纸面市场**（期货/价差交易）的联动；空间套利条件                                                                                                                                                                                                                                                                                                              |
 | **Model**      | 结构/计量分析（非预测模型）：检验物理–纸面市场如何共同决定 WTI–Brent 价差                                                                                                                                                                                                                                                                                                                                               |
 | **Target**     | **不是预测**：解释 WTI–Brent 价差的形成与扩大，区分物理约束与金融市场传导                                                                                                                                                                                                                                                                                                                                       |
-| **M1–M4 启示**   | **支撑 `brent_wti_spread` 的经济含义（非预测增量证据）。** ① 2011 前后 WTI 相对 Brent 折价与**物理市场瓶颈**（Cushing 库存/管输）及**纸面市场套利受限**密切相关 → 与 M1 价差列及 EIA 库存/贸易变量联读。② 出口禁令期空间套利无法将美国过剩原油外流至欧洲，价差扩大具有制度+基础设施双重解释（与 P103、[a9] 互补）。③ ⚠️ **不能**用本文论证 `brent_wti_spread` 在周频 Brent 预测中样本外显著优于随机游走；本文是**市场结构/价差机制**文献。 |
+| **M1–M4 启示**   | **支撑 `brent_wti_spread` 的经济含义（非预测增量证据）。** ① 2011 前后 WTI 相对 Brent 折价与**物理市场瓶颈**（Cushing 库存/管输）及**纸面市场套利受限**密切相关 → 与 M1 价差列及 EIA 库存/贸易变量联读。② 出口禁令期空间套利无法将美国过剩原油外流至欧洲，价差扩大具有制度+基础设施双重解释（与 P103、P112 互补）。③ ⚠️ **不能**用本文论证 `brent_wti_spread` 在周频 Brent 预测中样本外显著优于随机游走；本文是**市场结构/价差机制**文献。 |
 
 
 ---
@@ -132,10 +132,113 @@
 | **Variables**  | 区位价差分解：**国内运输/管输约束** vs **原油出口禁令**；出口自由化后的套利恢复                                                                                                                                                                                                                                                                                                                                               |
 | **Model**      | 价差分解/回归（非预测）：量化出口禁令与运输瓶颈对价差各部分的贡献                                                                                                                                                                                                                                                                                                                                                          |
 | **Target**     | **不是预测**：归因原油价差来源，检验取消出口禁令后价差是否因套利恢复而收窄                                                                                                                                                                                                                                                                                                                                                    |
-| **M1–M4 启示**   | **直接支撑 `crude_exports` 制度断点说明（M1 数据字典 §6）。** ① 出口禁令使美国原油**无法经跨大西洋空间套利外流**，2015 年前 `crude_exports` 低值主要反映**政策约束**而非市场信号；2016 年后才更充分承载出口能力与套利信息。② 与 `brent_wti_spread` 重新整合叙事衔接：禁令取消 → 空间套利恢复 → 价差收窄（与 §4.1 [a9]/[a10]、P102 一致）。③ 本项目比较窗口 2019–2025 落在取消后制度内；全样本解释须处理 2016 断点。④ ⚠️ **不能**用本文论证 `crude_exports` 已证实在周频 Brent ML 预测中显著增量——本文是**制度/价差分解**文献。 |
+| **M1–M4 启示**   | **直接支撑 `crude_exports` 制度断点说明（M1 数据字典 §6）。** ① 出口禁令使美国原油**无法经跨大西洋空间套利外流**，2015 年前 `crude_exports` 低值主要反映**政策约束**而非市场信号；2016 年后才更充分承载出口能力与套利信息。② 与 `brent_wti_spread` 重新整合叙事衔接：禁令取消 → 空间套利恢复 → 价差收窄（与 P112/P113、P102 一致）。③ 本项目比较窗口 2019–2025 落在取消后制度内；全样本解释须处理 2016 断点。④ ⚠️ **不能**用本文论证 `crude_exports` 已证实在周频 Brent ML 预测中显著增量——本文是**制度/价差分解**文献。 |
 
 
 ---
+
+### ①-b M1 数据字典 §4.1 价格/收益变量支撑（P104–P114 · 2026-07-03 登记）
+
+> 自 `03_data/processed/M1/m1_data_dictionary.md` §4.1.1 局部编号并入主文献表；Report 材料见 §4.6 `[R001]`–`[R021]`。⚠️ 均待精读。
+
+| ID | 论文（卷期页已核对） | M1 变量 | 文献用法（变量选择依据） |
+| --- | --- | --- | --- |
+| **P104** | Yu, L., Wang, S. & Lai, K.K. (2008). *Energy Economics*, 30(5), 2623–2635. DOI: 10.1016/j.eneco.2008.05.003 | `brent_price`, `wti_price` | EMD+NN 集成预测 **WTI & Brent 现货价**水平 |
+| **P105** | Abdollahi, H. & Ebrahimi, S.B. (2020). *Energy*, 200, 117520. DOI: 10.1016/j.energy.2020.117520 | `brent_price` | 混合 ANFIS+ARFIMA+Markov 预测 **Brent 价格**水平 |
+| **P106** | Ye, M., Zyren, J. & Shore, J. (2005). *Int. J. Forecasting*, 21(3), 491–501. DOI: 10.1016/j.ijforecast.2005.01.001 | `wti_price` | 月频 **WTI 现货**预测（相对库存）；EIA 经典方法 |
+| **P107** | Chen, Y.-W., Chiu, C.-Y. & Hsiao, M.-C. (2021). *Sustainability*, 13(9), 5050. DOI: 10.3390/su13095050 | `brent_log_return` | Brent 投资辅助指数；收益/方向风险度量 |
+| **P108** | Ma, R.R., Xiong, T. & Bao, Y. (2021). *Energy Economics*, 102, 105517. DOI: 10.1016/j.eneco.2021.105517 | `wti_log_return` | 俄沙油价战事件研究；**WTI/Brent/Oman 现货与期货**日收益 |
+| **P109** | Chen, L., Zerilli, P. & Baum, C.F. (2019). *Energy Economics*, 79(C), 111–129. DOI: 10.1016/j.eneco.2018.03.032 | `brent_log_return`, `wti_log_return` | **现货**对数收益 SV 模型；VaR/CVaR（EIA WTI/Brent 现货） |
+| **P110** | Zhang, Y.-J., Yao, T., He, L.-Y. & Ripple, R.D. (2019). *Int. Rev. Econ. & Finance*, 59, 302–317. DOI: 10.1016/j.iref.2018.09.006 | `brent_log_return` | 原油市场**波动率** regime-switching GARCH；日/周 WTI & Brent |
+| **P111** | Wang, L. & Chen, X. (2025). *J. Risk Financial Manag.*, 18(7), 351. DOI: 10.3390/jrfm18070351 | `wti_log_return` | XGBoost/RF/NN 预测 **WTI 收益**（55 维因子） |
+| **P112** | Scheitrum, D.P., Carter, C.A. & Revoredo-Giha, C. (2018). *Energy Economics*, 72(C), 462–469. DOI: 10.1016/j.eneco.2018.04.039 | `brent_wti_spread` | WTI–Brent 价差 **2011-01 结构断点**；期货曲线与出口禁令 |
+| **P113** | Bravo Caro, J.M., Golpe, A.A., Iglesias, J. & Vides, J.C. (2020). *Energy Economics*, 85, 104546. DOI: 10.1016/j.eneco.2019.104546 | `brent_wti_spread` | FCVAR 测度价差**长记忆/全球化**；Brent 驱动价差结构 |
+| **P114** | Charles, A. & Darné, O. (2017). *Energy Economics*, 67(C), 508–519. DOI: 10.1016/j.eneco.2017.09.002 | `brent_log_return`, `wti_log_return` | GARCH/GAS/MSM **波动率**预测；含跳跃成分 |
+
+> **登记更正（联网核对）：** ① P110 期刊为 *International Review of Economics & Finance*（非 *Energy Economics*）；② P108 为文章号 105517（非传统页码）；③ P113 在线发表 2019、正式刊出 2020 卷 85。
+
+---
+
+### ①-c M1 数据字典 §4.2 EIA 周报基本面支撑（P115–P121 · 2026-07-03 登记）
+
+> 自 `m1_data_dictionary.md` §4.2.1 并入；Report 见 §4.6 `[R001]`–`[R021]`。⚠️ 均待精读。
+
+| ID | 论文 | M1 变量 | 文献用法 |
+| --- | --- | --- | --- |
+| **P115** | Bu, H. (2014). *Energy Economics*, 46, 485–494. DOI: 10.1016/j.eneco.2014.05.015 | `crude_stocks_excl_spr`, `crude_stocks_change` | **库存信息冲击**（非实际变化本身）→ 油价波动 |
+| **P116** | Armstrong, W.J., Cardella, L. & Sabah, N. (2021). *J. Financial Economics*, 140(3), 916–940. DOI: 10.1016/j.jfineco.2021.02.002 | 库存/炼厂/产量相关 | **库存意外**、refiner input、production 构成信息冲击 |
+| **P117** | Kim, S., Baek, J. & Heo, E. (2020). *Empirical Economics*, 59(2), 1003–1018. DOI: 10.1007/s00181-019-01660-1 | `cushing_stocks`, `cushing_stocks_change` | Global/US/**Cushing** 库存 SVAR |
+| **P118** | Kaufmann, R.K., Dées, S., Gasteuil, A. & Mann, M. (2008). *Energy Economics*, 30(5), 2609–2622. DOI: 10.1016/j.eneco.2008.04.010 | `refinery_utilisation` | 炼厂开工率→实际油价（**负向**；月频） |
+| **P119** | Zagaglia, P. (2010). *Energy Economics*, 32(2), 409–417. DOI: 10.1016/j.eneco.2009.11.003 | 进出口/炼厂/成品油多列 | 月频 FAVAR **能源数量信息集** |
+| **P120** | Malliaris, A.G. & Malliaris, M. (2021). *JRFM*, 14(8), 391. DOI: 10.3390/jrfm14080391 | 库存/产量/消费代理 | 微观基本面面板（1986–2020） |
+| **P121** | Wei, X. (2026). *PLoS One*, 21(2), e0341496. DOI: 10.1371/journal.pone.0341496 | `crude_production`, `crude_imports` | LASSO 特征筛选；含美国/全球产量与进口增长 |
+
+---
+
+### ①-d M1 数据字典 §4.3 宏观金融支撑（P122–P130 · 2026-07-03 登记）
+
+| ID | 论文 | M1 变量 | 文献用法 |
+| --- | --- | --- | --- |
+| **P122** | Tissaoui, K., Zaghdoudi, T., Hakimi, A. & Nsaibi, M. (2023). *Computational Economics*, 62(2), 663–687. DOI: 10.1007/s10614-022-10305-y | `vix`（亦见 §4.4 `ovx`） | XGBoost+SHAP；**VIX** 预测 WTI |
+| **P123** | He, Y., Wang, S. & Lai, K.K. (2010). *Energy Economics*, 32(4), 868–876. DOI: 10.1016/j.eneco.2009.12.005 | `dollar_index` | 贸易加权美元与油价、Kilian REA 协整 |
+| **P124** | Qadan, M. & Cohen, G. (2024). *Financial Innovation*, 10, 9. DOI: 10.1186/s40854-023-00551-w | `treasury_10y`, `dgs10_change`（亦见 §4.4） | **利率不确定性**与油价收益/波动 |
+| **P125** | Basistha, A. & Kurov, A. (2015). *J. Futures Markets*, 35(1), 87–103. DOI: 10.1002/fut.21639 | `fed_funds_rate` | 货币政策意外→能源价格（日内显著） |
+| **P126** | Kilian, L. & Park, C. (2009). *Int. Economic Review*, 50(4), 1267–1287. DOI: 10.1111/j.1468-2354.2009.00568.x | `sp500`, `sp500_log_return` | 油价冲击→美国**实际**股票收益 |
+| **P127** | Sadorsky, P. (1999). *Energy Economics*, 21(5), 449–469. DOI: 10.1016/S0140-9883(99)00020-1 | `sp500`, `sp500_log_return` | S&P 500 **连续复合收益**（减通胀） |
+| **P128** | Lu, X., Liu, K., Lai, K.K. & Cui, H. (2021). *Entropy*, 23(9), 1172. DOI: 10.3390/e23091172 | `sp500_log_return` | WTI 与 S&P 500 股指期货 **log-returns** |
+| **P129** | Hussain, S.M., Naveed, A., Ahmed, S. et al. (2022). *Empirical Economics*, 62(6), 2673–2692. DOI: 10.1007/s00181-021-02116-1 | `sp500_log_return` | S&P 500 与 Brent **日度连续复合收益** |
+| **P130** | Roy, A., Soni, A. & Deb, S. (2023). *Energy Economics*, 124, 106830. DOI: 10.1016/j.eneco.2023.106830 | `sp500_log_return` | S&P 500、Brent、WTI 等统一 **`ln(Pₜ/Pₜ₋₁)`** |
+
+---
+
+### ①-e M1 数据字典 §4.4 衍生市场/宏观支撑（P122/P124/P052/P131–P135 · 2026-07-03 登记）
+
+| ID | 论文 | M1 变量 | 文献用法 |
+| --- | --- | --- | --- |
+| **P122** | Tissaoui et al. (2023)（同上） | `ovx` | **OVX** 为 XGBoost+SHAP 重要预测因子 |
+| **P131** | Caldara, D. & Iacoviello, M. (2022). *American Economic Review*, 112(4), 1194–1225. DOI: 10.1257/aer.20191823 | `gpr` | GPR 指数原始论文；新闻文本地缘风险 |
+| **P132** | Kang, S.H., McIver, R. & Yoon, S.-M. (2017). *Energy Economics*, 62, 19–32. DOI: 10.1016/j.eneco.2016.12.011 | `gold_return` | 原油—贵金属期货**溢出** |
+| **P052** | Kilian, L. (2009). *AER*, 99(3), 1053–1069. DOI: 10.1257/aer.99.3.1053 | `global_econ_activity` | Kilian REA 理论基础（全球实体需求） |
+| **P133** | Kilian, L. & Zhou, X. (2018). *J. Int. Money & Finance*, 88, 54–78. DOI: 10.1016/j.jimonfin.2018.05.006 | `global_econ_activity`, `nonoil_industrial_commodity` | 全球商品需求波动；工业原料价格代理 |
+| **P134** | Valenti, D. (2022). *The Energy Journal*, 43(2), 41–66. DOI: 10.5547/01956574.43.2.dval | `futures_spread` | 3M Brent **期货–现货价差**进入 SVAR |
+| **P135** | Chen, Y.-C., Rogoff, K.S. & Rossi, B. (2010). *QJE*, 125(3), 1145–1194. DOI: 10.1162/qjec.2010.125.3.1145 | `commodity_fx` | 商品货币（含 CAD/AUD）预测商品价格 |
+| **P124** | Qadan & Cohen (2024)（同上） | `dgs10_change` | 利率**变化**/不确定性与油价 |
+
+---
+
+### ①-f M1 数据字典 §4.6 业界/机构 Report 层（R001–R021 · 2026-07-03 登记）
+
+> 非学术论文；按**唯一 URL/出版物**去重（原 §4.1–§4.4 局部 `[b*]` → `[Rxxx]`）。完整表见 `m1_data_dictionary.md` §4.6。
+
+| ID | 机构 | 材料 | M1 关联变量（代表） |
+| --- | --- | --- | --- |
+| **R001** | EIA | 原油现货价表 | `brent_price`, `wti_price` |
+| **R002** | EIA | Today in Energy — Brent–WTI 价差 | `brent_wti_spread` |
+| **R003** | EIA | Today in Energy — Daily Prices | `brent_log_return` |
+| **R004** | OPEC | Monthly Oil Market Report | `brent_log_return`, `brent_wti_spread` |
+| **R005** | CME | WTI Insights | `wti_price`, `wti_log_return` |
+| **R006** | ICE | Risk Model 2.0 | `brent_log_return` |
+| **R007** | EIA | WPSR 周报 | §4.2 多列 EIA 基本面 |
+| **R008** | EIA | Today in Energy — WPSR 概述 | §4.2（背景） |
+| **R009** | EIA | product supplied FAQ | `gasoline_supplied`, `jet_fuel_supplied` |
+| **R010** | EIA | 馏分油 product supplied 序列 | `distillate_supplied` |
+| **R011** | CME | WTI Cushing 交割 | `cushing_stocks`, `cushing_stocks_change` |
+| **R012** | CME | Econoday EIA 日历 | `crude_stocks_change` |
+| **R013** | Reuters | EIA 周度市场报道例证 | `crude_exports`, `refinery_utilisation`, `crude_stocks_change` |
+| **R014** | Cboe | VIX | `vix` |
+| **R015** | EIA | Markets & Finance | `dollar_index` |
+| **R016** | CME | Economic Data and Crude Oil | `treasury_10y`, `fed_funds_rate`, `sp500`, `gold_return`, `commodity_fx`, `dgs10_change` |
+| **R017** | MSCI/RiskMetrics | Technical Document | `sp500_log_return` |
+| **R018** | Cboe | OVX | `ovx` |
+| **R019** | Dallas Fed | igrea 数据页 | `global_econ_activity` |
+| **R020** | IMF | Primary Commodity Prices | `nonoil_industrial_commodity` |
+| **R021** | Caldara–Iacoviello | GPR **数据页**（≠ P131） | `gpr` |
+
+> **P+R 查重（2026-07-03）：** P001–P135 按 DOI **无重复编号**；跨节复用 P052/P122/P124 为交叉引用。R021（数据页）与 P131（AER 论文）分层不重复。Template 笔记 DOI 与 P001/P122 相同，未占新号。
+
+---
+
+
 
 ### ① 小结：M1 推荐变量（按 Kilian 三类机制组织，精读后修正）
 
@@ -450,7 +553,7 @@
 | 6   | `pw_malacca_capacity_tanker`                   | 运力加权                 | P018, P070                          | PortWatch  |
 | 7   | `pw_global_tanker_total`（全球汇总，已有 `pw_all_n_tanker_sum`） | 全球规模               | **P017（区域异质）**, P018                | PortWatch  |
 | 8   | **`pw_tanker_exp_imp_asym` 出口-进口不对称** ✅已构建        | 方向性（供给装载 vs 需求卸货）  | **P070（方向性 import/export）**, P017, P018 | PortWatch ports |
-| 9   | **`gfw_{choke}_dwell_hours_per_vessel` 拥堵/停留代理** ✅已构建 | 拥堵 / 停留            | **P016（dwell-time）**, P084           | GFW presence |
+| 9   | **`gfw_{choke}_mean_presence_hours_per_vessel` 存在强度/拥堵粗代理**（原名 `dwell_hours_per_vessel`，2026-07-03 改名）✅已构建 | 拥堵 / 停留            | **P016（dwell-time）**, P084           | GFW presence |
 | 10  | `pw_{choke}_avg_tanker_size`（平均船型）+ `tanker_share` ✅已构建 | 船型结构（防泄漏）          | **P070（概念优先级）**, P018              | PortWatch  |
 | 11  | `gfw_{choke}_total_hours` / `total_vessels` ✅已构建    | 流量强度补充（2012+）       | P016, P017                          | GFW 4Wings |
 
@@ -464,7 +567,7 @@
 
 | 文献       | 文中 Variables / 启示提及        | 未采纳原因                                   | M3 处置                          |
 | -------- | ------------------------- | --------------------------------------- | ------------------------------ |
-| **P016** | `duration` 平均靠泊时间          | PortWatch transit 不直接提供逐船靠泊时长           | ✅已构建 GFW dwell 代理 `gfw_{choke}_dwell_hours_per_vessel`（#9） |
+| **P016** | `duration` 平均靠泊时间          | PortWatch transit 不直接提供逐船靠泊时长           | ✅已构建 GFW 存在强度粗代理 `gfw_{choke}_mean_presence_hours_per_vessel`（#9，原名 dwell，非严格 dwell） |
 | **P016** | `GT` 靠港油轮总吨位               | GT≠DWT≠货量，混入船型与频率                       | 改用 DWT 运力 `capacity_tanker`（#2/4/6） |
 | **P016** | `new_add` 新增活跃油轮（二值）       | 含义模糊（"独立船数增加"非真新船）                      | 改用独立船数变化 / z-score，不照搬二值       |
 | **P016** | `reserve` / `nx` 储量 / 贸易控制 | 属油价回归控制，且与 M1 基本面重叠                     | 归 M1 / 控制变量                    |
@@ -560,11 +663,11 @@
 
 ---
 
-## ④+ 扁平深度学习对照：TFT Early Fusion（1 篇 · 已精读 2026-07-03）
+## ④+ 时序深度学习方法参考：Temporal Fusion Transformer（1 篇 · 已精读 2026-07-03）
 
-> **定位：** 研究方案 `2026-06-22_research_plan_e2e_multimodal.md` §6.1 **架构维度**中 **LSTM/TFT-Early** 对照——所有 M1/M2/M3 工程特征拼成同一时序输入，由 TFT 做**特征级 early fusion**。与 §⑤ 扁平 XGBoost、§⑥ 模态专属编码器 + 门控融合形成三层递进：**XGBoost（表格）→ TFT（扁平 DL）→ Gated/Cross-Attention（表示级）**。
+> **定位：** TFT（Lim et al., 2021）是**可解释多步时序深度学习**的代表文献，在本项目中仅作为**文献综述中的时序建模方法参考**——其变量选择、门控与时间注意力可解释性为创新层的时序编码设计提供方法背景。
 >
-> ⚠️ **边界：** P089 支撑的是「已工程化时序特征的强 DL 融合 baseline」，**不是**保留卫星 patch 空间结构或航运图结构的端到端多模态模型；有效性须始终对照 M0 + Ridge/XGB 扁平基线（`run_baseline.py`）。
+> ⚠️ **边界：** 本项目**不做深度 early-fusion 基线**，不将 TFT 作为独立基线运行；核心实证层的扁平对照仅为 M0 + Ridge/XGB（`run_baseline.py`）。TFT 亦无法保留卫星 patch 空间结构或航运图结构，故非端到端多模态模型。
 
 | 列 | P089 · Lim et al. (International Journal of Forecasting, 2021) |
 | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -573,21 +676,10 @@
 | **Variables** | 将输入明确分为三类：① **static covariates**：实体、商店、商品等不随时间变化的元数据；② **past-observed inputs**：仅在历史时点能够观测、预测未来时未知的变量，如历史目标值、收益率、流量和销售量；③ **known future inputs**：预测时已经知道的未来变量，如星期、月份、节假日和促销安排。连续变量经过线性变换，类别变量使用 entity embedding。 |
 | **Model** | **Temporal Fusion Transformer（TFT）**：Variable Selection Networks 动态选择变量 + Gated Residual Networks / GLU 抑制无效变量和网络模块 + static covariate encoders 注入静态上下文 + LSTM encoder–decoder 学习局部和短期变化 + interpretable multi-head self-attention 学习长期依赖 + quantile regression 同时输出 P10、P50、P90 预测。 |
 | **Target** | Direct multi-horizon probabilistic forecasting：一次性预测多个未来时点的目标变量及其条件分位数。具体包括未来 24 小时电力消费、未来 24 小时交通占用率、未来 30 天商品销售，以及未来 5 个交易日的已实现波动率。 |
-| **M1–M4 启示** | **这是你使用 TFT 作为 M1–M4 深度学习基准模型时最核心的原始方法文献。** ① 可以把 **M1 金融变量、M2 遥感工程特征、M3 航运工程特征、M4 全部特征**作为 past-observed inputs，分别训练 TFT，并与 XGBoost、LSTM 和 no-change benchmark 比较。② 对你的周度 Brent 预测，known future inputs 主要应限制为 week-of-year、month、holiday 等预测时确实已知的日历变量，不能把未来航运、遥感或宏观变量误设为 known future。③ Variable Selection Networks 可提供随样本和时间变化的变量权重，用于检验遥感、航运变量是否在危机期或供应冲击期获得更高权重；temporal attention 可识别模型主要使用哪些历史滞后期。④ 论文的消融实验表明，LSTM 局部处理与 self-attention 长期依赖是性能贡献最大的部分，variable selection、static encoders 和 gating 也能改善预测；其中 gating 对规模较小、噪声较大的金融波动率数据尤其有用。⑤ 建议输出 **P10 / P50 / P90 的下一周 Brent 收益率或价格区间**，而不只输出单一点预测，以反映油价预测的不确定性。⑥ 但 TFT 本质上仍是对已经工程化的时间序列特征进行融合，**不是保留卫星影像空间结构和航运图结构的真正端到端多模态模型**；因此应将其定位为 M1–M4 的强时序融合 baseline，而不是你的最终"模态专属编码器 + 门控交叉注意力"创新模型。⑦ 你的周度样本量明显小于论文中的数据集，应使用较小 hidden size、1 个 attention head、较高 dropout、early stopping 和滚动时间验证，防止复杂 TFT 过拟合。 |
+| **M1–M4 启示** | **作为可解释时序深度学习的方法参考文献（本项目不做深度 early-fusion 基线、不将 TFT 作为独立基线运行）。** ① TFT 对 **static / past-observed / known-future** 三类输入的显式区分，为本项目防泄漏输入设计提供清晰框架：金融、遥感、航运测量应作为 past-observed，仅 week-of-year、month、holiday 等日历变量可作 known-future。② Variable Selection Networks 提供随样本与时间变化的变量权重，为创新层「模态/变量是否在危机期或供应冲击期获得更高权重」的可解释性分析提供思路；temporal attention 可识别重要历史滞后。③ 论文消融表明 LSTM 局部处理与 self-attention 长期依赖贡献最大，gating 对规模小、噪声大的金融数据尤其有用——为创新层时序编码器设计提供组件参考。④ 其 quantile 输出（P10/P50/P90）提示可用区间预测反映油价不确定性。⑤ TFT 本质上仍是对已工程化时序特征的融合，**不保留卫星影像空间结构与航运图结构**，故仅作方法背景，而非最终"模态专属编码器 + 门控交叉注意力"创新模型。⑥ 若借鉴其组件，因周度样本量小，应使用较小 hidden size、1 个 attention head、较高 dropout、early stopping 与滚动时间验证以防过拟合。 |
 
 ---
 
-### ④+ 小结：扁平 DL 对照在 M0–M4 中的位置
-
-| 层级 | 代表模型 | 文献 | 融合方式 |
-| --- | --- | --- | --- |
-| 表格基线 | Ridge / XGBoost | §① P004 等 | 特征列拼接 → 树/线性 |
-| **扁平 DL** | **TFT / LSTM-Early** | **§④+ P089** | 工程特征 → 同一时序网络 |
-| 表示级融合 | Gated / Cross-Attention | §⑥ P039/P096 等 | 模态专属编码器 → 表示空间融合 |
-
-> **与 §⑥ 的分工：** P089 回答「扁平特征下，强 DL 时序融合是否优于 XGBoost」；§⑥ 回答「保留模态结构的表示级融合是否优于扁平（含 TFT）」。RQ2 须三者并列报告。
-
----
 
 ## ⑤ M4 多模态融合 + 降维逻辑（1 篇）
 

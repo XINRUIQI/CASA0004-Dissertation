@@ -6,9 +6,12 @@ contribution of each shipping data source under the locked L4_tuned protocol:
 
   arm                 Shipping columns used
   ─────────────────── ─────────────────────────────────────────────────────
+  core                §11.1 main-model core (GFW 6x4 + PW chokepoints 6x2 + ports 2 = 38)
   full                All M3 shipping columns (PortWatch + GFW combined)
   portwatch-only      Only PortWatch vessel-traffic columns
   gfw-only            Only GFW monthly AIS columns
+  gfw-presence        GFW core 24 + 6x mean_presence_hours_per_vessel (presence experiment)
+  gfw-aggregate       gfw_all_activity_zmean only (aggregate benchmark; derived, leak-free)
   tanker-only         Tanker-type columns only (portwatch vessel_type filter)
 
 Outputs (-> 05_outputs/baselines/m3/):
@@ -47,10 +50,16 @@ def select_m3_arm(dico: pd.DataFrame, arm: str) -> list[str]:
     m3_all = dico.loc[dico["modality"] == "M3", "feature"].tolist()
     if arm == "full":
         return m3_all
+    if arm == "core":                       # §11.1 main-model core (38)
+        return data.m3_core_columns(dico)
     if arm == "portwatch-only":
         return [c for c in m3_all if c.startswith("pw_")]
     if arm == "gfw-only":
         return [c for c in m3_all if c.startswith("gfw_")]
+    if arm == "gfw-presence":               # GFW core 24 + 6x mean_presence
+        return data.gfw_core_columns(dico) + data.gfw_presence_columns(dico)
+    if arm == "gfw-aggregate":              # derived z-mean only (injected in build)
+        return [data.GFW_ZMEAN_COL]
     if arm == "tanker-only":
         return [c for c in m3_all if "tanker" in c.lower()]
     raise ValueError(f"Unknown arm: {arm}")
@@ -107,7 +116,8 @@ def make_overview(summary, path):
 def main():
     ap = argparse.ArgumentParser(description="M3 leave-one-channel-out ablation.")
     ap.add_argument("--arms", nargs="+",
-                    default=["full", "portwatch-only", "gfw-only", "tanker-only"])
+                    default=["core", "full", "portwatch-only", "gfw-only",
+                             "gfw-presence", "gfw-aggregate", "tanker-only"])
     ap.add_argument("--min-train",      type=int, default=104)
     ap.add_argument("--retrain-every",  type=int, default=13)
     ap.add_argument("--val-weeks",      type=int, default=52)

@@ -303,8 +303,9 @@ def build_base(idx: pd.DatetimeIndex) -> pd.DataFrame:
         w["crude_stocks_change"] = w["crude_stocks_excl_spr"].diff()
     if "cushing_stocks" in w:
         w["cushing_stocks_change"] = w["cushing_stocks"].diff()
-    if "crude_imports" in w and "crude_exports" in w:
-        w["net_crude_trade"] = w["crude_imports"] - w["crude_exports"]
+    # net_crude_trade removed 2026-07: net = imports - exports is an exact linear
+    # combination of the two (rank-deficient); imports & exports are kept (near-
+    # orthogonal in-window, corr 0.05) -- see research diary 2026-07-03.
 
     # --- FRED macro daily ---------------------------------------------------
     fred_daily = {
@@ -325,19 +326,24 @@ def build_base(idx: pd.DatetimeIndex) -> pd.DataFrame:
         else:
             _warn(f"FRED file for '{col}' (*{token}*) not found; column skipped")
 
-    # --- Yahoo S&P 500 ------------------------------------------------------
+    # --- Yahoo S&P 500 (log-return only; non-stationary level dropped) ------
+    # The S&P 500 level trends out of the training range (test level exceeds it);
+    # only the weekly log-return is kept as the equity-market signal, unified with
+    # brent/wti log-return convention -- see research diary 2026-07-03.
+    sp = None
     sp_path = _find(YAHOO_DIR, "sp500")
     if sp_path is not None:
-        w["sp500"] = daily_to_weekly_last(parse_two_col(sp_path), idx)
+        sp = daily_to_weekly_last(parse_two_col(sp_path), idx)
     elif ONLINE:
         try:
-            w["sp500"] = daily_to_weekly_last(fetch_yf_close("^GSPC"), idx)
+            sp = daily_to_weekly_last(fetch_yf_close("^GSPC"), idx)
         except Exception as e:                       # noqa: BLE001
             _warn(f"Yahoo ^GSPC online fetch failed ({type(e).__name__}); sp500 NaN")
     else:
         _warn("Yahoo sp500 file not found; sp500 skipped")
-    if "sp500" in w:
-        w["sp500_return_pct"] = w["sp500"].pct_change() * 100
+    if sp is not None:
+        assert (sp.dropna() > 0).all(), "negative weekly S&P 500 level: log-return undefined"
+        w["sp500_log_return"] = np.log(sp / sp.shift(1))
 
     return w
 
@@ -381,21 +387,23 @@ def build_dgs10_change(idx, base):
     raise FileNotFoundError("dgs10_change (needs treasury_10y)")
 
 
-def build_commodity_fx(idx, base):
-    cad_p, aud_p = _find(YAHOO_DIR, "CADUSD"), _find(YAHOO_DIR, "AUDUSD")
-    if cad_p is not None and aud_p is not None:
-        cad = daily_to_weekly_last(parse_two_col(cad_p), idx).pct_change()
-        aud = daily_to_weekly_last(parse_two_col(aud_p), idx).pct_change()
+def build_cadusd_log_return(idx, base):
+    # CAD/USD weekly log-return. CAD is the commodity currency most directly tied
+    # to crude (Canada is a major oil exporter). The old commodity_fx mean(CAD,AUD)
+    # and the AUD leg are dropped (AUD ~0.79 corr with CAD, weaker oil link);
+    # AUD kept only as a future robustness option -- see research diary 2026-07-03.
+    cad_p = _find(YAHOO_DIR, "CADUSD")
+    if cad_p is not None:
+        cad = daily_to_weekly_last(parse_two_col(cad_p), idx)
     elif ONLINE:
         try:
-            cad = daily_to_weekly_last(fetch_yf_close("CADUSD=X"), idx).pct_change()
-            aud = daily_to_weekly_last(fetch_yf_close("AUDUSD=X"), idx).pct_change()
+            cad = daily_to_weekly_last(fetch_yf_close("CADUSD=X"), idx)
         except Exception:                            # noqa: BLE001
-            cad = -daily_to_weekly_last(fetch_fred("DEXCAUS"), idx).pct_change()
-            aud = daily_to_weekly_last(fetch_fred("DEXUSAL"), idx).pct_change()
+            cad = 1.0 / daily_to_weekly_last(fetch_fred("DEXCAUS"), idx)  # DEXCAUS=USD/CAD -> invert to CAD/USD
     else:
-        raise FileNotFoundError("commodity_fx (Yahoo CADUSD=X / AUDUSD=X)")
-    return pd.concat([cad, aud], axis=1).mean(axis=1)
+        raise FileNotFoundError("cadusd_log_return (Yahoo CADUSD=X)")
+    assert (cad.dropna() > 0).all(), "negative CAD/USD: log-return undefined"
+    return np.log(cad / cad.shift(1))
 
 
 def build_nonoil_industrial_commodity(idx, base):
@@ -409,24 +417,54 @@ def build_nonoil_industrial_commodity(idx, base):
     return monthly_to_weekly(s, idx, MONTHLY_LAG_WEEKS)
 
 
-def build_futures_spread(idx, base):
+def build_brent_f1_spot_log_basis(idx, base):
+    # Front-month futures MINUS spot log BASIS -- NOT a pure term-structure spread.
+    # ln(BZ=F front-month) - ln(EIA Brent spot); each leg taken as the week's last
+    # (W-FRI) value then differenced. NO back-adjustment: a basis needs the real
+    # same-day front-month price (back-adjust would distort the level). Contract
+    # rolls are handled via the brent_roll_week dummy -- see research diary.
     path = _find(YAHOO_DIR, "BZF")
     if path is not None:
         fut = daily_to_weekly_last(parse_two_col(path), idx)
     elif ONLINE:
         fut = daily_to_weekly_last(fetch_yf_close("BZ=F"), idx)
     else:
-        raise FileNotFoundError("futures_spread (Yahoo BZ=F)")
+        raise FileNotFoundError("brent_f1_spot_log_basis (Yahoo BZ=F)")
     if "brent_price" in base:
         spot = base["brent_price"]
     elif ONLINE:
         spot = daily_to_weekly_last(fetch_fred("DCOILBRENTEU"), idx)
     else:
-        raise FileNotFoundError("futures_spread spot leg (needs brent_price)")
+        raise FileNotFoundError("brent_f1_spot_log_basis spot leg (needs brent_price)")
     return np.log(fut) - np.log(spot)
 
 
+def build_brent_roll_week(idx, base):
+    # ICE Brent front-month rolls near month-end (a contract expires on the last
+    # business day of the 2nd month preceding delivery). Approximate the roll week
+    # as the LAST W-FRI of each calendar month -- a documented approximation of the
+    # exact ICE expiry calendar, used as a roll-control dummy so the model can
+    # absorb mechanical basis jumps at contract change (see research diary).
+    s = pd.Series(0, index=idx, dtype="int64")
+    last_fri = pd.Series(idx, index=idx).groupby([idx.year, idx.month]).max()
+    s.loc[s.index.isin(last_fri.values)] = 1
+    return s
+
+
 def build_gpr(idx, base):
+    # Prefer DAILY GPRD (Caldara-Iacoviello "Recent GPR"): weekly-MEAN to W-FRI,
+    # then +1w publication lag (daily series has a short release delay; the lag
+    # keeps it point-in-time). This replaces the coarser monthly ffill+lag and
+    # matches the weekly forecast cadence -- see research diary 2026-07-03.
+    # Falls back to the monthly export if the daily file is absent.
+    path_daily = _find(OTHER_DIR, "data_gpr_daily")
+    if path_daily is not None:
+        df = pd.read_excel(path_daily)
+        d = pd.to_datetime(df["date"], errors="coerce")
+        s = pd.Series(pd.to_numeric(df["GPRD"], errors="coerce").to_numpy(), index=d)
+        s = s[s.index.notna()].dropna().sort_index()
+        w = s.resample("W-FRI").mean().reindex(idx)
+        return w.shift(GPR_LAG_WEEKS) if GPR_LAG_WEEKS else w
     path = _find(OTHER_DIR, "data_gpr_export")
     if path is not None:
         s = parse_gpr(path)
@@ -439,7 +477,7 @@ def build_gpr(idx, base):
              .assign(**{date_col: pd.to_datetime(df[date_col], errors="coerce")})
              .dropna(subset=[date_col]).set_index(date_col)[gpr_col].sort_index())
     else:
-        raise FileNotFoundError("gpr (Other/data_gpr_export.*)")
+        raise FileNotFoundError("gpr (Other/data_gpr_daily_recent.* or data_gpr_export.*)")
     return monthly_to_weekly(s, idx, GPR_LAG_WEEKS)
 
 
@@ -474,8 +512,9 @@ TO_BUILD = {
     "gold_return": build_gold_return,
     "global_econ_activity": build_global_econ_activity,
     "nonoil_industrial_commodity": build_nonoil_industrial_commodity,
-    "futures_spread": build_futures_spread,
-    "commodity_fx": build_commodity_fx,
+    "brent_f1_spot_log_basis": build_brent_f1_spot_log_basis,
+    "brent_roll_week": build_brent_roll_week,
+    "cadusd_log_return": build_cadusd_log_return,
     "dgs10_change": build_dgs10_change,
 }
 
@@ -526,8 +565,8 @@ def main() -> None:
         weekly["avail_market"] = weekly["brent_price"].notna().astype(int)
     if "crude_stocks_excl_spr" in weekly:
         weekly["avail_eia_weekly"] = weekly["crude_stocks_excl_spr"].notna().astype(int)
-    if "sp500" in weekly:
-        weekly["avail_sp500"] = weekly["sp500"].notna().astype(int)
+    if "sp500_log_return" in weekly:
+        weekly["avail_sp500"] = weekly["sp500_log_return"].notna().astype(int)
     if "dollar_index" in weekly:
         weekly["avail_dollar_index"] = weekly["dollar_index"].notna().astype(int)
 

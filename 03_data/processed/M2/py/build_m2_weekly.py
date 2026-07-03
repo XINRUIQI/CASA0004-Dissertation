@@ -29,11 +29,11 @@ Masks:
 Outputs (-> 03_data/processed/M2/outputs/):
   m2_weekly_features.csv          wide: {idx}_{aoi}, {idx}_anom_{aoi},
                                   {mod}_age/avail  (merge keeps 55 anom cols)
-  m2_eda_weekly_long.csv          tidy EDA table: one row per (week, site, idx)
+  m2_eda_weekly.csv          tidy EDA table: one row per (week, site, idx)
 
   --watermask (B4 robustness):
   m2_weekly_features_watermask.csv   same structure + MNDWI cols + s2_land_px_*
-  m2_eda_weekly_long_watermask.csv   + land_px, low_land_coverage flag
+  m2_eda_weekly_watermask.csv   + land_px, low_land_coverage flag
 
 Run:
   python3 03_data/processed/M2/py/build_m2_weekly.py
@@ -289,7 +289,7 @@ def main():
         ).astype(int)
 
     long_out = long_out.sort_values(["week_fri", "site_id", "index"])
-    long_path = OUT / f"m2_eda_weekly_long{suffix}.csv"
+    long_path = OUT / f"m2_eda_weekly{suffix}.csv"
     long_out.to_csv(long_path, index=False)
 
     wide = to_wide(long, order_short, idx_order)

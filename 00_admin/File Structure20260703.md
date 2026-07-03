@@ -62,7 +62,7 @@ casa0004 Dissertation/
 ├── 待整理/                              # 进行中方案与实验日志（待归档）
 │   ├── 2026-06-22_research_plan_e2e_multimodal.md
 │   ├── 2026-06-22_channelB_mechanism_plan.md
-│   └── flat_baseline_log.md           # M0–M4 扁平 + 深度基准实验唯一主记录（M2 §8）
+│   └── flat_baseline_log.md           # M0–M4 扁平基线实验唯一主记录（M2 §8）
 └── Inactive/                          # 归档旧版文档
     ├── File Structure20260506.md
     ├── Meeting_KLP_20260609/
@@ -76,7 +76,7 @@ casa0004 Dissertation/
 
 **说明：** 研究方案与基准实验日志暂存于 `待整理/`；活跃管理文件保留在根级；旧版文档在 `Inactive/`。
 
-**文档变更（2026-07-03）：** 原 `2026-06-23_m2_baseline_results.md` 已合并入 `flat_baseline_log.md` §8 并删除；基线协议、M1–M4 结果、深度 LSTM、M2 完整分析现均指向单一文件。
+**文档变更（2026-07-03）：** 原 `2026-06-23_m2_baseline_results.md` 已合并入 `flat_baseline_log.md` §8 并删除；基线协议、M1–M4 结果、M2 完整分析现均指向单一文件。
 
 ---
 
@@ -150,6 +150,7 @@ casa0004 Dissertation/
 │   │   ├── py/build_m1_weekly.py
 │   │   └── outputs/m1_weekly_features.csv
 │   ├── M2/
+│   │   ├── m2_data_dictionary.md
 │   │   ├── py/
 │   │   │   ├── build_m2_weekly.py
 │   │   │   ├── audit_m2_coverage.py
@@ -193,6 +194,7 @@ casa0004 Dissertation/
 - Channel A **S2 patch 影像**（967 个 `.tif`）已下载至 `raw/02_sentinel2/Channel A/s2_patches/`。
 - Channel B 新增 **watermask** 变体（`extract_sentinel2_monthly_indices_watermask_gee.js` + 对应 CSV）。
 - 原 `01_literature/Test/` 与 `EDA/` 中的 M2 EDA 图表已迁移至 `processed/M2/outputs/`。
+- 新增 `processed/M2/m2_data_dictionary.md`（Channel B 数据字典，与 M1/M3 对齐；含 5 指标精确波段公式、as-of 对齐与建模合约）。
 
 ---
 
@@ -283,7 +285,6 @@ casa0004 Dissertation/
 04_code/
 ├── scripts/
 │   ├── run_baseline.py                # 扁平特征基准（Ridge / XGB / ARIMA / Naive）
-│   ├── run_deep_baseline.py           # 深度基准（LSTM / TFT 等）
 │   ├── m1/sweep_m1.py
 │   ├── m2/
 │   │   ├── sweep_m2.py
@@ -307,7 +308,7 @@ casa0004 Dissertation/
 └── notebooks/                         # 空（占位）
 ```
 
-**说明：** 由原 `01_literature/Test/` 迁移而来；入口脚本 `run_baseline.py` / `run_deep_baseline.py`，各模态 sweep / robustness / SHAP 分目录存放。
+**说明：** 由原 `01_literature/Test/` 迁移而来；入口脚本 `run_baseline.py`，各模态 sweep / robustness / SHAP 分目录存放。
 
 ---
 
@@ -318,29 +319,25 @@ casa0004 Dissertation/
 └── baselines/
     ├── m1/                            # M1 金融基准
     │   ├── baseline_{metrics,predictions}.csv
-    │   ├── baseline_deep_{metrics,predictions}.csv
-    │   ├── backtest_deep.png
     │   └── sweep_{overview.png,summary.csv}
     ├── m2/                            # M2 遥感基准（anom / level / watermask / literature / LOAO）
     │   ├── baseline_*_{metrics,predictions}.csv   # 多设定变体
-    │   ├── baseline_deep_*_{metrics,predictions}.csv
-    │   ├── backtest_{anom,deep_anom,watermask}.png
+    │   ├── backtest_{anom,watermask}.png
     │   ├── shap_*.{png,csv}           # Ridge / XGB + 按 AOI / index 分解
     │   └── sweep_m2_{overview.png,summary.csv}
     ├── m3/                            # M3 航运基准
     │   ├── baseline_{metrics,predictions}.csv
-    │   ├── baseline_deep_{metrics,predictions}.csv
-    │   ├── backtest{,_deep}.png
+    │   ├── backtest.png
     │   ├── shap_m3*.{png,csv}
     │   └── sweep_m3_{overview.png,summary.csv}
     └── m4/                            # M4 多模态融合基准
-        ├── baseline_{anom,deep}_*.{csv}
-        ├── backtest_{anom,deep_anom}.png
+        ├── baseline_anom_*.{csv}
+        ├── backtest_anom.png
         ├── shap_m4*.{png,csv}         # 含按 modality / M2 index / M3 source 分解
         └── sweep_m4_{overview.png,summary.csv}
 ```
 
-**说明：** 完整实验记录见 `00_admin/待整理/flat_baseline_log.md`（§7 M1 sweep · §8 M2 · §9 M3 · §12 M4 · §13 深度 LSTM · §11 复现命令）。
+**说明：** 完整实验记录见 `00_admin/待整理/flat_baseline_log.md`（§7 M1 sweep · §8 M2 · §9 M3 · §12 M4 · §11 复现命令）。
 
 ---
 

@@ -16,20 +16,19 @@ distillate_supplied,M1,EIA WPSR weekly,already lagged in M1 (+1w Wed-release),36
 jet_fuel_supplied,M1,EIA WPSR weekly,already lagged in M1 (+1w Wed-release),365,100.0,2019-01-04,2025-12-26
 crude_stocks_change,M1,EIA WPSR weekly,already lagged in M1 (+1w Wed-release),365,100.0,2019-01-04,2025-12-26
 cushing_stocks_change,M1,EIA WPSR weekly,already lagged in M1 (+1w Wed-release),365,100.0,2019-01-04,2025-12-26
-net_crude_trade,M1,EIA WPSR weekly,already lagged in M1 (+1w Wed-release),365,100.0,2019-01-04,2025-12-26
 vix,M1,market daily,none; week-close,365,100.0,2019-01-04,2025-12-26
 dollar_index,M1,market daily,none; week-close,365,100.0,2019-01-04,2025-12-26
 treasury_10y,M1,market daily,none; week-close,365,100.0,2019-01-04,2025-12-26
 fed_funds_rate,M1,market daily,none; week-close,365,100.0,2019-01-04,2025-12-26
-sp500,M1,market daily,none; week-close,365,100.0,2019-01-04,2025-12-26
 sp500_log_return,M1,market daily,none; week-close,365,100.0,2019-01-04,2025-12-26
 ovx,M1,market daily,none; week-close,365,100.0,2019-01-04,2025-12-26
 gpr,M1,macro monthly,already lagged in M1 (1-5w),365,100.0,2019-01-04,2025-12-26
 gold_return,M1,market daily,none; week-close,365,100.0,2019-01-04,2025-12-26
 global_econ_activity,M1,macro monthly,already lagged in M1 (1-5w),365,100.0,2019-01-04,2025-12-26
 nonoil_industrial_commodity,M1,macro monthly,already lagged in M1 (1-5w),365,100.0,2019-01-04,2025-12-26
-futures_spread,M1,market daily,none; week-close,365,100.0,2019-01-04,2025-12-26
-commodity_fx,M1,market daily,none; week-close,365,100.0,2019-01-04,2025-12-26
+brent_f1_spot_log_basis,M1,market daily,none; week-close,365,100.0,2019-01-04,2025-12-26
+brent_roll_week,M1,market daily,none; week-close,365,100.0,2019-01-04,2025-12-26
+cadusd_log_return,M1,market daily,none; week-close,365,100.0,2019-01-04,2025-12-26
 dgs10_change,M1,market daily,none; week-close,365,100.0,2019-01-04,2025-12-26
 avail_market,mask,modality availability,n/a,365,100.0,2019-01-04,2025-12-26
 avail_eia_weekly,mask,modality availability,n/a,365,100.0,2019-01-04,2025-12-26
@@ -95,55 +94,49 @@ gfw_cape_total_vessels,M3,GFW monthly presence,+4w (applied in M3),365,100.0,201
 gfw_cape_cargo_hours,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_cape_bunker_hours,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_cape_other_hours,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
-gfw_cape_nontanker_hours,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_cape_other_share,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_cape_total_hours_mom_pct,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
-gfw_cape_dwell_hours_per_vessel,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
+gfw_cape_mean_presence_hours_per_vessel,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_hormuz_total_hours,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_hormuz_total_vessels,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_hormuz_cargo_hours,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_hormuz_bunker_hours,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_hormuz_other_hours,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
-gfw_hormuz_nontanker_hours,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_hormuz_other_share,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_hormuz_total_hours_mom_pct,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
-gfw_hormuz_dwell_hours_per_vessel,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
+gfw_hormuz_mean_presence_hours_per_vessel,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_malacca_total_hours,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_malacca_total_vessels,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_malacca_cargo_hours,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_malacca_bunker_hours,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_malacca_other_hours,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
-gfw_malacca_nontanker_hours,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_malacca_other_share,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_malacca_total_hours_mom_pct,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
-gfw_malacca_dwell_hours_per_vessel,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
+gfw_malacca_mean_presence_hours_per_vessel,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_mandeb_total_hours,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_mandeb_total_vessels,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_mandeb_cargo_hours,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_mandeb_bunker_hours,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_mandeb_other_hours,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
-gfw_mandeb_nontanker_hours,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_mandeb_other_share,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_mandeb_total_hours_mom_pct,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
-gfw_mandeb_dwell_hours_per_vessel,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
+gfw_mandeb_mean_presence_hours_per_vessel,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_panama_total_hours,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_panama_total_vessels,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_panama_cargo_hours,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_panama_bunker_hours,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_panama_other_hours,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
-gfw_panama_nontanker_hours,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_panama_other_share,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_panama_total_hours_mom_pct,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
-gfw_panama_dwell_hours_per_vessel,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
+gfw_panama_mean_presence_hours_per_vessel,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_suez_total_hours,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_suez_total_vessels,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_suez_cargo_hours,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_suez_bunker_hours,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_suez_other_hours,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
-gfw_suez_nontanker_hours,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_suez_other_share,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_suez_total_hours_mom_pct,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
-gfw_suez_dwell_hours_per_vessel,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
+gfw_suez_mean_presence_hours_per_vessel,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 gfw_all_total_hours_sum,M3,GFW monthly presence,+4w (applied in M3),365,100.0,2019-01-04,2025-12-26
 pw_cape_n_tanker,M3,PortWatch chokepoints,+1w (applied in M3),364,99.7,2019-01-11,2025-12-26
 pw_cape_n_total,M3,PortWatch chokepoints,+1w (applied in M3),364,99.7,2019-01-11,2025-12-26

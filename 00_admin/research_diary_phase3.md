@@ -214,7 +214,7 @@
 
 **EDA 产物统一 `m2_eda_*` 前缀**
 
-- `build_m2_weekly.py` 输出的 tidy 长表由 `m2_weekly_long.csv` 重命名为 **`m2_eda_weekly_long.csv`**（供 `eda_m2_mechanism.py` 读入；与 `m2_eda_*.png` / `m2_eda_leadlag_corr.csv` 同属 EDA 层产物）。
+- `build_m2_weekly.py` 输出的 tidy EDA 表为 **`m2_eda_weekly.csv`**（供 `eda_m2_mechanism.py` 读入；与 `m2_eda_*.png` / `m2_eda_leadlag_corr.csv` 同属 EDA 层产物）。
 - B0 审计产物仍保留 `m2_coverage_*` / `m2_s2_*` 等前缀（非 EDA 脚本产出）。
 
 **merge 矩阵仅并入 55 列 M2 anomaly（主分析契约）**
@@ -464,7 +464,7 @@
 
 运行结果（`--watermask`）：
 - 宽表 `m2_weekly_features_watermask.csv`：**365 × 188**（+MNDWI 22 列 + land_px 11 列）
-- 长表 `m2_eda_weekly_long_watermask.csv`：**24090 行**（6 指数 × 11 × 365）
+- EDA 表 `m2_eda_weekly_watermask.csv`：**24090 行**（6 指数 × 11 × 365）
 - `low_land_coverage` 行：3385 / 20045 S2 行（**16.9%**），主要来自 Basra、RasTanura
 
 **下一步（B4 robustness 水体掩膜比较，P2）**
@@ -477,6 +477,34 @@ python 04_code/scripts/run_baseline.py \
   --out 05_outputs/baselines/m2/watermask/
 ```
 （需先在 `run_baseline.py` / `robustness_m2.py` 增加 `--m2-features-csv` 覆盖参数；当前 M3/M4 优先，此项 P2。）
+
+## 2026-07-03
+
+### M1 变量精简与口径统一（防泄漏 + 冗余清理）
+
+系统精简 M1 特征并统一收益率口径，**38 → 35 列**；重建 `m1_weekly_features.csv` 与 merge 主 / full / watermask 三变体（防泄漏自检全通过，merge M1 modality = 31）。
+
+**改动清单：**
+
+1. **移除 `brent_direction`**：方向不作独立目标/特征，改由预测价格派生为评估指标（基线 SHAP≈0，冗余）。
+2. **`brent_return_pct` 移除、`wti_return_pct` → `wti_log_return`**：Brent/WTI 统一对数收益（简单收益率与对数收益相关 0.997，冗余）。
+3. **移除 `net_crude_trade`**：`= imports − exports` 为精确线性组合（秩亏）；保留 `crude_imports` + `crude_exports`（窗内近正交 corr≈0.05，信息互补）。
+4. **移除 `sp500` level、`sp500_return_pct` → `sp500_log_return`**：指数水平非平稳、测试期（4697–6930）超训练范围（2305–4770）外推；主分析 `feature_mode="all"` 不平稳化，故仅留对数收益。
+5. **`futures_spread` → `brent_f1_spot_log_basis`（正名）+ 新增 `brent_roll_week`**：正名为前月期货—现货**基差**（非纯期限结构）；**未 back-adjust**（basis 需真实当日 F₁ 价）；`brent_roll_week` = 每月最后 W-FRI ≈ ICE Brent 换月，作换月控制哑变量。
+6. **`commodity_fx` → `cadusd_log_return`**：删复合均值与 AUD 腿，主留 CAD 单腿对数收益。
+7. **`gpr` 改用日度 GPRD**：下载 `Other/data_gpr_daily_recent.xls`，周均值聚合 → 滞后一周（替代月度 ffill+lag，匹配周频、避免按月份标签回填的潜在前视）。
+8. **product supplied 中文名**「消费量」→「表观需求」（非严格终端消费）。
+9. **负价格护栏**：所有对数收益计算前 `assert price>0`（2020-04-20 WTI −36.98 在周五最后值口径下不构成代表价，不影响）。
+
+### Decisions / 待办
+
+- **AUD 稳健性（暂缓，已记录）**：`audusd_log_return` 从主表删除。数据依据：CAD–油价相关 0.36 > AUD 0.28；CAD–AUD 相关 0.74–0.79（AUD 增量有限，更多反映铁矿/煤/中国需求/风险偏好）。**保留为「商品货币选择稳健性」备选**——后续可 (i) AUD 替换 CAD、(ii) CAD+AUD 同时加、(iii) 复原 `commodity_fx` 均值 作稳健性对照。raw `Yahoo_AUDUSD_daily.csv` 仍在，暂不入库。
+- **重跑 baseline（待办）**：M1 特征集已变（35 列 / merge M1=31）；`05_outputs/baselines/*` 旧 SHAP 与 `00_admin/待整理/flat_baseline_log.md` 列数需在重跑后同步。
+- **`brent_f1_spot_log_basis` 换月稳健性（建模阶段）**：删换月周 / 删前后各一周 / A(无 basis)–B(basis+dummy)–C(basis 删换月周) 对比（见 `m1_data_dictionary.md` §4.4.2-D）。
+
+**EN summary:** Streamlined M1 from 38 to 35 columns — dropped `brent_direction`, `brent_return_pct`, `net_crude_trade`, `sp500` level; unified log-return convention (`wti`/`sp500` → log return); renamed `futures_spread` → `brent_f1_spot_log_basis` (unadjusted, + `brent_roll_week` roll dummy); `commodity_fx` → `cadusd_log_return` (AUD leg dropped, kept for future robustness); `gpr` switched to daily GPRD weekly-mean + 1-week lag. Rebuilt m1 + merge three variants (M1=31); leakage self-checks pass. Baseline rerun pending.
+
+---
 
 ## Backlog 待办
 

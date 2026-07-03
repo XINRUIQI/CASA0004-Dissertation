@@ -124,7 +124,9 @@ def load_portwatch_chokepoints_weekly() -> pd.DataFrame:
 
         weekly["tanker_share"] = _safe_div(weekly["n_tanker"], weekly["n_total"])
         weekly["tanker_cap_share"] = _safe_div(weekly["capacity_tanker"], weekly["capacity"])
-        # Average tanker size (P070: capacity weighted by loading > tanker count).
+        # Mean DWT per tanker transit = capacity_tanker / n_tanker (author-derived;
+        # consistent with P070 vessel-type disaggregation, but NOT a P070 oil-price
+        # variable). A DWT-equivalent transit-capacity proxy, not actual oil load.
         weekly["avg_tanker_size"] = _safe_div(weekly["capacity_tanker"], weekly["n_tanker"])
         weekly["n_tanker_wow_pct"] = weekly["n_tanker"].pct_change(fill_method=None) * 100
         weekly["capacity_tanker_4w_ma"] = weekly["capacity_tanker"].rolling(4, min_periods=1).mean()
@@ -215,11 +217,12 @@ def load_gfw_monthly() -> pd.DataFrame:
     for cp, grp in df.groupby("cp"):
         ts = grp.set_index("date")[keep].sort_index()
         # Monthly-native derived metrics.
-        ts["nontanker_hours"] = ts["cargo_hours"] + ts["bunker_hours"]
         ts["other_share"] = _safe_div(ts["other_hours"], ts["total_hours"])
         ts["total_hours_mom_pct"] = ts["total_hours"].pct_change(fill_method=None) * 100
-        # Congestion / dwell proxy (P016): mean presence hours per unique vessel.
-        ts["dwell_hours_per_vessel"] = _safe_div(ts["total_hours"], ts["total_vessels"])
+        # Mean presence hours per unique vessel = total_hours / total_vessels.
+        # A COARSE proxy for transit duration / congestion, NOT observed dwell time
+        # (true dwell needs entry/exit events or low-speed/anchorage segmentation).
+        ts["mean_presence_hours_per_vessel"] = _safe_div(ts["total_hours"], ts["total_vessels"])
 
         ts.columns = [f"gfw_{cp}_{c}" for c in ts.columns]
         frames.append(ts)

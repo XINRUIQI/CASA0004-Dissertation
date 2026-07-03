@@ -2,7 +2,7 @@
 
 > **配套主方案**：`00_admin/2026-06-22_research_plan_e2e_multimodal.md` §4.2 双通道设计
 > **定位**：把遥感影像转成有经济/物理含义的人工指标（NDVI/NDWI/NDBI/BSI + NTL，共 5 个；FRT 已去掉，见 §6），形成「日期×站点×指标」时间序列，服务于**机制解释、统计验证、可解释性**。
-> **最后更新**：2026-06-23
+> **最后更新**：2026-07-03
 
 ---
 
@@ -16,31 +16,43 @@
 
 ---
 
+
+
 ## 1. 现有资产盘点
 
 
-| 资产       | 文件（`03_data/raw/02_sentinel2/Channel B/`）                                             | 字段                                                                         | 窗口/频率                      |
-| -------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------- |
-| S2 光学指标  | `sentinel2_oil_sites_monthly_indices_201704_202512_11aoi.csv`                         | NDVI/NDWI/NDBI/BSI（各 + `_std`）、`cloud_probability`、`valid_obs_count`、站点元数据 | 2017-04 ~ 2025-12，月，11 AOI |
-| VIIRS 夜光 | `viirs_oil_sites_monthly_nightlights_201401_202512_11aoi.csv`                         | `ntl_avg_rad_mean/max/stddev`、`ntl_cf_cvg_mean`                            | 2014-01 ~ 2025-12，月，11 AOI |
-| GEE 导出脚本 | `extract_sentinel2_monthly_indices_gee.js`、`extract_viirs_monthly_nightlights_gee.js` | 可复跑/扩展                                                                     | —                          |
+| 资产             | 文件（`03_data/raw/02_sentinel2/Channel B/`）                                             | 字段                                                                         | 窗口/频率                      |
+| -------------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------- |
+| S2 光学指标        | `sentinel2_oil_sites_monthly_indices_201704_202512_11aoi.csv`                         | NDVI/NDWI/NDBI/BSI（各 + `_std`）、`cloud_probability`、`valid_obs_count`、站点元数据 | 2017-04 ~ 2025-12，月，11 AOI |
+| VIIRS 夜光       | `viirs_oil_sites_monthly_nightlights_201401_202512_11aoi.csv`                         | `ntl_avg_rad_mean/max/stddev`、`ntl_cf_cvg_mean`                            | 2014-01 ~ 2025-12，月，11 AOI |
+| GEE 导出脚本       | `extract_sentinel2_monthly_indices_gee.js`、`extract_viirs_monthly_nightlights_gee.js` | 可复跑/扩展                                                                     | —                          |
+| S2 水体掩膜版（B4）   | `sentinel2_oil_sites_monthly_indices_watermask_201704_202512_11aoi.csv`               | 同上 + MNDWI + `land_px`；NDVI/NDBI/BSI 仅陆地像素                                 | 2017-04 ~ 2025-12，月，11 AOI |
+| GEE 水体掩膜脚本（B4） | `extract_sentinel2_monthly_indices_watermask_gee.js`                                  | B4 稳健性对照                                                                   | —                          |
 
 
-**已知数据问题（待 B0 量化）：**
+**已知数据问题（B0 已量化，B4 水体掩膜已部分缓解）：**
 
 - terminal 类站点（Fujairah/Singapore/Ningbo 等）大量月份 NDVI/NDWI 行为空——云掩膜 + 水面占主导，光学指标在纯水/码头面意义弱。
 - S2 指标 2017-04 起、VIIRS 2014 起，与标准比较窗 **2019–2026** 对齐时早期周缺失属正常。
 
 ---
 
+
+
 ## 2. 关键缺口（开工前必须确认）
 
-1. `**03_data/processed/M2/` 为空**：尚无任何周频特征表、无聚合脚本、未接入 `01_literature/Test/` 消融。
-2. **当前是月度原始水平值**：未做站点 z-score（NTL 受 AOI 规模/城市灯光污染影响，原始水平不可比；NDVI/BSI 等有强季节性）、未做异步对齐（方案 §4.4：按可得日对齐、加 `days_since_obs`，**禁止把月值 ffill 成多个相同周值**）。
+> 以下为 **2026-06-22 开工前** 的记录，保留作历史；当前均已在 B0–B1 解决。
+
+1. `03_data/processed/M2/` ~~为空~~ → 已有周频特征表、聚合脚本，并通过 `build_feature_matrix.py` + `04_code/scripts/run_baseline.py` 接入 M0–M4 消融（原 `01_literature/Test/` 已废弃）。
+2. ~~月度原始水平值、无 z-score、无异步对齐~~ → B1 已实现站点 expanding z-score（anom）+ as-of 周对齐 + `days_since_obs`。
 
 ---
 
+
+
 ## 3. 接下来的步骤（B0 → B4）
+
+
 
 ### B0 — 数据审计与质量报告 ✅ 已完成（2026-06-23）
 
@@ -50,6 +62,8 @@
   - **云量**：terminal（中东干旱）云量最低（Basra 4.0 / Ras Tanura 4.9 / Yanbu 5.7），光学质量好；最多云为 Jamnagar 15.8 / Rotterdam 11.4。
   - **信息量按站点分化，不能按类型一刀切**：高方差如 Basra / Kharg / Ras Tanura 的 NDWI（水面动态）；近常数（低信号）如 Fujairah / Yanbu 的 NDVI、Basra / Ras Tanura 的 NTL。
   - **高方差 ≠ 有用信号**：水面 terminal 的 NDWI 高波动可能是潮汐 / 泥沙 / 水色噪声（当前 GEE 只做云掩膜、未做水体掩膜）→ 去留交 B3 数据驱动（SHAP / leave-one-AOI-out），B0 不硬删。
+
+
 
 ### B1 — 机制特征构建 ✅ 已完成（2026-06-23）
 
@@ -84,48 +98,76 @@
   - 任何滚动统计只用历史，scaler 仅在训练集 fit。
 - 输出：
   - `03_data/processed/M2/outputs/m2_weekly_features.csv`（宽表：`{index}_{aoi}` + `{index}_anom_{aoi}` + `avail_`*，对齐 2019–2026）；
-  - `m2_weekly_long.csv`（tidy 长表：date, site_id, site_type, index, level, anom, age, cloud…，供 EDA/面板分析）。
-- 同步在 `03_data/Dataset/Dataset_Overview4.ipynb` 的 M2 词典里补 Channel B 逐变量说明。
-- **验收**：`m2_weekly_features.csv` 能直接被 `01_literature/Test/data_loader.py` 当 M2 读入。
-- **产出（2026-06-23）**：脚本 `build_m2_weekly.py`；`outputs/m2_weekly_features.csv`（365 周 × 154 特征：5 指标 ×11 站 ×(level+anom) + 2 模态 ×11 站 ×(age+avail)）+ `m2_weekly_long.csv`（20075 行 tidy）。S2 可用率 0.998 / NTL 1.000，anom 缺失 3%。防泄漏 sanity 通过（level 月内重复、`days_since_obs` 每周 +7、发布滞后下新观测才跳变）。
+  - `m2_eda_weekly.csv`（tidy 长表：date, site_id, site_type, index, level, anom, mom, age, cloud…，供 EDA/面板分析）。
+  - B4 水体掩膜版：`m2_weekly_features_watermask.csv`（365×188）+ `m2_eda_weekly_watermask.csv`（`--watermask`）。
+- 同步在 `03_data/Dataset/Dataset_Overview4.ipynb` 的 M2 词典里补 Channel B 逐变量说明；完整列字典见 `03_data/processed/M2/m2_ChannelB_data_dictionary.md`。
+- **验收**：`m2_weekly_features.csv` 经 `03_data/processed/merge/py/build_feature_matrix.py` 并入 `weekly_feature_matrix.csv`，由 `04_code/scripts/run_baseline.py --modality M2` 读入。
+- **产出（2026-06-23）**：脚本 `build_m2_weekly.py`；`outputs/m2_weekly_features.csv`（365 周 × 154 特征：5 指标 ×11 站 ×(level+anom) + 2 模态 ×11 站 ×(age+avail)）+ `m2_eda_weekly.csv`（20075 行 tidy）。S2 可用率 0.998 / NTL 1.000，anom 缺失 3%。防泄漏 sanity 通过（level 月内重复、`days_since_obs` 每周 +7、发布滞后下新观测才跳变）。
+
+
 
 ### B2 — 机制验证 EDA ✅ 已完成（2026-06-23）
 
-- 新建 `03_data/processed/M2/py/eda_m2_mechanism.py`（或并入 `01_literature/EDA/`）。
+- 新建 `03_data/processed/M2/py/eda_m2_mechanism.py`。
 - 内容：
   - 每指标各站点时序图，叠加已知事件（2020 COVID、2022 俄乌、2023–24 红海/Houthi、Hormuz 紧张、炼厂检修）；
   - 与 Brent 周对数收益、与 **M1 基本面**的**滞后相关 / 交叉相关 / Granger**（严格滞后，无前视）——例如：refinery 站点的 NDBI/NTL 是否领先 `refinery_utilisation`；export terminal 的 NTL 是否与 `crude_exports` 同步。
   - 按**站点类型**（port/refinery/terminal）聚合成可解释复合活动指数。
-- 输出：时序/相关/lead-lag 图 → `05_outputs/`（或 `01_literature/EDA/`）。
+- 输出：时序/相关/lead-lag 图 → `03_data/processed/M2/outputs/m2_eda_*.png`
 - **验收**：能给出 2–3 条"机制故事"（如"X 站点夜光异常领先出口 N 周"），写进 Methodology/Results。
 - **产出（2026-06-23）**：脚本 `eda_m2_mechanism.py`；`outputs/m2_eda_*.png`（站点类型复合 anom 时序 / lead-lag 热图 / 与 M1 同期相关 / Houston 专项）+ `m2_eda_leadlag_corr.csv`。
-- **B2 结论**：① 整体相关弱（|corr| < 0.15，符合周油价难预测 + NTL↔油价弱代理）；② **多数较强相关落在负 lag**（Channel B 滞后/同期反应油价，而非领先）→ 对 RQ1 增量预测是**审慎信号**；③ 亮点 **NDWI_terminal**（中东出口码头水面动态）lag+1 Granger p=0.029、lag+3 领先相关 ≈0.14（多重比较下需谨慎）；④ 含义：手工指标领先信号有限，**反向支撑"需要 Channel A 表示学习 + 门控融合"** 的论证；增量价值留 B3 用 DM/Clark–West 严格判定。
+- **B2 结论**：① 整体相关弱（|corr| < 0.15，符合周油价难预测 + NTL↔油价弱代理）；② **多数较强相关落在负 lag**（Channel B 滞后/同期反应油价，而非领先）→ 对 RQ1 增量预测是**审慎信号**；③ 亮点 **NDWI_terminal**（中东出口码头水面动态）lag+1 Granger p=0.029、lag+3 领先相关 ≈0.14（多重比较下需谨慎）；④ 含义：手工指标领先信号有限，**反向支撑"需要 Channel A 表示学习 + 门控融合"** 的论证；**B3 已确认 XGB 嵌套增量显著（CW_p=0.006），但 vs M0 仍无 skill**。
 
-### B3 — 增量价值 + 可解释性消融（统计验证主交付，1–1.5 天）
 
-- 把 `m2_weekly_features.csv` 接进 `01_literature/Test/`，作为 **M2 = Channel B**。
-- 跑 **M0 / M1 / M1+M2** 的表格模型（Ridge/RF/XGBoost——Channel B 是 tabular，深度模型留给主框架）。
-- 检验：对 M1 和 M0(随机游走) 做 **Diebold–Mariano / Clark–West**（嵌套模型用 Clark–West 更稳）。
-- 解释：M1+M2 的 **SHAP**——哪些 Channel B 变量、哪些站点、哪些时期起作用。
-- **leave-one-AOI-out** 与**按站点类型**消融：定位信号来自哪些站点。
-- **验收**：产出"M1 vs M1+ChannelB"对比表（含 DM/CW p 值）+ SHAP 图；明确回答 RQ1（遥感有无增量）。
 
-#### B3 前置现状（2026-06-23 检查）
+### B3 — 增量价值 + 可解释性消融 ✅ 已完成（2026-06-23；M1 基线 2026-07-03 重跑）
 
-- ✅ 数据就绪：`m2_weekly_features.csv`（365 周 ×154）已并入 `processed/merge/outputs/weekly_feature_matrix.csv`，含 `target_price_next` / `avail_m2`。
-- ❌ **M0 未实现**、❌ **M1 未在现无泄漏矩阵上跑公平基线**、❌ M1+ChannelB 消融/DM-CW/SHAP/leave-one-AOI-out 全未做。旧 `01_literature/Test/` 结果基于旧扁平表 + 多目标，**不可复用**。
-- 顺序：先建建模层 → M0 → M1（须稳定 beat M0）→ M1+M2 → DM/CW → SHAP → leave-one-AOI-out。
+- 建模层：`04_code/src/backtest/` + `04_code/scripts/run_baseline.py`（替代旧 `01_literature/Test/`）。
+- 跑 **M0 / M1 / M1+M2** 表格模型（Ridge + XGB；Channel B 为 tabular，深度模型留给主框架）。
+- 检验：**Diebold–Mariano / Clark–West**（嵌套模型 vs M1 用 Clark–West）。
+- 解释：**SHAP**（`04_code/scripts/m2/shap_m2.py`）——按 RS 指数 / AOI 聚合。
+- **leave-one-AOI-out**（`run_baseline.py --leave-one-aoi-out`）；~~按站点类型~~ 分组消融 **未单独实现**（B2 仅有类型复合 EDA）。
+- **降维对照 C2**（`04_code/scripts/m2/robustness_m2.py`）：All-55 / PCA-90% / ElasticNet / SHAP-top20。
+- **验收**：✅ "M1 vs M1+ChannelB" 对比表 + SHAP 图 + LOAO；已回答 RQ1。
+
+
+
+#### B3 产出与结论（2026-06-23 / 07-03）
+
+
+| 项                         | 脚本 / 产物                                                                                                  |
+| ------------------------- | -------------------------------------------------------------------------------------------------------- |
+| 主基线 M0/M1/M2              | `run_baseline.py --modality M2 --m2-features anom` → `05_outputs/baselines/m2/baseline_metrics_anom.csv` |
+| literature 子集（4 NTL_anom） | `--m2-features literature` → `baseline_metrics_literature.csv`                                           |
+| level 对照（B4）              | `--m2-features level` → `baseline_metrics_level.csv`                                                     |
+| LOAO                      | `--leave-one-aoi-out` → `baseline_loao_anom.csv`                                                         |
+| SHAP                      | `shap_m2.py` → `shap_anom.png` + `shap_*_by_{feature,index,aoi}.csv`                                     |
+| C2 降维                     | `robustness_m2.py` → `c2_summary.csv` / `c2_overview.png`                                                |
+| 完整记录                      | `00_admin/待整理/flat_baseline_log.md` §8                                                                   |
+
+
+**B3 结论（主协议 L4，lookback=4，2019–2025）：**
+
+- **vs M0**：无模型 beat 随机游走（M2 Ridge skill −6.3%，DM 不显著）——周频 Brent 难预测，与 B2 一致。
+- **vs M1（RQ1 嵌套增量）**：M2 **XGB** Clark–West **p = 0.006**（显著）；M2 Ridge CW_p = 0.21（不显著）→ 增量**模型依赖**（非线性树能挖 RS 信号，线性不能）。
+- **LOAO**：逐站剔除多数略降 RMSE → 信号**分散**于多站，非单站驱动。
+- **C2**：PCA-90 / SHAP-top20 下 XGB CW 仍显著（p ≈ 2.6e-6 / 7.1e-4）→ 增量非纯过拟合 55 维。
+- **literature 4 NTL**：XGB CW 亦显著（L4 p ≈ 2.0e-5）→ 文献精选子集与全量 55 anom 结论一致。
+
+
 
 #### M2 入模列决策（154 列 → 用哪些）
 
 > 实测窗口 **2019-01 ~ 2025-12（365 周，M2 整段落入，无需裁剪）**。154 列 = `level` 55 + `anom` 55 + `age` 22 + `avail` 22。
 
-| 类别 | 列数 | 2019–2025 实测 | 决策 |
-|---|---:|---|---|
-| `{idx}_anom_{aoi}` | 55 | std≈1.20，无常数列 | ✅ **入模主力** |
-| `{idx}_{aoi}` level | 55 | std≈4.21，尺度不可比+含季节+与 anom 冗余 | ❌ 主分析不用；仅 B4「level vs anom」robustness |
-| `s2/ntl_age_days_{aoi}` | 22 | 28–271 天，有变化但属时效非信号 | 🔶 主分析不用；可选聚合版作 robustness |
-| `s2/ntl_avail_{aoi}` | 22 | 8024 值中仅 8 个=0，**近零方差** | ❌ 剔除（窗内恒≈1；其价值在端到端 missing-modality，非 tabular） |
+
+| 类别                      | 列数  | 2019–2025 实测                 | 决策                                             |
+| ----------------------- | --- | ---------------------------- | ---------------------------------------------- |
+| `{idx}_anom_{aoi}`      | 55  | std≈1.20，无常数列                | ✅ **入模主力**                                     |
+| `{idx}_{aoi}` level     | 55  | std≈4.21，尺度不可比+含季节+与 anom 冗余 | ❌ 主分析不用；仅 B4「level vs anom」robustness          |
+| `s2/ntl_age_days_{aoi}` | 22  | 28–271 天，有变化但属时效非信号          | 🔶 主分析不用；可选聚合版作 robustness                     |
+| `s2/ntl_avail_{aoi}`    | 22  | 8024 值中仅 8 个=0，**近零方差**      | ❌ 剔除（窗内恒≈1；其价值在端到端 missing-modality，非 tabular） |
+
 
 **三层用法（兼顾 RQ1 + 可解释性 + P058 降维对照）：**
 
@@ -139,17 +181,34 @@
 - 文献只推 **4 个 NTL 站点 + 1 质量变量 ≈ 5–7 列**；NDVI 降级、删非石油 Ningbo。B1 全量 55 anom = 候选池，B3 据此走「文献精选 vs 全量+降维」**两条都报**：全量答 RQ1，精选+SHAP+leave-one-AOI-out 答可解释性。
 - 「保留 `valid_obs_count`」是数据质量/审计用途，**非预测特征**——与「质量/时效列不入模」一致。
 
-### B4 — 稳健性 + 写作 + 为 RQ2 铺路（0.5–1 天）
 
-- 稳健性：不同滞后（1/4/8 周）、common-sample vs max-sample、有/无 z-score（level vs anom）、leave-one-AOI-out；**（可选）水面 terminal 的「水体掩膜版」光学指标对照**——重跑 GEE 加 NDWI/MNDWI 水体掩膜、仅陆地像素算 NDVI/NDBI/BSI（呼应 McFeeters 1996 / Xu 2006），解决 Basra/Kharg 等 NDWI 受水面主导的问题。
-- 文档：完成 Channel B 数据字典；写 Methodology「机制变量构建」与 Results「增量价值」段落。
-- **为 RQ2 铺路**：固定 Channel B 作为"扁平指标基线"，待 Channel A image embedding 就绪后，做"手工指标 vs 表示学习"对照（同站点、同窗口、同目标）。
+
+### B4 — 稳健性 + 写作 + 为 RQ2 铺路 🔶 大部分完成（2026-06-23）
+
+- 稳健性：
+  - ✅ lookback 1/4/8 周 × anom/literature/level → `04_code/scripts/m2/sweep_m2.py` → `sweep_m2_summary.csv`
+  - ✅ level vs anom（见 sweep `level` contract + 主基线 `--m2-features level`）
+  - ✅ leave-one-AOI-out（B3 已做）
+  - ✅ **水体掩膜版** GEE → `build_m2_weekly.py --watermask` → `build_feature_matrix.py --m2-csv ...watermask.csv` → `run_baseline.py --matrix weekly_feature_matrix_watermask.csv --tag watermask`；M2 XGB CW_p **0.006 → 8.5e-5**（增量更强，结论保守）
+  - ❌ **common-sample vs max-sample** 显式对照未做
+- 文档：
+  - ✅ `m2_ChannelB_data_dictionary.md`（含 §7 水体掩膜）
+  - ✅ `06_writing/chapter_3_methodology.md`（机制变量、z-score、as-of、水体掩膜）
+  - ✅ `06_writing/chapter_4_results.md`（M2 增量表 + 稳健性段落）
+- **为 RQ2 铺路**：
+  - ✅ Channel B 已固定为 M2 扁平指标基线（全套 baseline 可复现）
+  - 🔶 Channel A（Prithvi embedding）数据工程进行中：`precompute_s2_embeddings.py`、`s2_patch_index.csv` 等（2026-07-03）
+  - ❌ **「手工指标 vs 表示学习」正式对照实验** 待 Channel A 入模后启动
 
 ---
 
-## 3.5 已实现脚本说明（B0–B2）
 
-> 路径均在 `03_data/processed/M2/py/`；产物均在 `03_data/processed/M2/outputs/`。
+
+## 3.5 已实现脚本说明（B0–B4）
+
+> 数据工程脚本路径 `03_data/processed/M2/py/`，数据产物 `03_data/processed/M2/outputs/`；建模/消融脚本 `04_code/scripts/`，结果 `05_outputs/baselines/m2/`。
+
+
 
 ### `audit_m2_coverage.py`（B0 — 数据审计）
 
@@ -168,6 +227,8 @@
 
 ---
 
+
+
 ### `build_m2_weekly.py`（B1 — 周频特征构建）
 
 **干什么：** 把两张**原始月度表**转成**无泄漏、可入模**的周频（W-FRI）特征表——Channel B 进入 M2 消融前的核心数据工程步骤。
@@ -177,13 +238,15 @@
 | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **输入** | 同上两张 Channel B 月度 CSV（用全历史算 anomaly，再对齐到比较窗）                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | **处理** | 1. **统一长表**：11 站 × 5 指标（NDVI/NDWI/NDBI/BSI/NTL） 2. **三形态**（每站×每指标）： · `level` — 原始月度值（解释用） · `anom` — 站点扩展窗标准化距平：先去季节（expanding 月气候态）再 expanding z-score（min 12 月、**仅用过去**） · `mom` — 月环比一阶差分 3. **月→周异步对齐**：as-of join，可得日 = 月末 + 15 天发布滞后；**不是哑 ffill**——值可在月内重复，但每周携带递增的 `days_since_obs`，新观测发布时才跳变 4. **元数据 mask**：`valid_mask`（有无有效观测）、`modality_mask`（age ≤ 100 天视为模态可用）；`cloud_probability` **不入模**，保留 `valid_obs_count` 作可信度 5. **宽表 pivot**：level + anom 列 + S2/VIIRS 各自的 age/avail 列 |
-| **输出** | `m2_weekly_features.csv` — 宽表，365 周 × 154 特征（5×11×(level+anom) + 2×11×(age+avail)） `m2_weekly_long.csv` — 长表，20075 行（365×11×5），含 level/anom/mom + 全部元数据，供 EDA                                                                                                                                                                                                                                                                                                                                  |
-| **运行** | `python3 03_data/processed/M2/py/build_m2_weekly.py` 可选 `--no-deseasonalize`（只做 z-score、不去季节） 可选 `--start / --end` 改窗口                                                                                                                                                                                                                                                                                                                                                                         |
+| **输出** | `m2_weekly_features.csv` — 宽表，365 周 × 154 特征（5×11×(level+anom) + 2×11×(age+avail)） `m2_eda_weekly.csv` — 长表，20075 行（365×11×5），含 level/anom/mom + 全部元数据，供 EDA                                                                                                                                                                                                                                                                                                                              |
+| **运行** | `python3 03_data/processed/M2/py/build_m2_weekly.py` 可选 `--no-deseasonalize`（只做 z-score、不去季节） 可选 `--watermask`（B4 水体掩膜版 → `*_watermask.csv`） 可选 `--start / --end` 改窗口                                                                                                                                                                                                                                                                                                                          |
 
 
 **设计要点：** `anom` 是入模主力；防泄漏 sanity 已验证（2019-01 初周看到的是 2018-11 观测，而非尚未发布的 12 月值）。
 
 ---
+
+
 
 ### `eda_m2_mechanism.py`（B2 — 机制验证 EDA）
 
@@ -192,15 +255,74 @@
 
 | 项      | 内容                                                                                                                                                                                                                                                                                                                                                                                                                |
 | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **输入** | `outputs/m2_weekly_long.csv`（B1 长表） `processed/M1/outputs/m1_weekly_features.csv`（Brent 收益、美国基本面等）                                                                                                                                                                                                                                                                                                                |
+| **输入** | `outputs/m2_eda_weekly.csv`（B1 长表） `processed/M1/outputs/m1_weekly_features.csv`（Brent 收益、美国基本面等）                                                                                                                                                                                                                                                                                                            |
 | **处理** | 1. **站点类型复合指数**：按 port / refinery / terminal 对每指标的 `anom` 取均值，画 2019–2026 时序并叠加事件线（COVID、俄乌、红海等） 2. **Lead-lag 交叉相关**：15 个复合特征 vs `brent_log_return`，lag −8…+8 周（lag>0 = Channel B **领先**市场） 3. **同期相关热图**：各站 NTL/NDBI anomaly vs M1 关键变量（Brent、炼厂利用率、进出口等） 4. **Houston 专项**：唯一美国 AOI，对比 NTL/NDBI anomaly 与美国 `refinery_utilisation` / `crude_exports` 5. **Granger 因果**（可选）：对 lead-lag 最强的 4 个复合特征做 maxlag=4 检验 |
 | **输出** | `m2_eda_anom_by_type.png` — 五指标×三站点类型复合 anomaly 时序 `m2_eda_leadlag_brent.png` — lead-lag 相关热图 `m2_eda_corr_m1.png` — 各站 NTL/NDBI vs M1 同期相关 `m2_eda_houston_us.png` — Houston vs 美国基本面 `m2_eda_leadlag_corr.csv` — lead-lag 数值表                                                                                                                                                                                   |
 | **运行** | `python3 03_data/processed/M2/py/eda_m2_mechanism.py`                                                                                                                                                                                                                                                                                                                                                             |
 
 
-**解读注意：** M1 基本面是**美国**（EIA），Channel B 站点是**全球**；干净机制链是「全球站点活动 → Brent 价格」，只有 Houston 与美国基本面有地理对应。B2 结论（弱相关、多数负 lag）已写入 §3 B2；**增量预测价值留 B3** 用 DM/Clark–West 判定。
+**解读注意：** M1 基本面是**美国**（EIA），Channel B 站点是**全球**；干净机制链是「全球站点活动 → Brent 价格」，只有 Houston 与美国基本面有地理对应。B2 结论（弱相关、多数负 lag）已写入 §3 B2 与 `chapter_4_results.md`；**B3 样本外增量**见 §3 B3（XGB CW_p=0.006）。
 
 ---
+
+
+
+### `run_baseline.py` + `04_code/src/backtest/`（B3 — M0/M1/M2 消融）
+
+**干什么：** 统一 rolling-origin 引擎；M2 = M1 + Channel B 55 anom（或 literature/level 合约）。
+
+
+| 项      | 内容                                                                                                                            |
+| ------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| **输入** | `processed/merge/outputs/weekly_feature_matrix.csv`（55 anom 已 merge）                                                          |
+| **运行** | `python3 04_code/scripts/run_baseline.py --modality M2 --m2-features anom`                                                    |
+|        | `python3 04_code/scripts/run_baseline.py --modality M2 --leave-one-aoi-out`                                                   |
+|        | `python3 04_code/scripts/run_baseline.py --modality M2 --matrix weekly_feature_matrix_watermask.csv --tag watermask`          |
+| **输出** | `05_outputs/baselines/m2/baseline_metrics_*.csv` / `baseline_predictions_*.csv` / `backtest_*.png` / `baseline_loao_anom.csv` |
+
+
+---
+
+
+
+### `shap_m2.py`（B3 — 可解释性）
+
+
+| 项      | 内容                                                                          |
+| ------ | --------------------------------------------------------------------------- |
+| **运行** | `python3 04_code/scripts/m2/shap_m2.py`                                     |
+| **输出** | `shap_anom.png`；`shap_xgb_m2_by_{index,aoi}.csv`；`shap_topN_anom.csv`（供 C2） |
+
+
+---
+
+
+
+### `robustness_m2.py`（B3/B4 — C2 降维对照）
+
+
+| 项      | 内容                                                                              |
+| ------ | ------------------------------------------------------------------------------- |
+| **运行** | `python3 04_code/scripts/m2/robustness_m2.py`                                   |
+| **输出** | `c2_summary.csv` / `c2_overview.png`（All-55 / PCA-90 / ElasticNet / SHAP-top20） |
+
+
+---
+
+
+
+### `sweep_m2.py`（B4 — lookback × feature contract）
+
+
+| 项      | 内容                                                                                     |
+| ------ | -------------------------------------------------------------------------------------- |
+| **运行** | `python3 04_code/scripts/m2/sweep_m2.py`                                               |
+| **输出** | `sweep_m2_summary.csv` / `sweep_m2_overview.png`（anom / literature / level × L1/L4/L8） |
+
+
+---
+
+
 
 ## 4. 目标产物（time-series 表格示例）
 
@@ -212,7 +334,7 @@
 | 2024-01-05 | 0.42             | 0.11              | −0.30              | …   | 1                |
 
 
-长表 `m2_weekly_long.csv`（节选，供面板/EDA）：
+长表 `m2_eda_weekly.csv`（节选，供面板/EDA）：
 
 
 | week_fri   | site_id | site_type | index | level | anom | age_days | cloud_frac |
@@ -222,15 +344,19 @@
 
 ---
 
+
+
 ## 5. 防泄漏自检（每步必查，呼应方案 §6.4）
 
-- [ ] 月度指标按**真实可得日 + 保守滞后**对齐，绝不用当周尚未发布的值。
-- [ ] 站点 z-score / 滚动统计**仅用过去**（expanding，min 12 月）。
-- [ ] **不**把月值 ffill 成多个相同周值；改为 `值 + age + mask`。
-- [ ] 标准化/特征选择只在训练集内 fit。
-- [ ] 不用中心化移动平均（避免 P018 式前视）。
+- [x] 月度指标按**真实可得日 + 保守滞后**对齐，绝不用当周尚未发布的值。（B1 as-of + 15d 滞后；`build_m2_weekly.py` sanity 通过）
+- [x] 站点 z-score / 滚动统计**仅用过去**（expanding，min 12 月）。（B1 `anom` 列）
+- [x] **不**把月值 ffill 成多个相同周值；改为 `值 + age + mask`。（B1 设计 + merge 文档）
+- [x] 标准化/特征选择只在训练集内 fit。（`04_code/src/backtest/rolling.py` 每 fold 内 fit）
+- [x] 不用中心化移动平均（避免 P018 式前视）。
 
 ---
+
+
 
 ## 6. 决策记录
 
@@ -239,23 +365,30 @@
 1. **去掉 FRT**：Channel B 固定为 5 个指标 NDVI/NDWI/NDBI/BSI + NTL。理由：旧「浮顶充填率」S2 10m 无法复现（P055，已否决）；新「火点/热异常」需另采 VIIRS Nightfire/S3 SLSTR，本阶段不扩范围。如日后想补，作为 Future Work 单列。
 2. **光学指标也做站点 z-score**：4 个 S2 指标与 NTL 一律做站点扩展窗 z-score（去规模 + 去季节，过去-only），见 §3 B1 说明。
 3. **比较窗锁定 2019–2026**：与主方案 M0–M4 标准化窗口一致。
-4. **`cloud_probability` 不入模**：仅作 B0 审计 / 无效观测过滤；保留 `valid_obs_count` 作可信度标记。
+4. `cloud_probability` **不入模**：仅作 B0 审计 / 无效观测过滤；保留 `valid_obs_count` 作可信度标记。
 5. **不按站点类型先验剔除**（基于 B0）：terminal 的 NDVI/NDWI 在 2019–2026 覆盖 0.99–1.00、并不缺失，故全部纳入 B1（5 指标 × 11 站）；站点 z-score 后近常数列（如 Fujairah/Yanbu NDVI、Basra/Ras Tanura NTL）自然弱化，最终去留由 B3 的 SHAP / leave-one-AOI-out 数据驱动决定。
-6. **M2 入模列 = 55 个 `anom`**（详见 §3 B3「M2 入模列决策」）：剔除 55 level（仅 robustness）+ 22 avail（窗内近零方差）；age 主分析不用。主分析全 55 anom + PCA/正则/SHAP 降维对照（答 RQ1），可解释层用文献核心 NTL_anom 子集 + SHAP + leave-one-AOI-out。
+6. **M2 入模列 = 55 个** `anom`（详见 §3 B3「M2 入模列决策」）：剔除 55 level（仅 robustness）+ 22 avail（窗内近零方差）；age 主分析不用。主分析全 55 anom + PCA/正则/SHAP 降维对照（答 RQ1），可解释层用文献核心 NTL_anom 子集 + SHAP + leave-one-AOI-out。
 
-**待确认：** 暂无（B0 后清空）。
+**待确认 / 后续（2026-07-03）：**
+
+1. **RQ2 正式对照**：Channel A embedding 入模后，跑「Channel B（M2 anom-55）vs Channel A（image embedding）」同协议消融。
+2. **common-sample vs max-sample** 显式稳健性（B4 遗留）。
+3. **按站点类型**（port/refinery/terminal）分组消融（B3 计划项；当前仅有 B2 类型复合 EDA + 逐 AOI LOAO）。
+4. 更新 `Dataset_Overview4.ipynb` 中长表文件名为 `m2_eda_weekly.csv`（若仍引用旧名）。
 
 ---
 
-## 7. 一周排期建议
 
 
-| 天     | 任务                                       |
-| ----- | ---------------------------------------- |
-| D1    | B0 审计（FRT 已决：去掉）                         |
-| D2–D3 | B1 `build_m2_weekly.py` + 数据字典           |
-| D4    | B2 机制 EDA                                |
-| D5–D6 | B3 消融 + DM/CW + SHAP + leave-one-AOI-out |
-| D7    | B4 稳健性 + 写作 + RQ2 对照接口                   |
+## 7. 一周排期建议（执行记录）
+
+
+| 天     | 任务                                       | 状态                               |
+| ----- | ---------------------------------------- | -------------------------------- |
+| D1    | B0 审计（FRT 已决：去掉）                         | ✅ 2026-06-23                     |
+| D2–D3 | B1 `build_m2_weekly.py` + 数据字典           | ✅ 2026-06-23（字典 07-03 扩 §7 水体掩膜） |
+| D4    | B2 机制 EDA                                | ✅ 2026-06-23                     |
+| D5–D6 | B3 消融 + DM/CW + SHAP + leave-one-AOI-out | ✅ 2026-06-23（M1 基线 07-03 重跑）     |
+| D7    | B4 稳健性 + 写作 + RQ2 对照接口                   | 🔶 稳健性+写作 ✅；RQ2 对照待 Channel A    |
 
 

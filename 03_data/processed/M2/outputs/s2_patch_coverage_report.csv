@@ -4,7 +4,7 @@ P006,NingboZhoushan,port,86,86,1.0,0,0,0
 P001,Rotterdam,port,83,83,1.0,0,0,0
 P007,Jamnagar,refinery,86,86,1.0,0,0,0
 P004,Jurong,refinery,84,84,1.0,0,0,0
-P009,Ulsan,refinery,87,85,0.977,0,0,2
+P009,Ulsan,refinery,87,85,0.977,0,2,0
 P008,Basra,terminal,90,89,0.989,0,1,0
 P002,Fujairah,terminal,90,90,1.0,0,0,0
 P010,Kharg,terminal,90,90,1.0,0,0,0

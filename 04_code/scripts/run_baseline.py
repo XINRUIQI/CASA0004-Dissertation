@@ -70,8 +70,10 @@ def get_out_dir(modality: str) -> Path:
 # ----------------------------------------------------------------------------
 def run_config(df, dico, modality: str, m2_features: str, lookback: int,
                min_train: int, retrain_every: int, seed: int, feature_mode: str,
-               tune: bool, val_weeks: int, drop_aoi: str | None = None) -> pd.DataFrame:
-    cols = data.select_features(dico, modality, m2_features, drop_aoi=drop_aoi)
+               tune: bool, val_weeks: int, drop_aoi: str | None = None,
+               m3_tier: str = "core") -> pd.DataFrame:
+    cols = data.select_features(dico, modality, m2_features, drop_aoi=drop_aoi,
+                                m3_tier=m3_tier)
     ds = data.build_dataset(df, cols, lookback, feature_mode)
     return rolling.rolling_origin(ds, modality, min_train, retrain_every,
                                   seed, tune, val_weeks)
@@ -209,6 +211,9 @@ def main() -> None:
     ap.add_argument("--modality", default="M1", choices=list(data.MODALITY_SETS))
     ap.add_argument("--m2-features", default="anom", choices=list(data.M2_FEATURE_MODES),
                     help="RS feature contract for M2/M4 (default anom = 55 cols)")
+    ap.add_argument("--m3-tier", default="core", choices=list(data.M3_TIERS),
+                    help="M3/M4 shipping tier: core (§11.1 main model, default) or "
+                         "full (all shipping columns, robustness)")
     ap.add_argument("--lookback", type=int, default=4)
     ap.add_argument("--min-train", type=int, default=104)
     ap.add_argument("--retrain-every", type=int, default=13,
@@ -263,7 +268,8 @@ def main() -> None:
     t0 = time.time()
     res_main = run_config(df, dico, args.modality, args.m2_features, args.lookback,
                           args.min_train, args.retrain_every, args.seed,
-                          args.feature_mode, tune, args.val_weeks)
+                          args.feature_mode, tune, args.val_weeks,
+                          m3_tier=args.m3_tier)
     print(f"  {args.modality:3s}: {res_main.attrs['n_raw']:3d} raw x{args.lookback} "
           f"= {res_main.attrs['n_features']:4d} feats | fits={res_main.attrs['n_fits']} "
           f"| test={len(res_main)} ({res_main.index.min().date()}~{res_main.index.max().date()})")
@@ -272,7 +278,8 @@ def main() -> None:
     if args.modality != NESTED_BASE:
         res_base = run_config(df, dico, NESTED_BASE, args.m2_features, args.lookback,
                               args.min_train, args.retrain_every, args.seed,
-                              args.feature_mode, tune, args.val_weeks)
+                              args.feature_mode, tune, args.val_weeks,
+                              m3_tier=args.m3_tier)
         # align to common test weeks for a fair nested comparison
         common = res_main.index.intersection(res_base.index)
         res_main, res_base = res_main.loc[common], res_base.loc[common]

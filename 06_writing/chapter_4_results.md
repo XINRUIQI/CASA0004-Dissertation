@@ -11,7 +11,7 @@ The mechanism-level EDA of the remote-sensing channel (Channel B) tempers expect
 
 ## 4.2 Model performance
 
-All four model families were run under the identical locked protocol (2019–2026, lookback 4, expanding rolling-origin, single-task regression of \(r_{t+1}\) reconstructed to price). Table 4.1 reports every modality × model cell.
+All three model families were run under the identical locked protocol (2019–2026, lookback 4, expanding rolling-origin, single-task regression of \(r_{t+1}\) reconstructed to price). Table 4.1 reports every modality × model cell.
 
 **Table 4.1 — M0–M4 out-of-sample performance (price RMSE, 257 test weeks)**
 
@@ -20,33 +20,27 @@ All four model families were run under the identical locked protocol (2019–202
 | **M0** | Random walk | **4.152** | 3.011 | – | 0.0% | – | – |
 | M1 Finance | Ridge | 4.332 | 3.081 | 0.490 | −4.3% | 0.91 | – |
 | | XGB | 4.771 | 3.406 | 0.525 | −14.9% | 0.98 | – |
-| | LSTM | 4.178 | 3.052 | 0.490 | −0.6% | 0.74 | – |
 | M2 +Remote sensing | Ridge | 4.411 | 3.208 | 0.518 | −6.3% | 0.96 | 0.212 |
 | | XGB | 4.643 | 3.300 | 0.506 | −11.8% | 0.98 | **0.006** |
-| | LSTM | 4.210 | 2.969 | 0.595 | −1.4% | 0.79 | **0.012** |
 | M3 +Shipping | Ridge | 4.592 | 3.278 | 0.502 | −10.6% | 0.96 | 0.481 |
 | | XGB | 4.456 | 3.227 | 0.498 | −7.3% | 0.96 | **2.5e-5** |
-| | LSTM | 4.370 | 3.154 | 0.494 | −5.3% | 1.00 | 0.460 |
 | M4 All | Ridge | 4.560 | 3.313 | 0.482 | −9.8% | 0.96 | 0.228 |
 | | XGB | 4.470 | 3.284 | 0.502 | −7.7% | 0.99 | **1.7e-4** |
-| | LSTM | 4.180 | 3.035 | 0.549 | −0.7% | 0.79 | 0.059 |
 
 *Skill > 0 beats the random walk; DM_p is the one-sided p that the model beats M0 (< 0.05 = significantly better); CW_p is the Clark–West nested increment over M1 (< 0.05 = significant). Bold marks significant nested increments.*
 
-Two patterns dominate. First, **no model beats M0** — every skill value is negative and no DM test is significant, confirming the difficulty of weekly Brent forecasting. The deep early-fusion LSTM comes closest (M1/M4 skill −0.6% / −0.7%), well ahead of Ridge and XGBoost, and — importantly — it does so **without the negative-\(R^2\) instability** seen in earlier unregularised deep runs, thanks to target standardisation, dropout, weight decay and early stopping. Second, **relative to the financial baseline M1, the added modalities do carry a statistically significant nested increment**: under XGBoost the Clark–West test is significant for M2 (p = 0.006), M3 (p = 2.5e-5) and M4 (p = 1.7e-4); under the deep model it is significant for M2 (p = 0.012) but not M3.
-
-![M4 deep early-fusion backtest](../05_outputs/baselines/m4/backtest_deep_anom.png)
+Two patterns dominate. First, **no model beats M0** — every skill value is negative and no DM test is significant, confirming the difficulty of weekly Brent forecasting; among the learned models the tuned Ridge on the financial set stays closest to the random walk (M1 skill −4.3%). Second, **relative to the financial baseline M1, the added modalities do carry a statistically significant nested increment**: under XGBoost the Clark–West test is significant for M2 (p = 0.006), M3 (p = 2.5e-5) and M4 (p = 1.7e-4).
 
 ## 4.3 Key findings
 
-**RQ1 — incremental value.** Remote sensing and shipping provide a *statistically significant nested increment* over the finance-only model (Clark–West, XGBoost), and the remote-sensing result is corroborated across model families (XGB p = 0.006, LSTM p = 0.012). However, this must be stated with an honest nuance: **a significant Clark–West increment over M1 is not the same as beating M0** — no configuration achieves positive skill against the random walk. The contribution of alternative data is therefore *detectable but modest* at the weekly horizon.
+**RQ1 — incremental value.** Remote sensing and shipping provide a *statistically significant nested increment* over the finance-only model under XGBoost (Clark–West: M2 p = 0.006, M3 p = 2.5e-5, M4 p = 1.7e-4), though the increment is model-dependent — it does not reach significance under the linear Ridge. However, this must be stated with an honest nuance: **a significant Clark–West increment over M1 is not the same as beating M0** — no configuration achieves positive skill against the random walk. The contribution of alternative data is therefore *detectable but modest* at the weekly horizon.
 
-**RQ2 — flat vs modality-aware fusion.** The shipping modality is the sharpest diagnostic. The 119 high-dimensional shipping features yield a strongly significant increment under XGBoost (p = 2.5e-5) yet **no significant increment under the flat deep early-fusion LSTM** (p = 0.46), whose RMSE actually worsens to 4.37. In other words, stacking heterogeneous high-dimensional modalities into one shared sequence model handles them poorly — *how* modalities are combined matters, not merely whether they are included. This is direct empirical motivation for the representation-level, modality-aware fusion of the contribution layer.
+**RQ2 — flat vs modality-aware fusion.** Even within flat feature fusion, *how* a modality is handled already matters. The 119 high-dimensional shipping features yield a strongly significant increment under XGBoost (p = 2.5e-5) yet **no significant increment under the linear Ridge model** (p = 0.48), whose RMSE worsens to 4.59 — the high-dimensional, collinear shipping block overwhelms a flat linear model while the tree model can still exploit it. Whether a representation-level, modality-aware fusion extracts this signal more effectively than any flat baseline is precisely the question the contribution layer (Chapter 5) is designed to answer.
 
 **Modality attribution (SHAP).** On the M4 XGBoost model, global mean-|SHAP| attributes **56% of predictive contribution to shipping, 31% to finance and 13% to remote sensing** (Figure 4.x, `../05_outputs/baselines/m4/shap_m4.png`), consistent with the chokepoint tanker signals (Hormuz/Suez) being the strongest non-price inputs.
 
 ![M4 SHAP modality contribution](../05_outputs/baselines/m4/shap_m4.png)
 
-**Robustness.** (i) Applying an MNDWI water mask to water-dominated export terminals *strengthens* the remote-sensing increment (M2 XGB Clark–West p = 0.006 → 8.5e-5), supporting the interpretation that water-surface noise had been diluting the optical indices. (ii) Leave-one-AOI-out shows that dropping most individual sites slightly *reduces* RMSE, i.e. the remote-sensing increment is **diffuse across sites rather than driven by any single AOI**, and warns against per-site overfitting. (iii) All four model families remain numerically stable under the shared protocol.
+**Robustness.** (i) Applying an MNDWI water mask to water-dominated export terminals *strengthens* the remote-sensing increment (M2 XGB Clark–West p = 0.006 → 8.5e-5), supporting the interpretation that water-surface noise had been diluting the optical indices. (ii) Leave-one-AOI-out shows that dropping most individual sites slightly *reduces* RMSE, i.e. the remote-sensing increment is **diffuse across sites rather than driven by any single AOI**, and warns against per-site overfitting. (iii) Both learned model families remain numerically stable under the shared protocol.
 
-**Summary.** The core empirical layer establishes a credible, leakage-safe, four-family baseline in which (a) the random walk is unbeaten, (b) remote sensing and shipping nonetheless add significant nested information over finance, and (c) the flat-vs-deep contrast on shipping already signals that modality-aware fusion is the right next step — setting up the contribution layer (Chapter 5).
+**Summary.** The core empirical layer establishes a credible, leakage-safe, three-family baseline in which (a) the random walk is unbeaten, (b) remote sensing and shipping nonetheless add significant nested information over finance, and (c) the linear-vs-tree contrast on the high-dimensional shipping block already signals that *how* modalities are combined matters — motivating the modality-aware contribution layer (Chapter 5).

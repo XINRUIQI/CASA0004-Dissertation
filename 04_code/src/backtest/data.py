@@ -7,15 +7,27 @@ Every modality config (M1..M4) reads the SAME matrix and differs only in which
 columns are selected, so the rolling-origin backtest is identical across configs.
 
 Modality column selection (by the dictionary `modality` field):
-  M1 = finance/macro            (32 cols; the 4 avail_* masks are modality='mask',
+  M1 = finance/macro            (31 cols; the 4 avail_* masks are modality='mask',
                                  i.e. zero-variance in-window, so they are NOT M1
-                                 features -- this is exactly why merged-M1 has 32
-                                 cols vs the 36-col single table, which are
+                                 features -- this is exactly why merged-M1 has 31
+                                 cols vs the 35-col single table, which are
                                  equivalent because VarianceThreshold drops them.)
   M2 = M1 + remote sensing
-  M3 = M1 + shipping
+  M3 = M1 + shipping        (main model = §11.1 CORE tier by default)
   M4 = M1 + remote sensing + shipping
 Targets (target_*) and mask columns (avail_*) are never used as features.
+
+M3 shipping tier (--m3-tier, see m3_data_dictionary.md §11):
+  core (DEFAULT, 38 cols) GFW 6x4 (total_hours, total_vessels, cargo_hours,
+                          total_hours_mom_pct) + PortWatch chokepoints 6x2 +
+                          PortWatch ports 2. mean_presence and the aggregate
+                          z-mean are EXCLUDED (separate experiments below).
+  full (113 cols)         every shipping column (robustness / legacy behaviour).
+Separate GFW experiments (not in the main model, see robustness_m3.py):
+  GFW-Presence   6 x gfw_{cp}_mean_presence_hours_per_vessel.
+  GFW-Aggregate  gfw_all_activity_zmean, DERIVED leak-free at build time
+                 (past-only expanding z-score mean of the 6 chokepoint
+                 total_hours), replacing the deprecated gfw_all_total_hours_sum.
 
 M2 feature contract (--m2-features), per 2026-06-22_channelB_mechanism_plan.md §3/§4:
   anom        55 cols {NDVI,NDWI,NDBI,BSI,NTL}_anom_{aoi}   <- DEFAULT, main analysis
@@ -51,18 +63,36 @@ MODALITY_SETS = {
     "M4": ["M1", "M2", "M3"],      # all
 }
 
+# ---------------------------------------------------------------------------
+# M3 shipping main-model CORE tier (m3_data_dictionary.md §11.1).
+# The matrix carries every shipping column; the MAIN model selects only this
+# core set. Robustness/ablation scripts still read the full M3 set directly.
+# ---------------------------------------------------------------------------
+GFW_CHOKES = ["hormuz", "suez", "malacca", "mandeb", "panama", "cape"]
+# Main-model GFW core = 4 metrics x 6 chokepoints = 24.
+GFW_CORE_SUFFIXES = ["total_hours", "total_vessels", "cargo_hours", "total_hours_mom_pct"]
+PW_CHOKE_CORE_SUFFIXES = ["n_tanker", "capacity_tanker"]
+PW_PORTS_CORE = ["pw_exp_hubs_export_vol", "pw_imp_hubs_import_vol"]
+# NOT in the main model (each drives its own separate experiment, §11):
+#   mean_presence_hours_per_vessel -> GFW-Presence experiment
+#   gfw_all_activity_zmean         -> GFW-Aggregate benchmark
+GFW_PRESENCE_SUFFIXES = ["mean_presence_hours_per_vessel"]
+GFW_ZMEAN_COL = "gfw_all_activity_zmean"   # derived leak-free at build time
+GFW_ZMEAN_MIN_PERIODS = 12
+M3_TIERS = ("core", "full")
+
 RS_INDICES = ["NDVI", "NDWI", "NDBI", "BSI", "NTL"]
 M2_FEATURE_MODES = ("anom", "level", "all", "literature")
 # C1 literature arm: core night-time-light anomaly export hubs.
 LITERATURE_AOIS = ["Fujairah", "RasTanura", "Rotterdam", "Houston"]
 
 # feature-mode="returns": M1 trending level columns to stationarise.
-LOGRET_COLS = ["brent_price", "wti_price", "sp500"]
+LOGRET_COLS = ["brent_price", "wti_price"]
 DIFF_COLS = [
     "crude_stocks_excl_spr", "cushing_stocks", "crude_production",
     "crude_imports", "crude_exports", "refinery_crude_input",
     "gasoline_supplied", "distillate_supplied", "jet_fuel_supplied",
-    "net_crude_trade", "dollar_index", "nonoil_industrial_commodity",
+    "dollar_index", "nonoil_industrial_commodity",
 ]
 
 
@@ -130,14 +160,45 @@ def list_aois(dico: pd.DataFrame) -> list[str]:
     return sorted({a for c in m2_all if (a := aoi_of(c)) is not None})
 
 
+def gfw_core_columns(dico: pd.DataFrame) -> list[str]:
+    """Main-model GFW core: 6 chokepoints x 4 metrics = 24 (no mean_presence)."""
+    m3_all = set(dico.loc[dico["modality"] == "M3", "feature"])
+    return [f"gfw_{cp}_{s}" for cp in GFW_CHOKES for s in GFW_CORE_SUFFIXES
+            if f"gfw_{cp}_{s}" in m3_all]
+
+
+def gfw_presence_columns(dico: pd.DataFrame) -> list[str]:
+    """GFW-Presence experiment set: 6 x mean_presence_hours_per_vessel (NOT core)."""
+    m3_all = set(dico.loc[dico["modality"] == "M3", "feature"])
+    return [f"gfw_{cp}_{s}" for cp in GFW_CHOKES for s in GFW_PRESENCE_SUFFIXES
+            if f"gfw_{cp}_{s}" in m3_all]
+
+
+def m3_core_columns(dico: pd.DataFrame) -> list[str]:
+    """§11.1 main-model core shipping columns present in the matrix.
+
+    GFW 6x4 = 24 ; PortWatch chokepoints 6x2 = 12 ; PortWatch ports 2 = 38.
+    mean_presence and gfw_all_activity_zmean are EXCLUDED (separate experiments).
+    """
+    m3_all = set(dico.loc[dico["modality"] == "M3", "feature"])
+    cols: list[str] = gfw_core_columns(dico)
+    cols += [f"pw_{cp}_{s}" for cp in GFW_CHOKES for s in PW_CHOKE_CORE_SUFFIXES
+             if f"pw_{cp}_{s}" in m3_all]
+    cols += [c for c in PW_PORTS_CORE if c in m3_all]
+    return cols
+
+
 def select_features(dico: pd.DataFrame, modality: str, m2_features: str = "anom",
-                    drop_aoi: str | None = None) -> list[str]:
+                    drop_aoi: str | None = None, m3_tier: str = "core") -> list[str]:
     """Feature columns for a modality config (never targets/masks).
 
     drop_aoi (leave-one-AOI-out): remove every M2 column belonging to that AOI.
+    m3_tier: 'core' (§11.1 main-model set, DEFAULT) or 'full' (all shipping cols).
     """
     if modality not in MODALITY_SETS:
         raise ValueError(f"modality must be one of {list(MODALITY_SETS)}")
+    if m3_tier not in M3_TIERS:
+        raise ValueError(f"m3_tier must be one of {M3_TIERS}")
     mods = MODALITY_SETS[modality]
     cols: list[str] = []
     if "M1" in mods:
@@ -148,7 +209,10 @@ def select_features(dico: pd.DataFrame, modality: str, m2_features: str = "anom"
             m2 = [c for c in m2 if aoi_of(c) != drop_aoi]
         cols += m2
     if "M3" in mods:
-        cols += dico.loc[dico["modality"] == "M3", "feature"].tolist()
+        if m3_tier == "core":
+            cols += m3_core_columns(dico)
+        else:
+            cols += dico.loc[dico["modality"] == "M3", "feature"].tolist()
     return [c for c in cols if not c.startswith("target_")]
 
 
@@ -170,6 +234,30 @@ def to_stationary(df: pd.DataFrame, mode: str) -> pd.DataFrame:
     for c in DIFF_COLS:
         if c in out:
             out[c] = out[c].diff()
+    return out
+
+
+def add_gfw_activity_zmean(df: pd.DataFrame,
+                           min_periods: int = GFW_ZMEAN_MIN_PERIODS) -> pd.DataFrame:
+    """Append gfw_all_activity_zmean = mean over the 6 chokepoints of each
+    chokepoint's total_hours standardised by its OWN past-only expanding
+    mean/std. Standardising before averaging stops large-polygon chokepoints
+    from dominating a raw sum. Expanding (data up to t only) is leak-free and
+    operates on the already +4w-lagged GFW columns. Replaces the deprecated raw
+    sum gfw_all_total_hours_sum (m3_data_dictionary.md §9.2/§11).
+    """
+    cols = [f"gfw_{cp}_total_hours" for cp in GFW_CHOKES
+            if f"gfw_{cp}_total_hours" in df.columns]
+    if not cols:
+        return df
+    out = df.copy()
+    z = pd.DataFrame(index=df.index)
+    for c in cols:
+        s = df[c].astype(float)
+        mu = s.expanding(min_periods=min_periods).mean()
+        sd = s.expanding(min_periods=min_periods).std()
+        z[c] = (s - mu) / sd
+    out[GFW_ZMEAN_COL] = z.mean(axis=1, skipna=True)
     return out
 
 
@@ -205,6 +293,8 @@ def build_dataset(df: pd.DataFrame, feat_cols: list[str], lookback: int,
     assert not any(c.startswith("target_") for c in feat_cols), "target leaked into features"
 
     df_feat = to_stationary(df, feature_mode)
+    if GFW_ZMEAN_COL in feat_cols and GFW_ZMEAN_COL not in df_feat.columns:
+        df_feat = add_gfw_activity_zmean(df_feat)   # derived, leak-free
     Xfilled = fill_features(df_feat[feat_cols])
     X_all = make_lagged(Xfilled, feat_cols, lookback)
     feat_names = X_all.columns.tolist()

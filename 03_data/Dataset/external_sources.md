@@ -10,8 +10,8 @@
 > **构建分工（两层管线：RAW 按数据提供方分目录 → PROCESSED 单表）：**
 >
 > - **① RAW 原始层**（`03_data/raw/01_market_financial/`，按提供方分 `EIA/`、`FRED/`、`Yahoo/`、`Other/`）：统一入口 `download_m1_raw.py` —— `EIA/` 为手动网站导出 `.xls`（只登记不下载），`FRED/`、`Yahoo/`、`Other/` 自动下载并缓存；落盘后写根目录 `manifest.csv`（字段：`variable, raw_file, kind, category, source, series_id_or_ticker, source_url, frequency, native_unit, download_utc, n_rows, coverage_start, coverage_end, sha256, notes`；其中 `category` 即提供方 `eia/fred/yahoo/other/local`）以便离线复现与来源审计。
-> - **② PROCESSED 构建层**（`03_data/processed/M1/`）：`py/build_m1_weekly.py`（**默认离线，只读本地 raw**）→ `outputs/m1_weekly_features.csv`（**单表 36 列周频**：基础锚点 + 8 个派生变量 + EIA 成品油供应等扩展列，所有列平级，无中间表、无单独 merge 步骤）。`--online` 仅在某原始文件缺失时临时联网；`--refresh-raw` 先调用 `download_m1_raw.py` 再构建；`--base-only` 只建基础锚点、跳过 8 个派生列。
-> - **本地派生（不另存 raw，manifest 记 `kind=local`）**：`#8 dgs10_change` 由本地 `treasury_10y`（`FRED/` 的 `DGS10`）一阶差分；`#5 futures_spread` 现货端取本地 `brent_price`（`EIA/Brent` 日度），仅期货端 `BZ=F` 落盘 `Yahoo/`。
+> - **② PROCESSED 构建层**（`03_data/processed/M1/`）：`py/build_m1_weekly.py`（**默认离线，只读本地 raw**）→ `outputs/m1_weekly_features.csv`（**单表 35 列周频**：基础锚点 + 9 个派生变量 + EIA 成品油供应等扩展列，所有列平级，无中间表、无单独 merge 步骤）。`--online` 仅在某原始文件缺失时临时联网；`--refresh-raw` 先调用 `download_m1_raw.py` 再构建；`--base-only` 只建基础锚点、跳过 8 个派生列。
+> - **本地派生（不另存 raw，manifest 记 `kind=local`）**：`#8 dgs10_change` 由本地 `treasury_10y`（`FRED/` 的 `DGS10`）一阶差分；`#5 brent_f1_spot_log_basis` 现货端取本地 `brent_price`（`EIA/Brent` 日度），仅期货端 `BZ=F` 落盘 `Yahoo/`。
 
 
 | 序   | 变量                                              | 机制        | 数据集 / 指标                                        | 提供方                         | 标识符 (series/ticker)                                                             | URL                                                                                                                                                                  | 原始频率 | → 周频处理                                                 | 构建                                                                   | 覆盖起点                    |
@@ -20,12 +20,12 @@
 | 2   | `crude_stocks_change` 库存变化                      | 供给 / 市场平衡 | Commercial Crude Stocks (excl. SPR)             | EIA WPSR                    | 本地 `EIA/Weekly Petroleum Status Report/EIA_commercial_crude_stocks_weekly*.xls` | [https://www.eia.gov/petroleum/supply/weekly/](https://www.eia.gov/petroleum/supply/weekly/)                                                                         | 周    | 对齐 W-FRI 后一阶差分                                         | 已有                                                                   | 2006-01                 |
 | 3   | `global_econ_activity`（Kilian 指数 / 全球 IP / PMI） | 全球需求      | Index of Global Real Economic Activity (Kilian) | Dallas Fed（备用 OECD CLI）     | igrea (xlsx/csv)；备用 FRED `OECDLOLITOAASTSAM`                                    | [https://www.dallasfed.org/research/igrea](https://www.dallasfed.org/research/igrea)                                                                                 | 月    | 月末 ffill + **5 周**发布滞后                                 | 已构建（`Other/DallasFed_igrea_monthly.xlsx`）                            | 2006-02                 |
 | 4   | `nonoil_industrial_commodity`（CRB 工业 / 金属）      | 全球需求      | Global Price Index of Industrial Materials      | IMF (via FRED)              | FRED `PINDUINDEXM`                                                              | [https://fred.stlouisfed.org/series/PINDUINDEXM](https://fred.stlouisfed.org/series/PINDUINDEXM)                                                                     | 月    | 月末 ffill + **5 周**发布滞后                                 | 已构建（`FRED/FRED_PINDUINDEXM_monthly.csv`）                             | 2006-02                 |
-| 5   | `futures_spread` 期货–现货价差                        | 市场紧张 / 预期 | Brent 近月期货 − Brent 现货（log 价差）                   | ICE (期货, Yahoo) + EIA (现货)  | `BZ=F` − 本地 `brent_price`（备用 FRED `DCOILBRENTEU`）                               | [https://finance.yahoo.com/quote/BZ%3DF](https://finance.yahoo.com/quote/BZ%3DF)                                                                                     | 日    | 周最后值，`log(fut) − log(spot)`                            | 已构建（`Yahoo/Yahoo_BZF_daily.csv` + 本地 `brent_price`）                  | 2007-08                 |
+| 5   | `brent_f1_spot_log_basis` 前月期货–现货对数基差（+ `brent_roll_week` 换月哑变量） | 市场紧张 / 预期 | Brent 前月期货 − Brent 现货（对数 basis，非纯期限结构）           | ICE (期货, Yahoo) + EIA (现货)  | `BZ=F` − 本地 `brent_price`（未 back-adjust；备用 FRED `DCOILBRENTEU`）                | [https://finance.yahoo.com/quote/BZ%3DF](https://finance.yahoo.com/quote/BZ%3DF)                                                                                     | 日    | 各取周五最后值，`log(fut) − log(spot)`                         | 已构建（`Yahoo/Yahoo_BZF_daily.csv` + 本地 `brent_price`）                  | 2007-08                 |
 | 6   | `ovx`（优先）/ `vix`                                | 石油特定不确定性  | CBOE Crude Oil Volatility Index / CBOE VIX      | CBOE (via Yahoo / FRED)     | `^OVX`（备用 FRED `OVXCLS`）；FRED `VIXCLS`                                          | [https://finance.yahoo.com/quote/%5EOVX；https://fred.stlouisfed.org/series/VIXCLS](https://finance.yahoo.com/quote/%5EOVX；https://fred.stlouisfed.org/series/VIXCLS) | 日    | 周最后值                                                   | `ovx` 已构建（`Yahoo/Yahoo_OVX_daily.csv`）；`vix` 来自 `FRED/VIXCLS`        | OVX 2007-05；VIX 2006-01 |
-| 7   | `gpr` 地缘政治风险                                    | 预防性需求     | Geopolitical Risk Index                         | Caldara & Iacoviello (2022) | 文件 `data_gpr_export.xls`，列 `GPR`                                                | [https://www.matteoiacoviello.com/gpr.htm](https://www.matteoiacoviello.com/gpr.htm)                                                                                 | 月    | 月末 ffill + **1 周**发布滞后                                 | 已构建（`Other/data_gpr_export.dta`）                                     | 2006-01                 |
+| 7   | `gpr` 地缘政治风险                                    | 预防性需求     | Geopolitical Risk Index（日度 GPRD）              | Caldara & Iacoviello (2022) | 文件 `data_gpr_daily_recent.xls`，列 `GPRD`                                         | [https://www.matteoiacoviello.com/gpr.htm](https://www.matteoiacoviello.com/gpr.htm)                                                                                 | 日    | 周均值 + **1 周**发布滞后                                     | 已构建（`Other/data_gpr_daily_recent.xls`；旧月度 `.dta` 作 fallback）        | 2006-01                 |
 | 8   | `dgs10_change`（ΔDGS10，10Y 收益率变化 / 一阶差分）         | 利率 / 持有成本 | 美国 10 年期国债收益率变化                                 | FRED (Board of Governors)   | 由本地 `treasury_10y`（FRED `DGS10`）派生                                              | [https://fred.stlouisfed.org/series/DGS10](https://fred.stlouisfed.org/series/DGS10)                                                                                 | 日    | 周最后值 → 一阶差分（**不用水平值**）                                 | 已构建（本地派生，`kind=local`）                                               | 2006-01                 |
 | 9   | `gold_return`（`gold_price` 衍生）                  | 商品联动 / 避险 | LBMA Gold Price PM (USD)                        | ICE/LBMA (via FRED)         | FRED `GOLDPMGBD228NLBM`（备用 yfinance `GC=F`）                                     | [https://fred.stlouisfed.org/series/GOLDPMGBD228NLBM](https://fred.stlouisfed.org/series/GOLDPMGBD228NLBM)                                                           | 日    | 周最后值 → 对数收益率                                           | 已构建（`Yahoo/Yahoo_GCF_daily.csv`，当前快照，见下注）                            | 2006-01                 |
-| 10  | `commodity_fx`（CAD/AUD，优先于宽美元）                  | 汇率渠道      | 商品货币强度（CAD/USD、AUD/USD 均值）                      | Yahoo Finance（备用 FRED）      | `CADUSD=X`, `AUDUSD=X`（备用 FRED `DEXCAUS`, `DEXUSAL`）                            | [https://finance.yahoo.com/quote/CADUSD=X](https://finance.yahoo.com/quote/CADUSD=X)                                                                                 | 日    | 周最后值 → 两者周 % 变化均值                                      | 已构建（`Yahoo/Yahoo_CADUSD_daily.csv` + `Yahoo/Yahoo_AUDUSD_daily.csv`） | 2006-01                 |
+| 10  | `cadusd_log_return`（CAD 单腿，优先于宽美元）              | 汇率渠道      | 商品货币强度（CAD/USD 对数收益）                          | Yahoo Finance（备用 FRED）      | `CADUSD=X`（备用 FRED `DEXCAUS` 取倒数）                                              | [https://finance.yahoo.com/quote/CADUSD=X](https://finance.yahoo.com/quote/CADUSD=X)                                                                                 | 日    | 周最后值 → 对数收益（AUD 腿删，留稳健性）                             | 已构建（`Yahoo/Yahoo_CADUSD_daily.csv`）                                | 2006-01                 |
 
 
 **说明：**
@@ -34,17 +34,17 @@
 - #6 文献建议 **OVX 优先于 VIX**（P052）；M1 同时保留两者，建模时可做共线性检查。
 - #8 水平值 `treasury_10y`（DGS10）未通过单位根检验（P076），M1 使用一阶差分 `dgs10_change`。
 - #10 宽口径美元指数（DXY）证据有限（P053/P004），改用商品出口国汇率 CAD/AUD。
-- `ovx`、`futures_spread` 覆盖起点较晚（OVX 2007-05；Brent 期货 2007-08），早期周缺失属正常。
+- `ovx`、`brent_f1_spot_log_basis` 覆盖起点较晚（OVX 2007-05；Brent 期货 2007-08），早期周缺失属正常。
 - M1 覆盖窗口：2006-01-06 ~ 2025-12-26
 - `gpr` 为新闻文本聚合指数；文本模态已移除（Meeting 02），归入 M1 作低频地缘政治风险代理。
-- `futures_spread` 为近月连续合约与现货之差的**近似**期限价差。
+- `brent_f1_spot_log_basis`（原 `futures_spread`）为前月连续合约与现货之差的**对数基差 proxy**（非纯期限结构；未 back-adjust，配 `brent_roll_week` 控制换月）。
 - 月频变量（#3, #4, #7）发布滞后为保守估计，避免前视偏差；进入模型前仍须统一滞后处理。
-- **扩展列（不属 Core-10，M1 需求侧扩展特征）**：EIA WPSR 成品油供应 `gasoline_supplied`（汽油）/ `distillate_supplied`（馏分油/柴油）/ `jet_fuel_supplied`（喷气燃料），均为美国周频需求代理（千桶/日），落盘 `EIA/Weekly Petroleum Status Report/`，已并入产出表；连同基础锚点与 8 个派生列，`m1_weekly_features.csv` 共 **36 列**（已移除已实现波动率 `brent_vol_4w` / `brent_vol_12w`、方向辅助列 `brent_direction`、简单收益率 `brent_return_pct`，并将 `wti_return_pct` 改为对数收益 `wti_log_return` 以与 `brent_log_return` 统一口径——波动率不作预测目标、方向改由预测价格派生为评估指标；理由见研究日志 2026-06-23 / 2026-07-03）。
+- **扩展列（不属 Core-10，M1 需求侧扩展特征）**：EIA WPSR 成品油供应 `gasoline_supplied`（汽油）/ `distillate_supplied`（馏分油/柴油）/ `jet_fuel_supplied`（喷气燃料），均为美国周频需求代理（千桶/日），落盘 `EIA/Weekly Petroleum Status Report/`，已并入产出表；连同基础锚点与 9 个派生列，`m1_weekly_features.csv` 共 **35 列**（相对早期版本已移除已实现波动率 `brent_vol_4w/12w`、方向 `brent_direction`、简单收益率 `brent_return_pct`、净贸易 `net_crude_trade`、`sp500` 指数水平；`wti_return_pct`/`sp500_return_pct`→对数收益，`commodity_fx`→`cadusd_log_return`（删 AUD 腿），`futures_spread`→`brent_f1_spot_log_basis` + 新增 `brent_roll_week`，`gpr` 改日度 GPRD 周均值；理由见研究日志 2026-06-23 / 2026-07-03）。
 - **原始层（按提供方分目录，离线复现 + 来源审计）**：
   - `EIA/`（手动 `.xls`，只登记不下载）：`EIA/Brent/EIA_brent_spot_price_daily*.xls`、`EIA/WTI/EIA_WTI_cushing_crude_price_daily*.xls`、`EIA/Weekly Petroleum Status Report/EIA_*_weekly*.xls`（库存 / 产量 / 进出口 / 炼厂利用率 + `gasoline_supplied` / `distillate_supplied` / `jet_fuel_supplied`）。
   - `FRED/`（自动下载）：`FRED_*_DGS10_*.csv`（10Y 收益率）、`FRED_*_VIXCLS_*.csv`（VIX）、`FRED_*_DTWEXBGS_*.csv`（美元指数）、`FRED_*_DFF_*.csv`（联邦基金利率）、`FRED_PINDUINDEXM_monthly.csv`（IMF 工业原料）。
-  - `Yahoo/`（自动下载）：`Yahoo_sp500_daily*.csv`（S&P 500）、`Yahoo_OVX_daily.csv`（OVX）、`Yahoo_BZF_daily.csv`（Brent 近月期货）、`Yahoo_CADUSD_daily.csv` + `Yahoo_AUDUSD_daily.csv`（商品货币）、`Yahoo_GCF_daily.csv`（黄金，见下注）。
-  - `Other/`（自动下载）：`DallasFed_igrea_monthly.xlsx`（Kilian REA）、`data_gpr_export.dta`（GPR，Stata，列 `GPR`）。
+  - `Yahoo/`（自动下载）：`Yahoo_sp500_daily*.csv`（S&P 500）、`Yahoo_OVX_daily.csv`（OVX）、`Yahoo_BZF_daily.csv`（Brent 近月期货）、`Yahoo_CADUSD_daily.csv`（商品货币 CAD；`Yahoo_AUDUSD_daily.csv` 仍在但 AUD 腿已不入表）、`Yahoo_GCF_daily.csv`（黄金，见下注）。
+  - `Other/`（自动下载）：`DallasFed_igrea_monthly.xlsx`（Kilian REA）、`data_gpr_daily_recent.xls`（日度 GPRD，列 `GPRD`）、`data_gpr_export.dta`（旧月度 GPR，fallback）。
   - 根目录 `manifest.csv` 记录每个文件的 `category`（提供方）、来源 URL、标识、下载时间、行数、覆盖区间与 SHA-256。
 - ⚠️ `**gold_return` 实际快照源**：FRED 序列 `GOLDPMGBD228NLBM`（LBMA Gold PM）近期在 FRED 端不稳定（404/超时），当前快照由备用源 **Yahoo `GC=F`（COMEX 黄金期货）** 落盘于 `Yahoo/Yahoo_GCF_daily.csv`；两者的周度对数收益率经核对一致（max|Δ|≈3e-16）。canonical 主源仍记为 FRED，`manifest.csv` 如实记录实际下载源。
 - 引用：GPR — Caldara, D. & Iacoviello, M. (2022) *Measuring Geopolitical Risk*, AER；Kilian REA — Kilian (2009)，Dallas Fed 维护更新版。
@@ -100,7 +100,7 @@
 | ---------------------------------------------- | ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------- |
 | **咽喉过境**（按船型 `n_`*/`capacity_*`）               | IMF PortWatch `Daily_Chokepoints_Data`               | ArcGIS FeatureServer（org `weJ1QsnbMYJlCHdG`）；6 咽喉 portid                                                                                              | 日    | W-FRI 求和                             | `pw_{choke}_n_tanker`、`_n_total`、`_capacity_tanker`、`_capacity`、`_tanker_share`、`_tanker_cap_share`、`_avg_tanker_size`(=cap/n)、`_n_tanker_wow_pct`、`_capacity_tanker_4w_ma`；汇总 `pw_all_n_tanker_sum`/`_n_total_sum`/`_tanker_share`  | 2019-01 |
 | **港口级进出口**（`import_tanker`/`export_tanker` 吨位） | IMF PortWatch `Daily_Ports_Data`                     | ArcGIS FeatureServer；14 油轮枢纽 portid                                                                                                                   | 日    | W-FRI 求和（按出口/进口篮子）                   | `pw_exp_hubs_export_vol`、`pw_imp_hubs_import_vol`、`pw_tanker_exp_imp_net`、`pw_tanker_exp_imp_asym`、`pw_tanker_exp_imp_log_ratio`、`pw_tanker_exp_imp_asym_4w_ma`、`pw_exp_hubs_export_vol_wow_pct`                                     | 2019-01 |
-| **AIS 船舶 presence**（按船型 hours/vessels）         | Global Fishing Watch 4Wings `public-global-presence` | Report API（POST，Bearer token，6 咽喉多边形）                                                                                                                 | 月    | 月→日 ffill→W-FRI last                 | `gfw_{choke}_total_hours`、`_total_vessels`、`_cargo_hours`、`_bunker_hours`、`_other_hours`、`_nontanker_hours`、`_other_share`、`_total_hours_mom_pct`、`**_dwell_hours_per_vessel`(=hours/vessels 拥堵/停留代理)**；汇总 `gfw_all_total_hours_sum` | 2012-01 |
+| **AIS 船舶 presence**（按船型 hours/vessels）         | Global Fishing Watch 4Wings `public-global-presence` | Report API（POST，Bearer token，6 咽喉多边形）                                                                                                                 | 月    | 月→日 ffill→W-FRI last                 | `gfw_{choke}_total_hours`、`_total_vessels`、`_cargo_hours`、`_bunker_hours`、`_other_hours`、`_other_share`、`_total_hours_mom_pct`、`**_mean_presence_hours_per_vessel`(=hours/vessels 存在强度/拥堵粗代理，原名 `_dwell_hours_per_vessel`，2026-07-03 改名)**；汇总 `gfw_all_total_hours_sum`（`_nontanker_hours` 已于 2026-07-03 删除） | 2012-01 |
 | **AIS 船舶密度栅格**（月度 vessel density）              | EMODnet Human Activities                             | `EMODnet_HA_Vessel_Density`（约 1 km 栅格 GeoTIFF，`vesseldensity_10_YYYYMMDD.tif`）；本地 `03_data/raw/03_shipping/emodnet_vessel_density_monthly_2017-2025/` | 月    | AOI/咽喉多边形区域统计 → 月→日 ffill→W-FRI last | `emodnet_{node}_vessel_density`（节点/咽喉空间密度，区域贸易流强度代理）                                                                                                                                                                                 | 2017-01 |
 
 
@@ -118,4 +118,69 @@
 - ⚠️ **EMODnet vessel density** 为月度栅格（约 1 km），覆盖范围以欧洲/全球为主，作节点级 AIS 空间密度补充（与 GFW presence 互为交叉验证）；按 AOI/咽喉多边形做区域统计后并入，覆盖 2017+。
 - ⚠️ **样本期对齐**：PortWatch 系列 2019+，GFW 系列 2012+，EMODnet 2017+；统一比较窗 2019–2026。油价方向为 price→shipping（P016/P017），建模须**严格滞后、按发布时点对齐、后向滚动**（避免 P018 中心 MA 前视泄漏）。
 - 引用：PortWatch — Arslanalp, Exton, Gao, Kamali, Saraiva, Sozzi & Verschuur (2026, IMF WP/26/99)；Arslanalp, Marini & Tumbarello (2019, IMF WP/19/275)。GFW — Global Fishing Watch 4Wings API。EMODnet — EMODnet Human Activities Vessel Density Map。油价—航运关系 — Mi et al. (2022, 2023)。
+
+---
+
+## M3 Stage-2 — 动态异质图补采数据（节点特征 / O-D 有向边 / dark vessel）
+
+> **定位**：阶段 1（PortWatch 咽喉/港口 + GFW 咽喉 presence 的扁平聚合）已闭环并跑完 M3 基线。本节登记**阶段 2「17 节点动态异质图 G(t)」的新采集 raw 数据**——把航运模态从「6 咽喉聚合特征」升级为「11 AOI 节点 + 6 咽喉 + 节点间有向边」的图结构。三个新下载脚本均对齐 M2 遥感所用的**同一批 11 AOI**（`03_data/raw/02_sentinel2/aoi_oil_infrastructure.csv`），统一窗口 2019–2025（对齐 M0–M4 比较窗）。所有源公开免费；GFW 复用阶段 1 的免费 API token。
+>
+> 产物目录：`03_data/raw/03_shipping/{IMF Portwatch, GFW}/`（`raw/` 整目录 gitignore，脚本入库）。
+
+### 1. 11 AOI 图节点 ↔ PortWatch `portid` 映射（探测于 2026-07-03）
+
+| site_id | short | 类型 | PortWatch portid | PortWatch 名称 | 匹配质量 |
+| ------- | ----- | ---- | ---------------- | -------------- | -------- |
+| P001 | Rotterdam | port | `port1114` | Rotterdam | 精确 |
+| P002 | Fujairah | terminal | `port362` | Fujairah | 精确 |
+| P003 | RasTanura | terminal | `port1091` | Ras Tanura | 精确 |
+| P004 | Jurong | refinery | `port1201` | Singapore | **代理**（裕廊岛炼厂并入 Singapore；PortWatch 无独立裕廊油港） |
+| P005 | Houston | port | `port481` | Houston | 精确 |
+| P006 | Ningbo | port | `port824` | Ningbo | 精确（Zhoushan 为独立 `port1429`，未并） |
+| P007 | Jamnagar | refinery | `port1199` | Sikka | **代理**（Reliance Jamnagar 专用外港 Sikka；PortWatch 无 Jamnagar） |
+| P008 | Basra | terminal | `port2479` | Basrah Oil Terminal | 精确（油码头，非城市港 `port20`） |
+| P009 | Ulsan | refinery | `port1338` | Ulsan | 精确 |
+| P010 | Kharg | terminal | `port2164` | Kharg Island | 精确 |
+| P011 | Yanbu | terminal | `port570` | Yanbu (King Fahd Port) | 精确 |
+
+### 2. 三个数据源 / 脚本 / 产物
+
+| 通道 | 数据集 / 指标 | 提供方 | 接口 / 标识 | 原始频率 | 脚本 → 产物 | 覆盖 |
+| ---- | ------------ | ------ | ----------- | -------- | ----------- | ---- |
+| **节点特征** | 11 AOI 单港 tanker/cargo 停靠数 + 进出口吨位 | IMF PortWatch `Daily_Ports_Data` | ArcGIS FeatureServer（org `weJ1QsnbMYJlCHdG`），11 portid | 日 | `IMF Portwatch/download_portwatch_aoi_nodes.py` → `portwatch_aoi_nodes_daily.csv`（**30074 行 = 11 节点 × 2734 天**，字段 `portcalls_tanker/cargo/portcalls`、`import/export_tanker`、`import/export`） | 2019-01 ~ 2026-06 |
+| **O-D 有向边 + 节点 dwell** | AOI port-visit 事件（含 `vessel.id`、`durationHrs`、锚地） | GFW Events API v3 | `POST /v3/events`，`public-global-port-visits-events:v3.0`，`types=[PORT_VISIT]`，`vesselTypes=[BUNKER,CARGO]`，`confidences=[3,4]`，`geometry`=AOI 方形多边形 | 事件级 | `GFW/download_gfw_port_visits.py` → `gfw_aoi_port_visits.csv`（原始事件，节点级，含 dwell）+ `gfw_aoi_od_voyages.csv`（同船相邻 AOI 停靠 → 有向边 `from_site→to_site`、`transit_days`） | 2019 ~ 2025 |
+| **dark vessel（暗船）** | SAR 检测数，AIS 匹配 / 未匹配拆分 | GFW 4Wings API | `POST /v3/4wings/report`，`public-global-sar-presence:latest`，`temporal-resolution=MONTHLY`，`filters[0]=matched='false'`(dark)/`'true'`(matched)，6 咽喉 + 11 AOI 多边形 | 月 | `GFW/download_gfw_sar_detections.py` → `gfw_sar_detections_monthly.csv`（每 region×月 `detections_total/dark/matched` + `dark_share`） | 2019 ~ 2025 |
+
+### 3. API 与关键限制（写作/建模必读 caveat）
+
+- ⚠️ **油轮无法在 events 层精确隔离**：GFW Events `vesselTypes` 枚举为 `[BUNKER, CARGO, CARRIER, FISHING, GEAR, OTHER, PASSENGER, SEISMIC_VESSEL, SUPPORT, NON_FISHING, RESEARCH]`，**无 TANKER**。实测纯原油港油轮归 **CARGO**（Ras Tanura 2024 `CARGO=1812` vs `BUNKER=3`；Kharg `CARGO=89` vs `BUNKER=0`）——`BUNKER` 仅加油船。故本项目取 `CARGO+BUNKER`：**油相关 AOI（Ras Tanura/Kharg/Basra/Yanbu/Fujairah）的 CARGO 近似即油轮**，综合港（Rotterdam/Singapore/Houston/Ningbo/Ulsan）为混合货运——O-D 边应理解为「油港主导的货运连通」而非纯油轮流。
+- ⚠️ **O-D = 11 节点诱导子图**：边 `AOI_i→AOI_j` 表示「同一船在 AOI_i 之后**下一次被观测到的 AOI 停靠**是 AOI_j」，中途非 AOI 港口停靠不在观测内。这正是图模块所需的 AOI 子图 O-D。
+- ✅ **节点级 dwell 升级**：`port_visit.durationHrs` 是每次停靠的真实停留时长，**比阶段 1 用 GFW presence `total_hours/total_vessels` 的粗代理精确**。⚠️ 但存在跨年**超长异常值**（如某船 `durationHrs≈114181`≈13 年，实为 AIS 长期在港/拼接），processed 阶段须按上限（如 ≤ 30 天）裁剪。
+- ⚠️ **dark vessel = SAR 未匹配 AIS 检测**（P057 Paolo 2024 / P061 GFW SAR）：`detections_total = dark + matched`（实测 Hormuz 2024Q1 `4799 = 2388 + 2411`，暗船占比≈50%，与霍尔木兹伊朗制裁油轮关闭 AIS 一致）。SAR 覆盖 2017+、单请求 ≤ **366 天**（故按年分段），单位为**检测数**非小时。
+- ⚠️ **AOI 多边形**：脚本默认方形 half-size = **0.25°（~25–28 km）**，覆盖泊位 + 近岸锚地；波斯湾密集区（Ras Tanura/Kharg/Basra/Fujairah）虽多边形不重叠，仍可用事件 `anchorage_id` 细分。可用 `--buffer-deg` 调整。
+- ⚠️ **样本期与防泄漏**：本节 raw 统一 2019–2025；周频化 + 发布滞后（同阶段 1 的 GFW +4 周 / PortWatch +1 周思路）在 processed 建图阶段施加，raw 不含滞后。
+
+### 4. 复现命令
+
+```bash
+cd 03_data/raw/03_shipping/IMF\ Portwatch && python3 download_portwatch_aoi_nodes.py
+cd 03_data/raw/03_shipping/GFW && python3 download_gfw_port_visits.py --start 2019 --end 2025   # --resume 断点续传
+cd 03_data/raw/03_shipping/GFW && python3 download_gfw_sar_detections.py --start 2019 --end 2025
+```
+
+### 5. 实测产出概览（2026-07-03 全量下载）
+
+| 产物 | 规模 | 关键统计 |
+| ---- | ---- | -------- |
+| `portwatch_aoi_nodes_daily.csv` | 30074 行（11 节点 × 2734 天，2019-01~2026-06） | Kharg 纯出口（`import_tanker`=0）、Basra 出口主导、Jurong/Singapore 转运量最大 |
+| `gfw_aoi_port_visits.csv` | 570521 visits / 38300 unique vessels | 节点平均 dwell（小时）：Kharg 234、Jamnagar 167、Ras Tanura 126 最长；综合港 Rotterdam 61、Ulsan 57 |
+| `gfw_aoi_od_voyages.csv` | 532221 边（cross-node 106992，self-loop 425229） | Top 航线：Ningbo↔Singapore(≈1.5万)、Fujairah↔Singapore、Singapore↔Rotterdam、Singapore→Ras Tanura（返程装油） |
+| `gfw_sar_detections_monthly.csv` | 1419 行（17 region × 84 月，2019-01~2025-12） | **暗船占比：Kharg 79%、Basra 56%、Hormuz 51%、Suez 47%、Malacca 38%**（制裁"影子船队"信号）；合规港 Fujairah 5%、Rotterdam 11%、Ulsan 10% |
+
+> ⚠️ **dark vessel 亮点即研究信号**：Kharg（伊朗唯一主要出口枢纽）暗船 79% + Basra（伊拉克）56% + Hormuz 51% 直接对应 OPEC/受制裁国油轮关闭 AIS 的"影子船队"，对供给风险 → 油价机制有强解释潜力（P057/P061）。
+
+> **阶段 2 processed（已完成 2026-07-03）**：
+> ① **周频图张量** → `03_data/processed/M3/py/build_m3_graph_weekly.py` 产出 `m3_graph_nodes_weekly.csv`（391 周 × 11 站 × 11 特征）+ `m3_graph_edges_weekly.csv`（O-D 有向边）+ `m3_graph_darkvessel_weekly.csv`（17 区域）+ `m3_graph_tensors.npz`（node `(391,11,11)` + adjacency `(391,11,11)`）；含 dwell ≤ 720h / transit ≤ 90d 裁剪、发布滞后 PW +1w / GFW-event +2w / SAR +4w、有向性与防泄漏自检通过。
+> ② **EMODnet zonal stats** → `build_emodnet_weekly.py` 产出 `m3_emodnet_density_weekly.csv`。⚠️ EMODnet 为 **EPSG:3035 欧洲栅格**，17 区域中**仅 Rotterdam + Suez 有有效像素**，其余在覆盖外（NaN）；栅格覆盖 2017-2024（无 2025），故仅作 **Rotterdam 交叉验证**补充，非全球图特征。
+> 字段与形状详见 `03_data/processed/M3/m3_data_dictionary.md` Stage-2 节。
 

@@ -42,7 +42,7 @@ This research makes three contributions:
 ## 1.5 Dissertation structure
 
 - **Chapter 2 — Literature Review:** Reviews crude oil price forecasting methods, the use of shipping and remote sensing data as economic proxies, and multimodal forecasting approaches, identifying the research gap.
-- **Chapter 3 — Methodology:** Describes the research design, dataset inventory, preprocessing pipeline, feature engineering, model architecture (XGBoost/LightGBM, LSTM, Temporal Fusion Transformer), ablation framework, and evaluation strategy.
+- **Chapter 3 — Methodology:** Describes the research design, dataset inventory, preprocessing pipeline, feature engineering, model architecture (XGBoost/LightGBM, Temporal Fusion Transformer), ablation framework, and evaluation strategy.
 - **Chapter 4 — Results:** Presents EDA findings, M1–M4 ablation results, and SHAP-based feature importance analysis across market regimes.
 - **Chapter 5 — Discussion:** Interprets results, discusses implications, limitations, and future work.
 - **Chapter 6 — Conclusion:** Summarises findings and contributions.

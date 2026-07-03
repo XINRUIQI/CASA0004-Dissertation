@@ -37,7 +37,7 @@ import seaborn as sns
 
 ROOT = Path(__file__).resolve().parents[4]
 OUT = ROOT / "03_data/processed/M2/outputs"
-M2_LONG = OUT / "m2_weekly_long.csv"
+M2_LONG = OUT / "m2_eda_weekly.csv"
 M1_CSV = ROOT / "03_data/processed/M1/outputs/m1_weekly_features.csv"
 
 INDEX_ORDER = ["NDVI", "NDWI", "NDBI", "BSI", "NTL"]
