@@ -75,7 +75,7 @@
 
 **说明 / 注意（双通道设计 + 文献矩阵 §② 精读修正）：**
 
-- ⚠️ **通道 A 是方法创新核心**：6 波段 patch 对齐 Prithvi-EO 基础模型所用的 HLS 6-band 集；EO 大模型**只做特征提取不微调**，仅训练轻量 temporal attention（同 AOI 多月）+ site attention（11 AOI 加权池化）。
+- ⚠️ **通道 A 是方法集成与实证检验核心**：6 波段 patch 对齐 Prithvi-EO 基础模型所用的 HLS 6-band 集；EO 大模型**只做特征提取不微调**，仅训练轻量 temporal attention（同 AOI 多月）+ site attention（11 AOI 加权池化）。
 - ⚠️ **差异化 patch**：脚本 `PATCH_HALF_BY_TYPE` 默认 half-size = port 3200 m / refinery 2560 m / terminal 1280 m（即 full = 6.4 / 5.12 / 2.56 km），实际导出以 `aoi_oil_infrastructure.csv` 的 `patch_half_m` 为准并含单站覆盖微调（Fujairah/Kharg/Yanbu = 1600 m → 3.2 km；Basra = 800 m → 1.6 km）；EO 编码器后续 resize 到固定输入，故各类型像素尺寸不同无碍。
 - ⚠️ **通道 B 用动态异常而非原始水平**：`ntl_anomaly_{aoi}`（站点 z-score），因 NTL 时间维度弱、原始水平受 AOI 规模与城市灯光污染影响（P024/P032）。
 - ⚠️ **NTL 不是油轮代理**：Santos 实测 NTL↔油轮 Rs=−0.07 → 仅作综合锚泊/港口活动信号（P024）。

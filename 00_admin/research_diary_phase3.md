@@ -302,6 +302,94 @@
 
 ---
 
+## 2026-06-30
+
+### Decisions made
+
+- **贡献措辞统一更新为「方法集成与实证检验层」**（原「方法创新层」）：明确本研究**不提出新的融合算子 / 网络层 / 损失**，而是把既有方法（冻结 EO 基础模型 + 模态专属编码器 + 门控 / 交叉注意力 + 缺失模态 / 不规则时间建模）**集成**，并**首次**在原油周频价格预测中系统检验「表示级融合 vs 扁平特征融合」；贡献定位 = **application + integration + 系统实证比较**，非方法学创新。
+- 已对齐文档：`2026-06-22_research_plan_e2e_multimodal.md`（§0/§1/§2/§6.2.1/§7）、`literature_matrix.md` §⑥、`external_sources.md`、`2026-06-23_flat_baseline_log.md`。**本日记 2026-06-17/22/23 旧条目保留原「方法创新层」措辞作历史记录**（不回改）。
+
+### What I did
+
+- **补齐「方法集成与实证检验层」文献缺口**：联网核实并新增 8 篇方法学文献（建议编号 **P094–P101**），写入 `literature_matrix.md` 新增 **§⑥**：
+  - EO 基础模型：**P094** Prithvi-EO-2.0（arXiv:2412.02732）、**P095** SatMAE（NeurIPS 2022）；
+  - 门控融合：**P096** Gated Multimodal Units（Arevalo et al. 2017）；
+  - 缺失模态：**P097** Ma et al.（CVPR 2022）、**P100** ModDrop（Neverova et al. 2016）；
+  - 不规则时间序列：**P098** GRU-D（Che et al. 2018）、**P099** mTAN（Shukla & Marlin 2021）；
+  - 多模态综述锚点：**P101** Baltrušaitis et al.（TPAMI 2019）。
+  - ⚠️ 8 篇均**待精读、待核页码**，且**无一在油价 / 商品预测上验证** → 创新层文献是「方法骨架」而非「有效性证据」，增量价值须靠本项目消融（始终对照 M0 + 扁平基线）自证。
+- **修正 FRT 不一致**：`research_plan` §4.2 通道 B + §5 架构图删除残留 FRT，与 `2026-06-22_channelB_mechanism_plan` §6「去掉 FRT」对齐（P055 仅支撑油罐结构容量、不支撑充填率 / 液位）。
+
+### Next tasks
+
+- 把 **P094–P101** 同步并入 `literatue.md` 分类总表与 Tier 排序。
+- 将 **P039 / P062 / P063 / P096 / P094 或 P095** 升级为正式 reading note（创新层三编码器与融合的选型依据）。
+- 起草 `chapter_2_literature_review.md` **§2.4 Multimodal forecasting**（P101 框架 + P039 先例 + P094/095 EO FM + P096 门控）。
+
+### M0–M4 基线进度核对
+
+**结论：** 线性 + XGBoost 的 M0–M4 已完成（且超额）；TCN（及任何深度时序基线）尚未实现。
+
+#### ✅ 已完成部分（远超 baseline 最低要求）
+
+`04_code/src/backtest/`（公平回测内核）+ `run_baseline.py`（M0–M4 单入口）已跑通，`05_outputs/baselines/` 下有 38 个结果文件，不是空头文档：
+
+| 模态 | 已产出 | 关键结果 |
+|---|---|---|
+| M0 随机游走 | 内嵌基准 | RMSE=4.152（极强，无人超过）|
+| M1 金融 | 主基线 + lookback sweep + 调参 | L4_tuned Ridge 4.332 |
+| M2 +遥感 | anom/literature 两套 + Clark-West + LOAO + SHAP + PCA/ElasticNet 降维对照 + lookback sweep + 水体掩膜稳健性 | XGB CW_p=0.006（显著嵌套增量）|
+| M3 +航运 | 主基线 + sweep + SHAP + LOCHO | XGB CW_p=0.000，霍尔木兹/苏伊士 tanker 信号 |
+| M4 全模态 | 主基线 + SHAP + sweep + LOMO | XGB CW_p=0.0002；SHAP：航运 55.6% > 金融 30.3% > 遥感 13.1% |
+
+公平协议均已到位：统一窗口 2019–2025、lookback=4、rolling-origin（expanding，min_train=104）、单任务回归 \(r_{t+1}\) 还原价格、DM（vs M0）+ Clark-West（vs M1 嵌套）、SHAP、多种 leave-one-out 稳健性。完成度很高。
+
+#### ❌ 尚未完成
+
+1. **TCN（及任何深度时序基线）未实现。** 在 `04_code/` 内检索 `TCN|LSTM|GRU|torch|Conv1d` 零命中（匹配均来自文档/文献笔记）。`models.py` 里仅有 Ridge 与 XGBoost。
+2. **写作未动**（两份日志 backlog 均列着）：Methodology「机制变量构建」、Results「增量价值」、Discussion。
+
+#### 定位说明
+
+方案 §0 写的是「XGBoost / 线性 / TCN」，但 §6.1 baseline 对照表列的时序基线是 LSTM/TFT-Early（early-fusion）；TCN 主要出现在 §5.1 作为阶段 1 的 Finance 模态编码器。不论叫 TCN 还是 LSTM，目前**缺一根「把所有数值列喂进同一时序网络」的深度 early-fusion 基线**——这正是 RQ2（扁平 vs 模态感知融合）的重要标尺。严格按 §0 措辞，「核心实证层」还差这一块。
+
+#### 一句话摘要
+
+线性（Ridge）+ XGBoost 的 M0–M4 消融已做完且很扎实（主基线 + DM/Clark-West + SHAP + 多种 leave-one-out + 降维对照 + 水体掩膜稳健性，结果文件齐全可复现）；TCN 或任何深度 early-fusion 时序基线尚未做。需补时序基线或推进写作时再启动。
+
+---
+
+## 2026-07-03
+
+### What I did — 深度 early-fusion 基线（补齐核心实证层最后一块）
+
+- 新建 `04_code/scripts/run_deep_baseline.py`：LSTM/GRU **early-fusion** 时序基线，复用 `backtest.data`（同特征/窗口/防泄漏）+ `backtest.metrics`（同 DM/CW），把所选全部数值列 reshape 成 `[lookback, features]` 序列喂进**一个共享 RNN**（无模态专属编码器）——即 RQ2 里「扁平 / 早融合」的**深度版标尺**（此前只有 Ridge/XGB 的表格扁平融合，缺深度 early-fusion）。
+- 协议同扁平基线：2019–2026、lookback=4、rolling-origin（min_train=104、retrain_every=13、20 fits）、单任务回归 \(r_{t+1}\) 还原价格、特征+目标训练折内标准化、inner-val early stopping + dropout/weight_decay 强正则（小样本防过拟合）。
+- 产物：`05_outputs/baselines/{m1..m4}/baseline_deep_metrics*.csv` + `_predictions*.csv` + `backtest_deep*.png`。
+
+### 结果（257 测试周 2021–2025，M0 RMSE=4.152）
+
+| 模型 | RMSE | DirAcc | skill vs M0 | CW_p vs M1 |
+|---|---|---|---|---|
+| M1_LSTM | 4.178 | 0.490 | −0.6% | — |
+| M2_LSTM | 4.210 | 0.595 | −1.4% | **0.012（显著）** |
+| M3_LSTM | 4.370 | 0.494 | −5.3% | 0.460（不显著） |
+| M4_LSTM | 4.180 | 0.549 | −0.7% | 0.059（边缘） |
+
+- **深度 early-fusion 同样打不过 M0**（skill 全负），与 Ridge/XGB 结论一致 → 强化「周频 Brent 随机游走极强」。
+- **M2 遥感嵌套增量显著（CW_p=0.012）**，与 XGB 的 M2（CW_p=0.006）方向一致，交叉印证遥感 anom 有嵌套增量。
+- **M3 航运在深度早融合里反而变差（RMSE 4.37、CW 不显著）**，而 XGB 的 M3 CW 显著 → 说明「把 119 维高维航运直接堆进一个 RNN」的扁平早融合处理不好高维异构模态，**正是 RQ2「需模态感知融合而非扁平早融合」的经验论据**。
+- 深度模型全程数值稳定、无负 R² 崩溃（强正则 + 目标标准化 + early stopping 生效），解决了此前「深度模型 R² 大量为负」的问题。
+
+### 定位
+核心实证层补齐：**M0 / 线性(Ridge) / 树(XGB) / 深度 early-fusion(LSTM)** 四类基线齐全、同协议可比。方法创新层（模态专属编码器 + 门控融合）将以「深度扁平早融合」为直接对照回答 RQ2。（2026-06-30「M0–M4 基线进度核对」中「深度基线未实现」的结论到此更新。）
+
+### Next tasks
+- （可选）深度基线稳健性：`--arch gru`、hidden/dropout sweep、`returns` 特征模式、多 seed 平均。
+- 推进写作（§2.4 / Ch3 / Ch4）或启动创新层原型（Prithvi/SatMAE embedding → 门控融合 → flat vs modality-aware）。
+
+---
+
 # Task List
 
 > **Current phase:** Phase 03 — Data processing & 4-model framework implementation  
@@ -326,9 +414,10 @@
 - [x] 修复 merge 层 EIA 双重滞后（`EIA_WPSR_LAG_WEEKS=0`，仅复查；重跑自检全 OK）
 - [x] M2 B0–B2：审计 + 周频构建 + 机制 EDA
 - [x] M2 B3：公平回测 + DM/CW + LOAO + SHAP + C2 降维
-- [ ] **M2 B4：水体掩膜 GEE 稳健性**（cloud-mask vs water-masked 并列回测）
-- [ ] M3（M1+航运）扁平对照 + DM/CW
-- [ ] M4 全模态
+- [x] **M2 B4：水体掩膜 GEE 稳健性**（cloud-mask vs water-masked 并列回测）✅ XGB CW_p 0.006→8.5e-5
+- [x] M3（M1+航运）扁平对照 + DM/CW ✅ XGB CW_p=2.5e-5
+- [x] M4 全模态 ✅ XGB CW_p=1.7e-4；SHAP 航运56%>金融31%>遥感13%
+- [x] 深度 early-fusion 基线（LSTM，M1–M4）✅ 2026-07-03 `run_deep_baseline.py`（RQ2 扁平标尺）
 - [x] 唯一核心目标 = 价格：训练 `r_{t+1}` → 还原 \(\hat P_{t+1}\)；方向由预测价格派生；单任务回归
 - [x] 2019–2025 · 4-week lag · rolling-origin · L4_tuned（M0/M1/M2 已完成）
 - [x] M2：DM + Clark-West 检验（还原价格上计算）
@@ -410,3 +499,6 @@ python 04_code/scripts/run_baseline.py \
 - S2 Channel B 11 AOI 月度 indices CSV（2017-04 – 2025-12）
 - M2 B0–B3：公平回测 + DM/CW + LOAO + SHAP + C2 降维；方法论决策（lookback/子期间跳过）
 - **M2 B4 水体掩膜全流程**（GEE CSV 验收 ✓ → `build_m2_weekly.py --watermask` ✓ → `build_feature_matrix.py --m2-csv` ✓ → `run_baseline.py --matrix` ✓；XGB CW_p 0.006 → 0.0001，结论强化；`m2_baseline_results.md` §7b 完整记录）
+
+
+

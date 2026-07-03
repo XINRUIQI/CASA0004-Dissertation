@@ -2,6 +2,14 @@
 
 ## 3.1 Research design
 
+This dissertation adopts a **two-layer design** under one shared, leakage-safe evaluation protocol.
+
+**Core empirical layer (baselines / ablation).** Four model families predict the next-week Brent price under identical conditions: M0 (no-change random walk), a regularised linear model (Ridge), a gradient-boosted tree (XGBoost), and a deep early-fusion recurrent network (LSTM). Across these, the data modality is varied in a nested ablation — **M1** (financial / macro), **M2** (M1 + remote sensing), **M3** (M1 + shipping), **M4** (all) — so the incremental value of each alternative-data modality can be isolated (RQ1).
+
+**Integration and empirical-testing layer (contribution).** The same modalities are then fused at the *representation* level using modality-specific encoders and gated / cross-attention fusion, and compared head-to-head with the flat feature / early fusion of the core layer (RQ2). This layer **integrates existing methods rather than proposing a new algorithm**.
+
+The sole prediction target is the next-week Brent price \(P_{t+1}\); the model is trained on the one-week log return \(r_{t+1}=\log(P_{t+1}/P_t)\) and the price is reconstructed as \(\hat P_{t+1}=P_t\,e^{\hat r_{t+1}}\). Direction and returns are derived from the predicted price for evaluation only (single-task regression). All configurations share a common window (2019–2026), weekly Friday-aligned sampling, a 4-week lookback, expanding rolling-origin backtesting, and the same chronological train/validation/test ordering, so performance differences reflect **data and architecture, not protocol**.
+
 ## 3.2 Data sources
 <!-- Dataset inventory table (link to 03_data/external_sources.md) -->
 <!-- Dataset feasibility assessment -->
@@ -71,12 +79,25 @@ To verify that the model results are not driven by the inclusion or exclusion of
 - ECB (2025). Can satellites predict oil demand? *ECB Working Paper Series*, No. 3198.
 
 ## 3.3 Data preprocessing
-<!-- Cleaning, alignment, feature engineering -->
+
+All variables are aligned to their real **publication timestamp**, not the statistical reference date, to prevent look-ahead. EIA Weekly Petroleum Status Report series (reference "week ending Friday", released the following Wednesday) are lagged one week at source; monthly geopolitical / activity series carry conservative 1–5 week release lags; remote-sensing observations use an as-of join at month-end + 15 days; shipping is lagged GFW +4 weeks and PortWatch +1 week. Self-checks confirm every alignment is a lag, never a forward shift.
+
+Monthly values are **not** forward-filled into repeated weekly values. Each remote-sensing observation instead carries `days_since_obs` (age), `valid_mask` and `modality_mask`, so staleness and missingness stay explicit. Remote-sensing signals are expressed as **within-site standardised anomalies** on an expanding, past-only window (min 12 months): each index is de-seasonalised and z-scored against that site's own history, removing cross-site scale and seasonality (following the night-lights standardisation literature) without using future information. A water-masked variant (MNDWI, land-only pixels; McFeeters 1996, Xu 2006) is produced for robustness at water-dominated terminals.
+
+All scalers, variance filters and any feature selection are fit **inside the training fold only**. The three modalities are merged on a common Friday index into a single leakage-safe matrix (**365 weeks × 221 columns** for 2019–2026), each column documented with its modality, group, release lag and coverage. The default M2 feature contract is the **55 within-site anomalies**; level, age, and near-constant availability columns are excluded from the main analysis by design.
 
 ## 3.4 Analytical framework
-<!-- Model architecture -->
-<!-- Model selection justification -->
+
+**Core empirical layer.** M0 is the random walk (\(\hat r=0\)). The tabular baselines flatten the past \(L\) weeks of every selected column into one feature vector and fit Ridge (with StandardScaler) and XGBoost, each with time-aware inner-validation tuning. The deep early-fusion baseline reshapes the same columns into an \([L,\text{features}]\) sequence and feeds them to a **single shared LSTM** with no modality-specific structure — the deep analogue of flat / early fusion that the contribution layer must beat.
+
+**Integration layer (contribution).** Each modality is encoded separately before fusion: a small TCN / GRU for the financial sequence (cf. Foroutan & Lahmiri, 2024 [P001]); an Earth-observation branch that feeds Sentinel-2 patches through a **frozen** foundation model (Prithvi-EO-2.0 [P094] / SatMAE [P095]) to obtain image embeddings, then temporal- and site-attention pooling (cf. mTAN [P099]; Gohari et al., 2024 [P039]); and a shipping branch pairing a graph encoder (GAT / Graph WaveNet [P091]; crude-oil maritime GNNs [P062/P063]) with a temporal model. The three embeddings are fused with increasing sophistication — encoder-concatenation, **Gated Fusion** (Gated Multimodal Units [P096], whose per-sample gates also serve RQ3 interpretability), and cross-modal attention [P039]. Because monthly imagery and lagged shipping are frequently missing, training uses **modality masking / modality dropout** (Ma et al., 2022 [P097]; ModDrop [P100]) and time-gap handling (GRU-D [P098]; mTAN [P099]). This organisation follows the multimodal taxonomy of Baltrušaitis et al. (2019) [P101]: the baselines are early / feature-level fusion, whereas the contribution layer learns a **joint representation with model-based fusion**.
+
+**Model-selection justification.** The random walk is a mandatory benchmark (Alquist et al., 2013 [P053]); Ridge and XGBoost are strong tabular baselines rather than assumed winners (Costa et al., 2021 [P072]; Yılmaz & Zehir, 2026 [P076]); the LSTM supplies the deep early-fusion reference for RQ2; TFT / GNN architectures ([P089/P091/P062/P063]) are candidate encoders for the contribution layer. All models are kept deliberately small and strongly regularised given the ~360-week sample.
 
 ## 3.5 Evaluation metrics
 
+All metrics are computed on the **reconstructed price** \(\hat P_{t+1}\): RMSE, MAE, directional accuracy, and skill relative to M0 (\(1-\text{RMSE}/\text{RMSE}_{M0}\)). Two forecast-accuracy tests are used (following Diebold & Mariano, 1995 [P058]): the **Diebold–Mariano** test (HLN small-sample correction) for the non-nested comparison against M0, and the **Clark–West** MSPE-adjusted test for the *nested* increments (M2/M3/M4 over M1), since the standard DM statistic is biased for nested models. Every comparison uses the same target, horizon, out-of-sample dates and rolling origin. Interpretability uses **SHAP** (Lundberg & Lee, 2017 [P059]) aggregated to the Market / Remote-sensing / Shipping modality groups, with feature selection performed inside each training window to avoid leakage; SHAP importance is read as "what the model used", not as causal evidence or a substitute for the ablation / DM tests. Robustness checks include leave-one-AOI-out, the water-masked remote-sensing variant, and lookback sensitivity. Direction labels, where reported, use a flat threshold at the 33rd percentile of \(|r|\) on the training fold.
+
 ## 3.6 Ethical considerations
+
+All data are public or appropriately licensed: EIA and FRED (financial / macro), Copernicus Sentinel-2 and VIIRS via Google Earth Engine (remote sensing), IMF PortWatch and Global Fishing Watch (shipping). No personal data are used; AIS is aggregated to chokepoint / port level and never used to track individual operators. Dark-vessel and sanctions-related activity, where discussed, is treated only in aggregate as a data-coverage caveat, not to identify specific vessels. The pipeline is fully scripted and leakage-audited for reproducibility, and the compute footprint is kept low by pre-computing frozen foundation-model embeddings once rather than training large image models. Forecasts are a research artefact and **not investment advice**.
