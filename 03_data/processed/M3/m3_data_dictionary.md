@@ -626,6 +626,8 @@ PortWatch 是 IMF 为监测海运贸易与关键航道中断构建的 AIS 指标
 | `outputs/m3_graph_darkvessel_weekly.csv` | long（week × region） | 6647 行 | 17 区域（11 AOI + 6 咽喉）SAR 暗船 |
 | `outputs/m3_graph_tensors.npz` | 张量 | node `(391,11,11)` + adj `(391,11,11)` | 直接喂 GNN 的节点特征张量 + 邻接张量 |
 | `outputs/m3_emodnet_density_weekly.csv` | long（week × region） | 5491 行 | EMODnet 船舶密度 zonal（⚠️ 仅 Rotterdam+Suez 有效） |
+| `outputs/m3_graph17_tensors.npz` | 张量 bundle | aoi(391,11,11)+choke(391,6,20)+adj(391,17,17) | **完整 17 节点异质图**（11 AOI + 6 咽喉），见 §12.9 |
+| `outputs/m3_graph17_choke_nodes_weekly.csv` | long（week × chokepoint） | 2346 行 | 6 咽喉节点特征（可读审计） |
 
 时间索引统一 `week_ending_friday`（W-FRI）；比较窗 2019-01-04 起（图张量 391 周至 2026-06-26，含全量，建模裁 2019–2025）。
 
@@ -694,7 +696,85 @@ python build_emodnet_weekly.py                        # EMODnet zonal（欧洲�
 
 ### 12.8 已知缺口 / 后续
 
-- **咽喉节点未入张量**：`m3_graph_tensors.npz` 为 11 AOI 核心（O-D 边的实际端点）；17 节点完整图的 6 咽喉节点特征可取自扁平 `m3_weekly_features.csv`（GFW presence + PortWatch transit）+ 本节暗船表咽喉行 + 静态 AOI↔咽喉映射（见 `aoi_oil_infrastructure_sites.md` §4），建模时按需拼接。
+- **11 AOI 核心张量 vs 完整 17 节点图**：`m3_graph_tensors.npz`（§12.5）是 O-D 边端点的 11 AOI 核心；**完整 17 节点异质图已组装**为 `m3_graph17_tensors.npz`（§12.9，含 6 咽喉节点 + AOI↔咽喉静态边）。
 - **O-D 为 AOI 诱导子图**：边表示同船相邻 AOI 停靠，中途非 AOI 港口不观测。
 - **油轮≈CARGO 近似**：port visits 无法在 events 层隔离油轮，油港节点 CARGO 近似油轮、综合港为混合货运（详见 `external_sources.md` caveat）。
-- **未并入主矩阵**：图张量是创新层专用结构，不进 `build_feature_matrix.py` 的扁平 M4 表。
+- **未并入扁平主矩阵**：图张量/17 节点 bundle 是创新层专用结构，不进 `build_feature_matrix.py` 的扁平 M4 表；其消费者是 §12.10 的 z_ship 编码器。
+
+### 12.9 完整 17 节点异质图 `m3_graph17_tensors.npz`
+
+构建脚本 `build_m3_graph17.py`：把 §12.5 的 11 AOI 张量 + **咽喉节点特征**（扁平 `m3_weekly_features.csv` 的 `gfw_{cp}_*`/`pw_{cp}_*` + 暗船表咽喉行）+ **AOI↔咽喉静态边** 组装为 17 节点异质图。所有输入均已在上游滞后（AOI +1/+2/+4w、咽喉 gfw +4w/pw +1w、SAR +4w），**不再额外 shift**。
+
+**节点顺序（固定）**：AOI 0–10 = `P001…P011`；chokepoint 11–16 = `hormuz, suez, malacca, mandeb, panama, cape`。**异质**：AOI 与咽喉特征空间不同（`F_aoi=11 ≠ F_choke=20`），由编码器用类型专属输入投影统一。
+
+| npz 键 | 形状 | 含义 |
+| ------ | ---- | ---- |
+| `weeks` | (391,) | W-FRI 轴 2019-01-04 ~ 2026-06-26 |
+| `node_ids` / `node_types` | (17,) | 节点 id 与类型（aoi/chokepoint） |
+| `aoi_feature_names` / `choke_feature_names` | (11,)/(20,) | 特征名（张量最后一维顺序） |
+| `aoi_features` | (391, 11, 11) | AOI 节点特征（同 §12.2） |
+| `choke_features` | (391, 6, 20) | 咽喉节点特征 = gfw(8) + pw(9) + sar(3) |
+| `adjacency_od` | (391, 11, 11) | 动态有向 O-D（AOI 块） |
+| `static_edges` | (17, 17) | AOI↔咽喉静态边（12 条无向） |
+| `adjacency` | (391, 17, 17) | 组合邻接（O-D 动态 + 静态广播，平均 63.8 边/周） |
+
+**静态边**（`aoi_oil_infrastructure_sites.md` §4）：hormuz–{P002,P003,P008,P010}、suez–{P001,P011}、malacca–{P004,P006,P009}、mandeb–P011、cape–P001、panama–P005。配套可读长表 `m3_graph17_choke_nodes_weekly.csv`（6 咽喉 × 391 周）。复现：`python build_m3_graph17.py`。
+
+### 12.10 z_ship 编码器 `04_code/src/models/shipping_encoder.py`
+
+创新层**航运模态分支**（研究计划 §5.1「1–2 层 GAT + 小 TCN → 32 维」）。消费 §12.9 的 17 节点时序图，输出 `z_ship (B,32)` + `site_att (B,17)`（节点重要度，供 RQ3 模态内可解释）。
+
+**架构**：类型专属投影（`F_aoi/F_choke → d_model`）+ node-type embedding → **2 层 dense 多头 GAT**（邻接对称化 + 自环掩码，融合动态 O-D 与静态 AOI↔咽喉边）→ **因果 TCN**（lookback L 周时序）→ 节点注意力池化 → MLP head → 32 维。约 **4.2 万参数**（小样本友好，呼应 §8「编码器维度小 + 强正则」）。
+
+| 接口 | 说明 |
+| ---- | ---- |
+| `ShippingGraphEncoder(f_aoi=11, f_choke=20, d_model=64, d_out=32, gat_layers=2, heads=4, tcn_layers=2)` | 编码器构造 |
+| `forward(aoi_feat (B,L,11,11), choke_feat (B,L,6,20), adj (B,L,17,17))` | → `(z_ship (B,32), site_att (B,17))` |
+| `load_graph17_windows(npz, lookback=8)` | 切滚动窗口（含标准化；⚠️ smoke 用全局 z-score，**训练须改 past-only expanding**） |
+
+**冒烟自检**（`python shipping_encoder.py`）：384 个 lookback=8 窗口 → `z_ship (32,32)` 全 finite、`site_att` 行和=1.0、反向 `grad_norm≈36`（可训练）。
+
+> ✅ **已接入端到端回测**（见 §12.11）：z_ship 与金融 z_fin 的门控融合 + rolling-origin 单任务回归训练已实现并跑出结果。遥感 z_rs（冻结 Prithvi EO）分支尚未接入。
+
+### 12.11 端到端表示级融合基线（deep：z_ship / z_fin / gated fusion）
+
+创新层的 flat-vs-representation 对照（研究计划 §5.2 / RQ2）。在**与扁平基线完全相同的协议**（`min_train=104`、`retrain_every=13`、目标 `r_{t+1}=log(P_{t+1}/P_t)`、指标在还原价格上算）下训练深度模态编码器并回测，与 flat M1 在相同测试周做 Clark-West 对照。
+
+**模块**（`04_code/src/models/`）：
+
+| 文件 | 作用 |
+| ---- | ---- |
+| `deep_dataset.py` | 把 17 节点图张量 + M1 金融序列对齐到扁平 `build_dataset` 的同一 target/idx，切 lookback=8 窗口；per-fold past-only 标准化接口 |
+| `finance_encoder.py` | `z_fin`：M1 金融序列 → 小型因果 TCN → 32 维 |
+| `fusion.py` | `GatedFusion`（softmax 门控）+ `DeepForecastModel`（mode = ship / fin / fusion）→ 回归头 → r_hat |
+| `deep_rolling.py` | rolling-origin 深度训练循环（Adam + inner-val 早停 + 每 fold 目标标准化），输出与 `backtest.metrics` 兼容的 res 表 |
+| `scripts/run_deep_baseline.py` | 入口：跑 ship/fin/fusion + 读入 flat M1 预测 + evaluate + Clark-West |
+
+> ⚠️ **工程注意**：`run_deep_baseline.py` **不 import xgboost**（不重跑 flat M1，改读 `05_outputs/baselines/m1/baseline_predictions.csv`）——xgboost 与 torch 同进程在 macOS 因重复 OpenMP runtime **段错误**。需先 `run_baseline.py --modality M1` 生成该预测。
+
+**结果**（253 共同测试周 2021-02 ~ 2025-12，`epochs=80` 早停，`seed=42`）：
+
+| 模型 | RMSE | skill vs M0 | DirAcc |
+| ---- | ---- | ----------- | ------ |
+| M0（随机游走） | 4.1717 | 0.0% | – |
+| M1_Ridge（扁平） | 4.2791 | −2.6% | 0.490 |
+| M1_XGB（扁平） | 4.3833 | −5.1% | 0.553 |
+| Mship（z_ship 图） | 4.1878 | −0.4% | 0.522 |
+| Mfin（z_fin TCN） | 4.2045 | −0.8% | 0.506 |
+| **Mfusion（门控融合）** | **4.1711** | **+0.02%** | **0.569** |
+
+**嵌套 Clark-West（单边 p）**：
+
+| 对照 | CW_stat | CW_p |
+| ---- | ------- | ---- |
+| 表示级融合 vs 扁平 M1（Mfusion vs M1_Ridge） | 3.36 | **0.0004** |
+| 航运表示 vs 扁平 M1（Mship vs M1_Ridge） | 3.00 | **0.0014** |
+| 航运增量 vs 纯金融深度（Mfusion vs Mfin） | 1.58 | 0.057 |
+
+**解读（RQ2 核心证据）**：
+- **表示级融合显著优于扁平特征融合**：Mfusion / Mship 相对 flat M1_Ridge 的 CW p = 0.0004 / 0.0014（极显著）；且深度模型不像扁平模型被高维稀释——flat M1 skill 为 −2.6%/−5.1%，而三个深度模型都贴近 M0，**Mfusion 是唯一 skill ≥ 0（+0.02%）且 DirAcc 最高（0.569）** 的模型。
+- **航运表示的边际增量**：Mfusion vs Mfin 的 CW p = 0.057（边际显著），门控融合较纯金融深度略有航运增量。
+- **仍未显著击败 M0**：所有模型 DM_p(vs M0) 均不显著（与本项目一贯的诚实结论一致：周频 Brent 随机游走极强）。
+- ⚠️ **caveat**：Mfusion/Mship 相对 flat M1 的 CW 为**近似嵌套**（深度模型含相同金融输入 + 表示学习，非严格线性嵌套）；小样本（253 周）、未做深度超参 sweep、单 seed；z_rs 未接入。
+
+**产物**：`05_outputs/baselines/deep/`（`deep_metrics.csv` / `deep_cw.csv` / `deep_predictions.csv` / `deep_backtest.png`）。复现：`python3 04_code/scripts/run_deep_baseline.py --modes ship,fin,fusion --lookback 8 --epochs 80`。

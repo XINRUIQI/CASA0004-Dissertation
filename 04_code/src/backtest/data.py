@@ -34,6 +34,8 @@ M2 feature contract (--m2-features), per 2026-06-22_channelB_mechanism_plan.md Â
   level       55 cols {idx}_{aoi} raw level                 <- C3 robustness only
   all         110 cols anom + level                          <- robustness
   literature  4 cols NTL_anom of Fujairah/RasTanura/Rotterdam/Houston  <- C1 arm
+  aoi4        20 cols {5 idx}_anom_{4 core AOI}  <- 2x2 sparsity: site-selected
+  ntlall      11 cols NTL_anom_{11 AOI}          <- 2x2 sparsity: index-selected
 The 55 level (scale-incomparable, seasonal, redundant with anom), 22 age
 (days_since_obs; timeliness not signal) and 22 avail (near-constant in-window)
 are excluded from the main analysis by design.
@@ -82,7 +84,7 @@ GFW_ZMEAN_MIN_PERIODS = 12
 M3_TIERS = ("core", "full")
 
 RS_INDICES = ["NDVI", "NDWI", "NDBI", "BSI", "NTL"]
-M2_FEATURE_MODES = ("anom", "level", "all", "literature")
+M2_FEATURE_MODES = ("anom", "level", "all", "literature", "aoi4", "ntlall")
 # C1 literature arm: core night-time-light anomaly export hubs.
 LITERATURE_AOIS = ["Fujairah", "RasTanura", "Rotterdam", "Houston"]
 
@@ -150,6 +152,13 @@ def m2_columns(dico: pd.DataFrame, m2_features: str) -> list[str]:
         return level
     if m2_features == "all":
         return anom + level
+    if m2_features == "aoi4":
+        # 2x2 sparsity cell: 4 core AOIs x 5 indices anomaly (site-selected) = 20
+        want = [f"{idx}_anom_{a}" for a in LITERATURE_AOIS for idx in RS_INDICES]
+        return [c for c in want if c in anom]
+    if m2_features == "ntlall":
+        # 2x2 sparsity cell: 11 AOIs x NTL anomaly (index-selected to NTL) = 11
+        return [c for c in anom if c.startswith("NTL_anom_")]
     # literature: 4 core NTL_anom export hubs (intersect with what exists)
     want = [f"NTL_anom_{a}" for a in LITERATURE_AOIS]
     return [c for c in want if c in anom]

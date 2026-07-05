@@ -182,5 +182,6 @@ cd 03_data/raw/03_shipping/GFW && python3 download_gfw_sar_detections.py --start
 > **阶段 2 processed（已完成 2026-07-03）**：
 > ① **周频图张量** → `03_data/processed/M3/py/build_m3_graph_weekly.py` 产出 `m3_graph_nodes_weekly.csv`（391 周 × 11 站 × 11 特征）+ `m3_graph_edges_weekly.csv`（O-D 有向边）+ `m3_graph_darkvessel_weekly.csv`（17 区域）+ `m3_graph_tensors.npz`（node `(391,11,11)` + adjacency `(391,11,11)`）；含 dwell ≤ 720h / transit ≤ 90d 裁剪、发布滞后 PW +1w / GFW-event +2w / SAR +4w、有向性与防泄漏自检通过。
 > ② **EMODnet zonal stats** → `build_emodnet_weekly.py` 产出 `m3_emodnet_density_weekly.csv`。⚠️ EMODnet 为 **EPSG:3035 欧洲栅格**，17 区域中**仅 Rotterdam + Suez 有有效像素**，其余在覆盖外（NaN）；栅格覆盖 2017-2024（无 2025），故仅作 **Rotterdam 交叉验证**补充，非全球图特征。
-> 字段与形状详见 `03_data/processed/M3/m3_data_dictionary.md` Stage-2 节。
+> ③ **完整 17 节点异质图** → `build_m3_graph17.py` 产出 `m3_graph17_tensors.npz`（11 AOI + 6 咽喉节点 + AOI↔咽喉静态边 + 动态 O-D，`adjacency (391,17,17)`）；**z_ship 编码器**（类型专属投影 + 异质 GAT + 时序 TCN → 32 维，~4.2 万参数）见 `04_code/src/models/shipping_encoder.py`。
+> 字段与形状详见 `03_data/processed/M3/m3_data_dictionary.md` Stage-2 节（§12.9 / §12.10）。
 
