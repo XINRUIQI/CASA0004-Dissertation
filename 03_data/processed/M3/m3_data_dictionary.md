@@ -3,7 +3,7 @@
 > 对应数据文件：`03_data/processed/M3/outputs/m3_weekly_features.csv`
 > 构建脚本：`03_data/processed/M3/py/aggregate_shipping_to_weekly.py`
 > 版本：union 对齐修订版（GFW/PW 各自对齐 + union 索引，修复 727→362 掉样本；发布滞后已加）
-> 最后更新：2026-07-03
+> 最后更新：2026-07-05（M3/M4 主模型由 core 38 列改为 full 113 列，见 §11）
 
 ---
 
@@ -531,13 +531,13 @@ PortWatch 是 IMF 为监测海运贸易与关键航道中断构建的 AIS 指标
 
 ---
 
-## 11. 最终进主模型的 feature（4.1–4.4 汇总）
+## 11. M3 主模型（full）与 core tier 稳健性臂（4.1–4.4 汇总）
 
-> 依据 §9（GFW）、§10（PortWatch）、§4.3–§4.4 的评审结论确定。**「主模型」= 收缩后的核心特征集**；扩展/控制/汇总/方向性其余列保留在 CSV 作**消融/稳健性/附录**，不进主模型。
+> **主模型（2026-07-05 起）= full tier：全部 113 航运列（GFW 49 + PortWatch 64）**。改用 full 的理由：本节 §11.1 的 38 列人工精选 core tier 在 XGB 下反而**最弱且不显著**（RMSE 4.476、CW_p 0.096），而 full 显著（RMSE 4.429、CW_p 0.0002），说明人工筛选丢弃了树模型可利用的非线性航运信号（见 §9/§10 与 `flat_baseline_log.md` M3 LOCHO）。§11.1 的 core tier **降级为稳健性臂**，与 portwatch-only / tanker-only / gfw-aggregate 等并列。
 >
-> **代码现状（2026-07-03 已实现）**：`m3_weekly_features.csv` 与合并矩阵仍输出全部列（GFW 49 + PortWatch 64 + 4 mask）；但 `04_code/src/backtest/data.py::select_features(..., m3_tier="core")` **默认只选本节 38 列核心**（M3、M4 主模型均生效）。`mean_presence` 与 `gfw_all_activity_zmean` **不进主模型**，各自进入独立实验（见下）。`--m3-tier full` 可切回全部航运列；`robustness_m3.py` 提供 `core / gfw-presence / gfw-aggregate` 等臂。
+> **代码现状（2026-07-05 已实现）**：`m3_weekly_features.csv` 与合并矩阵输出全部列（GFW 49 + PortWatch 64 + 4 mask）；`04_code/src/backtest/data.py::select_features(..., m3_tier="full")` **默认选全部 113 航运列**（M3、M4 主模型均生效，含 `mean_presence` 6 列）。`gfw_all_activity_zmean` 为建模阶段派生列、**不在 CSV/full 内**，仅 `gfw-aggregate` 实验注入。`--m3-tier core` 切回 §11.1 的 38 列 core 稳健性臂；`robustness_m3.py` 提供 `core / full / portwatch-only / tanker-only / gfw-presence / gfw-aggregate` 等臂。
 
-### 11.1 主模型核心清单（每咽喉短码：hormuz/suez/malacca/mandeb/panama/cape）
+### 11.1 core tier 清单（38 列，稳健性臂；每咽喉短码：hormuz/suez/malacca/mandeb/panama/cape）
 
 **4.1 GFW 核心（6×4 = 24）**
 
@@ -571,7 +571,7 @@ PortWatch 是 IMF 为监测海运贸易与关键航道中断构建的 AIS 指标
 - 2019–2025 common-window 主实验：`avail_*` 近乎常数 → **不进主模型**（现管线已标 `modality='mask'`，本就不入模型）。
 - 2012–2025 长样本 / 缺失模态模型：保留 `avail_gfw`、`avail_pw_chokepoints`、`avail_pw_ports` 作**门控**（非经济预测变量）；`avail_shipping` 冗余（确定性 OR）建议删。
 
-**主模型 M3 特征合计**：GFW 核心 24 + PortWatch 咽喉 12 + 港口方向 2 = **38 列**（3×2 精简版为 32）。均为 `M1 + 上述 M3 子集`，增量价值靠 M1 vs M1+M3 消融 + CW/DM。
+**core tier 合计**：GFW 核心 24 + PortWatch 咽喉 12 + 港口方向 2 = **38 列**（3×2 精简版为 32）。此为**稳健性臂之一（非主模型）**；主模型用 full 113 列。增量价值靠 M1 vs M1+M3 消融 + CW/DM。
 
 ### 11.2 扩展 / 稳健性 / 附录（不进主模型，保留在 CSV）
 
@@ -593,16 +593,16 @@ PortWatch 是 IMF 为监测海运贸易与关键航道中断构建的 AIS 指标
 | **GFW-Presence 替换实验** | `gfw-presence` | GFW 核心 24 + 6×`mean_presence_hours_per_vessel` = 30 | 每船平均存在强度（dwell/拥堵粗代理）相对 GFW 核心是否有增量 |
 | **GFW-Aggregate 汇总基准** | `gfw-aggregate` | `gfw_all_activity_zmean`（1，建模阶段派生） | 仅一个全网络活动汇总指数是否已足以预测 |
 
-对照臂：`core`（主模型 38）、`gfw-only`（全 GFW）、`full`（全航运）。
+对照臂：`core`（稳健性 38，曾为旧主模型）、`gfw-only`（全 GFW）、`full`（现主模型，全航运）。
 
 ### 11.4 实现状态
 
 **已实现（2026-07-03）**
 
-1. ✅ `select_features(dico, modality, m3_tier="core")`：M3/M4 主模型默认只用 **38 列**核心（`data.py`：`GFW_CORE_SUFFIXES`(4) / `gfw_core_columns` / `PW_CHOKE_CORE_SUFFIXES` / `PW_PORTS_CORE` / `m3_core_columns()`）；`--m3-tier full` 切全量。
+1. ✅ `select_features(dico, modality, m3_tier="full")`：**M3/M4 主模型默认用全部 113 航运列**（2026-07-05 起）；`--m3-tier core` 切回 38 列 core 稳健性臂（`data.py`：`GFW_CORE_SUFFIXES`(4) / `gfw_core_columns` / `PW_CHOKE_CORE_SUFFIXES` / `PW_PORTS_CORE` / `m3_core_columns()` 仍保留供 core 臂与 GFW 子实验）。
 2. ✅ GFW 分离实验选择器：`data.gfw_core_columns()`(24) / `data.gfw_presence_columns()`(6) / `data.GFW_ZMEAN_COL`；`robustness_m3.py` 新增 `core / gfw-presence / gfw-aggregate` 臂（默认 arms 已含）。
 3. ✅ `gfw_all_activity_zmean`：`add_gfw_activity_zmean()` 在 `build_dataset` 内派生（过去-only 扩展窗 z-score 均值，leak-free），仅在 `gfw-aggregate` 实验请求时注入；CSV/矩阵无需改。
-4. ✅ 冒烟自检：`run_baseline --modality M3` → `69 raw = 31 M1 + 38 M3 core`，end-to-end 通过。
+4. ✅ 冒烟自检：`run_baseline --modality M3` → 2026-07-05 起 `144 raw = 31 M1 + 113 M3 full`（旧 core 为 69）；end-to-end 通过。
 
 **待实现（可选）**
 

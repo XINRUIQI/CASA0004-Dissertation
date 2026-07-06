@@ -28,6 +28,7 @@ import time
 from pathlib import Path
 
 import matplotlib
+import numpy as np
 import pandas as pd
 
 matplotlib.use("Agg")
@@ -100,23 +101,49 @@ def run_grid(df, dico, min_train, retrain_every, val_weeks, seed):
     return pd.DataFrame(rows)
 
 
+def _draw_cells(ax, piv, fmt):
+    """Tick labels + per-cell value annotations (NaN -> 'n/a')."""
+    ax.set_xticks(range(piv.shape[1]))
+    ax.set_xticklabels([f"L={c}" for c in piv.columns])
+    ax.set_yticks(range(piv.shape[0]))
+    ax.set_yticklabels(piv.index)
+    for i in range(piv.shape[0]):
+        for j in range(piv.shape[1]):
+            v = piv.values[i, j]
+            ax.text(j, i, "n/a" if pd.isna(v) else fmt.format(v),
+                    ha="center", va="center", fontsize=9)
+
+
 def make_overview(summary, path):
+    from matplotlib.colors import TwoSlopeNorm
+
+    row_order = [c for c in ("anom", "literature", "level")
+                 if c in summary["contract"].unique()]
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
-    for ax, mdl, title in zip(axes, ["Ridge", "XGB"],
-                               ["Ridge RMSE", "XGB Clark-West p (vs M1)"]):
-        sub = summary[summary.model == mdl].pivot(
-            index="contract", columns="lookback",
-            values="M2_RMSE" if mdl == "Ridge" else "CW_p_vs_M1")
-        im = ax.imshow(sub.values, aspect="auto", cmap="RdYlGn_r" if mdl == "Ridge" else "RdYlGn")
-        ax.set_xticks(range(len(sub.columns)))
-        ax.set_xticklabels([f"L={c}" for c in sub.columns])
-        ax.set_yticks(range(len(sub.index)))
-        ax.set_yticklabels(sub.index)
-        for i in range(len(sub.index)):
-            for j in range(len(sub.columns)):
-                ax.text(j, i, f"{sub.values[i, j]:.3f}", ha="center", va="center", fontsize=9)
-        plt.colorbar(im, ax=ax)
-        ax.set_title(title)
+
+    # -- left: Ridge RMSE (red = higher = worse) --
+    ax = axes[0]
+    piv = (summary[summary.model == "Ridge"]
+           .pivot(index="contract", columns="lookback", values="M2_RMSE")
+           .reindex(row_order))
+    im = ax.imshow(piv.values, aspect="auto", cmap="RdYlGn_r")
+    plt.colorbar(im, ax=ax)
+    _draw_cells(ax, piv, "{:.3f}")
+    ax.set_title("Ridge RMSE  (red = higher = worse)")
+
+    # -- right: XGB Clark-West p; colour breaks at 0.05 so green = significant --
+    ax = axes[1]
+    piv = (summary[summary.model == "XGB"]
+           .pivot(index="contract", columns="lookback", values="CW_p_vs_M1")
+           .reindex(row_order))
+    finite = piv.values[np.isfinite(piv.values)]
+    vmax = float(finite.max()) if finite.size else 0.1
+    norm = TwoSlopeNorm(vmin=0.0, vcenter=0.05, vmax=max(vmax, 0.0501))
+    im = ax.imshow(piv.values, aspect="auto", cmap="RdYlGn_r", norm=norm)
+    plt.colorbar(im, ax=ax, label="Clark-West p (colour breaks at 0.05)")
+    _draw_cells(ax, piv, "{:.4f}")
+    ax.set_title("XGB Clark-West p vs M1  (green = p<0.05 significant)")
+
     fig.suptitle("M2 sweep: feature contract × lookback", fontsize=11)
     fig.tight_layout()
     fig.savefig(path, dpi=130)
@@ -126,13 +153,24 @@ def make_overview(summary, path):
 def main():
     ap = argparse.ArgumentParser(description="M2 feature-contract × lookback sweep.")
     ap.add_argument("--quick", action="store_true")
+    ap.add_argument("--plot-only", action="store_true",
+                    help="re-draw overview from existing summary CSV (skip the sweep)")
     ap.add_argument("--min-train",      type=int, default=104)
     ap.add_argument("--val-weeks",      type=int, default=52)
     ap.add_argument("--seed",           type=int, default=42)
     args = ap.parse_args()
 
-    retrain_every = 26 if args.quick else 13
     OUT_DIR.mkdir(parents=True, exist_ok=True)
+    csv_path = OUT_DIR / "sweep_m2_summary.csv"
+    png_path = OUT_DIR / "sweep_m2_overview.png"
+
+    if args.plot_only:
+        summary = pd.read_csv(csv_path)
+        make_overview(summary, png_path)
+        print(f"Re-drew overview from {csv_path}\n       {png_path}")
+        return
+
+    retrain_every = 26 if args.quick else 13
     df   = data.load_matrix()
     dico = data.load_dict()
     print(f"M2 sweep ({'quick' if args.quick else 'full'}) | "
@@ -140,8 +178,6 @@ def main():
           f"matrix {df.shape}\n")
 
     summary = run_grid(df, dico, args.min_train, retrain_every, args.val_weeks, args.seed)
-    csv_path = OUT_DIR / "sweep_m2_summary.csv"
-    png_path = OUT_DIR / "sweep_m2_overview.png"
     summary.to_csv(csv_path, index=False)
     make_overview(summary, png_path)
 

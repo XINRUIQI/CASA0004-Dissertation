@@ -47,4 +47,5 @@ class RSPrithviEncoder(nn.Module):
         s_score = s_score.masked_fill(site_valid == 0, float("-inf"))
         s_alpha = torch.nan_to_num(torch.softmax(s_score, dim=-1))
         z = (s_alpha.unsqueeze(-1) * site_emb).sum(1)  # (B,d)
-        return self.head(z), s_alpha
+        # site_emb (B,S,d_model) are per-AOI tokens for cross-modal attention.
+        return self.head(z), s_alpha, site_emb

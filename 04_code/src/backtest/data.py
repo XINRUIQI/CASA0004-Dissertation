@@ -13,16 +13,18 @@ Modality column selection (by the dictionary `modality` field):
                                  cols vs the 35-col single table, which are
                                  equivalent because VarianceThreshold drops them.)
   M2 = M1 + remote sensing
-  M3 = M1 + shipping        (main model = §11.1 CORE tier by default)
+  M3 = M1 + shipping        (main model = FULL tier, all 113 cols, by default)
   M4 = M1 + remote sensing + shipping
 Targets (target_*) and mask columns (avail_*) are never used as features.
 
 M3 shipping tier (--m3-tier, see m3_data_dictionary.md §11):
-  core (DEFAULT, 38 cols) GFW 6x4 (total_hours, total_vessels, cargo_hours,
+  full (DEFAULT, 113 cols) every shipping column (PortWatch 64 + GFW 49); the
+                          MAIN model, chosen because the hand-picked core tier
+                          is not XGB-optimal (m3_data_dictionary.md §11 / robustness).
+  core (38 cols)          GFW 6x4 (total_hours, total_vessels, cargo_hours,
                           total_hours_mom_pct) + PortWatch chokepoints 6x2 +
-                          PortWatch ports 2. mean_presence and the aggregate
-                          z-mean are EXCLUDED (separate experiments below).
-  full (113 cols)         every shipping column (robustness / legacy behaviour).
+                          PortWatch ports 2; now a ROBUSTNESS arm. mean_presence
+                          and the aggregate z-mean are EXCLUDED (separate exps).
 Separate GFW experiments (not in the main model, see robustness_m3.py):
   GFW-Presence   6 x gfw_{cp}_mean_presence_hours_per_vessel.
   GFW-Aggregate  gfw_all_activity_zmean, DERIVED leak-free at build time
@@ -66,12 +68,12 @@ MODALITY_SETS = {
 }
 
 # ---------------------------------------------------------------------------
-# M3 shipping main-model CORE tier (m3_data_dictionary.md §11.1).
-# The matrix carries every shipping column; the MAIN model selects only this
-# core set. Robustness/ablation scripts still read the full M3 set directly.
+# M3 shipping CORE tier (m3_data_dictionary.md §11.1) -- now a ROBUSTNESS arm.
+# The MAIN model uses the FULL tier (all shipping columns); this hand-picked
+# core set is kept for the 'core' robustness arm and the GFW sub-experiments.
 # ---------------------------------------------------------------------------
 GFW_CHOKES = ["hormuz", "suez", "malacca", "mandeb", "panama", "cape"]
-# Main-model GFW core = 4 metrics x 6 chokepoints = 24.
+# Core-tier GFW = 4 metrics x 6 chokepoints = 24.
 GFW_CORE_SUFFIXES = ["total_hours", "total_vessels", "cargo_hours", "total_hours_mom_pct"]
 PW_CHOKE_CORE_SUFFIXES = ["n_tanker", "capacity_tanker"]
 PW_PORTS_CORE = ["pw_exp_hubs_export_vol", "pw_imp_hubs_import_vol"]
@@ -170,7 +172,7 @@ def list_aois(dico: pd.DataFrame) -> list[str]:
 
 
 def gfw_core_columns(dico: pd.DataFrame) -> list[str]:
-    """Main-model GFW core: 6 chokepoints x 4 metrics = 24 (no mean_presence)."""
+    """Core-tier GFW: 6 chokepoints x 4 metrics = 24 (no mean_presence)."""
     m3_all = set(dico.loc[dico["modality"] == "M3", "feature"])
     return [f"gfw_{cp}_{s}" for cp in GFW_CHOKES for s in GFW_CORE_SUFFIXES
             if f"gfw_{cp}_{s}" in m3_all]
@@ -184,7 +186,7 @@ def gfw_presence_columns(dico: pd.DataFrame) -> list[str]:
 
 
 def m3_core_columns(dico: pd.DataFrame) -> list[str]:
-    """§11.1 main-model core shipping columns present in the matrix.
+    """§11.1 core-tier shipping columns present in the matrix (robustness arm).
 
     GFW 6x4 = 24 ; PortWatch chokepoints 6x2 = 12 ; PortWatch ports 2 = 38.
     mean_presence and gfw_all_activity_zmean are EXCLUDED (separate experiments).
@@ -198,11 +200,12 @@ def m3_core_columns(dico: pd.DataFrame) -> list[str]:
 
 
 def select_features(dico: pd.DataFrame, modality: str, m2_features: str = "anom",
-                    drop_aoi: str | None = None, m3_tier: str = "core") -> list[str]:
+                    drop_aoi: str | None = None, m3_tier: str = "full") -> list[str]:
     """Feature columns for a modality config (never targets/masks).
 
     drop_aoi (leave-one-AOI-out): remove every M2 column belonging to that AOI.
-    m3_tier: 'core' (§11.1 main-model set, DEFAULT) or 'full' (all shipping cols).
+    m3_tier: 'full' (all 113 shipping cols, DEFAULT main model) or 'core'
+             (§11.1 38-col hand-picked set, now a robustness arm).
     """
     if modality not in MODALITY_SETS:
         raise ValueError(f"modality must be one of {list(MODALITY_SETS)}")

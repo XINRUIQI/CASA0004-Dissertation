@@ -86,22 +86,38 @@ def run_grid(df, dico, min_train, retrain_every, val_weeks, seed):
 
 
 def make_overview(summary, path):
+    piv_rmse = summary.pivot(index="lookback", columns="model",
+                             values="M4_RMSE").sort_index()
+    piv_cw   = summary.pivot(index="lookback", columns="model",
+                             values="CW_p_vs_M1").sort_index()
+    m0 = summary.groupby("lookback")["M0_RMSE"].first().sort_index()
+
     fig, axes = plt.subplots(1, 2, figsize=(12, 5))
-    for ax, mdl, col, title in [
-        (axes[0], "Ridge", "M4_RMSE",    "RMSE (Ridge)"),
-        (axes[1], "XGB",   "CW_p_vs_M1", "Clark-West p vs M1 (XGB)"),
-    ]:
-        sub = summary[summary.model == mdl].sort_values("lookback")
-        ax.plot(sub["lookback"], sub[col], "o-",
-                color="tab:blue" if mdl == "Ridge" else "tab:red")
-        ax.set_xlabel("lookback (weeks)")
-        ax.set_ylabel(col)
-        ax.set_title(f"M4 sweep: {title}")
-        ax.set_xticks(LOOKBACKS)
-        ax.grid(alpha=0.3)
-        if col == "CW_p_vs_M1":
-            ax.axhline(0.05, color="black", ls="--", lw=0.8, label="p=0.05")
-            ax.legend(fontsize=8)
+
+    # -- left: RMSE for both models + M0 reference --
+    ax = axes[0]
+    ax.plot(piv_rmse.index, piv_rmse["Ridge"], "o-", color="tab:blue", label="M4 Ridge")
+    ax.plot(piv_rmse.index, piv_rmse["XGB"],   "s-", color="tab:red",  label="M4 XGB")
+    ax.plot(m0.index, m0.values, "k--", lw=0.9, label="M0 (random walk)")
+    ax.set_xlabel("lookback (weeks)")
+    ax.set_ylabel("RMSE (restored price)")
+    ax.set_title("M4 sweep: RMSE vs lookback")
+    ax.set_xticks(LOOKBACKS)
+    ax.grid(alpha=0.3)
+    ax.legend(fontsize=8)
+
+    # -- right: Clark-West p for both models + 0.05 line --
+    ax = axes[1]
+    ax.plot(piv_cw.index, piv_cw["Ridge"], "o-", color="tab:blue", label="Ridge")
+    ax.plot(piv_cw.index, piv_cw["XGB"],   "s-", color="tab:red",  label="XGB")
+    ax.axhline(0.05, color="black", ls="--", lw=0.8, label="p=0.05")
+    ax.set_xlabel("lookback (weeks)")
+    ax.set_ylabel("Clark-West p vs M1")
+    ax.set_title("M4 sweep: Clark-West p vs M1 (nested)")
+    ax.set_xticks(LOOKBACKS)
+    ax.grid(alpha=0.3)
+    ax.legend(fontsize=8)
+
     fig.suptitle("M4 (M1 + RS + Shipping) lookback robustness", fontsize=11)
     fig.tight_layout()
     fig.savefig(path, dpi=130)
@@ -112,21 +128,30 @@ def main():
     ap = argparse.ArgumentParser(description="M4 lookback robustness sweep.")
     ap.add_argument("--quick", action="store_true",
                     help="retrain_every=26 for speed")
+    ap.add_argument("--plot-only", action="store_true",
+                    help="re-draw overview from existing summary CSV (skip the sweep)")
     ap.add_argument("--min-train",  type=int, default=104)
     ap.add_argument("--val-weeks",  type=int, default=52)
     ap.add_argument("--seed",       type=int, default=42)
     args = ap.parse_args()
 
-    retrain_every = 26 if args.quick else 13
     OUT_DIR.mkdir(parents=True, exist_ok=True)
+    csv_path = OUT_DIR / "sweep_m4_summary.csv"
+    png_path = OUT_DIR / "sweep_m4_overview.png"
+
+    if args.plot_only:
+        summary = pd.read_csv(csv_path)
+        make_overview(summary, png_path)
+        print(f"Re-drew overview from {csv_path}\n       {png_path}")
+        return
+
+    retrain_every = 26 if args.quick else 13
     df   = data.load_matrix()
     dico = data.load_dict()
     print(f"M4 sweep ({'quick' if args.quick else 'full'}) | "
           f"lookbacks={LOOKBACKS} | matrix {df.shape}\n")
 
     summary = run_grid(df, dico, args.min_train, retrain_every, args.val_weeks, args.seed)
-    csv_path = OUT_DIR / "sweep_m4_summary.csv"
-    png_path = OUT_DIR / "sweep_m4_overview.png"
     summary.to_csv(csv_path, index=False)
     make_overview(summary, png_path)
 

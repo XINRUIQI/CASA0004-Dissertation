@@ -154,7 +154,8 @@ class ShippingGraphEncoder(nn.Module):
         site_att = torch.softmax(score, dim=1)
         z = (site_att.unsqueeze(-1) * ht).sum(1)     # (B,d)
         z = self.head(z)                             # (B,d_out)
-        return z, site_att
+        # ht (B,N,d_model) are the per-node tokens for cross-modal attention.
+        return z, site_att, ht
 
 
 # ----------------------------------------------------------------------------
@@ -205,7 +206,7 @@ def _smoke() -> None:
     enc.eval()
     with torch.no_grad():
         B = min(32, A.shape[0])
-        z, site_att = enc(A[:B], C[:B], Ad[:B])
+        z, site_att, _tok = enc(A[:B], C[:B], Ad[:B])
     print(f"z_ship: {tuple(z.shape)}  finite={torch.isfinite(z).all().item()}  "
           f"mean={z.mean():.3f} std={z.std():.3f}")
     print(f"site_att: {tuple(site_att.shape)}  row-sum={site_att[0].sum():.3f}")
@@ -219,7 +220,7 @@ def _smoke() -> None:
     # Gradient sanity: one backward step on a dummy regression target.
     enc.train()
     opt = torch.optim.Adam(enc.parameters(), lr=1e-3)
-    z, _ = enc(A[:B], C[:B], Ad[:B])
+    z, _, _ = enc(A[:B], C[:B], Ad[:B])
     loss = (z.sum(dim=1) ** 2).mean()               # dummy scalar objective
     opt.zero_grad(); loss.backward(); opt.step()
     gnorm = torch.sqrt(sum((p.grad ** 2).sum() for p in enc.parameters()

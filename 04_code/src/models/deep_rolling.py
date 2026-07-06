@@ -20,13 +20,14 @@ import torch.nn as nn
 from .deep_dataset import apply_scalers, fit_scalers
 from .fusion import DeepForecastModel
 
-# config name -> (ordered modalities, short model name used in result columns)
+# config name -> (ordered modalities, short model name, fusion_type)
 CONFIGS = {
-    "ship": (["ship"], "GNN"),
-    "fin": (["fin"], "TCN"),
-    "rs": (["rs"], "RS"),
-    "fusion": (["fin", "ship"], "Fusion"),
-    "m4rep": (["fin", "rs", "ship"], "M4rep"),
+    "ship": (["ship"], "GNN", "gated"),
+    "fin": (["fin"], "TCN", "gated"),
+    "rs": (["rs"], "RS", "gated"),
+    "fusion": (["fin", "ship"], "Fusion", "gated"),
+    "m4rep": (["fin", "rs", "ship"], "M4rep", "gated"),
+    "m4xattn": (["fin", "rs", "ship"], "M4xattn", "xattn"),
 }
 
 
@@ -34,13 +35,18 @@ def _to_tensors(scaled: dict, device: str) -> dict:
     return {k: torch.from_numpy(v).to(device) for k, v in scaled.items()}
 
 
-def _make_model(ds: dict, modalities: list[str]) -> DeepForecastModel:
+def _make_model(ds: dict, modalities: list[str], fusion_type: str = "gated",
+                mk: "dict | None" = None) -> DeepForecastModel:
+    mk = mk or {}
     return DeepForecastModel(
         modalities,
         f_aoi=ds["aoi"].shape[-1], f_choke=ds["choke"].shape[-1],
         f_fin=ds["fin"].shape[-1],
         rs_emb_dim=(ds["rs"].shape[-1] if ds.get("with_rs") else 1024),
-        n_sites=ds["aoi"].shape[2])
+        n_sites=ds["aoi"].shape[2],
+        d=mk.get("d", 32), dropout=mk.get("dropout", 0.1),
+        gat_layers=mk.get("gat_layers", 2), tcn_layers=mk.get("tcn_layers", 2),
+        fusion_type=fusion_type, modality_dropout=mk.get("modality_dropout", 0.0))
 
 
 def _forward(model, X: dict, idx_arr):
@@ -54,7 +60,9 @@ def _forward(model, X: dict, idx_arr):
 
 def _train_fold(ds: dict, sc: dict, i: int, modalities: list[str], seed: int,
                 epochs: int, lr: float, weight_decay: float, batch: int,
-                val_weeks: int, device: str) -> tuple[nn.Module, float, float]:
+                val_weeks: int, device: str,
+                model_kwargs: "dict | None" = None,
+                fusion_type: str = "gated") -> tuple[nn.Module, float, float]:
     """Train on samples [0, i); early-stop on the last `val_weeks` of the fold."""
     torch.manual_seed(seed)
     np.random.seed(seed)
@@ -69,7 +77,7 @@ def _train_fold(ds: dict, sc: dict, i: int, modalities: list[str], seed: int,
     tr_idx = np.arange(0, n - n_val)
     va_idx = np.arange(n - n_val, n)
 
-    model = _make_model(ds, modalities).to(device)
+    model = _make_model(ds, modalities, fusion_type, model_kwargs).to(device)
     opt = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
     lossf = nn.MSELoss()
 
@@ -103,9 +111,10 @@ def rolling_origin_deep(ds: dict, label: str, config: str, min_train: int = 104,
                         retrain_every: int = 13, seed: int = 42, epochs: int = 80,
                         lr: float = 1e-3, weight_decay: float = 1e-4,
                         batch: int = 32, val_weeks: int = 52,
-                        device: str = "cpu", verbose: bool = True) -> pd.DataFrame:
+                        device: str = "cpu", verbose: bool = True,
+                        model_kwargs: "dict | None" = None) -> pd.DataFrame:
     """Walk-forward deep backtest for one config -> res DataFrame."""
-    modalities, mname = CONFIGS[config]
+    modalities, mname, ftype = CONFIGS[config]
     idx = ds["idx"]
     Pt, Pn = ds["P_t"], ds["P_next"]
     rn, rnow = ds["r_next"], ds["r_now"]
@@ -122,7 +131,7 @@ def rolling_origin_deep(ds: dict, label: str, config: str, min_train: int = 104,
             sc = fit_scalers(ds, train_n=i)
             model, r_mean, r_std = _train_fold(
                 ds, sc, i, modalities, seed, epochs, lr, weight_decay, batch,
-                val_weeks, device)
+                val_weeks, device, model_kwargs, ftype)
             n_fits += 1
             if verbose:
                 print(f"    fit #{n_fits} @ week {idx[i].date()} (train={i})", flush=True)

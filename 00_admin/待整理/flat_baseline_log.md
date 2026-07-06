@@ -6,9 +6,13 @@
 >
 > **更新**：2026-07-03（**M1/M2/M3 特征改动后 M0–M4 全套统一重跑**：merge 矩阵重建 365×212；§7–§12 数值 + SHAP + sweep + robustness 全部刷新）
 >
+> **2026-07-05 增补**：M3/M4 主模型改 **full 113 列**（§9/§12）；新增 **§8.9 M2 2×2 稀疏性六臂**（`aoi4`/`ntlall` + 水体掩膜，站点维度冗余 > 指标维度）；新增 **§13 创新层表示级融合首跑**（Mship vs flat M1 **CW 0.0014** ✅、Mfusion 逼近 M0——RQ2 首个正面证据）。
+>
 > 进度：M0 / M1 / M2（anom 主 + literature/level + CW + LOAO + SHAP + C2 + sweep + watermask）/ M3（主基线 + sweep + SHAP + LOCHO）/ M4（主基线 + SHAP + sweep + LOMO）
 >
 > **本次重跑关键结论变化**：M1 精简后大幅变强（旧 XGB 4.771 → 新 **4.368**；M3 主模型改为 core tier 38 列），导致**单模态 anom-55 / M3-core 的 XGB 嵌套增量由「高度显著」退化为「边缘不显著」**（M2 anom CW_p 0.085、M3 core CW_p 0.096）；**只有 M4 全模态（CW_p 0.020）、M2 literature（0.022）、M2 watermask（0.028）、M3 full/portwatch/tanker 臂仍显著**。强化 RQ2 论据：把 RS/航运扁平拼到已很强的金融基线上，边际增量被稀释 → 需模态感知融合。
+>
+> ⚠️ **2026-07-05 再更新**：M3/M4 主模型已由 core 38 列改为 **full 113 列** → M3_XGB CW 0.0002、M4_XGB CW 0.009 均显著（不再是 core 版的边缘不显著）；SHAP 模态占比重回 **M3(52%)>M1(34%)>M2(15%)**。下方 §7–§12 的 core-tier 数值降为稳健性对照，最新主表见 §4/§9/§12 与 changelog。
 
 ---
 
@@ -64,7 +68,7 @@
 - **M1 = 31 列（merge）vs 35 列（单表 `m1_weekly_features.csv`）**：差异是 4 个 `avail_*`（market/eia_weekly/sp500/dollar_index）。它们在 merge 里归为 `mask`，且在 2019–2025 窗口内**恒为 1（零方差）**，单表脚本里的 `VarianceThreshold` 本就会丢弃 → **31 与 35 有效特征等价**。统一从 merge 读以消除歧义。
   - **列数为 2026-07 M1 精简后**（单表 38→35、merge 34→31）：移除 `brent_direction` / `brent_return_pct` / `net_crude_trade` / `sp500` level；`wti_return_pct`→`wti_log_return`、`sp500_return_pct`→`sp500_log_return`；`futures_spread`→`brent_f1_spot_log_basis` + 新增 `brent_roll_week`；`commodity_fx`→`cadusd_log_return`（删 AUD 腿）；`gpr` 改日度 GPRD。变更详见 `research_diary_phase3.md`（2026-07-03）与 `m1_data_dictionary.md`。
   - ✅ **§7–§12 全部数值已基于 2026-07-03 正式重跑更新**（merge 365×212：M1=31 + M2=55 + M3=113 + mask=11 + target=2）：`run_baseline.py` M1/M2/M3/M4 + 各模态 sweep / SHAP / robustness 全套刷新，嵌套对照里的 M1 基线统一为新精简版（Ridge **4.256** / XGB **4.368**）。
-  - **M3 主模型定义变更**：`data.py` 引入 `m3_tier`，主基线默认 **core tier（38 列 = GFW 6×4 + PW 咽喉 6×2 + PW 港口 2）**，M3 raw 由旧 153/119 降为 **69（31 M1 + 38 core）**；`full tier`（全 113 航运列）仅用于 robustness/LOCHO 与 M4 LOMO 的 full 臂。
+  - **M3/M4 主模型定义变更（2026-07-05）**：`data.py` 的 `m3_tier` 默认由 **core（38 列）改为 `full`（全 113 航运列 = GFW 49 + PW 64）** → M3 raw = **144**（31 M1 + 113）、M4 raw = **199**（31+55+113）。理由：core 在 XGB 下最弱且不显著（RMSE 4.476、CW_p 0.096），full 显著（RMSE 4.429、CW_p 0.0002），人工精选丢弃了树模型可用的航运信号。core（38 列 = GFW 6×4 + PW 咽喉 6×2 + PW 港口 2）降级为 `robustness_m3.py` 的稳健性臂。⚠️ 下方 §7–§12 主表数值为 **2026-07-03（M3/M4 用 core）** 跑数；**2026-07-05 主表已改 full**：M3_XGB 4.429 / CW 0.0002、M4_XGB 4.507 / CW 0.009（见 §9 LOCHO 的 full 臂与 `05_outputs/baselines/{m3,m4}/` 产物）；SHAP 与 lookback sweep 均已按 full 重跑刷新（§9/§12，2026-07-05，L4 与主基线逐格一致）。
 
 
 
@@ -276,29 +280,29 @@ CW_p = Clark-West 单边 p（越小 = 大模型即 M1+RS 越显著优于 M1）�
 
 ### 8.7 C3 lookback × feature-contract sweep
 
-脚本 `sweep_m2.py --quick`（retrain_every=26），产物 `05_outputs/baselines/m2/sweep_m2_summary.csv` / `sweep_m2_overview.png`。
+脚本 `sweep_m2.py`（retrain_every=13，与主协议 + M3/M4 sweep 统一；2026-07-05 重跑），产物 `05_outputs/baselines/m2/sweep_m2_summary.csv` / `sweep_m2_overview.png`。
 
-M1 RMSE（quick retrain_every=26，同周对齐）：L=1 → 4.190 Ridge / 4.511 XGB；L=4 → 4.250 / 4.436；L=8 → 4.373 / 5.038。**（2026-07-03 重跑）**
+M1 RMSE（retrain_every=13，同周对齐）：L=1 → 4.188 Ridge / 4.479 XGB；L=4 → 4.256 / 4.368；L=8 → 4.339 / 4.646。**（2026-07-05 重跑，与 §8.2 主基线一致）**
 
 | contract | L | Ridge RMSE | Ridge CW_p | XGB RMSE | XGB CW_p |
 |---|---|---|---|---|---|
-| anom | **1** | **4.213** | 0.346 | **4.497** | **0.012** ✅ |
-| anom | 4 ← 主协议 | 4.420 | 0.499 | 4.482 | **0.042** ✅ |
-| anom | 8 | 4.550 | 0.085 | 4.952 | **0.005** ✅ |
-| literature | **1** | **4.162** | **0.038** ✅ | **4.341** | **&lt;0.001** ✅ |
-| literature | 4 | 4.250 | 0.221 | 4.293 | **0.001** ✅ |
-| literature | 8 | 4.372 | 0.177 | 4.829 | **&lt;0.001** ✅ |
+| anom | **1** | 4.230 | 0.447 | 4.510 | 0.057 |
+| anom | 4 ← 主协议 | **4.414** | **0.474** | **4.440** | **0.085** |
+| anom | 8 | 4.526 | 0.122 | 4.668 | 0.070 |
+| literature | **1** | **4.153** | **0.027** ✅ | **4.334** | **0.0007** ✅ |
+| literature | 4 | 4.252 | 0.129 | 4.322 | **0.022** ✅ |
+| literature | 8 | 4.348 | 0.279 | 4.606 | **0.018** ✅ |
 | level | 1/4/8 | ≡ M1 | NaN | ≡ M1 | NaN |
 
-> **注**：sweep 为 **quick 模式（retrain_every=26）**，其 M1_XGB 基线（L4=4.436）弱于主协议 retrain_every=13 的 4.368，故 anom L4 XGB 在此显示 CW_p=0.042（显著），而主协议 §8.2 为 0.085（不显著）——差异纯来自 retrain 频率对 M1 基线强弱的影响。level 合约无 level 列 → 退化为 M1（CW_p=NaN）。
+> **注**：本 sweep 已与主协议统一（retrain_every=13）→ **anom L4 逐格等于 §8.2 主基线**（Ridge 4.414 / CW 0.474、XGB 4.440 / CW 0.085）。旧 quick 版 anom XGB「全 lookback 显著」是弱 M1 基线（尤其 L8 的 M1_XGB=5.038）造成的假象，统一协议后消除：**anom XGB 现全 lookback 不显著**（0.057 / 0.085 / 0.070）。level 合约无 level 列 → 退化为 M1（CW_p=NaN）。
 
-**C3 结论（2026-07-03 重跑）**：
+**C3 结论（2026-07-05 重跑，retrain_every=13 与主协议统一）**：
 
 1. **L=1 是 M2 的最优 lookback**，RMSE 随 lookback 单调变差——与 M1（调参后 L4 最优）相反。原因：RS 月频信号弱，多 lag 只引入噪声；维度膨胀（55 anom × 8 lags = 440 维）远超样本量。
-2. **XGB 在所有 lookback×合约均显著**（CW_p ≤ 0.042），遥感非线性增量在 L=1 已充分捕获。Ridge 仅 literature+L1 显著（0.038），其余不显著，支持"高维 RS 不利于线性模型"。
-3. **L=1 literature（Ridge 4.162）是整个 sweep 中 Ridge 的全局最优**——4 个 NTL_anom × 1 lag = 4 维，少而精到极致。
-4. **与 C2（PCA）一致**：L=1 减 lag 与 PCA 降维同向（减冗余维度），均改善 XGB 增量显著性。
-5. **写作注意**：主协议固定 L=4（导师设定）；Discussion 可补充「L=1 与 literature 合约下 M2 遥感增量对 XGBoost 的 CW 显著性显著增强（literature L1 XGB p&lt;0.001、Ridge p=0.038）」作为灵敏度分析。
+2. **统一 retrain=13 后，全 55 anom 的 XGB 在所有 lookback 均不显著**（0.057 / 0.085 / 0.070，与主基线 §8.2 一致）；**仅 literature（4 列少而精）XGB 全 lookback 显著**（0.0007 / 0.022 / 0.018），Ridge 仅 literature+L1 显著（0.027）。→ 旧 quick 版「anom 全 lookback 显著」是弱 M1 基线的假象；「全量遥感扁平吃不动、唯少而精显著」在时间窗上稳健（支持 RQ2）。
+3. **L=1 literature（Ridge 4.153）是整个 sweep 中 Ridge 的全局最优**（且 < M1 4.188）——4 个 NTL_anom × 1 lag = 4 维，少而精到极致。
+4. **与 C2（PCA）一致**：减 lag（L=1）、降维（PCA）、精选（literature）三条路都比全 55 anom 更利于 XGB——高维全量扁平遥感本身是主要障碍。
+5. **写作注意**：主协议固定 L=4（导师设定）；Discussion 可补充「literature 合约下 M2 遥感增量对 XGBoost 全 lookback 显著（L1 p=0.0007 / L4 p=0.022 / L8 p=0.018），而全 55 anom 在同协议下均不显著」作为灵敏度分析。
 
 **COVID/红海子期间**：不单独跑，写 Discussion 叙事。SHAP holdout（2024–2025）天然是「红海扰动后」子期间，与 rolling origin（2021–2025）全段排名差异本身即为隐性子期间发现。
 
@@ -326,11 +330,41 @@ M1 RMSE（quick retrain_every=26，同周对齐）：L=1 → 4.190 Ridge / 4.511
 3. **稳健性正向且更关键**：与旧跑（掩膜把已显著的 0.006 推到 0.0001）不同，本次是**掩膜把边缘不显著（0.085）救回显著（0.028）**——说明在强 M1 下，遥感增量对「是否去水面噪声」更敏感；主分析用标准 anom-55 是**保守下界**。
 4. **写作建议**：主分析用标准 anom-55（保守），水体掩膜版作为 B4 关键稳健性——「陆地像素精确提取后 XGB 增量 CW_p 由 0.085 改善至 0.028，去噪后遥感增量才显著（去水面噪声是利用 RS 的前提）」。
 
-## 9. M3 结果（M1 + 航运，2026-06-23；**2026-07-03 精简 M1 + M3 core tier 重跑**）
+### 8.9 M2 2×2 稀疏性矩阵（六臂，2026-07-05）
 
-> **主模型定义变更**：M3 主基线现用 **core tier（38 列）** = GFW 6×4（total_hours/total_vessels/cargo_hours/total_hours_mom_pct）+ PortWatch 咽喉 6×2（n_tanker/capacity_tanker）+ PortWatch 港口 2；M3 raw = 31 M1 + 38 core = **69**（旧为全 113/119 列）。full tier 见 LOCHO。
+**动机**：全 11 站 × 5 指数 anom-55 对 XGB 不显著（CW 0.085）。到底是「站点太多稀释」还是「指标太多稀释」？在 `data.py` 新增 `aoi4`（4 核心站 × 5 指数 = 20）与 `ntlall`（11 站 × NTL = 11）两臂，与既有 `anom`(55)/`literature`(4) 组成 **站点维度 × 指标维度** 的 2×2；另跑 `anom`/`aoi4` 的水体掩膜版做去噪对照。同协议（L4_tuned，257 测试周，M0=4.152，M1_Ridge 4.256 / M1_XGB 4.368）。
 
-### 主基线（L4_tuned，257 周测试，core tier）
+**六臂结果（标准云掩膜 + 水体掩膜）**：
+
+| 臂 | 站×指标 | 列数 | Ridge RMSE | Ridge CW_p | XGB RMSE | XGB CW_p |
+|---|---|---|---|---|---|---|
+| anom | 11×5 | 55 | 4.414 | 0.474 | 4.440 | 0.085 ✗ |
+| ntlall | 11×NTL | 11 | 4.246 | 0.108 | 4.345 | 0.036 ✅ |
+| **aoi4** | 4×5 | 20 | 4.302 | 0.395 | 4.340 | **0.0055** ✅ |
+| literature | 4×NTL | 4 | 4.252 | 0.129 | 4.322 | 0.022 ✅ |
+| anom_watermask | 11×5 去噪 | 55 | 4.358 | 0.290 | 4.414 | 0.028 ✅ |
+| aoi4_watermask | 4×5 去噪 | 20 | 4.316 | 0.495 | 4.396 | 0.027 ✅ |
+
+**2×2 视图（XGB CW_p vs M1）**：
+
+| | 5 指标全用 | 只用 NTL |
+|---|---|---|
+| **11 站** | 55 → 0.085 ✗ | 11 → 0.036 ✅ |
+| **4 核心站** | 20 → **0.0055 ✅** | 4 → 0.022 ✅ |
+
+**结论**：
+
+1. **全 55 不显著是「双重稀疏」**：砍站点（→20）或砍指标（→11）任一都让 XGB 跨入显著。
+2. **站点维度冗余 > 指标维度**：`aoi4`（4 站×5 指数，0.0055）是六臂最显著，强于 `literature`（4×NTL，0.022）——主噪声来自 7 个非核心站；4 核心站上 NDVI/NDWI/NDBI/BSI 亦有增量（非仅 NTL）。
+3. **去噪 vs 精选是替代非叠加**：水体掩膜救全量（0.085→0.028），但对已精选的 `aoi4` 反而变差（0.0055→0.027）——精选后再去噪属过度处理。
+4. **Ridge 全程 CW 不显著**（最好 ntlall 0.108）；`ntlall`/`literature` 的 Ridge RMSE 微超 M1_Ridge（4.246/4.252 < 4.256）但不显著——线性无论怎么精选都吃不动高维 RS。
+5. **写作定位（防 p-hacking）**：主分析仍锚**标准 anom-55（保守下界）**；`aoi4`/`ntlall`/`literature` 作稀疏性诊断、水体掩膜作去噪稳健性——**均不升级为主分析**，共同支撑「扁平吃不动、需模态感知融合」（RQ2）。产物 `baseline_metrics_{aoi4,ntlall,anom_watermask,aoi4_watermask}.csv`。
+
+## 9. M3 结果（M1 + 航运，2026-06-23；2026-07-03 精简 M1；**2026-07-05 主模型改用 full 113 列重跑**）
+
+> **主模型定义变更（2026-07-05）**：M3 主基线改用 **full tier（全 113 航运列 = GFW 49 + PW 64）**，M3 raw = 31 M1 + 113 = **144**。理由：core（38 列）在 XGB 下最弱且不显著（见下表与 §11）。旧 core tier（GFW 6×4 + PW 咽喉 6×2 + 港口 2 = 38）降为 LOCHO 的 core 臂。
+
+### 主基线（L4_tuned，257 周测试，full tier 113 列）
 
 
 | 模型               | RMSE      | skill vs M0 | CW_p_vs_M1 | DM_p_vs_M1 |
@@ -338,55 +372,57 @@ M1 RMSE（quick retrain_every=26，同周对齐）：L=1 → 4.190 Ridge / 4.511
 | M0_RW            | 4.152     | —           | —          | —          |
 | M1_Ridge         | 4.256     | −2.5%       | —          | —          |
 | M1_XGB           | 4.368     | −5.2%       | —          | —          |
-| **M3_Ridge**     | **4.351** | −4.8%       | 0.289      | 0.821      |
-| **M3_XGB**       | **4.476** | −7.8%       | 0.096      | 0.884      |
+| **M3_Ridge**     | **4.430** | −6.7%       | 0.264      | 0.842      |
+| **M3_XGB**       | **4.429** | −6.7%       | **0.0002** ✅ | 0.705      |
 | Naive_DirPersist | —         | —           | —          | —          |
 
 
-- **精简 M1 后 M3-core 的 XGB 嵌套增量退化为不显著**（CW_p=0.096，旧为 0.000）：M1_XGB 由 4.771 降至 4.368 后，M3-core 的 XGB RMSE（4.476）反而**劣于** M1_XGB（4.368）。
-- M3_Ridge 无增量（CW p=0.29），与 M2 模式一致。
-- **重要**：core tier（38 列）对 XGB **不是最优**——LOCHO 显示 full/portwatch-only/tanker-only 臂的 XGB 仍显著（见下），说明主模型 core 精选反而丢了对 XGB 有用的航运列；这与 M2「少而精」方向相反，是 M3 特有现象。仍未超 M0（skill &lt; 0）。
+- **full tier（113 列）XGB 嵌套增量显著**（CW_p=0.0002）：M3_XGB RMSE（4.429）虽仍略劣于 M1_XGB（4.368，即未在 RMSE 上击败纯金融），但 MSPE 调整后的 Clark-West 方向显著——树模型能吃到高维航运的非线性增量。
+- M3_Ridge 无增量（CW p=0.264）：线性模型吸收不了高维共线航运（与 M2 模式一致）。
+- 对照：旧 core tier（38 列）XGB CW_p=0.096（不显著）、RMSE 4.476，正是改用 full 的直接原因（见下方 LOCHO）。
+- **重要**：core tier（38 列）对 XGB **不是最优**——LOCHO 显示 full/portwatch-only/tanker-only 臂的 XGB 仍显著（见下），说明 core 人工精选反而丢了对 XGB 有用的航运列（**已据此于 2026-07-05 改用 full 作主模型**）；这与 M2「少而精」方向相反，是 M3 特有现象。仍未超 M0（skill &lt; 0）。
 
 
 
-### Lookback Sweep（L1/L4/L8，full retrain_every=13，core tier，2026-07-03 重跑）
+### Lookback Sweep（L1/L4/L8，full retrain_every=13，**full tier 113 列**，2026-07-05 重跑）
 
 
 | lookback | 模型        | test周   | M0        | M1 RMSE   | M3 RMSE   | CW_p_vs_M1 |
 | -------- | --------- | ------- | --------- | --------- | --------- | ---------- |
-| 1        | Ridge     | 260     | 4.137     | 4.188     | 4.219     | 0.344      |
-| 1        | XGB       | 260     | 4.137     | 4.479     | 4.684     | 0.779      |
-| **4**    | **Ridge** | **257** | **4.152** | **4.256** | **4.351** | **0.289**  |
-| **4**    | **XGB**   | **257** | **4.152** | **4.368** | **4.476** | **0.096**  |
-| 8        | Ridge     | 253     | 4.172     | 4.339     | 4.452     | 0.429      |
-| 8        | XGB       | 253     | 4.172     | 4.646     | **4.667** | **0.035** ✅ |
+| 1        | Ridge     | 260     | 4.137     | 4.188     | 4.278     | 0.560      |
+| 1        | XGB       | 260     | 4.137     | 4.479     | 4.441     | **0.007** ✅ |
+| **4**    | **Ridge** | **257** | **4.152** | **4.256** | **4.430** | **0.264**  |
+| **4**    | **XGB**   | **257** | **4.152** | **4.368** | **4.429** | **0.0002** ✅ |
+| 8        | Ridge     | 253     | 4.172     | 4.339     | 4.553     | 0.226      |
+| 8        | XGB       | 253     | 4.172     | 4.646     | 4.616     | **0.0018** ✅ |
 
 
-- **精简 M1 后 M3-core 的 XGB 增量仅在 L8 显著**（CW p=0.035）；L1（0.779）、L4（0.096）均不显著——与旧跑「所有 lookback 均显著」相反，因新 M1 强得多。
-- Ridge 在所有 lookback 均无显著增量，与 M2 模式一致。
-- XGB RMSE：L4（4.476）最优，L1（4.684）最差，L8（4.667）；L8 显著是因 M1_XGB 在 L8 恶化到 4.646、相对差距拉大，而非 M3 本身变好。主协议 L4 仍是稳健选择。
+- **full tier 下 M3 的 XGB 增量对 lookback 完全稳健**：L1/L4/L8 的 CW_p = 0.007 / 0.0002 / 0.0018 **全部显著**（旧 core 版仅 L8 显著、L1=0.779/L4=0.096 不显著）——航运增量不依赖特定滞后窗，比 core 稳健得多。
+- Ridge 在所有 lookback 均无显著增量（0.560 / 0.264 / 0.226），与 M2 模式一致。
+- XGB RMSE：L4（4.429）最优、L1（4.441）次之、L8（4.616）最差；主协议 L4 与 §9 主基线（M3_XGB 4.429 / CW 0.0002）逐格一致。
 
 
 
-### SHAP Top-10 M3 特征（XGB，2024 holdout，core tier，2026-07-03 重跑）
+### SHAP Top-10 M3 特征（XGB，2024 holdout，full tier 113 列，2026-07-05 重跑）
 
 | 特征 | mean\|SHAP\| | 来源 |
 |---|---|---|
-| pw_suez_n_tanker | 0.00149 | PortWatch |
-| pw_suez_capacity_tanker | 0.00136 | PortWatch |
-| pw_cape_capacity_tanker | 0.00127 | PortWatch |
-| gfw_hormuz_cargo_hours | 0.00118 | GFW |
-| pw_imp_hubs_import_vol | 0.00115 | PortWatch |
-| pw_cape_n_tanker | 0.00107 | PortWatch |
-| gfw_cape_cargo_hours | 0.00098 | GFW |
-| pw_panama_capacity_tanker | 0.00084 | PortWatch |
-| gfw_suez_total_hours_mom_pct | 0.00066 | GFW |
-| pw_malacca_capacity_tanker | 0.00060 | PortWatch |
+| pw_hormuz_tanker_share | 0.01224 | PortWatch |
+| pw_suez_n_tanker_wow_pct | 0.00793 | PortWatch |
+| pw_malacca_tanker_cap_share | 0.00433 | PortWatch |
+| pw_malacca_avg_tanker_size | 0.00251 | PortWatch |
+| pw_hormuz_n_tanker_wow_pct | 0.00156 | PortWatch |
+| pw_malacca_tanker_share | 0.00150 | PortWatch |
+| pw_hormuz_avg_tanker_size | 0.00145 | PortWatch |
+| gfw_mandeb_other_share | 0.00135 | GFW |
+| pw_mandeb_n_tanker_wow_pct | 0.00112 | PortWatch |
+| gfw_suez_other_share | 0.00105 | GFW |
 
-**按来源**：PortWatch 0.00925 > GFW 0.00462（PortWatch 信号量约 GFW 的 2.0 倍；注：core tier 特征名为 n_tanker/capacity_tanker，非旧的 tanker_share/wow_pct）
+**按来源**：PortWatch 0.04154（85.0%）> GFW 0.00734（15.0%）（PortWatch 信号量约 GFW 的 5.7 倍）。
 
-- **机制验证（红海绕行叙事）**：**苏伊士（Suez）与好望角（Cape）**的 tanker 计数/运力在 top-3 突出——正对应 2023–24 红海/Houthi 事件后油轮改道绕行好望角的机制；霍尔木兹 cargo_hours（GFW）亦在 top-4，与 channelB_mechanism_plan 假设一致。
-- PortWatch（日度 → 周度，精度高）仍比 GFW（月度 → ffill，精度低）信息量大，但差距由旧 4.3× 收窄到 2.0×（core tier 只保留 GFW 6×4 高价值列）。
+- **core 精选丢弃的派生列在 full 下登顶**：Top-10 由 `tanker_share` / `n_tanker_wow_pct` / `tanker_cap_share` / `avg_tanker_size`（PortWatch 派生列，**均不在 core 38 列内**）主导——直接印证「人工 core 精选丢掉了 XGB 高价值航运信号」，是改用 full 的机制层证据。
+- **机制（霍尔木兹 + 红海绕行）**：霍尔木兹 tanker 占比、苏伊士 tanker 过境周环比在 top-2，马六甲多列进 top——对应原油运输主咽喉与 2023–24 红海/Houthi 改道叙事。
+- PortWatch（日频，精度高）SHAP 约为 GFW（月频 ffill）的 5.7 倍（core tier 时为 2.0×，因 core 砍掉了多数 PortWatch 派生列）。
 - 产物：`05_outputs/baselines/m3/shap_m3.png` / `shap_xgb_by_feature.csv` / `shap_xgb_m3_by_source.csv`
 
 
@@ -396,7 +432,7 @@ M1 RMSE（quick retrain_every=26，同周对齐）：L=1 → 4.190 Ridge / 4.511
 
 | arm            | Ridge RMSE | CW_p Ridge | XGB RMSE  | CW_p XGB  |
 | -------------- | ---------- | ---------- | --------- | --------- |
-| core（主模型 38）   | 4.351      | 0.289      | 4.476     | 0.096     |
+| core（旧主模型/现稳健性 38） | 4.351      | 0.289      | 4.476     | 0.096     |
 | full（全 113）    | 4.430      | 0.264      | **4.429** | **0.0002** ✅ |
 | portwatch-only | 4.346      | 0.098      | **4.356** | **0.0003** ✅ |
 | gfw-only       | 4.383      | 0.354      | 4.388     | **0.047** ✅ |
@@ -407,10 +443,10 @@ M1 RMSE（quick retrain_every=26，同周对齐）：L=1 → 4.190 Ridge / 4.511
 
 关键发现（精简 M1 后重跑，结论有实质变化）：
 
-1. **core（主模型 38 列）对 XGB 反而不是最优也不显著**（RMSE 4.476，CW_p 0.096）——**full（113 列，4.429）与 portwatch-only（4.356）、tanker-only（4.343）的 XGB 均显著**（CW p≤0.002），说明主模型的 core 精选丢掉了对 XGB 有用的航运列；这与 M2「少而精」方向相反。
+1. **core（旧主模型、现降为稳健性臂，38 列）对 XGB 反而不是最优也不显著**（RMSE 4.476，CW_p 0.096）——**full（113 列，4.429）与 portwatch-only（4.356）、tanker-only（4.343）的 XGB 均显著**（CW p≤0.002），说明 core 人工精选丢掉了对 XGB 有用的航运列；**已据此于 2026-07-05 把主模型改为 full 113 列**。这与 M2「少而精」方向相反。
 2. **XGB 最优 arm 是 tanker-only（4.343）/ gfw-aggregate（4.344）/ portwatch-only（4.356）**——核心信号集中在油轮计数/容量与聚合活动指标；tanker-only 仅"tanker"字样列即达最优，印证油轮专属信号是关键。
 3. **gfw-aggregate（单一派生 z-mean 列）是 Ridge 唯一显著 arm**（Ridge 4.246 &lt; M1 4.256，CW_p=0.047）——低维聚合航运指数无共线，反而能被线性模型利用；full/core 的高维航运列则拖垮 Ridge。
-4. **写作含义**：M3 的「最优子集因模型而异」（XGB→tanker/full；Ridge→gfw-aggregate 单列），且主 core tier 并非 XGB 最优——正是扁平融合局限的直接证据，支持 RQ2。
+4. **写作含义**：M3 的「最优子集因模型而异」（XGB→tanker/full；Ridge→gfw-aggregate 单列），且 core tier 并非 XGB 最优、full 才显著——正是扁平融合局限的直接证据，支持 RQ2。
 5. 产物：`robustness_m3_summary.csv` / `robustness_m3_overview.png`
 
 
@@ -471,9 +507,9 @@ python3 04_code/scripts/m4/robustness_m4.py
 
 
 
-### 主基线（L4_tuned，257 周测试，retrain_every=13；M3 core tier，M4 raw=31+55+38=124）
+### 主基线（L4_tuned，257 周测试，retrain_every=13；M3 full tier，M4 raw=31+55+113=199）
 
-产物目录：`05_outputs/baselines/m4/`（tag=anom，因 M4 含 M2 anom 特征）**（2026-07-03 精简 M1 + M3 core 重跑）**
+产物目录：`05_outputs/baselines/m4/`（tag=anom，因 M4 含 M2 anom 特征）**（2026-07-05 主模型改用 M3 full 113 列重跑）**
 
 
 | 模型               | RMSE      | skill vs M0 | CW_p_vs_M1   | DM_p_vs_M1 |
@@ -481,15 +517,15 @@ python3 04_code/scripts/m4/robustness_m4.py
 | M0_RW            | 4.152     | —           | —            | —          |
 | M1_Ridge         | 4.256     | −2.5%       | —            | —          |
 | M1_XGB           | 4.368     | −5.2%       | —            | —          |
-| **M4_Ridge**     | **4.466** | **−7.6%**   | 0.375        | 0.963      |
-| **M4_XGB**       | **4.492** | **−8.2%**   | **0.020** ✅  | 0.876      |
+| **M4_Ridge**     | **4.525** | **−9.0%**   | 0.314        | 0.941      |
+| **M4_XGB**       | **4.507** | **−8.6%**   | **0.009** ✅  | 0.873      |
 | Naive_DirPersist | —         | —           | —            | —          |
 
 
-- **M4_XGB Clark-West p=0.020（仍显著）**：**尽管 M2 anom（0.085）与 M3 core（0.096）单模态各自已不显著，M2+M3 合并后 XGB 跨回显著**——两个弱增量在全融合下叠加成显著增量。
-- **M4_Ridge 不显著**（CW p=0.375）：与 M2/M3 独立分析模式一致。
-- **M4_XGB(4.492) 略劣于 M3_XGB(4.476) 与 M2_XGB(4.440)**：core tier 下加 M2+M3 反而使 XGB RMSE 微升（维度膨胀 496 维）；显著性来自方向一致的弱增量叠加，而非 RMSE 改善。
-- M4 仍未超越 M0（skill &lt; 0），与各单模态一致。（注：M4 LOMO 用 M3 **full tier**，full 臂 XGB RMSE 4.507，见下）。
+- **M4_XGB Clark-West p=0.009（显著，且强于旧 core 版 0.020）**：M1+M2+M3(full) 全融合的 XGB 嵌套增量显著——航运 full 113 列是主要增量来源（见 LOMO）。
+- **M4_Ridge 不显著**（CW p=0.314）：与 M2/M3 独立分析模式一致，线性吸收不了高维融合。
+- **M4_XGB(4.507) 略劣于 M3_full_XGB(4.429) 与 M2_XGB(4.440)**：full tier 下把 M2 加到 M1+M3 反而使 XGB RMSE 微升（维度膨胀至 796）；显著性来自 MSPE 调整后的方向，而非 RMSE 改善。
+- M4 仍未超越 M0（skill &lt; 0），与各单模态一致。（注：主基线 M4 现 **= LOMO 的 full 臂**，199 特征，见下）。
 
 
 
@@ -497,60 +533,60 @@ python3 04_code/scripts/m4/robustness_m4.py
 
 产物：`05_outputs/baselines/m4/shap_m4.png` / `shap_xgb_by_feature.csv` / `shap_m4_by_modality.csv`
 
-**各模态重要性（XGB，sum mean|SHAP|）**：**（2026-07-03 重跑，M3 core tier；占比完全反转）**
+**各模态重要性（XGB，sum mean|SHAP|）**：**（2026-07-05，M3 full tier 重跑）**
 
 | 模态         | sum mean\|SHAP\| | 占比    |
 | ---------- | -------------- | ----- |
-| **M1（金融）** | 0.04280        | 51.1% |
-| M2（遥感）     | 0.02132        | 25.5% |
-| M3（航运）     | 0.01957        | 23.4% |
+| **M3（航运）** | 0.03857        | 51.8% |
+| M1（金融）     | 0.02513        | 33.7% |
+| M2（遥感）     | 0.01081        | 14.5% |
 
 **M2 遥感 RS 指数（XGB）**：
 
 | 指数        | sum mean\|SHAP\| |
 | --------- | -------------- |
-| NDVI（植被）  | 0.00581        |
-| BSI（裸地）   | 0.00491        |
-| NDWI（水面）  | 0.00468        |
-| NTL（夜光）   | 0.00369        |
-| NDBI（建成区） | 0.00222        |
+| NDWI（水面）  | 0.00414        |
+| NDVI（植被）  | 0.00288        |
+| NTL（夜光）   | 0.00147        |
+| BSI（裸地）   | 0.00147        |
+| NDBI（建成区） | 0.00084        |
 
-**M3 航运来源（XGB）**：PortWatch 0.01456（74.4%）> GFW 0.00501（25.6%）
+**M3 航运来源（XGB）**：PortWatch 0.03634（94.2%）> GFW 0.00224（5.8%）
 
 **Top-10 M4 特征（XGB）**：
 
 | 特征                          | mean\|SHAP\| | 模态  |
 | --------------------------- | ---------- | --- |
-| gold_return                 | 0.00712    | M1  |
-| brent_f1_spot_log_basis     | 0.00465    | M1  |
-| brent_wti_spread            | 0.00366    | M1  |
-| brent_log_return            | 0.00313    | M1  |
-| pw_mandeb_capacity_tanker   | 0.00225    | M3  |
-| vix                         | 0.00222    | M1  |
-| cushing_stocks_change       | 0.00200    | M1  |
-| gpr                         | 0.00186    | M1  |
-| pw_imp_hubs_import_vol      | 0.00174    | M3  |
-| cadusd_log_return           | 0.00173    | M1  |
+| pw_hormuz_tanker_share      | 0.00863    | M3  |
+| pw_suez_n_tanker_wow_pct    | 0.00688    | M3  |
+| pw_malacca_tanker_cap_share | 0.00482    | M3  |
+| gold_return                 | 0.00468    | M1  |
+| brent_f1_spot_log_basis     | 0.00381    | M1  |
+| vix                         | 0.00289    | M1  |
+| pw_malacca_avg_tanker_size  | 0.00284    | M3  |
+| brent_wti_spread            | 0.00248    | M1  |
+| NDWI_anom_Yanbu             | 0.00181    | M2  |
+| pw_mandeb_n_tanker_wow_pct  | 0.00145    | M3  |
 
-**模态占比完全反转**：旧跑 M3(55.6%)>M1(30.3%)>M2(13.1%)，本次 **M1(51.1%)>M2(25.5%)>M3(23.4%)**——因（i）M3 改用 core tier（38 列，总 SHAP 大降）、（ii）M1 精简后更强。**Top-10 中 8 个 M1 金融特征、2 个 M3 航运、0 个 M2 遥感**（旧为航运主导）——金融特征现主导，与主基线「M1 变强」一致。
+**模态占比（full tier）重回航运主导**：**M3(51.8%)>M1(33.7%)>M2(14.5%)**——与 core tier 版（M1 51%>M2 26%>M3 23%）相反，因 full 恢复了 113 航运列（含 core 砍掉的 `tanker_share`/`n_tanker_wow_pct`/`tanker_cap_share` 等高 SHAP 派生列），航运总 SHAP 大增。**Top-10 中 6 个 M3 航运（PortWatch 派生列主导）、3 个 M1 金融、1 个 M2 遥感**，接近旧全量版的航运主导格局。
 
-### Lookback Sweep（L1/L4/L8，quick 模式 retrain_every=26，2026-07-03 重跑）
+### Lookback Sweep（L1/L4/L8，full retrain_every=13，**full tier（M1+M2+M3full）**，2026-07-05 重跑）
 
 
 | lookback    | 模型    | test周 | M0    | M1 RMSE | M4 RMSE   | CW_p_vs_M1  |
 | ----------- | ----- | ----- | ----- | ------- | --------- | ----------- |
-| **1**       | Ridge | 260   | 4.137 | 4.190   | 4.262     | 0.459       |
-| **1**       | XGB   | 260   | 4.137 | 4.511   | 4.652     | 0.177       |
-| **4** ← 主协议 | Ridge | 257   | 4.152 | 4.250   | 4.456     | 0.400       |
-| **4** ← 主协议 | XGB   | 257   | 4.152 | 4.436   | **4.451** | **0.003** ✅ |
-| 8           | Ridge | 253   | 4.172 | 4.373   | 4.681     | 0.086       |
-| 8           | XGB   | 253   | 4.172 | 5.038   | **4.855** | **0.0002** ✅ |
+| **1**       | Ridge | 260   | 4.137 | 4.188   | 4.320     | 0.553       |
+| **1**       | XGB   | 260   | 4.137 | 4.479   | 4.595     | **0.035** ✅ |
+| **4** ← 主协议 | Ridge | 257   | 4.152 | 4.256   | 4.525     | 0.314       |
+| **4** ← 主协议 | XGB   | 257   | 4.152 | 4.368   | **4.507** | **0.009** ✅ |
+| 8           | Ridge | 253   | 4.172 | 4.339   | 4.586     | 0.079       |
+| 8           | XGB   | 253   | 4.172 | 4.646   | **4.564** | **0.0008** ✅ |
 
 
-- **XGB 在 L4/L8 显著（CW p 0.003 / 0.0002），L1 不显著（0.177）**——较旧跑「所有 lookback 均显著」收敛；主协议 L4 仍显著。
-- Ridge 在所有 lookback 均不显著（旧跑 L8 曾显著，本次 0.086）。
-- M4 XGB RMSE：L4（4.451）最优，L1（4.652）最差，L8（4.855）恶化。
-- **注**：sweep 为 quick（retrain_every=26），其 M1_XGB L4=4.436 弱于主协议 13 的 4.368，故 M4 L4 XGB CW_p 在此显示 0.003、主基线 §12 为 0.020——差异来自 retrain 频率。
+- **full tier 下 M4 的 XGB 增量对 lookback 完全稳健**：L1/L4/L8 的 CW_p = 0.035 / 0.009 / 0.0008 **全部显著**（旧 quick+core 版 L1=0.177 不显著）；主协议 L4 显著。
+- Ridge 在所有 lookback 均不显著（0.553 / 0.314 / 0.079）。
+- M4 XGB RMSE：L4（4.507）最优、L8（4.564）次之、L1（4.595）最差。
+- **L4 与 §12 主基线逐格一致**（M4_Ridge 4.525 / CW 0.314、M4_XGB 4.507 / CW 0.009）——本次 sweep 与主协议同为 retrain_every=13 + full tier，旧版「差异来自 retrain 频率」的注释已作废。
 
 
 
@@ -567,7 +603,7 @@ python3 04_code/scripts/m4/robustness_m4.py
 | M1-only            | 31  | **4.256**  | —          | **4.368** | —            |
 
 
-> **⚠️ LOMO 用 M3 full tier（113 列），故 full 臂=199 特征、XGB=4.507，与主基线 §12 的 core-tier M4（124 特征、XGB 4.492）不同**（`robustness_m4.py` 未改用 core tier）。minus-M2 = M1+M3full 与 §9 LOCHO 的 full 臂（XGB 4.429，CW_p 0.0002）一致；minus-M3 = M1+M2 与主 M2（XGB 4.440，CW_p 0.085）一致。
+> **✅ LOMO 用 M3 full tier（113 列），full 臂 = 199 特征、XGB=4.507——2026-07-05 主基线也改用 full 后，此 full 臂即等于 §12 主基线 M4**（core/full 口径差异已消除）。minus-M2 = M1+M3full 与 §9 LOCHO 的 full 臂（XGB 4.429，CW_p 0.0002）一致；minus-M3 = M1+M2 与主 M2（XGB 4.440，CW_p 0.085）一致。
 
 **LOMO 关键发现（精简 M1 后重跑）**：
 
@@ -575,13 +611,50 @@ python3 04_code/scripts/m4/robustness_m4.py
 2. **minus-M2（M1+M3full）XGB CW_p=0.0002 最显著**：M3 full-tier 是 XGB 的主增量来源（= §9 LOCHO full 臂）。
 3. **minus-M3（M1+M2）XGB CW_p=0.085**：= 主 M2 anom（不显著），M2 单独增量弱。
 4. **对两个模型，M1-only 都是 RMSE 全局最优**（Ridge 4.256 / XGB 4.368）——加任何模态都不降 RMSE；full/minus-M2 的 XGB 只是 CW（MSPE 调整后方向）显著，而非 RMSE 更低。这正是「加模态方向有用但扁平拼接吃不动」的体现。
-5. **最优配置因模型而异 + 主 core tier 非 XGB 最优**（core M4 XGB 4.492 &gt; full-tier minus-M2 4.429）——模型依赖的"最优子集"是扁平融合的局限，为 RQ2 模态感知融合提供最直接对照证据。
+5. **最优配置因模型而异**（XGB→minus-M2=M1+M3full 4.429 最优；旧 core M4 XGB 4.492 更差，故 2026-07-05 主模型已改 full）——模型依赖的"最优子集"是扁平融合的局限，为 RQ2 模态感知融合提供最直接对照证据。
 
 
 
 ### RQ1 M4 结论（可写入 Results §4.4）
 
-> 精简 M1 后，全模态扁平融合（M1+M2+M3 core）的 XGB **仍提供显著嵌套增量（Clark-West p=0.020）——尽管 M2 anom（0.085）与 M3 core（0.096）单模态已各自不显著**，两个弱增量在全融合下方向一致地叠加成显著。但 M4_XGB RMSE（4.492）**并不优于** M3_core（4.476）、M2（4.440）、乃至 M1_XGB（4.368）——即显著性来自 MSPE 调整后的方向，而非 RMSE 改善。SHAP 表明金融（51.1%）> 遥感（25.5%）> 航运（23.4%，因 M3 改 core tier），Top-10 中 8 个金融、2 个航运、0 个遥感。LOMO 证实：对两个模型 M1-only 都是 RMSE 全局最优，加任何模态都不降 RMSE；且 core tier 非 XGB 最优（full-tier minus-M2 XGB 4.429 更优）。**较旧跑数更强地支持「扁平拼接吃不动多模态增量、需要模态感知融合」的研究动机（RQ2）**。
+> 主模型改用 M3 full 113 列后，全模态扁平融合（M1+M2+M3full）的 XGB **提供显著嵌套增量（Clark-West p=0.009，强于旧 core 版 0.020）**；M3 full 单模态 XGB 亦显著（0.0002），M2 anom 单模态仍不显著（0.085）。但 M4_XGB RMSE（4.507）**并不优于** M3_full（4.429）、M2（4.440）、乃至 M1_XGB（4.368）——显著性来自 MSPE 调整后的方向，而非 RMSE 改善。SHAP 模态占比已按 full 重跑（§12：航运 51.8%>金融 33.7%>遥感 14.5%，重回航运主导）。LOMO 证实：对两个模型 M1-only 都是 RMSE 全局最优，加任何模态都不降 RMSE；full 融合的显著性主要来自 M3 full（minus-M2 XGB 4.429/0.0002）。**更强地支持「扁平拼接吃不动多模态增量、需要模态感知融合」的研究动机（RQ2）**。
+
+---
+
+## 13. 创新层（表示级融合）首跑结果（2026-07-05）
+
+> **定位**：**方法集成层**（模态感知表示级融合）首批端到端结果，作为 §8–§12 扁平基线的直接对照，回答 RQ2。代码 `04_code/src/models/`（3 编码器 + `GatedFusion` + `deep_rolling`）+ `run_deep_baseline.py`；产物 `05_outputs/baselines/deep/`。⚠️ **与扁平层用不同 M0/M1 基准**（deep lookback=8 → M0=4.172、≈252 测试周；扁平 lookback=4 → M0=4.152、257 周）：跨层比 **CW 方向 / skill**，勿直接比绝对 RMSE。
+
+**协议**：walk-forward（min_train=104、retrain_every=13、epochs=80、inner-val 52 周 early-stop、dropout 0.1 + weight_decay 强正则），lookback=8，单任务 r_{t+1} 还原价格；flat M1 嵌套参照**读**扁平 `baseline_predictions.csv`（避免 torch+xgboost OpenMP 段错误）。
+
+**结果（M0=4.172，≈252 测试周）**：
+
+| 模型 | 组成 | RMSE | skill vs M0 | CW vs flat M1 |
+|---|---|---|---|---|
+| M0_RW | 随机游走 | 4.172 | 0.0% | — |
+| 扁平 M1_Ridge | — | 4.279 | −2.6% | — |
+| 扁平 M1_XGB | — | 4.383 | −5.1% | — |
+| Mfin_TCN | z_fin | 4.205 | −0.8% | — |
+| Mrs_RS | z_rs（冻结 Prithvi） | 4.307 | −3.3% | 0.103 |
+| Mship_GNN | z_ship（17 节点 GAT+TCN） | 4.188 | −0.4% | **0.0014** ✅ |
+| **Mfusion** | gated(z_fin, z_ship) | **4.174** | **−0.1%** | — |
+| Mfull_M4rep | gated(z_fin, z_rs, z_ship) | 4.184 | −0.3% | **0.0021** ✅ |
+
+**嵌套 Clark–West（`deep_cw.csv`）**：Mship vs flat M1 = **0.0014** ✅；M4rep vs flat M1 = **0.0021** ✅；Mfusion vs Mfin（航运增量）= 0.059（边缘）；M4rep vs Mfusion（RS 增量）= 0.260（不显著）；Mrs vs flat M1 = 0.103（不显著）。
+
+**核心发现（RQ2 首个正面证据）**：
+
+1. **表示级 > 扁平（同一份航运信息）**：扁平 M3-core 的 XGB 只到 CW 0.096（旧 M3_LSTM early-fusion 更是 CW 0.460 不显著），而模态感知 GAT+TCN 的 **Mship 对 flat M1 达 CW 0.0014**——扁平吃不动、表示级吃得动，**RQ2 首个正面证据**。
+2. **深度表示逼近 M0**：Mfin/Mship/Mfusion/M4rep 的 skill 由扁平的 −2.5~5% 收窄到 ~0（Mfusion −0.06% 最优、DirAcc 0.557 最高）。但 **DM vs M0 仍不显著**（逼近≠战胜；需防塌缩到随机游走，DirAcc>0.5 + CW 显著说明非纯塌缩）。
+3. **门控融合最优**：Mfusion（fin+ship）> 各单模态；加 RS（M4rep）无显著增量（RS 分支 Prithvi meanpool 偏弱，待 sweep）。
+
+**RQ3 可解释性（`deep_interpret.png` / `deep_gate_weekly.csv`）**：
+
+- 模态门控权重 finance≈0.40 > rs≈0.33 > shipping≈0.27（与扁平 SHAP 的 M1>M2>M3 一致；⚠️ 2025 末 finance 飙至 ~0.9 需排查样本边界）。
+- 航运 site-attention **hormuz（霍尔木兹）最高** → 符合石油咽喉机制。
+- 遥感 site-attention top = RasTanura/Basra/Yanbu（出口码头），与人工 `literature` 4 站（Fujairah/RasTanura/Rotterdam/Houston）**仅重叠 RasTanura** → 数据驱动 vs 文献先验不一致，作 RQ3 讨论点（**不回流改扁平选站**，防循环论证）。
+
+**caveat**：单 seed、lookback=8、epochs=80、未调优，attention 排序稳定性未验；`run_deep_sweep.py`（多 seed + RS 超参）待跑。旧 LSTM 深度 early-fusion 标尺产物已被本次覆盖，如需「深度扁平 vs 深度表示」双对照须恢复归档。
 
 ---
 
@@ -624,5 +697,8 @@ python3 04_code/scripts/m4/robustness_m4.py
 | 2026-07-03 | 合并原 `2026-06-23_m2_baseline_results.md` 至 §8，恢复为单一基线记录文档 |
 | 2026-07-03 | M1 精简特征集正式重跑：§7 sweep / L4_tuned 数值更新（Ridge 4.256 / XGB 4.368）；删除 `baseline_deep_*` 产物；§8–§12 待 M2/M3 改完后统一重跑 |
 | 2026-07-03 | **M1/M2/M3 特征改动后 M0–M4 全套统一重跑**：merge 矩阵重建 365×212（M1=31/M2=55/M3=113），M3 主模型改 core tier（38）；§7–§12 全部数值 + SHAP + sweep + robustness 刷新。**关键结论变化**：M1 变强后单模态 anom-55（CW_p 0.085）/M3-core（0.096）XGB 增量退化为不显著，仅 M4（0.020）/M2 literature（0.022）/M2 watermask（0.028）/M3 full·portwatch·tanker 臂仍显著；SHAP 模态占比反转为 M1(51%)>M2(25%)>M3(23%)。更强支持 RQ2。 |
+| 2026-07-05 | **M3/M4 主模型由 core 38 列改为 full 113 列**：`data.py::select_features` 默认 `m3_tier="full"`；重跑 M3 raw=144（XGB 4.429 / CW 0.0002）、M4 raw=199（XGB 4.507 / CW 0.009，= LOMO full 臂）。理由：core 在 XGB 下最弱不显著（CW 0.096）、full 显著。§4/§9/§12 主表、SHAP（`shap_m3/m4`）、lookback sweep（`sweep_m3/m4`，现默认 full）均已重跑刷新；core 保留为 `robustness_m3.py` 的 core 臂。 |
+| 2026-07-05 | 新增 **§8.9 M2 2×2 稀疏性六臂**：`data.py` 加 `aoi4`(4站×5指数=20)/`ntlall`(11站×NTL=11)，与 anom/literature + 水体掩膜共 6 臂。发现「双重稀疏」+ 站点维度冗余 > 指标维度（`aoi4` XGB CW **0.0055** 最强）；去噪与精选替代非叠加。主分析仍锚 anom-55（防 p-hacking）。 |
+| 2026-07-05 | 新增 **§13 创新层（表示级融合）首跑**：3 编码器（z_fin/z_rs/z_ship）+ GatedFusion 端到端 walk-forward（lookback=8）。**Mship vs flat M1 CW 0.0014 ✅、M4rep 0.0021 ✅、Mfusion 逼近 M0（−0.06%）**——RQ2 首个正面证据。RQ3：航运 attention 聚焦 hormuz、门控 fin>rs>ship。单 seed 未调优，待 sweep。 |
 
 

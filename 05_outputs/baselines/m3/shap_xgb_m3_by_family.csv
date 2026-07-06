@@ -1,6 +1,6 @@
 index,sum_mean_abs_shap
-M1_finance,0.04250392
-cargo,0.0022633034
-shipping_other,0.0033789435
-tanker,0.008096728
-vessel_count,0.00013791175
+M1_finance,0.03148807
+cargo,0.00095471274
+shipping_other,0.00710116
+tanker,0.040001582
+vessel_count,0.0008204368

@@ -71,7 +71,7 @@ def get_out_dir(modality: str) -> Path:
 def run_config(df, dico, modality: str, m2_features: str, lookback: int,
                min_train: int, retrain_every: int, seed: int, feature_mode: str,
                tune: bool, val_weeks: int, drop_aoi: str | None = None,
-               m3_tier: str = "core") -> pd.DataFrame:
+               m3_tier: str = "full") -> pd.DataFrame:
     cols = data.select_features(dico, modality, m2_features, drop_aoi=drop_aoi,
                                 m3_tier=m3_tier)
     ds = data.build_dataset(df, cols, lookback, feature_mode)
@@ -211,9 +211,9 @@ def main() -> None:
     ap.add_argument("--modality", default="M1", choices=list(data.MODALITY_SETS))
     ap.add_argument("--m2-features", default="anom", choices=list(data.M2_FEATURE_MODES),
                     help="RS feature contract for M2/M4 (default anom = 55 cols)")
-    ap.add_argument("--m3-tier", default="core", choices=list(data.M3_TIERS),
-                    help="M3/M4 shipping tier: core (§11.1 main model, default) or "
-                         "full (all shipping columns, robustness)")
+    ap.add_argument("--m3-tier", default="full", choices=list(data.M3_TIERS),
+                    help="M3/M4 shipping tier: full (all 113 shipping columns, "
+                         "default main model) or core (§11.1 38-col set, robustness)")
     ap.add_argument("--lookback", type=int, default=4)
     ap.add_argument("--min-train", type=int, default=104)
     ap.add_argument("--retrain-every", type=int, default=13,

@@ -364,7 +364,7 @@
 
 - 新建 `04_code/scripts/run_deep_baseline.py`：LSTM/GRU **early-fusion** 时序基线，复用 `backtest.data`（同特征/窗口/防泄漏）+ `backtest.metrics`（同 DM/CW），把所选全部数值列 reshape 成 `[lookback, features]` 序列喂进**一个共享 RNN**（无模态专属编码器）——即 RQ2 里「扁平 / 早融合」的**深度版标尺**（此前只有 Ridge/XGB 的表格扁平融合，缺深度 early-fusion）。
 - 协议同扁平基线：2019–2026、lookback=4、rolling-origin（min_train=104、retrain_every=13、20 fits）、单任务回归 \(r_{t+1}\) 还原价格、特征+目标训练折内标准化、inner-val early stopping + dropout/weight_decay 强正则（小样本防过拟合）。
-- 产物：`05_outputs/baselines/{m1..m4}/baseline_deep_metrics*.csv` + `_predictions*.csv` + `backtest_deep*.png`。
+- 产物：`05_outputs/baselines/deep/` 下 `deep_metrics.csv`（含 DM/CW）+ `deep_cw.csv` + `deep_predictions.csv` + `deep_backtest.png`（单一 `deep/` 目录，非 `{m1..m4}/` 分目录）。
 
 ### 结果（257 测试周 2021–2025，M0 RMSE=4.152）
 
@@ -374,6 +374,8 @@
 | M2_LSTM | 4.210 | 0.595 | −1.4% | **0.012（显著）** |
 | M3_LSTM | 4.370 | 0.494 | −5.3% | 0.460（不显著） |
 | M4_LSTM | 4.180 | 0.549 | −0.7% | 0.059（边缘） |
+
+> ⚠️ **产物注记（2026-07-05 补记）**：上表为 07-03 当天 LSTM early-fusion 的历史结果。此后 `run_deep_baseline.py` 与 `05_outputs/baselines/deep/` 已被 2026-07-05 方法集成层工作覆盖——当前 `deep_metrics.csv` 内容已是模态感知融合架构 `Mfin_TCN / Mship_GNN / Mrs_RS / Mfusion / Mfull_M4rep`（M0 RMSE=4.172，测试样本对齐略有差异），LSTM 原始产物需回溯 git 历史复现。详见下方 2026-07-05 条目。
 
 - **深度 early-fusion 同样打不过 M0**（skill 全负），与 Ridge/XGB 结论一致 → 强化「周频 Brent 随机游走极强」。
 - **M2 遥感嵌套增量显著（CW_p=0.012）**，与 XGB 的 M2（CW_p=0.006）方向一致，交叉印证遥感 anom 有嵌套增量。
@@ -390,6 +392,122 @@
 ### 文档整理
 - 合并 `2026-06-23_m2_baseline_results.md` → `00_admin/待整理/flat_baseline_log.md` §8；删除独立 M2 文档，基线记录恢复为单一主文件。
 - 同步更新 `File Structure20260703.md`、`Meeting04_prep_20260703.md` 中的交叉引用。
+
+### M1 变量精简与口径统一（防泄漏 + 冗余清理）
+
+系统精简 M1 特征并统一收益率口径，**38 → 35 列**；重建 `m1_weekly_features.csv` 与 merge 主 / full / watermask 三变体（防泄漏自检全通过，merge M1 modality = 31）。
+
+**改动清单：**
+
+1. **移除 `brent_direction`**：方向不作独立目标/特征，改由预测价格派生为评估指标（基线 SHAP≈0，冗余）。
+2. **`brent_return_pct` 移除、`wti_return_pct` → `wti_log_return`**：Brent/WTI 统一对数收益（简单收益率与对数收益相关 0.997，冗余）。
+3. **移除 `net_crude_trade`**：`= imports − exports` 为精确线性组合（秩亏）；保留 `crude_imports` + `crude_exports`（窗内近正交 corr≈0.05，信息互补）。
+4. **移除 `sp500` level、`sp500_return_pct` → `sp500_log_return`**：指数水平非平稳、测试期（4697–6930）超训练范围（2305–4770）外推；主分析 `feature_mode="all"` 不平稳化，故仅留对数收益。
+5. **`futures_spread` → `brent_f1_spot_log_basis`（正名）+ 新增 `brent_roll_week`**：正名为前月期货—现货**基差**（非纯期限结构）；**未 back-adjust**（basis 需真实当日 F₁ 价）；`brent_roll_week` = 每月最后 W-FRI ≈ ICE Brent 换月，作换月控制哑变量。
+6. **`commodity_fx` → `cadusd_log_return`**：删复合均值与 AUD 腿，主留 CAD 单腿对数收益。
+7. **`gpr` 改用日度 GPRD**：下载 `Other/data_gpr_daily_recent.xls`，周均值聚合 → 滞后一周（替代月度 ffill+lag，匹配周频、避免按月份标签回填的潜在前视）。
+8. **product supplied 中文名**「消费量」→「表观需求」（非严格终端消费）。
+9. **负价格护栏**：所有对数收益计算前 `assert price>0`（2020-04-20 WTI −36.98 在周五最后值口径下不构成代表价，不影响）。
+
+### Decisions / 待办
+
+- **AUD 稳健性（暂缓，已记录）**：`audusd_log_return` 从主表删除。数据依据：CAD–油价相关 0.36 > AUD 0.28；CAD–AUD 相关 0.74–0.79（AUD 增量有限，更多反映铁矿/煤/中国需求/风险偏好）。**保留为「商品货币选择稳健性」备选**——后续可 (i) AUD 替换 CAD、(ii) CAD+AUD 同时加、(iii) 复原 `commodity_fx` 均值 作稳健性对照。raw `Yahoo_AUDUSD_daily.csv` 仍在，暂不入库。
+- **重跑 baseline（待办）**：M1 特征集已变（35 列 / merge M1=31）；`05_outputs/baselines/*` 旧 SHAP 与 `00_admin/待整理/flat_baseline_log.md` 列数需在重跑后同步。
+- **`brent_f1_spot_log_basis` 换月稳健性（建模阶段）**：删换月周 / 删前后各一周 / A(无 basis)–B(basis+dummy)–C(basis 删换月周) 对比（见 `m1_data_dictionary.md` §4.4.2-D）。
+
+**EN summary:** Streamlined M1 from 38 to 35 columns — dropped `brent_direction`, `brent_return_pct`, `net_crude_trade`, `sp500` level; unified log-return convention (`wti`/`sp500` → log return); renamed `futures_spread` → `brent_f1_spot_log_basis` (unadjusted, + `brent_roll_week` roll dummy); `commodity_fx` → `cadusd_log_return` (AUD leg dropped, kept for future robustness); `gpr` switched to daily GPRD weekly-mean + 1-week lag. Rebuilt m1 + merge three variants (M1=31); leakage self-checks pass. Baseline rerun pending.
+
+---
+
+## 2026-07-05
+
+### What I did — 精简 M1 后全套重跑 + 方法集成层启动
+
+**1. 落实 07-03「重跑 baseline」待办：精简 M1（35 列 / merge M1=31）后重跑扁平 M0–M4**
+
+- merge 矩阵更新为 `weekly_feature_matrix.csv` **365 周 × 212 列**（31 M1 + 55 M2 + 113 M3 + 11 mask + 2 target），无泄漏自检全通过。
+- **M3 引入 core / full 双 tier**：主模型用 **core 38 列**（GFW 存在 24 + PortWatch 咽喉过境 12 + 港口方向性进出口 2），**full 113 列**仅供稳健性（LOCHO）；「最优子集因模型而异」由此成为可检验的对照。（⚠️ **2026-07-05 更新**：主模型已由 core 38 改为 **full 113**、core 降为稳健性臂——因 core 对 XGB 最弱不显著、full 显著；见 `flat_baseline_log.md` §4/§9/§12。）
+- 协议不变：2019.1–2025.12 · lookback=4 · rolling-origin（expanding，min_train=104，retrain_every=13）· 单任务 \(r_{t+1}\) 还原价格 · 257 测试周（2021–2025）· DM vs M0 + Clark–West vs M1。
+
+结果（M0 RMSE=**4.152**）：
+
+| 模态 | 模型 | RMSE | skill vs M0 | CW_p vs M1（嵌套增量） |
+|---|---|---|---|---|
+| M0 | 随机游走 | 4.152 | 0.0% | — |
+| M1 金融 | Ridge / XGB | 4.256 / 4.368 | −2.5% / −5.2% | — |
+| M2 +遥感 (anom55) | Ridge / XGB | 4.414 / 4.440 | −6.3% / −6.9% | 0.474 / 0.085 |
+| M3 +航运 (core) | Ridge / XGB | 4.351 / 4.476 | −4.8% / −7.8% | 0.289 / 0.096 |
+| M4 全模态 | Ridge / XGB | 4.466 / 4.492 | −7.6% / −8.2% | 0.375 / **0.020** ✅ |
+
+**核心发现（与 06-23 相比因 M1 变强 + M3 改 core 而更新）**：
+
+1. **无一模型击败 M0**——周频 Brent 随机游走极强（诚实核心结论）。
+2. **精简 M1 变强后，单模态 XGB 嵌套增量退化为不显著**（M2 anom 0.085、M3 core 0.096）；**仅 M4 全模态（0.020）、M2 literature（0.022）、M2 水体掩膜（0.028）、M3 full/portwatch/tanker 臂仍显著**。
+3. **M3 是「模型敏感」关键对照**：XGB 下 full/tanker 臂显著，Ridge 几乎全不显著——高维异构航运在扁平线性模型下无法有效利用。
+4. **M3 core 对 XGB 反而非最优**（full/portwatch/tanker 更优）→「最优子集因模型而异」，扁平融合局限的直接证据。
+5. **SHAP 模态占比反转为 M1(51%) > M2(25%) > M3(23%)**（M3 改 core + M1 变强后）。
+6. 以上均**强化 RQ2**：把 RS/航运扁平拼到已很强的金融基线上，边际增量被稀释 → 需要模态感知的表示级融合。
+
+**2. M2 遥感合约变体补充（呼应 Meeting 03 四 AOI 决策）**
+
+- 在 `backtest/data.py` 新增 `--m2-features aoi4|ntlall` 后重跑两个 M2 稀疏合约（同 L4_tuned、257 测试周）：`aoi4` = 站点精选（Fujairah / RasTanura / Rotterdam / Houston 4 核心枢纽 × 5 指数 anom = **20 列**）、`ntlall` = 指数精选（11 AOI 仅 `NTL_anom` = **11 列**）。产物 `05_outputs/baselines/m2/baseline_metrics_{aoi4,ntlall}.csv`。
+- **`aoi4`：XGB CW_p vs M1 = 0.0055（显著）**、RMSE 4.340——聚焦 4 个核心 AOI 的嵌套增量比全 11-AOI anom（0.085）**更显著**，为 AOI 子集选择提供实证支撑。
+- `ntlall`：XGB CW_p=0.036（显著）、Ridge 0.108（不显著）。
+- **完整 2×2 六臂（+ 水体掩膜去噪对照）见 `flat_baseline_log.md` §8.9**：「双重稀疏」——砍站点（→20）或砍指标（→11）任一都让 XGB 跨入显著；**站点维度冗余 > 指标维度**（`aoi4` 0.0055 最强，强于 literature 0.022）；去噪与精选**替代非叠加**（水体掩膜救全量 0.085→0.028，但对已精选 `aoi4` 反而 0.0055→0.027）。主分析仍锚 anom-55（防 p-hacking）。
+
+**3. M3 graph17——17 节点动态异质图张量 bundle（GNN 输入）**
+
+- `03_data/processed/M3/py/build_m3_graph17.py` 将 Stage-2 产物合并为 **11 AOI + 6 咽喉 = 17 节点**异质图 → `m3_graph17_tensors.npz` + 可读审计表 `m3_graph17_choke_nodes_weekly.csv`（**2346 行** = 391 周 × 6 咽喉）；数据字典 `m3_data_dictionary.md` §12.9 同步。
+- 节点特征：AOI 11×11（O-D 端点特征）；咽喉 6×**20**（`gfw_*` 8 + `pw_*` 9 + `sar_*` 3）；6 咽喉 = hormuz / suez / malacca / mandeb / panama / cape。
+- 边：`adjacency (391,17,17)` = 动态 **AOI→AOI O-D**（`adjacency_od 11×11`）+ **静态 AOI↔咽喉**（`static_edges`，12 条无向）；编码器侧对称化 + 自环后作 GAT mask。
+- 定位为创新层 `Mship_GNN` 的正式输入，**不进入** flat M3 宽表。
+
+**4. 方法集成层——模态感知表示级融合全栈跑通（当日核心）**
+
+把 07-03 的「单一共享 RNN(LSTM) early-fusion 扁平深度标尺」**升级为表示级融合管线**：三个模态专属编码器各出 32 维 embedding → `GatedFusion`（softmax 门控凸组合）→ MLP 回归头预测 \(\hat r_{t+1}\) → 还原价格。walk-forward 同扁平协议但 **lookback=8**（min_train=104、retrain_every=13、epochs=80、inner-val=52 周 early-stop、dropout 0.1 + weight_decay 强正则），测试周 ≈ **252**（较扁平 257 少，8 周深度窗对齐损失）。
+
+- **`z_fin`**（`finance_encoder.py`）：Linear(31→32) + LayerNorm + 2 层因果 TCN → 32 维。
+- **`z_ship`**（`shipping_encoder.py`）：类型专属投影(→64) + node-type embedding + 2 层多头 GAT(4 heads) + 残差 LayerNorm + 每节点因果 TCN + 节点加性注意力池化 → 32 维（+ `site_att`），约 4.2 万参数。
+- **`z_rs`**（`rs_encoder.py`）：**冻结 Prithvi-EO-2.0** 预计算 embedding（1024 维 `s2_prithvi_emb_meanpool.npy`，backbone 不微调）+ Linear(→64) + 时间注意力（AOI 内 lookback）+ 站点注意力（11 AOI）→ 32 维（+ `site_att`）。
+- **`GatedFusion`**（`fusion.py`）：MLP(n_mod×32→32→n_mod) + softmax → \(z=\sum_i\alpha_i z_i\)；`DeepForecastModel` 统一接口。CONFIGS：`fin/ship/rs`（单模态）、`fusion`（fin+ship）、`m4rep`（fin+rs+ship）。数据挂载 `deep_dataset.build_deep_dataset()`：复用扁平测试周/目标锚点 + lookback=8 的 graph17 / M1 序列 / Prithvi 立方体；标准化仅在训练折 `fit_scalers()`（防泄漏）。
+- 另建 `run_deep_interpret.py`（RQ3 门控/节点注意力可视化）与 `run_deep_sweep.py`（多 seed / 超参稳健性）脚手架（git 未跟踪）。
+- **本管线产物覆盖了 07-03 的 LSTM early-fusion**（`baseline_deep_*` 已删），当前 `05_outputs/baselines/deep/deep_metrics.csv` 为下表。
+
+深度结果（M0 RMSE=**4.172**，≈252 测试周）：
+
+| 模型 | RMSE | skill vs M0 | CW vs flat M1 |
+|---|---|---|---|
+| Mfin_TCN | 4.205 | −0.8% | — |
+| Mrs_RS | 4.307 | −3.3% | 0.103 |
+| Mship_GNN | 4.188 | −0.4% | **0.0014** ✅ |
+| Mfusion (fin+ship) | 4.174 | −0.1% | — |
+| Mfull_M4rep (fin+rs+ship) | 4.184 | −0.3% | **0.0021** ✅ |
+
+- **表示级航运 GNN 首次对 flat M1 达到 Clark–West 显著（p=0.0014）**，与 07-03「M3_LSTM RMSE 4.370、CW p=0.460 不显著」形成**直接对照**——同一份航运信息，扁平早融合利用不了、模态感知 GAT+TCN 却能，**为 RQ2 提供首个正面证据**。
+- 门控增量：航运增量（fusion vs fin）CW p=0.059（边缘）；RS 增量（m4rep vs fusion）CW p=0.260（不显著）——RS 分支（Prithvi meanpool）偏弱，待 sweep。
+- 仍无深度模型超 M0（skill 全负），与扁平结论一致。
+
+> **对照缺口**：07-03 的 LSTM 深度 early-fusion 标尺产物已被本次覆盖。若 RQ2 要「深度扁平早融合 vs 表示级融合」双深度对照，需恢复 LSTM 脚本或独立归档旧结果。
+
+### Decisions made
+
+- **贡献定位定稿**：拟题「A Modality-Aware Spatio-Temporal Fusion Framework…」；不提新算子/层/损失，而是**集成**既有方法 + **首次**在原油周频价格预测中于统一无泄漏协议 + DM/CW 下系统检验「表示级融合 vs 扁平融合」；贡献 = application + integration + 系统实证比较。
+- **M3 core/full 双 tier 制**：主模型 core 38、稳健性 full 113。→ **2026-07-05 起主模型改用 full 113、core 38 降为稳健性臂**（core 对 XGB 最弱不显著；M3_XGB CW 0.0002、M4_XGB CW 0.009）。
+- **诚实核心结论保留**：无一模型超 M0、精简 M1 后单模态增量普遍不显著——这本身正是「需要模态感知融合」（RQ2）的动机与证据。
+
+### Files touched
+
+- 新增：`00_admin/2026-07-05_研究方案与进度总览.md`、`00_admin/2026-07-05_扁平模型变量清单.md`。
+- 新增创新层：`04_code/src/models/*.py`（3 编码器 + `GatedFusion` + dataset/rolling）、`04_code/scripts/run_deep_baseline.py`（LSTM 标尺重写为融合入口）+ `run_deep_interpret.py` + `run_deep_sweep.py`、`03_data/processed/M3/py/build_m3_graph17.py`（+ `m3_graph17_*` 产物）。
+- 更新：`03_data/Dataset/external_sources.md`、`03_data/processed/M3/m3_data_dictionary.md`（§12 graph17）、`04_code/src/backtest/data.py`。
+- 覆盖重跑：`05_outputs/baselines/{m1,m2,m3,m4,deep}/*`。
+
+### Next tasks
+
+- **创新层收尾**（3 编码器 + 门控融合已跑通）：补 Cross-Attention 融合臂 + Encoder-Concat 对照 + modality dropout（缺失模态建模）；`run_deep_interpret` 出门控/站点注意力图（RQ3）；`run_deep_sweep` 多 seed + RS 分支超参（当前 Mrs_RS 偏弱）。
+- **flat vs modality-aware 正式对照（RQ2）**：深度 ≈252 周 / 扁平 257 周测试期取交集后并列报表；`z_fused` 维度对齐研究方案（§1.5 写 64、代码现 32）。
+- 同步 `2026-07-05_研究方案与进度总览.md` §3.1：`z_fin`/`z_rs`/门控接线由 `[ ]` 更新为已实现（文档滞后于代码）。
+- 写作：Ch2 §2.4 Multimodal forecasting / Ch3 方法（机制变量 + 无泄漏对齐 + 编码器/融合）/ Ch4 结果（M0–M4 + DM/CW + SHAP + 稳健性）。
 
 ---
 
@@ -477,34 +595,6 @@ python 04_code/scripts/run_baseline.py \
   --out 05_outputs/baselines/m2/watermask/
 ```
 （需先在 `run_baseline.py` / `robustness_m2.py` 增加 `--m2-features-csv` 覆盖参数；当前 M3/M4 优先，此项 P2。）
-
-## 2026-07-03
-
-### M1 变量精简与口径统一（防泄漏 + 冗余清理）
-
-系统精简 M1 特征并统一收益率口径，**38 → 35 列**；重建 `m1_weekly_features.csv` 与 merge 主 / full / watermask 三变体（防泄漏自检全通过，merge M1 modality = 31）。
-
-**改动清单：**
-
-1. **移除 `brent_direction`**：方向不作独立目标/特征，改由预测价格派生为评估指标（基线 SHAP≈0，冗余）。
-2. **`brent_return_pct` 移除、`wti_return_pct` → `wti_log_return`**：Brent/WTI 统一对数收益（简单收益率与对数收益相关 0.997，冗余）。
-3. **移除 `net_crude_trade`**：`= imports − exports` 为精确线性组合（秩亏）；保留 `crude_imports` + `crude_exports`（窗内近正交 corr≈0.05，信息互补）。
-4. **移除 `sp500` level、`sp500_return_pct` → `sp500_log_return`**：指数水平非平稳、测试期（4697–6930）超训练范围（2305–4770）外推；主分析 `feature_mode="all"` 不平稳化，故仅留对数收益。
-5. **`futures_spread` → `brent_f1_spot_log_basis`（正名）+ 新增 `brent_roll_week`**：正名为前月期货—现货**基差**（非纯期限结构）；**未 back-adjust**（basis 需真实当日 F₁ 价）；`brent_roll_week` = 每月最后 W-FRI ≈ ICE Brent 换月，作换月控制哑变量。
-6. **`commodity_fx` → `cadusd_log_return`**：删复合均值与 AUD 腿，主留 CAD 单腿对数收益。
-7. **`gpr` 改用日度 GPRD**：下载 `Other/data_gpr_daily_recent.xls`，周均值聚合 → 滞后一周（替代月度 ffill+lag，匹配周频、避免按月份标签回填的潜在前视）。
-8. **product supplied 中文名**「消费量」→「表观需求」（非严格终端消费）。
-9. **负价格护栏**：所有对数收益计算前 `assert price>0`（2020-04-20 WTI −36.98 在周五最后值口径下不构成代表价，不影响）。
-
-### Decisions / 待办
-
-- **AUD 稳健性（暂缓，已记录）**：`audusd_log_return` 从主表删除。数据依据：CAD–油价相关 0.36 > AUD 0.28；CAD–AUD 相关 0.74–0.79（AUD 增量有限，更多反映铁矿/煤/中国需求/风险偏好）。**保留为「商品货币选择稳健性」备选**——后续可 (i) AUD 替换 CAD、(ii) CAD+AUD 同时加、(iii) 复原 `commodity_fx` 均值 作稳健性对照。raw `Yahoo_AUDUSD_daily.csv` 仍在，暂不入库。
-- **重跑 baseline（待办）**：M1 特征集已变（35 列 / merge M1=31）；`05_outputs/baselines/*` 旧 SHAP 与 `00_admin/待整理/flat_baseline_log.md` 列数需在重跑后同步。
-- **`brent_f1_spot_log_basis` 换月稳健性（建模阶段）**：删换月周 / 删前后各一周 / A(无 basis)–B(basis+dummy)–C(basis 删换月周) 对比（见 `m1_data_dictionary.md` §4.4.2-D）。
-
-**EN summary:** Streamlined M1 from 38 to 35 columns — dropped `brent_direction`, `brent_return_pct`, `net_crude_trade`, `sp500` level; unified log-return convention (`wti`/`sp500` → log return); renamed `futures_spread` → `brent_f1_spot_log_basis` (unadjusted, + `brent_roll_week` roll dummy); `commodity_fx` → `cadusd_log_return` (AUD leg dropped, kept for future robustness); `gpr` switched to daily GPRD weekly-mean + 1-week lag. Rebuilt m1 + merge three variants (M1=31); leakage self-checks pass. Baseline rerun pending.
-
----
 
 ## Backlog 待办
 
