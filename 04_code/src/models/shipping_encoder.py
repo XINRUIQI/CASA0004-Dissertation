@@ -42,7 +42,13 @@ import torch.nn.functional as F
 # Layers
 # ----------------------------------------------------------------------------
 class DenseGATLayer(nn.Module):
-    """Multi-head graph attention on a small dense graph with a boolean mask."""
+    """Multi-head graph attention on a small dense graph with a boolean mask.
+
+    Optionally biases the attention logits by a per-edge weight (log O-D flow):
+    heavier shipping lanes get a higher attention prior instead of the edge
+    strength being discarded by the boolean adjacency mask (P1-4). The gain
+    `edge_scale` is learned, so the model can down-weight the prior if unhelpful.
+    """
 
     def __init__(self, d_in: int, d_out: int, heads: int = 4,
                  dropout: float = 0.1, leaky: float = 0.2):
@@ -53,19 +59,24 @@ class DenseGATLayer(nn.Module):
         self.W = nn.Linear(d_in, d_out, bias=False)
         self.a_src = nn.Parameter(torch.empty(heads, self.dh))
         self.a_dst = nn.Parameter(torch.empty(heads, self.dh))
+        self.edge_scale = nn.Parameter(torch.tensor(1.0))   # learned edge-flow gain
         self.leaky = nn.LeakyReLU(leaky)
         self.drop = nn.Dropout(dropout)
         nn.init.xavier_uniform_(self.W.weight)
         nn.init.xavier_uniform_(self.a_src)
         nn.init.xavier_uniform_(self.a_dst)
 
-    def forward(self, x: torch.Tensor, mask: torch.Tensor):
+    def forward(self, x: torch.Tensor, mask: torch.Tensor,
+                edge_w: "torch.Tensor | None" = None):
         # x (M, N, d_in); mask (M, N, N) bool, mask[i, j] = i attends to j.
+        # edge_w (M, N, N) optional continuous edge weight (broadcast over heads).
         M, N, _ = x.shape
         h = self.W(x).view(M, N, self.heads, self.dh)
         src = (h * self.a_src).sum(-1)               # (M, N, H)
         dst = (h * self.a_dst).sum(-1)               # (M, N, H)
         e = self.leaky(src.unsqueeze(2) + dst.unsqueeze(1))   # (M, N, N, H)
+        if edge_w is not None:
+            e = e + (self.edge_scale * edge_w).unsqueeze(-1)  # O-D flow prior
         e = e.masked_fill(~mask.unsqueeze(-1), float("-inf"))
         alpha = torch.softmax(e, dim=2)              # over neighbours j
         alpha = torch.nan_to_num(alpha)              # guard fully-masked rows
@@ -75,19 +86,28 @@ class DenseGATLayer(nn.Module):
 
 
 class TemporalTCN(nn.Module):
-    """Causal 1-D convolution stack over the lookback; returns the last step."""
+    """Causal 1-D convolution stack with exponentially growing dilation so the
+    receptive field covers the whole lookback (P1-3).
+
+    Layer i uses dilation 2**i; receptive field = 1 + (kernel-1)*(2**layers - 1)
+    -> 7 for 2 layers / kernel 3, 15 for 3 layers. Without dilation a 2-layer
+    k=3 stack only saw the last 5 steps, so lookback 8/12 were largely wasted
+    (and long-lookback sweeps looked artificially worse). Returns the last step.
+    """
 
     def __init__(self, d: int, layers: int = 2, kernel: int = 3, dropout: float = 0.1):
         super().__init__()
         self.kernel = kernel
-        self.convs = nn.ModuleList([nn.Conv1d(d, d, kernel) for _ in range(layers)])
+        self.dilations = [2 ** i for i in range(layers)]
+        self.convs = nn.ModuleList(
+            [nn.Conv1d(d, d, kernel, dilation=dl) for dl in self.dilations])
         self.drop = nn.Dropout(dropout)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        # x (M, d, L) -> causal conv (left pad) -> last timestep (M, d)
-        pad = self.kernel - 1
-        for conv in self.convs:
+        # x (M, d, L) -> causal dilated conv (left pad) -> last timestep (M, d)
+        for conv, dl in zip(self.convs, self.dilations):
             res = x
+            pad = (self.kernel - 1) * dl
             x = F.relu(conv(F.pad(x, (pad, 0))))
             x = self.drop(x)
             x = x + res
@@ -134,13 +154,16 @@ class ShippingGraphEncoder(nn.Module):
         adj_sym = adj + adj.transpose(-1, -2)
         eye = torch.eye(N, device=adj.device, dtype=adj.dtype)
         mask = (adj_sym + eye[None, None]) > 0       # (B,L,N,N)
+        # Continuous edge weight (log O-D flow) as an attention prior (P1-4).
+        edge_w = torch.log1p(adj_sym.clamp(min=0))   # (B,L,N,N)
 
         # Spatial GAT over each (batch, week) slice.
         hM = h.reshape(B * L, N, -1)
         mM = mask.reshape(B * L, N, N)
+        eM = edge_w.reshape(B * L, N, N)
         last_alpha = None
         for gat in self.gats:
-            out, last_alpha = gat(hM, mM)
+            out, last_alpha = gat(hM, mM, eM)
             hM = self.gat_norm(F.elu(out) + hM)      # residual + norm
         h = hM.reshape(B, L, N, -1)
 

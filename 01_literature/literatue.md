@@ -1,6 +1,6 @@
 # 文献分类总表（Post-Meeting 02 + GNN + TFT + CV）
 
-> **Last updated:** 2026-07-03（编号 P001–P135 + R001–R021；R = M1 数据字典 §4.6 业界/机构 Report 层）
+> **Last updated:** 2026-07-07（编号 P001–P135 + R001–R021；R = M1 数据字典 §4.6 业界/机构 Report 层）
 >
 > 对应最新项目方案：M1(Fin) → M2(Fin+RS) → M3(Fin+Ship) → M4(All)
 > 模型：XGBoost (必做) / LSTM + TFT (推荐) / ST-GNN (进阶) / Baselines (对照)
@@ -172,20 +172,37 @@
 
 ---
 
-### ⑥ 方法集成与实证检验层（创新层，P094–P101 · 2026-06-30 精读补入）
+### ⑥ 方法集成与实证检验层（创新层，P094–P101 + P103–P115 · 2026-06-30 精读补入）
 
-> 支撑研究方案 §4.2 通道 A / §4.4 缺失与异步 / §5 模态编码器与门控融合；与上方各模态表分开列出。8 篇均已写 reading note（`reading_notes/06 创新/`）+ `literature_matrix.md` §⑥ 完整条目。⚠️ 均非油价实证，为方法骨架，须经本项目消融验证。
+> 支撑研究方案 §4.2 通道 A / §4.4 缺失与异步 / §5 模态编码器与门控融合；与上方各模态表分开列出。P094–P101 均已写 reading note（`reading_notes/06`–`10 创新-*` 子目录，见下表）+ `literature_matrix.md` §⑥ 完整条目；**P103–P115（含 P113 RobSense、P115 MM-RSFM 综述）2026-07-07 新增**。⚠️ 均非油价实证，为方法骨架，须经本项目消融验证。
+>
+> **§⑥ 创新层子目录（2026-07-07 细分）：** `06 创新-金融+图编码器`（P039/P063/P091）· `07 创新-EO基础模型`（P094/P095/P103/P104/P106/P108/P110/P113）· `08 创新-EO多模态融合`（P105/P107/P109/P111/P112/P114）· `09 创新-融合机制与缺失异步`（P096–P101/P115）· `10 创新-时序架构参考`（P088/P089）。PDF 对应 `papers_pdf/06`–`10/`。
+>
+> ⚠️ **编号消歧：** **§⑥ P103** = Reed et al. (2023) Scale-MAE；**§① P103** = Agerton & Upton (2019) 出口禁令/价差（M1 `crude_exports` 支撑）——二者无关。**§⑥ P104** = Tseng et al. (2024) Presto；**§① P104** = Yu et al. (2008) EMD+NN（M1 价格变量支撑）——二者无关。**§⑥ P105** = Fuller et al. (2023) CROMA；**§① P105** = Abdollahi & Ebrahimi (2020) Brent 价格混合预测（M1 `brent_price` 支撑）——二者无关。**§⑥ P106** = Xiong et al. (2025) DOFA；**§① P106** = Ye et al. (2005) WTI 现货预测（M1 `wti_price` 支撑）——二者无关；reading note 见 `07 创新-EO基础模型/P106.md`。**§⑥ P107** = Astruc et al. (2024) OmniSat；**§① P107** = Chen et al. (2021) Brent 投资辅助指数（M1 `brent_log_return` 支撑）——二者无关。**§⑥ P108** = Danish et al. (2025) TerraFM；**§① P108** = Ma et al. (2021) 俄沙油价战事件研究（M1 `wti_log_return` 支撑）——二者无关。**§⑥ P109** = Hong et al. (2021) S2FL；**§① P109** = Chen et al. (2019) 现货收益 SV/VaR（M1 `brent_log_return`/`wti_log_return` 支撑）——二者无关。**§⑥ P110** = Weber & Beneke (2025) PyViT-FUSE；**§① P110** = Zhang et al. (2019) 原油市场波动率 GARCH（M1 `brent_log_return` 支撑）——二者无关。**§⑥ P111** = Guo et al. (2025) CCFormer；**§① P111** = Wang & Chen (2025) WTI 收益 ML 预测（M1 `wti_log_return` 支撑）——二者无关；reading note 见 `08 创新-EO多模态融合/P111.md`。**§⑥ P112** = Zhao et al. (2025) CFFormer；**§① P112** = Scheitrum et al. (2018) WTI–Brent 价差 2011 结构断点（M1 `brent_wti_spread` 支撑）——二者无关。**§⑥ P113** = Do et al. (2025) RobSense；**§① P113** = Bravo Caro et al. (2020) WTI–Brent 价差 FCVAR（M1 `brent_wti_spread` 支撑）——二者无关。**§⑥ P114** = Wang, Chen, Ma et al. (2024) ShaSpec；**§① P114** = Charles & Darné (2017) 原油波动率 GARCH/GAS/MSM（M1 `brent_log_return`/`wti_log_return` 支撑）——二者无关。**§⑥ P115** = Zhou, Qian & Gamba (2025) MM-RSFM 综述；**§①-c P115** = Bu (2014) EIA 库存公告信息冲击（M1 `crude_stocks_excl_spr`/`crude_stocks_change` 支撑）——二者无关。
 
 | ID | 优先级 | 归类 | 用途说明 |
 | --- | --- | --- | --- |
 | **P094** | ✅ A 核心 | 核心-EO 基础模型 | Prithvi-EO-2.0（Szwarcman 2024, arXiv:2412.02732）— 冻结多时相 EO 基础模型提 image embedding，M2 通道 A 编码器 |
 | **P095** | ✅ A 核心 | 核心-EO 基础模型 | SatMAE（Cong 2022, NeurIPS）— 多光谱 / 时序卫星 MAE 预训练，遥感表示学习 |
+| **P103** | ✅ A 核心 | 核心-EO 基础模型 | Scale-MAE（Reed 2023, ICCV, arXiv:2212.14532）— GSD-aware MAE + Laplacian decoder；多尺度 RGB 表征；frozen kNN/linear probe |
+| **P104** | ✅ A 核心 | 核心-EO 基础模型 | Presto（Tseng 2024, arXiv:2304.14065v4）— 轻量级 pixel-timeseries Transformer；多源 S1/S2/ERA5/NDVI + structured masking；冻结 EO encoder + 轻量预测头 |
+| **P105** | ✅ A 核心 | 核心-EO 多模态融合 | CROMA（Fuller 2023, NeurIPS, arXiv:2311.00566）— S1+S2 contrastive MAE；radar/optical/joint 三编码器；optional unimodal；2D-ALiBi 可变 AOI |
+| **P106** | ✅ A 核心 | 核心-EO 基础模型 | DOFA（Xiong 2025, arXiv:2403.15356v3）— wavelength-conditioned dynamic hypernetwork + shared Transformer；5 类异构 EO 模态；MIM + distillation；DOFA+ 自 DINOv2；frozen backbone + lightweight head |
+| **P107** | ✅ A 核心 | 核心-EO 多模态融合 | OmniSat（Astruc 2024, ECCV, arXiv:2404.08351）— VHR + S2/S1 时序自监督融合；modality-specific encoder + cross-attention combiner；支撑 M4 EO 子网络架构 |
+| **P108** | ✅ A 核心 | 核心-EO 基础模型 | TerraFM（Danish 2025, arXiv:2506.06281）— S1+S2 统一 foundation model；modality-as-augmentation + cross-attention；frozen backbone + linear/kNN probing；GEO-Bench / Copernicus-Bench |
+| **P110** | ✅ A 核心 | 核心-EO 基础模型 | PyViT-FUSE（Weber & Beneke 2025, ICLR ML4RS）— SPOT+S1+S2+L8 混合分辨率 24 bands；SwAV + cross-attention fusion；band drop 缺失鲁棒；frozen encoder + 轻量 decoder |
+| **P113** | ✅ A 核心 | 核心-EO 基础模型 | RobSense（Do et al. 2025, CVPR）— SatlasPretrain MS+SAR T=8；MAE + TDA (KL) + latent reconstructors；static/temporal/incomplete 适配；frozen encoder 路线 |
+| **P109** | ✅ A 核心 | 核心-shared+specific 融合 | S2FL（Hong 2021, *ISPRS JPRS*, arXiv:2105.10196）— 多模态 RS 分解为 shared/specific 子空间；manifold alignment；支撑 RQ2 消融 ladder |
+| **P111** | ✅ A 核心 | 核心-cross-attention 融合 | CCFormer（Guo 2025, *Sensors*, DOI: 10.3390/s25185698）— HSI+LiDAR 双分支 + 双向 cross-attention；支撑 RQ2 early fusion vs modality-aware fusion 对照 |
+| **P112** | ✅ A 核心 | 核心-cross-fusion 分割 | CFFormer（Zhao 2025, *IEEE TGRS*）— optical+SAR/DSM dual-stream BiFormer；FCM 模态校正 + FFM cross-attention；支撑 M4 EO 融合结构与校正层设计 |
+| **P114** | ✅ A 核心 | 核心-shared+specific + 缺失模态 | ShaSpec（Wang et al. 2024, arXiv:2307.14126v2）— shared + specific encoder + residual fusion；DAO/DCO；训练/测试缺失模态；shared 平均补足（非重建） |
 | **P096** | ✅ A 核心 | 核心-多模态融合 | GMU（Arevalo 2017, ICLR-W）— 门控多模态单元，Gated Fusion 主模型依据 |
 | **P097** | ✅ A 核心 | 核心-缺失模态 | Ma 2022（CVPR）— 多模态 Transformer 缺失模态鲁棒性，modality masking |
 | **P098** | ✅ A 核心 | 核心-缺失 / 异步 | GRU-D（Che 2018, Sci Rep）— mask + time-interval 建模缺失，对应 age / valid_mask |
 | **P099** | ✅ A 核心 | 核心-不规则时序 | mTAN（Shukla & Marlin 2021, ICLR）— 连续时间嵌入 + 时间注意力，异步对齐 |
 | **P100** | ✅ A 核心 | 核心-缺失模态 | ModDrop（Neverova 2016, TPAMI）— modality dropout + 分模态预训练 |
 | **P101** | ✅ A 核心 | 核心-多模态综述 | Baltrušaitis 2019（TPAMI）— 多模态 ML 分类框架，early vs representation fusion 术语锚点 |
+| **P115** | ✅ A 核心 | 核心-MM-RSFM 综述 | Zhou, Qian & Gamba 2025（*Remote Sensing*）— MM-RSFM 分类与数据集地图；frozen/fine-tuned RS encoder 范式；M4 EO 模态 taxonomy 与局限 |
 
 ---
 
@@ -254,7 +271,7 @@ P007–P013 和 P040 共 8 篇 Text/NLP 论文，根据 Meeting 02 决策（移�
 
 > **排序逻辑：** 油价理论基础 → 核心模型与评估方法 → 三模态变量锚点 → 模型架构原始论文 → 模态补充 → 方法参考 → 背景/数据集/备查
 >
-> **编号说明：** P001–P135 连续编号（P102–P135 = M1 数据字典支撑文献；P094–P101 = ⑥ 创新/集成层）
+> **编号说明：** P001–P135 连续编号（P102–P135 = M1 数据字典支撑文献；P094–P101 + **§⑥ P103–P115** = ⑥ 创新/集成层；⚠️ §⑥ 同号条目 ≠ §① 同号条目）
 
 ## Tier 1 — 最优先精读（直接定义研究框架，序 1–15）
 

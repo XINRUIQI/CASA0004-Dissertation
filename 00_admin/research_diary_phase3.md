@@ -542,13 +542,14 @@
 - [x] 唯一核心目标 = 价格：训练 `r_{t+1}` → 还原 \(\hat P_{t+1}\)；方向由预测价格派生；单任务回归
 - [x] 2019–2025 · 4-week lag · rolling-origin · L4_tuned（M0/M1/M2 已完成）
 - [x] M2：DM + Clark-West 检验（还原价格上计算）
-- [ ] 定义 flat 阈值（训练集 |r| 33rd percentile）并文档化（用于**派生方向指标**）
-- [ ] （可选）派生方向指标改二分类 up/down
+- [x] 方向指标 = 二分类符号口径（`metrics.directional_acc`：sign(r_hat) vs sign(r_act)），无需 flat 阈值
+- [~] flat 阈值（训练集 |r| 33rd pct）**降级为可选**：单目标改制后方向不再是预测目标，仅当 Results 另报 up/flat/down 三分类时才需要（Meeting 03 遗留项，非必需）
 
 **写作**
 - [ ] 文献综述主题初稿（6 主题，~4–5 页）
 - [ ] 4-AOI 选择依据短文
-- [ ] RS 删除 cloud fraction 的方法论记录
+- [x] RS 删除 cloud fraction 的方法论记录（`chapter_3_methodology.md` §3.3 补段：云量仅作 QC、与 valid_obs_count 冗余，引用 Hao & Wang 2023 [P025]）
+- [x] 航运机制验证 EDA（`03_data/processed/M3/py/eda_m3_mechanism.py` → `m3_eda_*` 4 图 + lead-lag CSV；对齐 Meeting 03「遥感与航运均做机制 EDA」）
 
 **方法创新层（阶段 1，待导师确认后启动）**
 - [ ] S2 patch GEE 导出 + Prithvi/SatMAE embedding 预计算

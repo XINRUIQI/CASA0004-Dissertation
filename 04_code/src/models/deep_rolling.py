@@ -26,8 +26,10 @@ CONFIGS = {
     "fin": (["fin"], "TCN", "gated"),
     "rs": (["rs"], "RS", "gated"),
     "fusion": (["fin", "ship"], "Fusion", "gated"),
+    "finrs": (["fin", "rs"], "FinRS", "gated"),        # finance + RS (no shipping)
     "m4rep": (["fin", "rs", "ship"], "M4rep", "gated"),
     "m4xattn": (["fin", "rs", "ship"], "M4xattn", "xattn"),
+    "m4concat": (["fin", "rs", "ship"], "M4concat", "concat"),  # encoder-concat rung
 }
 
 

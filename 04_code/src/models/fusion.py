@@ -42,6 +42,28 @@ class GatedFusion(nn.Module):
         return z, alpha
 
 
+class ConcatFusion(nn.Module):
+    """Encoder-concatenation fusion: [z_1..z_m] -> MLP -> d.
+
+    The middle rung of the RQ2 fusion ladder (Baltrusaitis et al., 2019 [P101];
+    the concat baseline in Gated Multimodal Units [P096]). Modalities are still
+    encoded separately (unlike the flat Ridge/XGB early fusion), but mixed by a
+    fixed MLP with NO per-sample gating or cross-modal attention. Any gain of
+    GatedFusion / CrossModalAttentionFusion over this arm is therefore
+    attributable to the fusion mechanism, not merely to per-modality encoding.
+    Returns (z, None) to keep the (embedding, weights) interface of GatedFusion.
+    """
+
+    def __init__(self, n_mod: int, d: int):
+        super().__init__()
+        self.n_mod = n_mod
+        self.proj = nn.Sequential(nn.Linear(n_mod * d, d), nn.ReLU())
+
+    def forward(self, zs: list[torch.Tensor]):
+        z = self.proj(torch.cat(zs, dim=-1))        # (B, d)
+        return z, None
+
+
 class CrossModalAttentionFusion(nn.Module):
     """Finance z_fin as Query attending over RS/shipping node tokens (research
     plan sec 5.2 option 3): z_fused = LN(z_fin + gamma * CrossAttn(z_fin, H_kv)).
@@ -97,6 +119,8 @@ class DeepForecastModel(nn.Module):
         if len(modalities) > 1:
             if fusion_type == "gated":
                 self.fuse = GatedFusion(len(modalities), d)
+            elif fusion_type == "concat":
+                self.fuse = ConcatFusion(len(modalities), d)
             elif fusion_type == "xattn":
                 assert "fin" in modalities, "xattn needs finance as query"
                 self.xattn = CrossModalAttentionFusion(d, token_dim, dropout=dropout)
@@ -135,6 +159,9 @@ class DeepForecastModel(nn.Module):
             zin = self._modality_dropout(zs) if drop else zs
             z, gate = self.fuse(zin)
             info["gate"] = gate; info["gate_order"] = self.modalities
+        elif self.fusion_type == "concat":
+            zin = self._modality_dropout(zs) if drop else zs
+            z, _ = self.fuse(zin)
         else:  # xattn — finance queries RS/shipping node tokens
             z_fin = zs[self.modalities.index("fin")]
             kv_list = [toks[m] for m in self.modalities if m in ("rs", "ship")]

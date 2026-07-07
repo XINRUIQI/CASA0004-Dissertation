@@ -7,6 +7,8 @@ baseline (backtest.data + backtest.rolling), the deep modality encoders:
   Mship  = z_ship (17-node heterogeneous shipping graph GAT+TCN)   [RQ1 shipping]
   Mfin   = z_fin  (finance TCN)                                    [deep finance ref]
   Mfusion= gated(z_fin, z_ship) -> head                           [RQ2 representation arm]
+  Mfinrs = gated(z_fin, z_rs)   -> head          [RS incr. over finance, no shipping]
+  Mconcat= concat(z_fin,z_rs,z_ship) -> MLP head [encoder-concat rung of RQ2 ladder]
 
 and the flat M1 (Ridge/XGB) on the identical weeks as the nested reference. It
 reports RMSE / skill vs M0 / DM (vs M0) and Clark-West nested increments:
@@ -55,7 +57,8 @@ from models.deep_rolling import CONFIGS, rolling_origin_deep  # noqa: E402
 
 OUT_DIR = data.ROOT / "05_outputs/baselines/deep"
 LABELS = {"ship": "Mship", "fin": "Mfin", "rs": "Mrs",
-          "fusion": "Mfusion", "m4rep": "Mfull"}
+          "fusion": "Mfusion", "finrs": "Mfinrs", "m4rep": "Mfull",
+          "m4xattn": "Mxattn", "m4concat": "Mconcat"}
 
 
 def cw_row(merged: pd.DataFrame, small_col: str, large_col: str, name: str) -> dict:
@@ -98,8 +101,9 @@ def make_plot(merged, summ, model_cols, path):
 
 def main() -> None:
     ap = argparse.ArgumentParser(description="Deep representation-level fusion baseline.")
-    ap.add_argument("--modes", default="fin,ship,rs,fusion,m4rep",
-                    help="comma list of deep configs (fin/ship/rs/fusion/m4rep)")
+    ap.add_argument("--modes", default="fin,ship,rs,fusion,finrs,m4rep,m4concat",
+                    help="comma list of deep configs "
+                         "(fin/ship/rs/fusion/finrs/m4rep/m4xattn/m4concat)")
     ap.add_argument("--lookback", type=int, default=8, help="deep sequence lookback (weeks)")
     ap.add_argument("--min-train", type=int, default=104)
     ap.add_argument("--retrain-every", type=int, default=13)
@@ -164,8 +168,13 @@ def main() -> None:
         ("Mfull_M4rep", "Mfusion_Fusion", "RS incr. (M4rep vs fin+ship)"),
         ("Mfull_M4rep", "M1_Ridge", "full representation vs flat M1 (M4rep vs M1_Ridge)"),
         ("Mfusion_Fusion", "Mfin_TCN", "shipping incr. (fusion vs fin)"),
+        ("Mfinrs_FinRS", "Mfin_TCN", "rs incr. (finrs vs fin)"),
+        ("Mfinrs_FinRS", "M1_Ridge", "fin+rs representation vs flat M1 (finrs vs M1_Ridge)"),
         ("Mrs_RS", "M1_Ridge", "rs-rep vs flat M1 (rs vs M1_Ridge)"),
         ("Mship_GNN", "M1_Ridge", "shipping-rep vs flat M1 (ship vs M1_Ridge)"),
+        # encoder-concat rung: fusion-mechanism comparisons (read DM_p, non-nested).
+        ("Mconcat_M4concat", "M1_Ridge", "concat fusion vs flat M1 (M4concat vs M1_Ridge)"),
+        ("Mfull_M4rep", "Mconcat_M4concat", "gating gain (M4rep vs encoder-concat)"),
     ]
     cw_rows = []
     for large, small, name in cand:

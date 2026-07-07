@@ -1,6 +1,7 @@
 """
 Advanced deep-fusion ablations (RQ2/RQ3 robustness extensions):
-  1. Fusion type   : gated vs cross-attention (finance-as-query) on M4-rep.
+  1. Fusion type   : encoder-concat vs gated vs cross-attention (finance-as-query)
+                     on M4-rep (the RQ2 fusion ladder).
   2. Modality dropout: on/off (ModDrop-style missing-modality regularisation).
   3. Sub-period     : split the common test into early (2021-2022) vs late
                       (2023-2025) and re-check skill / Clark-West stability.
@@ -79,6 +80,7 @@ def main() -> None:
 
     # arm: (name, config, model_kwargs, min_train)
     arms = [
+        ("m4concat", "m4concat", {}, 104),     # encoder-concat rung (RQ2 ladder floor)
         ("m4rep_gated", "m4rep", {}, 104),
         ("m4xattn", "m4xattn", {}, 104),
         ("m4rep_drop0.3", "m4rep", {"modality_dropout": 0.3}, 104),

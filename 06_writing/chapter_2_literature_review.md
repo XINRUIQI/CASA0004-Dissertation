@@ -48,10 +48,20 @@ significantly beating XGBoost on a Diebold–Mariano test. Foroutan & Lahmiri
 optimistic because \(P_{t+1}\approx P_t\). Hybrid designs such as LSTM-feature-
 extraction + XGBoost (Simsek et al., 2024 [P004]) report near-perfect \(R^2\)
 that most likely reflects pre-split normalisation leakage, underscoring why
-leakage-safe protocols and random-walk baselines are non-negotiable. The
-collective lesson is that oil-price forecasting is dominated by a strong
-benchmark, requires mechanism-based features and rigorous out-of-sample
-evaluation, and treats the price's own lag as one of the strongest predictors.
+leakage-safe protocols and random-walk baselines are non-negotiable. Graph-based
+deep learning has also reached the problem: Zhao, Xue & Cheng (2023) [P063] couple
+a self-attention-learned dynamic graph with Graph WaveNet to forecast multi-step
+WTI futures and report gains over other neural models — but their "spatial" graph
+encodes *non-Euclidean relations among predictors*, not a geographic or shipping
+network, and they omit the no-change benchmark for a highly persistent price
+level, so superiority over a random walk is not established. A caveat cutting
+across this literature is that most evidence concerns WTI at daily or monthly
+frequency, and often on price levels; weekly Brent — the target here — yields
+fewer observations per year and an even more dominant random walk, so published
+gains do not transfer automatically. The collective lesson is that oil-price
+forecasting is dominated by a strong benchmark, requires mechanism-based features
+and rigorous out-of-sample evaluation, and treats the price's own lag as one of
+the strongest predictors.
 
 ## 2.2 Shipping activity and oil markets
 
@@ -81,6 +91,21 @@ origin, and crude is routinely re-sold, blended or transferred at sea — so
 shipping indicators should be tanker-specific, capacity-weighted, split by
 chokepoint/region, and validated against official oil-flow statistics before
 being trusted as predictors.
+
+**From flat indicators to shipping networks.** Beyond scalar counts, maritime
+activity has an intrinsic *network* structure that a flat table discards. The IMF
+PortWatch methodology (2026) [P070] standardises chokepoint- and port-level
+transit series and is the operational source adopted here, while Paolo et al.
+(2024) [P057] show from global SAR that a substantial share of at-sea industrial
+activity is absent from AIS altogether — a reminder that shipping proxies are
+themselves incomplete. To exploit structure rather than discard it, crude-oil
+work increasingly represents ports, terminals and chokepoints as graph nodes:
+Ouyang et al. (2022) [P062] couple supply-chain graph convolution with an LSTM to
+forecast crude-tanker traffic flow, and Liang et al. (2022) [P066] use a
+spatio-temporal multi-graph network (distance, interaction and correlation graphs)
+for fine-grained vessel-flow prediction. Both predict *traffic*, not price, so
+they establish only that a maritime graph is learnable — motivating, but not
+proving, a shipping encoder for Brent.
 
 ## 2.3 Satellite imagery and remote sensing
 
@@ -136,28 +161,93 @@ missing modalities.
 **Building blocks for a representation-level model.** Several components make a
 modality-aware oil-price model feasible. Earth-observation foundation models —
 Prithvi-EO-2.0 (Szwarcman et al., 2024) [P094] and SatMAE (Cong et al., 2022)
-[P095] — are self-supervised transformers pre-trained on multispectral/temporal
-satellite imagery whose frozen encoders yield transferable image embeddings,
-avoiding training an image model on a few hundred weekly samples; both, however,
-are validated only on land-cover/segmentation tasks, never on price. Gated
-Multimodal Units (Arevalo et al., 2017) [P096] learn input-dependent gates that
-weight each modality's contribution, providing both a fusion mechanism and a
-built-in interpretability handle. Robustness to missing modalities — unavoidable
+[P095] — are self-supervised transformers whose frozen encoders yield transferable
+image embeddings, avoiding training an image model on a few hundred weekly samples.
+Because optical and radar sensors differ in channel structure and noise, multimodal
+EO models encode each modality with a dedicated *modality-specific encoder* before
+fusing them: CROMA (Fuller et al., 2023) [P105] is representative, learning separate
+radar and optical encoders coupled by contrastive and masked-autoencoding
+objectives, and a growing family (DOFA [P106], OmniSat [P107], TerraFM [P108])
+extends the idea to more sensors, while cross-attention fusion [P111; P112] and
+shared/modality-specific decompositions [P109] consistently outperform naïve
+concatenation on segmentation benchmarks. A recent survey of these multimodal EO
+foundation models [P115] confirms the trend but also flags their open problems —
+limited cross-modal transfer and no standard evaluation — and, like every model
+above, they are validated on land-cover tasks, never on price. Gated Multimodal
+Units (Arevalo et al., 2017) [P096] learn input-dependent gates that weight each
+modality's contribution, providing both a fusion mechanism and a built-in
+interpretability handle. Robustness to missing modalities — unavoidable
 with cloud-limited monthly satellite data and publication-lagged shipping — is
-addressed by Ma et al. (2022) [P097], who show multimodal transformers degrade
-sharply under missing inputs unless missing-modality training is used, and by the
-modality-dropout idea of ModDrop (Neverova et al., 2016) [P100]. Irregular,
+among the EO open problems noted above and one of the most consequential here. In
+general multimodal learning it is addressed by Ma et al. (2022) [P097],
+who show multimodal transformers degrade sharply under missing inputs unless
+missing-modality training is used, by the modality-dropout idea of ModDrop
+(Neverova et al., 2016) [P100], and by the shared-specific feature modelling of
+ShaSpec (Wang et al., 2024) [P114], which regenerates a missing modality's
+embedding from the available ones rather than its raw signal. Directly in the EO
+setting, RobSense (Do et al., 2025) [P113] adds uni-modal latent reconstructors
+that recover multispectral/SAR representations from incomplete inputs and is
+evaluated explicitly across increasing missing rates, and PyViT-FUSE (Weber &
+Beneke, 2025) [P110] uses band-drop training with learnable empty tokens to
+remain robust when whole sensors or bands are absent. Irregular,
 asynchronous observation is handled by GRU-D (Che et al., 2018) [P098] via masks
 and time-since-last-observation, and by mTAN (Shukla & Marlin, 2021) [P099] via
 learned continuous-time embeddings — both directly relevant to aligning monthly
 imagery with weekly prices. For the temporal/graph backbones, the Temporal Fusion
-Transformer (Lim et al., 2021) [P089], Graph WaveNet (Wu et al., 2019) [P091] and
-crude-oil maritime GNNs (LGCOTFF [P062]; GWNet-Attn [P063]) supply candidate
-encoders. Crucially, **none of these has been validated on crude-oil price
+Transformer (Lim et al., 2021) [P089] and Graph WaveNet (Wu et al., 2019) [P091]
+supply candidate temporal and spatio-temporal encoders, the latter also underpinning
+the crude-oil maritime graphs discussed in §2.2 [P062; P066]. Crucially, **none of
+these has been validated on crude-oil price
 forecasting**: they are methodological scaffolding whose value in this setting
 must be demonstrated empirically, not asserted.
 
-## 2.5 Research gap and positioning
+## 2.5 Forecast evaluation and interpretability
+
+**Comparing forecasts, not just error numbers.** Because the random walk is so
+strong (§2.1), a lower RMSE or MAE is not by itself evidence that a model is
+genuinely better — the gap may be sampling noise over one out-of-sample path.
+Diebold & Mariano (1995) [P058] provide the standard test of equal expected
+predictive accuracy under general loss, and the forecasting handbook [P053]
+operationalises the surrounding protocol: real-time data alignment,
+recursive/rolling evaluation, horizon-by-horizon comparison, and correction for
+the serial correlation induced by overlapping multi-step forecasts. A subtlety
+specific to this study is that M2–M4 are *nested* extensions of the financial
+baseline M1, and under quadratic loss the standard DM asymptotics can be distorted
+for nested models; Clark & West (2007) therefore supply the appropriate test of
+whether an added modality delivers a statistically significant, correctly signed
+reduction in out-of-sample loss. Critically, a significant DM/CW result requires
+*both* a favourable sign of the mean loss differential *and* a small p-value:
+significance alone does not establish superiority.
+
+**Explaining which modality matters.** Establishing that a forecast improves does
+not reveal *what* drives the improvement. SHAP (Lundberg & Lee, 2017) [P059] offers
+a model-agnostic, additive attribution that can be aggregated to the modality level
+(financial / remote-sensing / shipping), turning an otherwise opaque tree or
+network into a mechanism-level account of which signals it relies on and when. The
+two instruments are complementary and non-substitutable — DM/CW say *whether*
+alternative data help, SHAP says *through which* features — and both must be read
+against leakage-safe, in-window feature selection rather than computed post hoc on
+the full sample. SHAP is, moreover, an attribution of model behaviour, not a causal
+claim. This two-layer evidence chain (significance test + attribution) is adopted
+throughout the dissertation to keep every modality claim falsifiable.
+
+## 2.6 Research gap and positioning
+
+**Existing alternative-data oil forecasting.** A handful of studies do connect
+alternative data to oil, but each stops short of the design tested here. On the
+remote-sensing side, Hao & Wang (2023) [P025] link cloud-cover observability to
+weekly WTI returns, and Bricongne et al. (2026) [P069] nowcast national oil
+*demand* from tropospheric NO₂ — both feed a single engineered signal into an
+otherwise standard model, and the latter predicts demand rather than price. On the
+shipping side, PortWatch-style pipelines [P070] and Jung (2026) [P068] convert
+vessel movements and imagery into tabular indicators that nowcast *trade*, not
+price. The methodologically richest precedents remain unimodal or bimodal:
+GWNet-Attn [P063] adds a learned variable graph but only for WTI futures, with no
+image or shipping modality, and the Modality-aware Transformer [P039] fuses text
+and numeric series for interest rates, not commodity prices. Across all of them,
+alternative data are either compressed into flat columns or used to nowcast an
+intermediate quantity; none preserves three heterogeneous modalities and fuses
+them at the representation level for weekly Brent.
 
 **The gap.** Oil-price forecasting has a very strong random-walk benchmark
 (§2.1); shipping and remote sensing are credible but noisy, causally entangled,
@@ -184,11 +274,10 @@ questions follow: **RQ1** — do remote sensing and shipping add incremental
 out-of-sample value over a financial baseline (and over the random walk)?
 **RQ2** — does modality-aware representation-level fusion outperform flat feature
 fusion on identical data? **RQ3** — do gating/attention weights reveal which
-modality the model relies on in different market regimes? Preliminary baseline
-evidence already motivates RQ2: high-dimensional shipping features yield a
-significant nested increment under a tree model but not under a flat linear
-model, suggesting that *how* heterogeneous modalities are combined,
-not merely whether they are included, matters.
+modality the model relies on in different market regimes? These questions are
+motivated, not pre-empted, by the baseline layer: its detailed M0–M4 results
+(Chapter 4) already indicate that *how* modalities are combined — not merely
+whether they are included — is what matters for RQ2.
 
 ---
 
@@ -198,29 +287,47 @@ not merely whether they are included, matters.
 - Alquist, R., Kilian, L., & Vigfusson, R. J. (2013). *Forecasting the Price of Oil.* Handbook of Economic Forecasting, 2A. [P053]
 - Arevalo, J., Solorio, T., Montes-y-Gómez, M., & González, F. A. (2017). *Gated Multimodal Units for Information Fusion.* ICLR Workshop. [P096]
 - Arslanalp, S., Marini, M., & Tumbarello, P. (2019). *Big Data on Vessel Traffic: Nowcasting Trade Flows in Real Time.* IMF WP/19/275. [P018]
+- Astruc, G., Gonthier, N., Mallet, C., & Landrieu, L. (2024). *OmniSat: Self-Supervised Modality Fusion for Earth Observation.* arXiv:2404.08351. [P107]
 - Baltrušaitis, T., Ahuja, C., & Morency, L.-P. (2019). *Multimodal Machine Learning: A Survey and Taxonomy.* IEEE TPAMI 41(2). [P101]
 - Baumeister, C., & Kilian, L. (2015). *Forecasting the Real Price of Oil in a Changing World: A Forecast Combination Approach.* [P054]
 - Bricongne, J.-C., Macalos, J.-P., Meunier, B., et al. (2026). *Can Satellites Predict Oil Demand?* ECB WP 3198. [P069]
 - Che, Z., Purushotham, S., Cho, K., et al. (2018). *Recurrent Neural Networks for Multivariate Time Series with Missing Values (GRU-D).* Scientific Reports 8:6085. [P098]
+- Clark, T. E., & West, K. D. (2007). *Approximately Normal Tests for Equal Predictive Accuracy in Nested Models.* Journal of Econometrics 138(1), 291–311.
 - Cong, Y., Khanna, S., Meng, C., et al. (2022). *SatMAE: Pre-training Transformers for Temporal and Multi-Spectral Satellite Imagery.* NeurIPS. [P095]
 - Costa, A. B. et al. (2021). *Machine Learning and Oil Price Point and Density Forecasting.* [P072]
+- Danish, M. S., Munir, M. A., Shah, S. R. A., Khan, M. H., Anwer, R. M., Laaksonen, J., Khan, F. S., & Khan, S. (2025). *TerraFM: A Scalable Foundation Model for Unified Multisensor Earth Observation.* arXiv:2506.06281. [P108]
+- Diebold, F. X., & Mariano, R. S. (1995). *Comparing Predictive Accuracy.* Journal of Business & Economic Statistics 13(3), 253–263. [P058]
+- Do, M. K., Han, K., Lai, P., Phan, K. T., & Xiang, W. (2025). *RobSense: A Robust Multi-modal Foundation Model for Remote Sensing with Static, Temporal, and Incomplete Data Adaptability.* CVPR. [P113]
 - Foroutan, P., & Lahmiri, S. (2024). *Deep learning systems for forecasting the prices of crude oil and precious metals.* Financial Innovation 10:111. [P001]
+- Fuller, A., Millard, K., & Green, J. (2023). *CROMA: Remote Sensing Representations with Contrastive Radar-Optical Masked Autoencoders.* NeurIPS. [P105]
 - Gibson, J., Olivia, S., Boe-Gibson, G., & Li, C. (2021). *Which Night Lights Data Should We Use in Economics, and Where?* J. Development Economics 149. [P032]
 - Gohari, H. E., Dang, X.-H., Shah, S. Y., & Zerfos, P. (2024). *Modality-aware Transformer for Financial Time Series Forecasting.* ICAIF '24. [P039]
+- Guo, H., Tian, B., & Liu, W. (2025). *CCFormer: Cross-Modal Cross-Attention Transformer for Classification of Hyperspectral and LiDAR Data.* Sensors 25(18):5698. [P111]
 - Hao, J., & Wang, Y. (2023). *Cloud Cover and Expected Oil Returns.* Humanities and Social Sciences Communications 10:605. [P025]
-- Jung (2026). *Watching Trade from Space: Nowcasting Port-Level Maritime Trade.* [P068]
+- Hong, D., Hu, J., Yao, J., Chanussot, J., & Zhu, X. X. (2021). *Multimodal Remote Sensing Benchmark Datasets for Land Cover Classification with a Shared and Specific Feature Learning Model (S2FL).* ISPRS Journal of Photogrammetry and Remote Sensing. [P109]
+- Jung, Y. (2026). *Watching Trade from Space: Nowcasting and Spatial Extrapolation of Port-Level Maritime Trade Using Satellite Imagery.* arXiv:2604.15444. [P068]
 - Kilian, L. (2009). *Not All Oil Price Shocks Are Alike.* American Economic Review. [P052]
+- Liang et al. (2022). *Fine-Grained Vessel Traffic Flow Prediction with a Spatio-Temporal Multi-Graph Convolutional Network (STMGCN).* [P066]
 - Lim, B. et al. (2021). *Temporal Fusion Transformers for Interpretable Multi-horizon Time Series Forecasting.* [P089]
+- Lundberg, S. M., & Lee, S.-I. (2017). *A Unified Approach to Interpreting Model Predictions (SHAP).* NeurIPS. [P059]
 - Ma, M., Ren, J., Zhao, L., Testuggine, D., & Peng, X. (2022). *Are Multimodal Transformers Robust to Missing Modality?* CVPR. [P097]
 - Mi, J. et al. (2022). *The Impact of the Crude Oil Price on Tankers' Port-Call Features.* JMSE 10(10). [P016]
-- Mi, J., Zang, ..., Lo, ..., & Chen, ... (2023). *The Nonlinear Relationship between Oil Prices and Tankers' Port Calls.* Procedia CS 221. [P017]
+- Mi, J. et al. (2023). *The Nonlinear Relationship between Oil Prices and Tankers' Port Calls.* Procedia CS 221. [P017]
 - Neverova, N., Wolf, C., Taylor, G. W., & Nebout, F. (2016). *ModDrop: Adaptive Multi-Modal Gesture Recognition.* IEEE TPAMI. [P100]
+- Ouyang et al. (2022). *Long Short-Term Memory and Graph Convolution Network for Forecasting the Crude Oil Traffic Flow (LGCOTFF).* IEEE Access. [P062]
+- Paolo, F. S. et al. (2024). *Satellite Mapping Reveals Extensive Industrial Activity at Sea.* Nature 625. [P057]
 - Polinov, S., Bookman, R., & Levin, N. (2022). *A Global Assessment of Night Lights as an Indicator for Shipping Activity in Anchorage Areas.* Remote Sensing 14(5). [P024]
 - IMF (2026). *Nowcasting Country-Level Trade Using IMF PortWatch.* [P070]
 - Shukla, S. N., & Marlin, B. M. (2021). *Multi-Time Attention Networks for Irregularly Sampled Time Series (mTAN).* ICLR. [P099]
-- Simsek, ..., Bulut, ..., Gur, ..., & Gültekin Tarla, ... (2024). *LSTM-based feature extraction with XGBoost Regressor for WTI.* Energy 309. [P004]
+- Simsek et al. (2024). *LSTM-based feature extraction with XGBoost Regressor for WTI.* Energy 309. [P004]
 - Szwarcman, D., Roy, S., Fraccaro, P., et al. (2024). *Prithvi-EO-2.0: A Versatile Multi-Temporal Foundation Model for Earth Observation.* arXiv:2412.02732. [P094]
-- Wang, T., Li, ..., Yu, ..., & Liu, ... (2019). *Estimating the Volume of Oil Tanks Based on High-Resolution Remote Sensing Images.* Remote Sensing 11(7). [P055]
+- Wang, H., Chen, Y., Ma, C., Avery, J., Hull, L., & Carneiro, G. (2024). *Multi-modal Learning with Missing Modality via Shared-Specific Feature Modelling (ShaSpec).* arXiv:2307.14126. [P114]
+- Wang, T. et al. (2019). *Estimating the Volume of Oil Tanks Based on High-Resolution Remote Sensing Images.* Remote Sensing 11(7). [P055]
+- Weber, M., & Beneke, C. (2025). *PyViT-FUSE: A Foundation Model for Multisensor Earth Observation Data.* ICLR ML4RS Workshop. [P110]
 - Wu, Z., Pan, S., Long, G., Jiang, J., & Zhang, C. (2019). *Graph WaveNet for Deep Spatial-Temporal Graph Modeling.* IJCAI. [P091]
+- Xiong, Z., Wang, Y., Zhang, F., Stewart, A. J., Hanna, J., Borth, D., Papoutsis, I., Le Saux, B., Camps-Valls, G., & Zhu, X. X. (2025). *Neural Plasticity-Inspired Multimodal Foundation Model for Earth Observation (DOFA).* arXiv:2403.15356. [P106]
 - Yan, Z. et al. (2020). *Analysis of global marine oil trade from AIS.* [P015]
-- Yılmaz, ..., & Zehir, ... (2026). *Strategic-Risk-Based Forecasting of Brent Crude Oil Prices.* Entropy 28(5). [P076]
+- Yılmaz and Zehir (2026). *Strategic-Risk-Based Forecasting of Brent Crude Oil Prices.* Entropy 28(5). [P076]
+- Zhao, G., Xue, M., & Cheng, L. (2023). *A New Hybrid Model for Multi-Step WTI Futures Price Forecasting Based on Self-Attention Mechanism and Spatial–Temporal Graph Neural Network (GWNet-Attn).* Resources Policy 85:103956. [P063]
+- Zhao, J., Zhang, M., Zhou, Z., Wang, Z., Lang, F., Shi, H., & Zheng, N. (2025). *CFFormer: A Cross-Fusion Transformer Framework for the Semantic Segmentation of Multisource Remote Sensing Images.* IEEE TGRS 63:4401117. [P112]
+- Zhou, G., Qian, L., & Gamba, P. (2025). *Advances on Multimodal Remote Sensing Foundation Models for Earth Observation Downstream Tasks: A Survey.* Remote Sensing 17(21):3532. [P115]

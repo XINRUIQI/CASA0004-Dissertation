@@ -11,8 +11,9 @@
 - 2.1 Crude oil price forecasting (traditional + ML/DL methods)
 - 2.2 Shipping activity and oil markets (tanker activity, AIS as economic indicator)
 - 2.3 Satellite imagery and remote sensing (ship detection, port monitoring, RS as economic proxy)
-- 2.4 Multimodal forecasting (combining heterogeneous data sources)
-- 2.5 Research gap and positioning
+- 2.4 Multimodal forecasting (fusion architectures for heterogeneous data)
+- 2.5 Forecast evaluation and interpretability (DM / Clark–West / SHAP)
+- 2.6 Research gap and positioning
 
 ## Chapter 3 — Methodology
 - 3.1 Research design
