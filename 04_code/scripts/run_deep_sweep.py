@@ -1,8 +1,8 @@
 """
 Robustness sweep for the deep representation-level models: multi-seed +
 hyperparameter grid (lookback / d_model / layers) + RS-branch study, to check
-the RQ2 Clark-West conclusion (representation fusion > flat M1) is stable, not a
-single-seed fluke, and to probe the weakest modality (remote sensing).
+the RQ2 conclusion (does the fusion beat the random walk M0, and the flat M1?)
+is stable, not a single-seed fluke, and to probe the weakest modality (RS).
 
 Four experiment groups:
   seed  : {fusion, m4rep, m4xattn} x seeds {42,1,2} at lookback=8, d=32, layers=2
@@ -15,8 +15,10 @@ Four experiment groups:
   reg   : lr / weight_decay / dropout grid on the MAIN gated fusion (P1-6): is
           the main model's skill sensitive to regularisation, not only RS?
 
-For each run we record skill vs M0 and Clark-West p vs flat M1_Ridge on the
-common test weeks (flat M1 read from baseline_predictions.csv; no xgboost import).
+For each run we record skill vs M0, the VALID Clark-West p vs M0 (nested -> does
+it beat the random walk?) and the VALID Diebold-Mariano p vs flat M1_Ridge
+(non-nested model class, where Clark-West would be invalid), on the common test
+weeks (flat M1 read from baseline_predictions.csv; no xgboost import).
 
 Outputs (-> 05_outputs/baselines/deep/):
   deep_sweep_summary.csv   one row per run (now incl. rs_kind / lr / wd / dropout)
@@ -59,7 +61,7 @@ def experiments() -> list[dict]:
     deep_sweep_summary.csv is self-describing (group/config/seed/lookback/d/
     gat/tcn/rs_kind/lr/wd/dropout)."""
     # 1) multi-seed stability — now includes m4xattn (cross-attention).
-    seed = [dict(group="seed", config=c, seed=s, lookback=8, d=32, **_DEF)
+    seed = [dict(group="seed", config=c, seed=s, lookback=4, d=32, **_DEF)
             for c in ["fusion", "m4rep", "m4xattn"] for s in [42, 1, 2]]
     # 2) hyperparameter grid on the gated fusion.
     hyper = [dict(group="hyper", config="fusion", seed=42, lookback=lb, d=d, **_DEF)
@@ -67,14 +69,14 @@ def experiments() -> list[dict]:
     hyper += [dict(group="hyper", config="fusion", seed=42, lookback=8, d=32,
                    **{**_DEF, "gat": 1, "tcn": 1})]
     # 3) RS branch (weakest modality): embedding type + small reg grid.
-    rs = [dict(group="rs", config="rs", seed=42, lookback=8, d=32,
+    rs = [dict(group="rs", config="rs", seed=42, lookback=4, d=32,
                **{**_DEF, "rs_kind": rk}) for rk in ["meanpool", "cls"]]
     for lr in [1e-3, 3e-4]:
         for wd in [1e-4, 1e-3]:
             for dp in [0.1, 0.3]:
                 if (lr, wd, dp) == (1e-3, 1e-4, 0.1):
                     continue   # == the meanpool default already added above
-                rs.append(dict(group="rs", config="rs", seed=42, lookback=8, d=32,
+                rs.append(dict(group="rs", config="rs", seed=42, lookback=4, d=32,
                                **{**_DEF, "lr": lr, "wd": wd, "dropout": dp}))
     # 4) regularisation grid on the MAIN gated fusion (P1-6): is skill sensitive
     #    to lr / weight_decay / dropout on the main model, not only on RS?
@@ -84,7 +86,7 @@ def experiments() -> list[dict]:
             for dp in [0.1, 0.3]:
                 if (lr, wd, dp) == (1e-3, 1e-4, 0.1):
                     continue   # == fusion default already in seed/hyper
-                reg.append(dict(group="reg", config="fusion", seed=42, lookback=8,
+                reg.append(dict(group="reg", config="fusion", seed=42, lookback=4,
                                 d=32, **{**_DEF, "lr": lr, "wd": wd, "dropout": dp}))
     return seed + hyper + rs + reg
 
@@ -133,16 +135,21 @@ def main() -> None:
         rhat = res.loc[common, f"r_hat_{col}"].to_numpy()
         ract = res_m1.loc[common, "r_actual"].to_numpy()
         diracc = metrics.directional_acc(rhat, ract)
-        _, cw_p = metrics.clark_west(
-            y, res_m1.loc[common, "P_hat_M1_Ridge"].to_numpy(), yhat)
+        # VALID tests: CW vs M0 (nested -> beats the random walk?), and DM vs the
+        # flat M1_Ridge (different model class -> Clark-West would be invalid).
+        _, cw_p_m0 = metrics.clark_west(
+            y, res_m1.loc[common, "P_hat_M0"].to_numpy(), yhat)
+        _, dm_p_m1 = metrics.dm_test(
+            yhat - y, res_m1.loc[common, "P_hat_M1_Ridge"].to_numpy() - y)
         row = {**e, "RMSE": rmse, "skill_vs_M0": 1 - rmse / rmse_m0,
-               "DirAcc": diracc, "CW_p_vs_M1": cw_p, "n_test": len(common)}
+               "DirAcc": diracc, "CW_p_vs_M0": cw_p_m0, "DM_p_vs_M1": dm_p_m1,
+               "n_test": len(common)}
         rows.append(row)
         print(f"  [{k+1}/{len(exps)}] {e['group']:5s} {e['config']:8s} "
               f"seed={e['seed']} lb={lb} d={e['d']} rs={rk:8s} "
               f"lr={e['lr']:.0e} wd={e['wd']:.0e} dp={e['dropout']} "
-              f"skill={row['skill_vs_M0']*100:+.2f}% CW_p={cw_p:.4f} "
-              f"({time.time()-t0:.0f}s)", flush=True)
+              f"skill={row['skill_vs_M0']*100:+.2f}% CWvsM0={cw_p_m0:.4f} "
+              f"DMvsM1={dm_p_m1:.4f} ({time.time()-t0:.0f}s)", flush=True)
 
     summ = pd.DataFrame(rows)
     OUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -152,18 +159,19 @@ def main() -> None:
     # --- summary stats ---
     print("\n" + "=" * 78)
     seed_g = summ[summ["group"] == "seed"]
-    print("Multi-seed stability (skill vs M0, CW_p vs flat M1):")
+    print("Multi-seed stability (skill vs M0; CWvsM0 = beats RW?; DMvsM1 vs flat M1):")
     for c in seed_g["config"].unique():
         s = seed_g[seed_g["config"] == c]
         print(f"  {c:8s}: skill {s['skill_vs_M0'].mean()*100:+.2f}% "
               f"± {s['skill_vs_M0'].std()*100:.2f}  | "
-              f"CW_p {s['CW_p_vs_M1'].mean():.4f} "
-              f"(min {s['CW_p_vs_M1'].min():.4f}, max {s['CW_p_vs_M1'].max():.4f}) "
-              f"| CW_p<0.05 in {(s['CW_p_vs_M1']<0.05).sum()}/{len(s)} seeds")
+              f"CWvsM0_p {s['CW_p_vs_M0'].mean():.4f} "
+              f"(min {s['CW_p_vs_M0'].min():.4f}, max {s['CW_p_vs_M0'].max():.4f}) "
+              f"| <0.05 in {(s['CW_p_vs_M0']<0.05).sum()}/{len(s)} "
+              f"| DMvsM1<0.05 in {(s['DM_p_vs_M1']<0.05).sum()}/{len(s)}")
     print("\nHyperparam sweep (fusion, seed=42):")
     hyp = summ[summ["group"] == "hyper"].sort_values(["lookback", "d", "gat"])
     print(hyp[["lookback", "d", "gat", "skill_vs_M0", "DirAcc",
-               "CW_p_vs_M1"]].to_string(index=False,
+               "CW_p_vs_M0", "DM_p_vs_M1"]].to_string(index=False,
               float_format=lambda x: f"{x:.4f}"))
 
     rs_g = summ[summ["group"] == "rs"]
@@ -173,12 +181,12 @@ def main() -> None:
                    & (rs_g["dropout"] == 0.1)]
         for _, r in emb.sort_values("rs_kind").iterrows():
             print(f"  {r['rs_kind']:8s}: skill {r['skill_vs_M0']*100:+.2f}%  "
-                  f"DirAcc {r['DirAcc']:.3f}  CW_p {r['CW_p_vs_M1']:.4f}")
+                  f"DirAcc {r['DirAcc']:.3f}  CWvsM0_p {r['CW_p_vs_M0']:.4f}")
         mp = rs_g[rs_g["rs_kind"] == "meanpool"].sort_values(
             "skill_vs_M0", ascending=False)
         print("  meanpool regularisation grid (best skill first):")
         print(mp[["lr", "wd", "dropout", "skill_vs_M0", "DirAcc",
-                  "CW_p_vs_M1"]].to_string(index=False,
+                  "CW_p_vs_M0", "DM_p_vs_M1"]].to_string(index=False,
                  float_format=lambda x: f"{x:.4f}"))
         mp_def = emb[emb["rs_kind"] == "meanpool"]["skill_vs_M0"].values[0] * 100
         b = mp.iloc[0]
@@ -188,10 +196,10 @@ def main() -> None:
 
     reg_g = summ[summ["group"] == "reg"]
     if len(reg_g):
-        print("\nMain fusion regularisation grid (P1-6, seed=42 lb=8; best skill first):")
+        print("\nMain fusion regularisation grid (P1-6, seed=42 lb=4; best skill first):")
         rr = reg_g.sort_values("skill_vs_M0", ascending=False)
         print(rr[["lr", "wd", "dropout", "skill_vs_M0", "DirAcc",
-                  "CW_p_vs_M1"]].to_string(index=False,
+                  "CW_p_vs_M0", "DM_p_vs_M1"]].to_string(index=False,
                  float_format=lambda x: f"{x:.4f}"))
     print("=" * 78)
 

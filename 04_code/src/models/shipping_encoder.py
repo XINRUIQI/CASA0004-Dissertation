@@ -86,19 +86,26 @@ class DenseGATLayer(nn.Module):
 
 
 class TemporalTCN(nn.Module):
-    """Causal 1-D convolution stack with exponentially growing dilation so the
-    receptive field covers the whole lookback (P1-3).
+    """Causal 1-D convolution stack with *adaptive* dilation (P1-3 + sweep evidence).
 
-    Layer i uses dilation 2**i; receptive field = 1 + (kernel-1)*(2**layers - 1)
-    -> 7 for 2 layers / kernel 3, 15 for 3 layers. Without dilation a 2-layer
-    k=3 stack only saw the last 5 steps, so lookback 8/12 were largely wasted
-    (and long-lookback sweeps looked artificially worse). Returns the last step.
+    Layer i uses dilation 2**i ONLY when the lookback is longer than the plain
+    (dilation-1) receptive field 1 + layers*(kernel-1); otherwise it falls back
+    to dense dilation-1 conv. Dilation helps long windows (lookback 8/12: lifts
+    the receptive field 5->7 and stops long-lookback sweeps looking artificially
+    worse) but slightly hurts a short lookback=4 window (skill +0.14% -> -0.07%),
+    where dense sampling is better. Pass `lookback` so the choice is made
+    automatically per window; lookback=None keeps dilation on. Returns last step.
     """
 
-    def __init__(self, d: int, layers: int = 2, kernel: int = 3, dropout: float = 0.1):
+    def __init__(self, d: int, layers: int = 2, kernel: int = 3, dropout: float = 0.1,
+                 lookback: "int | None" = None):
         super().__init__()
         self.kernel = kernel
-        self.dilations = [2 ** i for i in range(layers)]
+        plain_rf = 1 + layers * (kernel - 1)          # receptive field w/o dilation
+        if lookback is not None and lookback <= plain_rf:
+            self.dilations = [1] * layers             # short window -> dense conv
+        else:
+            self.dilations = [2 ** i for i in range(layers)]
         self.convs = nn.ModuleList(
             [nn.Conv1d(d, d, kernel, dilation=dl) for dl in self.dilations])
         self.drop = nn.Dropout(dropout)
@@ -119,7 +126,8 @@ class ShippingGraphEncoder(nn.Module):
 
     def __init__(self, f_aoi: int, f_choke: int, n_aoi: int = 11, n_choke: int = 6,
                  d_model: int = 64, d_out: int = 32, gat_layers: int = 2,
-                 heads: int = 4, tcn_layers: int = 2, dropout: float = 0.1):
+                 heads: int = 4, tcn_layers: int = 2, dropout: float = 0.1,
+                 lookback: "int | None" = None):
         super().__init__()
         self.n_aoi, self.n_choke = n_aoi, n_choke
         self.N = n_aoi + n_choke
@@ -130,7 +138,7 @@ class ShippingGraphEncoder(nn.Module):
         self.gats = nn.ModuleList(
             [DenseGATLayer(d_model, d_model, heads, dropout) for _ in range(gat_layers)])
         self.gat_norm = nn.LayerNorm(d_model)
-        self.tcn = TemporalTCN(d_model, tcn_layers, dropout=dropout)
+        self.tcn = TemporalTCN(d_model, tcn_layers, dropout=dropout, lookback=lookback)
         self.pool_score = nn.Linear(d_model, 1)
         self.head = nn.Sequential(
             nn.Linear(d_model, d_model), nn.ReLU(), nn.Dropout(dropout),

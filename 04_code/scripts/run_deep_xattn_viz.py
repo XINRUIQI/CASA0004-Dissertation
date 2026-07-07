@@ -50,7 +50,7 @@ EVENTS = [
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--lookback", type=int, default=8)
+    ap.add_argument("--lookback", type=int, default=4)
     ap.add_argument("--epochs", type=int, default=80)
     ap.add_argument("--min-train", type=int, default=104)
     ap.add_argument("--retrain-every", type=int, default=13)

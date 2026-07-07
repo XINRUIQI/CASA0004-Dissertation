@@ -1,0 +1,7 @@
+DONE seed=42 meanpool: skill=-1.28% DirAcc=50.2 CWp=0.894
+DONE seed=42 meanpool_anom: skill=+0.05% DirAcc=53.3 CWp=0.042
+DONE seed=1 meanpool: skill=-1.18% DirAcc=49.4 CWp=0.717
+DONE seed=1 meanpool_anom: skill=-0.83% DirAcc=48.2 CWp=0.708
+DONE seed=2 meanpool: skill=-0.20% DirAcc=45.9 CWp=0.111
+DONE seed=2 meanpool_anom: skill=-0.13% DirAcc=49.8 CWp=0.150
+DONE seed=3 meanpool: skill=-2.08% DirAcc=47.5 CWp=0.933

@@ -101,7 +101,8 @@ class DeepForecastModel(nn.Module):
                  f_fin: int, rs_emb_dim: int = 1024, n_sites: int = 11,
                  d: int = 32, dropout: float = 0.1, gat_layers: int = 2,
                  tcn_layers: int = 2, fusion_type: str = "gated",
-                 modality_dropout: float = 0.0, token_dim: int = 64):
+                 modality_dropout: float = 0.0, token_dim: int = 64,
+                 lookback: "int | None" = None):
         super().__init__()
         for m in modalities:
             assert m in ("fin", "rs", "ship"), f"bad modality {m}"
@@ -110,10 +111,11 @@ class DeepForecastModel(nn.Module):
         self.modality_dropout = modality_dropout
         if "ship" in modalities:
             self.ship = ShippingGraphEncoder(f_aoi, f_choke, d_out=d, dropout=dropout,
-                                             gat_layers=gat_layers, tcn_layers=tcn_layers)
+                                             gat_layers=gat_layers, tcn_layers=tcn_layers,
+                                             lookback=lookback)
         if "fin" in modalities:
             self.fin = FinanceTCNEncoder(f_fin, d_out=d, dropout=dropout,
-                                         tcn_layers=tcn_layers)
+                                         tcn_layers=tcn_layers, lookback=lookback)
         if "rs" in modalities:
             self.rs = RSPrithviEncoder(rs_emb_dim, n_sites, d_out=d, dropout=dropout)
         if len(modalities) > 1:

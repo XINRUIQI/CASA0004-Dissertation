@@ -10,18 +10,22 @@ baseline (backtest.data + backtest.rolling), the deep modality encoders:
   Mfinrs = gated(z_fin, z_rs)   -> head          [RS incr. over finance, no shipping]
   Mconcat= concat(z_fin,z_rs,z_ship) -> MLP head [encoder-concat rung of RQ2 ladder]
 
-and the flat M1 (Ridge/XGB) on the identical weeks as the nested reference. It
-reports RMSE / skill vs M0 / DM (vs M0) and Clark-West nested increments:
-  * Mfusion vs Mfin        (does the shipping representation add over finance?)
-  * Mfusion vs flat M1     (representation fusion vs flat finance)
-  * Mship  vs flat M1      (shipping representation vs flat finance)
+and the flat M1 (Ridge/XGB) on the identical weeks as the reference. It reports
+RMSE / skill vs M0 plus the STATISTICALLY VALID test for each comparison:
+  * CW vs M0 (random walk)  does the model beat the no-change benchmark?
+                            (valid: M0's r_hat=0 is nested in every model)
+  * CW nested increments    Mfusion vs Mfin, M4rep vs Mfusion, finrs vs fin
+                            (valid: the base modality is nested in the fused one)
+  * DM (non-nested)         deep vs flat M1, and gated vs concat
+                            (Clark-West is INVALID for these non-nested pairs;
+                            Diebold-Mariano is the correct accuracy test)
 
 This is the deep side of RQ2 (flat vs representation-level fusion): compare the
-CW increments / skill here against the flat M3/M4 numbers from run_baseline.py.
+skill / valid p-values here against the flat M3/M4 numbers from run_baseline.py.
 
 Outputs (-> 05_outputs/baselines/deep/):
-  deep_metrics.csv        M0 + flat M1 + deep modes, with DM/CW
-  deep_cw.csv             the nested Clark-West comparison table
+  deep_metrics.csv        M0 + flat M1 + deep modes, with DM & CW_p vs M0
+  deep_cw.csv             comparison table; valid_test/p_value pick CW or DM
   deep_predictions.csv    per test week, every model's P_hat
   deep_backtest.png       price tracks + RMSE + skill bars
 
@@ -61,14 +65,34 @@ LABELS = {"ship": "Mship", "fin": "Mfin", "rs": "Mrs",
           "m4xattn": "Mxattn", "m4concat": "Mconcat"}
 
 
-def cw_row(merged: pd.DataFrame, small_col: str, large_col: str, name: str) -> dict:
+def compare_row(merged: pd.DataFrame, small_col: str, large_col: str, name: str,
+                nested: bool) -> dict:
+    """One model comparison. Clark-West is only valid when `small` is NESTED in
+    `large` (e.g. fin nested in fin+ship). For NON-nested pairs (deep vs flat M1,
+    gated vs concat) CW is inflated and the valid test is Diebold-Mariano.
+    `valid_test`/`p_value` select the correct one; both raw stats are kept so the
+    invalid CW is documented rather than hidden. Both p's are one-sided for
+    H1: the 'large' (deep) model is more accurate."""
     y = merged["P_next_actual"].to_numpy()
     ys = merged[f"P_hat_{small_col}"].to_numpy()
     yl = merged[f"P_hat_{large_col}"].to_numpy()
-    cw, p = metrics.clark_west(y, ys, yl)
+    cw, cwp = metrics.clark_west(y, ys, yl)
     dm, dmp = metrics.dm_test(yl - y, ys - y)
     return {"comparison": name, "small": small_col, "large": large_col,
-            "CW_stat": cw, "CW_p": p, "DM_stat": dm, "DM_p": dmp}
+            "valid_test": "CW(nested)" if nested else "DM(non-nested)",
+            "p_value": cwp if nested else dmp,
+            "CW_stat": cw, "CW_p": cwp, "DM_stat": dm, "DM_p": dmp}
+
+
+def cw_vs_m0(merged: pd.DataFrame, model_cols: list[str]) -> pd.Series:
+    """Valid nested Clark-West of every model vs M0 (the random walk r_hat=0 is
+    nested in any model): the honest 'does it beat the no-change benchmark?' p,
+    one-sided (p<0.05 => the model is significantly more accurate than M0)."""
+    y = merged["P_next_actual"].to_numpy()
+    ym0 = merged["P_hat_M0"].to_numpy()
+    out = {c: metrics.clark_west(y, ym0, merged[f"P_hat_{c}"].to_numpy())[1]
+           for c in model_cols}
+    return pd.Series(out)
 
 
 def make_plot(merged, summ, model_cols, path):
@@ -104,7 +128,7 @@ def main() -> None:
     ap.add_argument("--modes", default="fin,ship,rs,fusion,finrs,m4rep,m4concat",
                     help="comma list of deep configs "
                          "(fin/ship/rs/fusion/finrs/m4rep/m4xattn/m4concat)")
-    ap.add_argument("--lookback", type=int, default=8, help="deep sequence lookback (weeks)")
+    ap.add_argument("--lookback", type=int, default=4, help="deep sequence lookback (weeks); main model = 4 (aligns flat protocol; adaptive TCN uses dense conv at lb<=5)")
     ap.add_argument("--min-train", type=int, default=104)
     ap.add_argument("--retrain-every", type=int, default=13)
     ap.add_argument("--epochs", type=int, default=80)
@@ -161,25 +185,29 @@ def main() -> None:
     flat_cols = ["M1_Ridge", "M1_XGB"]
     all_cols = flat_cols + deep_cols
     summ = metrics.evaluate(merged, all_cols)
+    # honest 'beats the random walk?' test: valid nested CW vs M0 for every model.
+    summ["CW_p_vs_M0"] = cw_vs_m0(merged, all_cols).reindex(summ.index)
 
-    # Nested Clark-West comparisons (only those whose columns are present).
+    # Model comparisons: CW where NESTED, else Diebold-Mariano (see compare_row).
     have = set(deep_cols)
     cand = [
-        ("Mfull_M4rep", "Mfusion_Fusion", "RS incr. (M4rep vs fin+ship)"),
-        ("Mfull_M4rep", "M1_Ridge", "full representation vs flat M1 (M4rep vs M1_Ridge)"),
-        ("Mfusion_Fusion", "Mfin_TCN", "shipping incr. (fusion vs fin)"),
-        ("Mfinrs_FinRS", "Mfin_TCN", "rs incr. (finrs vs fin)"),
-        ("Mfinrs_FinRS", "M1_Ridge", "fin+rs representation vs flat M1 (finrs vs M1_Ridge)"),
-        ("Mrs_RS", "M1_Ridge", "rs-rep vs flat M1 (rs vs M1_Ridge)"),
-        ("Mship_GNN", "M1_Ridge", "shipping-rep vs flat M1 (ship vs M1_Ridge)"),
-        # encoder-concat rung: fusion-mechanism comparisons (read DM_p, non-nested).
-        ("Mconcat_M4concat", "M1_Ridge", "concat fusion vs flat M1 (M4concat vs M1_Ridge)"),
-        ("Mfull_M4rep", "Mconcat_M4concat", "gating gain (M4rep vs encoder-concat)"),
+        # --- valid nested Clark-West: added modality over its own base ---
+        ("Mfull_M4rep", "Mfusion_Fusion", "RS incr. (M4rep vs fin+ship)", True),
+        ("Mfusion_Fusion", "Mfin_TCN", "shipping incr. (fusion vs fin)", True),
+        ("Mfinrs_FinRS", "Mfin_TCN", "rs incr. (finrs vs fin)", True),
+        # --- deep vs flat M1: NON-nested (different model class) -> DM ---
+        ("Mfull_M4rep", "M1_Ridge", "full rep vs flat M1", False),
+        ("Mfinrs_FinRS", "M1_Ridge", "fin+rs rep vs flat M1", False),
+        ("Mrs_RS", "M1_Ridge", "rs-rep vs flat M1", False),
+        ("Mship_GNN", "M1_Ridge", "shipping-rep vs flat M1", False),
+        ("Mconcat_M4concat", "M1_Ridge", "concat rep vs flat M1", False),
+        # --- fusion mechanism (same modalities, different fusion) -> DM ---
+        ("Mfull_M4rep", "Mconcat_M4concat", "gating vs concat", False),
     ]
     cw_rows = []
-    for large, small, name in cand:
+    for large, small, name, nested in cand:
         if large in have and (small in have or small.startswith("M1_")):
-            cw_rows.append(cw_row(merged, small, large, name))
+            cw_rows.append(compare_row(merged, small, large, name, nested))
     cw = pd.DataFrame(cw_rows)
 
     met_path = OUT_DIR / "deep_metrics.csv"
@@ -194,9 +222,16 @@ def main() -> None:
     print("\n" + "=" * 100)
     print(summ.to_string(float_format=lambda x: f"{x:8.4f}"))
     print("=" * 100)
+    print("CW_p_vs_M0<0.05 => model significantly beats the random walk "
+          "(the honest benchmark; M0 is nested in every model).")
     if len(cw):
-        print("\nNested Clark-West (one-sided p<0.05 => the 'large' model adds significant info):")
-        print(cw.to_string(index=False, float_format=lambda x: f"{x:.4f}"))
+        print("\nModel comparisons (valid_test = CW for nested, DM for non-nested; "
+              "one-sided p_value<0.05 => the deep/'large' model is more accurate):")
+        print(cw[["comparison", "small", "large", "valid_test", "p_value",
+                  "CW_p", "DM_p"]].to_string(
+              index=False, float_format=lambda x: f"{x:.4f}"))
+        print("NOTE: for deep-vs-flat-M1 and gating-vs-concat, read p_value (=DM); "
+              "CW_p is kept only to show CW is inflated/invalid for non-nested pairs.")
 
     if not args.no_plot:
         plot_path = OUT_DIR / "deep_backtest.png"

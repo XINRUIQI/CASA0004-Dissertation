@@ -1,0 +1,77 @@
+
+Prithvi embeddings: meanpool(963, 1024) cls(963, 1024)  index rows=963  sites=11
+
+================================================================================================
+Q4a. PER-AOI COVERAGE / CLOUD / FREQUENCY  (Prithvi monthly embeddings)
+------------------------------------------------------------------------------------------------
+site             type      n_obs              span medGap_mo maxGap_mo  cloud% >40%cld nScenes
+Rotterdam        port         83 19-01~26-06       1.0       3.0    28.4      20     2.9
+Fujairah         terminal     90 19-01~26-06       1.0       1.0    17.1       3     5.6
+RasTanura        terminal     90 19-01~26-06       1.0       1.0    12.9       0    10.6
+Jurong           refinery     84 19-01~26-06       1.0       3.0    36.3      36     2.7
+Houston          port         90 19-01~26-06       1.0       1.0    22.2       1    14.1
+NingboZhoushan   port         86 19-01~26-05       1.0       2.0    22.2       8     5.7
+Jamnagar         refinery     86 19-01~26-06       1.0       2.0    14.8       7     4.9
+Basra            terminal     89 19-02~26-06       1.0       1.0     9.3       1     5.2
+Ulsan            refinery     85 19-01~26-06       1.0       3.0    19.1       4     3.7
+Kharg            terminal     90 19-01~26-06       1.0       1.0    12.5       0     5.2
+Yanbu            terminal     90 19-01~26-06       1.0       1.0     7.8       0     5.7
+------------------------------------------------------------------------------------------------
+Embeddings are MONTHLY at best; the forecast target is WEEKLY -> a monthly signal is as-of held for ~4 weeks (frequency mismatch).
+================================================================================================
+
+================================================================================================
+Q4b. DYNAMIC vs STATIC  (between-AOI vs within-AOI-over-time variance)
+------------------------------------------------------------------------------------------------
+site             temporalStd  (mean over 1024 dims of std-over-time)
+Rotterdam              0.051
+Fujairah               0.031
+RasTanura              0.033
+Jurong                 0.054
+Houston                0.027
+NingboZhoushan         0.045
+Jamnagar               0.056
+Basra                  0.048
+Ulsan                  0.036
+Kharg                  0.034
+Yanbu                  0.024
+------------------------------------------------------------------------------------------------
+between-AOI variance (which place) : 0.034
+within-AOI temporal variance (time): 0.009
+=> temporal fraction = within/(within+between) = 20.5%  (low => embedding mostly encodes location, not change)
+near-constant dims (std < 5% of mean std): 0/1024
+================================================================================================
+
+================================================================================================
+Q2. MEANPOOL vs CLS EMBEDDING
+------------------------------------------------------------------------------------------------
+mean row-wise cosine(meanpool, cls) : 0.790  (1=identical direction)
+within-AOI temporal std  meanpool=0.040  cls=0.017  (higher => more temporal signal)
+Prior sweep: meanpool skill -0.05% vs cls -0.55% (both ~ random walk).
+================================================================================================
+
+================================================================================================
+Q3. EMBEDDING vs OIL / SHIPPING / INVENTORY / PORT / CHANNEL-B (top-5 PCs of the monthly cross-AOI-mean embedding)
+------------------------------------------------------------------------------------------------
+block                      n_cols n_obs noise floor max|corr|  #sig  CCA r1 CCA perm-p
+oil(price/ret)                  2    83       0.220     0.392     3   0.660      0.000
+inventory                       2    84       0.218     0.513     6   0.732      0.000
+shipping                        6    84       0.218     0.588    15   0.819      0.000
+port                            2    84       0.218     0.551     3   0.593      0.000
+channelB(NTL/NDBI anom)        22    71       0.237     0.534    18   0.881      0.000
+------------------------------------------------------------------------------------------------
+max|corr|<noise floor & CCA perm-p>0.05 => no detectable linear relation (embedding ~ unrelated to that block).
+Where the chain breaks: if not even related to Channel-B / shipping / inventory (real activity), the frozen embedding isn't capturing oil-relevant activity at all.
+================================================================================================
+
+================================================================================================
+Q5. GATED-FUSION ALPHA (m4rep, trained on all 357 samples, epochs=80)
+------------------------------------------------------------------------------------------------
+modality   mean_alpha     std     min     max
+fin             0.797   0.033   0.729   0.939
+rs              0.105   0.018   0.036   0.147
+ship            0.099   0.017   0.025   0.138
+------------------------------------------------------------------------------------------------
+RS mean gate weight = 0.105 of 1.0 (equal share = 0.333). DOWN-weighted by the learned gate.
+================================================================================================
+

@@ -4,7 +4,7 @@ Advanced deep-fusion ablations (RQ2/RQ3 robustness extensions):
                      on M4-rep (the RQ2 fusion ladder).
   2. Modality dropout: on/off (ModDrop-style missing-modality regularisation).
   3. Sub-period     : split the common test into early (2021-2022) vs late
-                      (2023-2025) and re-check skill / Clark-West stability.
+                      (2023-2025) and re-check skill / CW-vs-M0 stability.
   4. Longer window  : min_train=78 (test starts ~2020-08) skill vs M0 on the
                       model's own longer test span.
 
@@ -42,27 +42,32 @@ SPLIT = pd.Timestamp("2023-01-01")
 
 def _skill_cw(res: pd.DataFrame, res_m1: pd.DataFrame, col: str,
               idx: pd.Index) -> dict:
-    """skill vs M0 + DirAcc + Clark-West vs flat M1_Ridge on weeks `idx`."""
+    """skill vs M0 + DirAcc + the VALID tests on weeks `idx`: Clark-West vs M0
+    (nested -> beats the random walk?) and Diebold-Mariano vs flat M1_Ridge
+    (non-nested model class, where Clark-West would be invalid)."""
     common = res.index.intersection(idx)
     y = res.loc[common, "P_next_actual"].to_numpy()
-    e_m0 = res.loc[common, "P_hat_M0"].to_numpy() - y
+    ym0 = res.loc[common, "P_hat_M0"].to_numpy()
+    e_m0 = ym0 - y
     rmse_m0 = float(np.sqrt(np.mean(e_m0 ** 2)))
     yhat = res.loc[common, f"P_hat_{col}"].to_numpy()
     rmse = float(np.sqrt(np.mean((yhat - y) ** 2)))
     rhat = res.loc[common, f"r_hat_{col}"].to_numpy()
     ract = res.loc[common, "r_actual"].to_numpy()
+    _, cw0 = metrics.clark_west(y, ym0, yhat)          # valid nested: vs M0 (RW)
     out = {"n_test": len(common), "RMSE": rmse,
            "skill_vs_M0": 1 - rmse / rmse_m0,
-           "DirAcc": metrics.directional_acc(rhat, ract)}
+           "DirAcc": metrics.directional_acc(rhat, ract),
+           "CW_p_vs_M0": cw0}
     m1c = res_m1.index.intersection(common)
     if len(m1c) > 30:
-        _, cwp = metrics.clark_west(
-            res_m1.loc[m1c, "P_next_actual"].to_numpy(),
-            res_m1.loc[m1c, "P_hat_M1_Ridge"].to_numpy(),
-            res.loc[m1c, f"P_hat_{col}"].to_numpy())
-        out["CW_p_vs_M1"] = cwp
+        yv = res_m1.loc[m1c, "P_next_actual"].to_numpy()
+        _, dmp = metrics.dm_test(                       # valid non-nested: vs M1
+            res.loc[m1c, f"P_hat_{col}"].to_numpy() - yv,
+            res_m1.loc[m1c, "P_hat_M1_Ridge"].to_numpy() - yv)
+        out["DM_p_vs_M1"] = dmp
     else:
-        out["CW_p_vs_M1"] = np.nan
+        out["DM_p_vs_M1"] = np.nan
     return out
 
 
@@ -75,7 +80,7 @@ def main() -> None:
     res_m1 = pd.read_csv(data.ROOT / "05_outputs/baselines/m1/baseline_predictions.csv",
                          index_col=0, parse_dates=True)
     res_m1.index.name = "date"
-    dds = build_deep_dataset(df, dico, lookback=8)
+    dds = build_deep_dataset(df, dico, lookback=4)
     print(f"deep dataset N={len(dds['idx'])}\n")
 
     # arm: (name, config, model_kwargs, min_train)
@@ -100,8 +105,9 @@ def main() -> None:
                      "modality_dropout": mk.get("modality_dropout", 0.0),
                      "min_train": mt, "period": "full", **full})
         print(f"  {name:22s} skill={full['skill_vs_M0']*100:+.2f}% "
-              f"DirAcc={full['DirAcc']:.3f} CW_p={full['CW_p_vs_M1']:.4f} "
-              f"n={full['n_test']} ({time.time()-t0:.0f}s)", flush=True)
+              f"DirAcc={full['DirAcc']:.3f} CWvsM0={full['CW_p_vs_M0']:.4f} "
+              f"DMvsM1={full['DM_p_vs_M1']:.4f} n={full['n_test']} "
+              f"({time.time()-t0:.0f}s)", flush=True)
 
     # sub-period stability for the two standard-window fusion arms
     for name in ("m4rep_gated", "m4xattn"):
@@ -113,7 +119,7 @@ def main() -> None:
                          "modality_dropout": 0.0, "min_train": 104,
                          "period": lab, **s})
             print(f"  {name:14s} {lab:14s} skill={s['skill_vs_M0']*100:+.2f}% "
-                  f"CW_p={s['CW_p_vs_M1']:.4f} n={s['n_test']}")
+                  f"CWvsM0={s['CW_p_vs_M0']:.4f} n={s['n_test']}")
 
     summ = pd.DataFrame(rows)
     OUT_DIR.mkdir(parents=True, exist_ok=True)

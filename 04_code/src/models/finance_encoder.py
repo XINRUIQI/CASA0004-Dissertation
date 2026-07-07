@@ -16,11 +16,12 @@ class FinanceTCNEncoder(nn.Module):
     """(B, L, F_fin) -> z_fin (B, d_out) via a small causal TCN."""
 
     def __init__(self, f_in: int, d_model: int = 32, d_out: int = 32,
-                 tcn_layers: int = 2, kernel: int = 3, dropout: float = 0.1):
+                 tcn_layers: int = 2, kernel: int = 3, dropout: float = 0.1,
+                 lookback: "int | None" = None):
         super().__init__()
         self.proj = nn.Linear(f_in, d_model)
         self.norm = nn.LayerNorm(d_model)
-        self.tcn = TemporalTCN(d_model, tcn_layers, kernel, dropout)
+        self.tcn = TemporalTCN(d_model, tcn_layers, kernel, dropout, lookback=lookback)
         self.head = nn.Sequential(nn.Linear(d_model, d_out), nn.ReLU())
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:

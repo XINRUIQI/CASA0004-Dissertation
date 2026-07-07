@@ -610,6 +610,17 @@ python 04_code/scripts/run_baseline.py \
 - M2 lookback sweep（可选，`sweep_m2.py` 骨架已备，审稿人追问时再跑）
 - Meeting 04 汇报材料
 
+### Meeting 04 后：RS 分支与目标改进（2026-07-07 RS 诊断产出）
+
+> 证据来源：`04_code/scripts/diagnose_rs.py` → `05_outputs/baselines/deep/rs_diagnostic.log`。
+> 核心诊断：Prithvi 嵌入时序方差仅占 20.5%（80% 是静态站点指纹）；与油价**水平**相关（max|r|=0.395）但与**收益率**（预测目标）无关（ret_next max|r|=0.095 < 噪声地板 0.221）；门控 α = fin 0.797 / rs 0.105 / ship 0.099。
+
+- **【P1】双预测目标：加"下一周已实现波动率"**（本次决策，meet04 后做）。深度模型 head 输出 2 维，`loss = MSE(r_next) + λ·MSE(log RV_next)`；动机=RS/航运/地缘更可能预测**风险/波动**而非方向（呼应嵌入关联 level 不关联 return）。数据：优先日频 Brent 算周 RV，退路用矩阵已有 `ovx` 或周内平方收益近似。改 `deep_rolling.py`（多任务头 + 目标构造）。
+- **【已实现 opt-in，未采纳为默认；待多 seed】修"图像变化太弱"：RS 嵌入站内去均值异常化**。已实现 `deep_dataset._site_expanding_demean` + `rs_kind="meanpool_anom"`（月度层 past-only expanding 去均值再 as-of，泄漏安全；理论支点 [P032]、与 Channel B `anom` 口径一致）。**单 seed 对比**（`compare_rs_anom.py`，lb=4/epochs=80/seed=42，257 共同周；日志 `05_outputs/baselines/deep/rs_anom_compare.{log,csv}`）：`rs` skill −2.30→−2.82%、`finrs` −2.43→−4.00%（均**变差**）；但 `m4rep` skill −1.28→**+0.05%**、DirAcc 50.2→**53.3**、**CW vs M0 0.894→0.042（首次显著超随机游走）**、门控 α_rs 0.344→0.376。结论：交互依赖、单 seed 不稳健 → **默认仍用 raw meanpool**（主管线未变），保留 opt-in。**会后 P1**：多 seed（≥5）复跑 `m4rep` raw vs anom，稳健则采纳并写进正文。
+- **【P3】RS 频率（月频→周频）**：月频是物理下限（云限制光学合成）；保持 as-of + age/mask（已做，勿插值）。如审稿追问再考虑 GEE 重出 10 天/双周 S2 合成（成本高、预期收益边际，因收益端本无信号）。可选：`build_m2_weekly.py` 的 `PUB_LAG_DAYS` 敏感性（5/15/30）确认 15 天滞后非瓶颈。
+- **【P2】门控 α：不"修"，改为当 RQ3 结论呈现**。门控压低 RS(0.105)/ship(0.099) 是**正确学到弱模态**、非 bug；不要强行抬高 RS 权重。可选加 gate 熵/L1 稀疏或用已在 roadmap 的 modality-dropout，让弱模态干净清零（兼顾缺失模态目标）；正文把 α=0.80/0.10/0.10 作为"金融主导、边际上 RS/航运增量有限"的**可解释性证据**。
+- **【已确认，无需改】RS 嵌入用 meanpool**：`deep_dataset.build_deep_dataset` / sweep `_DEF` 默认已是 `meanpool`（时序信号 0.040 vs cls 0.017；sweep skill −0.05% vs −0.55%）。
+
 ## Completed 已完成（Phase 03 内）
 
 - Meeting 03 笔记结构化（`meeting_notes/Meeting03 2020260617.md`）

@@ -48,7 +48,8 @@ def _make_model(ds: dict, modalities: list[str], fusion_type: str = "gated",
         n_sites=ds["aoi"].shape[2],
         d=mk.get("d", 32), dropout=mk.get("dropout", 0.1),
         gat_layers=mk.get("gat_layers", 2), tcn_layers=mk.get("tcn_layers", 2),
-        fusion_type=fusion_type, modality_dropout=mk.get("modality_dropout", 0.0))
+        fusion_type=fusion_type, modality_dropout=mk.get("modality_dropout", 0.0),
+        lookback=ds.get("lookback"))
 
 
 def _forward(model, X: dict, idx_arr):

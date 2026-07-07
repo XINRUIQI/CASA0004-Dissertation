@@ -40,6 +40,27 @@ EMB_INDEX = EMB_DIR / "s2_prithvi_emb_index.csv"
 RS_PUB_LAG_DAYS = 15   # conservative availability = month-end + 15 days
 
 
+def _site_expanding_demean(emb: np.ndarray, idx: pd.DataFrame) -> np.ndarray:
+    """Within-site, past-only (expanding, inclusive) demeaning of the monthly
+    embeddings: a_j = e_j - mean(e_1..e_j) per site in chronological order.
+
+    Removes the static 'which-site' scene signature (~80% of the frozen-embedding
+    variance; see diagnose_rs.py) so the RS branch sees the temporal anomaly only.
+    Leak-free: month j's anomaly uses only months with availability <= avail_j,
+    all already published by the week that first uses month j. This mirrors the
+    within-site standardized anomaly used for the hand-crafted Channel-B indices
+    and the [P032] rationale (NTL captures cross-sectional, not within-site
+    temporal, variation -> use within-site anomalies).
+    """
+    out = emb.copy()
+    for _, g in idx.groupby("site_id"):
+        rows = g.sort_values("obs_month_start")["emb_row"].to_numpy().astype(int)
+        E = emb[rows]
+        expmean = np.cumsum(E, axis=0) / np.arange(1, len(E) + 1)[:, None]
+        out[rows] = (E - expmean).astype(np.float32)
+    return out
+
+
 def _build_rs_full(weeks: pd.DatetimeIndex, sites: list[str],
                    rs_kind: str = "meanpool"):
     """As-of align frozen Prithvi embeddings (month -> W-FRI, no look-ahead).
@@ -48,11 +69,19 @@ def _build_rs_full(weeks: pd.DatetimeIndex, sites: list[str],
     available yet, and rs_valid (T, n_sites) in {0,1}. Availability of a month's
     embedding = month-end + RS_PUB_LAG_DAYS; each week takes the most recent
     already-available monthly embedding (merge_asof backward).
+
+    rs_kind: "meanpool"/"cls" use the raw embedding; the "*_anom" variants
+    ("meanpool_anom"/"cls_anom") apply within-site past-only expanding demeaning
+    first (see _site_expanding_demean) to strip the static site signature.
     """
-    emb = np.load(EMB_MEANPOOL if rs_kind == "meanpool" else EMB_CLS).astype(np.float32)
+    base_kind = "cls" if rs_kind.startswith("cls") else "meanpool"
+    demean = rs_kind.endswith("_anom")
+    emb = np.load(EMB_MEANPOOL if base_kind == "meanpool" else EMB_CLS).astype(np.float32)
     idx = pd.read_csv(EMB_INDEX)
     idx["avail"] = (pd.to_datetime(idx["obs_month_start"])
                     + pd.offsets.MonthEnd(0) + pd.Timedelta(days=RS_PUB_LAG_DAYS))
+    if demean:
+        emb = _site_expanding_demean(emb, idx)
     D = emb.shape[1]
     T = len(weeks)
     rs_full = np.full((T, len(sites), D), np.nan, np.float32)
@@ -77,7 +106,7 @@ def _build_rs_full(weeks: pd.DatetimeIndex, sites: list[str],
 def build_deep_dataset(df: pd.DataFrame, dico: pd.DataFrame,
                        npz_path: "Path | str" = GRAPH17_NPZ,
                        lookback: int = 8, with_rs: bool = True,
-                       rs_kind: str = "meanpool",
+                       rs_kind: str = "meanpool",  # or cls / meanpool_anom / cls_anom
                        window_start: str = data.WINDOW_START,
                        window_end: str = data.WINDOW_END) -> dict:
     """Assemble aligned deep-model arrays over the flat baseline's test weeks.
