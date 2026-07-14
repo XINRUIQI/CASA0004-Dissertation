@@ -1,0 +1,31 @@
+Hi Xinrui, 
+
+Here are my notes from yesterdays meeting:
+
+Discussed results from new models - added an encoding layer to the data, then changing model framework to a deep learning model 
+Discussed how to present the results:
+Flat architecture model 
+M0 is best, and all models fail to improve on baseline 
+Comparing M1, M2, M3, M4 found M3 (financial data + shipping data) improves on M1 (just financial) 
+Deep architecture model 
+M0 still performs very well 
+M3 (deep) and M4(deep) result in a small improvement on M0. 
+Flat vs Deep architecture 
+Deep model architecture better across all models 
+Talked about adding in analysis of variable importance (e.g. SHAP) - only do this for the models which actually improve on M0 
+
+Please could you prepare a draft structure for your dissertation, and send it to me within the next week. This should include section, and subsection headings, with a few bullet points saying what will be the main points in each part. 
+
+Also please share your draft literature review, and I can give you some more formal feedback on it. 
+
+Our next meeting will be on Wednesday 29th July, which will be the last meeting before submission. I will send you a teams invite now. 
+
+Best, 
+Bea 
+
+Beatrice Taylor (She/Her)
+Research Fellow in Artificial Intelligence for Collective Intelligence – Smart Cities
+UCL CASA (Centre for Advanced Spatial Analysis)
+5th Floor - Maple House
+149 Tottenham Court Road
+London, W1T 7NF

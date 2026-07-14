@@ -35,7 +35,7 @@ from models.deep_dataset import (apply_scalers,             # noqa: E402
 from models.deep_rolling import (CONFIGS, _to_tensors,      # noqa: E402
                                  _train_fold, rolling_origin_deep)
 
-LABELS = {"ship": "Mship", "fin": "Mfin", "rs": "Mrs", "fusion": "Mfusion",
+LABELS = {"ship": "Mship", "fin": "Mfin", "rs": "Mrs", "finship": "Mfinship",
           "finrs": "Mfinrs", "m4rep": "Mfull", "m4concat": "Mconcat"}
 KINDS = ["meanpool", "meanpool_anom"]
 OUT = data.ROOT / "05_outputs/baselines/deep/rs_anom_compare.csv"

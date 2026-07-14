@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Deep Model Walkthrough</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="../00_admin/print.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Deep Model Walkthrough</h1>
+</header>
+<h1 id="deep-model">Deep Model</h1>
+<blockquote>
+<p>Three <strong>modality-specific encoders</strong> learn separate
+<strong>representations (embeddings)</strong> of financial state /
+remote-sensing activity / shipping network, then <strong>dynamically
+fuse</strong> them via gating / cross-attention to predict next-week
+Brent price end-to-end.</p>
+<p><strong>Core question (RQ2)</strong>: on the same data, does
+<strong>modality-aware representation-level fusion</strong> beat
+<strong>flat feature fusion</strong> (all columns stacked into one
+table)?</p>
+</blockquote>
+<hr />
+<h2 id="table-of-contents">Table of contents</h2>
+<ol type="1">
+<li><a href="#1">First: deep model vs flat model</a></li>
+<li><a href="#2">Raw data</a></li>
+<li><a href="#3">Three modality encoders</a></li>
+<li><a href="#4">Fusion module</a></li>
+<li><a href="#5">Backtest protocol</a></li>
+<li><a href="#6">Main results</a></li>
+<li><a href="#7">RQ2 answer</a></li>
+<li><a href="#8">RQ3 answer</a></li>
+</ol>
+<hr />
+<h2 id="first-deep-model-vs-flat-model">1. First: deep model vs flat
+model</h2>
+<p><strong>Prediction target</strong> (identical to the flat model):
+next-week Brent spot price P_{t+1} (USD/barrel, Friday close).</p>
+<p><strong>The two fusion paradigms (the dissertation’s selling
+point)</strong>:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th></th>
+<th>Flat fusion (baseline)</th>
+<th>Representation-level fusion (this deep model)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Handling</td>
+<td>flatten all columns into one wide table (212 cols)</td>
+<td>each modality goes through its <strong>own encoder</strong> to a
+32-d representation</td>
+</tr>
+<tr>
+<td>Model</td>
+<td>Ridge / XGBoost / LSTM early-fusion</td>
+<td>3 encoders + gated / cross-attention fusion</td>
+</tr>
+<tr>
+<td>Modality structure</td>
+<td>lost (no structure across columns)</td>
+<td>preserved (temporal, graph, AOI-site structure live inside
+encoders)</td>
+</tr>
+<tr>
+<td>Missing modality</td>
+<td>forced in via fill values</td>
+<td>modelled explicitly via encoder + mask + modality dropout</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The three modality encoders at a glance</strong>:</p>
+<pre class="text"><code>finance series ──► Finance Encoder (causal TCN) ───────────────────► z_fin  (32-d)
+satellite imagery ──► frozen Prithvi-EO-2.0 → embedding
+                       └► temporal attention + AOI site attention ──► z_rs   (32-d)
+shipping dyn. graph ──► GAT (spatial) → causal TCN (temporal) → node-att pool ─► z_ship (32-d)
+      z_fin, z_rs, z_ship
+        └► Gated Cross-Modal Fusion ──► z_fused ──► head ──► r̂_{t+1} ──► reconstructed P̂_{t+1}</code></pre>
+<hr />
+<h2 id="raw-data">2. Raw data</h2>
+<h3 id="m1-finance-macro">2.1 M1 finance / macro</h3>
+<p>Same as flat-model M1.</p>
+<h3 id="m2-remote-sensing">2.2 M2 remote sensing</h3>
+<ul>
+<li><strong>Deep model</strong>: <strong>monthly Sentinel-2 6-band image
+patches</strong> (GeoTIFF) for 11 oil sites. Bands B2/B3/B4/B8A/B11/B12
+match Prithvi’s expected HLS bands.</li>
+<li><strong>Flat model</strong>: <strong>monthly optical-index
+CSVs</strong> precomputed from imagery (NDVI/NDWI/NDBI/BSI from 2017-04;
+VIIRS night-time lights NTL from 2014-01).</li>
+</ul>
+<p><strong>The 11 AOI oil sites</strong></p>
+<h3 id="m3-shipping">2.3 M3 shipping</h3>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>Source</th>
+<th>Content</th>
+<th>Frequency</th>
+<th>Since</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IMF PortWatch</td>
+<td>6 chokepoints transit tanker/cargo counts, capacity; port
+import/export tanker volume</td>
+<td>daily</td>
+<td>2019+</td>
+</tr>
+<tr>
+<td>GFW (Global Fishing Watch)</td>
+<td>chokepoint AIS vessel-presence hours; AOI port-visit events + dwell;
+AOI↔︎AOI voyage O-D; SAR dark-vessel detections</td>
+<td>monthly/event</td>
+<td>2012+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The 6 chokepoints</strong></p>
+<hr />
+<h2 id="three-modality-encoders">3. Three modality encoders</h2>
+<p>All output a <strong>32-d (d=32)</strong> representation. High
+dimensions overfit under small samples (a hyperparameter sweep confirms
+d=64 is always worse).</p>
+<h3 id="z_fin-finance-tcn-encoder">3.1 z_fin — finance TCN encoder</h3>
+<p>Input <code>(B, L, 31)</code> → output
+<code>z_fin (B, 32)</code>.</p>
+<ul>
+<li><strong>Causal TCN</strong> (<code>TemporalTCN</code>): 2 layers of
+1-D conv, kernel=3, residual connections, dropout;</li>
+<li><strong>Literature support</strong>: causal TCN uses dilated
+convolutions to widen the receptive field while looking only at the past
+window — suitable for weekly finance series (Bai et al., 2018); Foroutan
+&amp; Lahmiri (2024) [P001] also report strong TCN performance in
+crude-oil / precious-metal forecasting, so the finance branch uses a
+light TCN rather than an RNN.</li>
+</ul>
+<h3 id="z_rs-remote-sensing-prithvi-attention-encoder">3.2 z_rs —
+remote-sensing Prithvi-attention encoder</h3>
+<p>Input <code>rs (B, L, 11, 1024)</code> + <code>mask (B, L, 11)</code>
+→ output <code>z_rs (B, 32)</code> + site attention
+<code>(B, 11)</code>. <strong>The Prithvi backbone is frozen</strong>;
+only light attention is learned here:</p>
+<ul>
+<li>linear projection 1024→64 + LayerNorm + dropout;</li>
+<li><strong>Model</strong>:
+<code>ibm-nasa-geospatial/Prithvi-EO-2.0-300M</code> (IBM–NASA
+remote-sensing foundation model). Weights
+<code>Prithvi_EO_V2_300M.pt</code> from HuggingFace.</li>
+<li><strong>Why it fits</strong>: exported 6 bands
+(B2/B3/B4/B8A/B11/B12) <strong>exactly equal</strong> Prithvi’s expected
+HLS bands — same physical bands, same order — no remapping needed.</li>
+<li><strong>Frozen</strong>: <code>model.eval()</code> +
+<code>requires_grad_(False)</code> + <code>torch.no_grad()</code> —
+<strong>not a single backbone parameter is trained</strong>.</li>
+<li><strong>Temporal attention</strong> (per site over lookback):
+learnable query scores time steps, masked by availability → softmax
+weighting → one vector per site;</li>
+<li><strong>Site attention</strong> (over 11 AOIs): learnable query
+scores sites → softmax → weighted sum → 32-d. Site-attention weights
+feed RQ3’s “which site the RS branch weights”.</li>
+<li><strong>Literature support</strong>: image representations come from
+frozen Prithvi-EO-2.0 [P094] (EO foundation model; end-to-end ViT
+training is infeasible under small samples); temporal/site attention
+handles <strong>irregular, missing</strong> monthly observations, in the
+spirit of mTAN [P099] for irregular time series.</li>
+</ul>
+<h3 id="z_ship-shipping-graph-gat-tcn-encoder">3.3 z_ship — shipping
+graph GAT + TCN encoder</h3>
+<p>Input <code>aoi (B,L,11,11)</code>, <code>choke (B,L,6,20)</code>,
+<code>adj (B,L,17,17)</code> → <code>z_ship (B,32)</code> + node
+attention <code>(B,17)</code>.</p>
+<ul>
+<li><strong>17-node heterogeneous graph</strong>
+(<code>build_m3_graph17.py</code>): 11 AOI oil sites (P001–P011) + 6
+chokepoints, fixed order (AOI 0–10, chokepoints 11–16).
+<ul>
+<li><strong>AOI node features (11 per node)</strong>:
+<code>pw_portcalls_tanker/cargo</code>, <code>pw_import_tanker</code>,
+<code>pw_export_tanker</code>, <code>gfw_n_visits</code>,
+<code>gfw_dwell_hrs_mean/median</code>, <code>gfw_self_loops</code>,
+<code>sar_detections_total/dark</code>,
+<code>sar_dark_share</code>.</li>
+<li><strong>Chokepoint node features (20 per node)</strong>: GFW 8 +
+PortWatch 9 + SAR 3.</li>
+<li><strong>Edges (adjacency, one 17×17 per week)</strong>: dynamic O-D
+edges (AOI→AOI from GFW <code>n_voyages</code>); static AOI↔︎chokepoint
+edges (fixed by geography).</li>
+</ul></li>
+<li><strong>Heterogeneous input</strong>: AOI/chokepoint each linearly
+projected to d_model=64 + node-type embedding (0=AOI, 1=chokepoint) +
+LayerNorm;</li>
+<li><strong>Spatial GAT</strong> (<code>DenseGATLayer</code>): 2 layers
+of multi-head (heads=4) dense graph attention (17×17 with boolean mask).
+Adjacency symmetrised + self-looped. <strong>Innovation P1-4</strong>:
+<strong>log O-D flow</strong> <code>log1p(flow)</code> <strong>as an
+attention prior</strong> (learnable gain <code>edge_scale</code>).</li>
+<li><strong>Temporal TCN</strong>: per node over lookback via causal TCN
+(same adaptive dilation);</li>
+<li><strong>Node-attention pooling</strong>: additive attention over 17
+nodes → softmax → 32-d graph representation. Node weights feed RQ3’s
+“which port/chokepoint is attended”.</li>
+<li><strong>Literature support</strong>: spatial layer uses GAT for
+message passing on the port–chokepoint graph (Veličković et al., 2018);
+crude-oil shipping already has graph-conv/LSTM flow-forecasting
+precedents [P062]; spatio-temporal graph modelling see Graph WaveNet
+[P091]; temporal layer still uses causal TCN over weekly dynamic
+graphs.</li>
+</ul>
+<hr />
+<h2 id="fusion-module">4. Fusion module</h2>
+<p>Fuses several 32-d modality representations into one 32-d
+<code>z_fused</code>, then a regression head → r̂.</p>
+<h3 id="concatfusion-encoder-concat-ladder-floor">4.1 ConcatFusion
+(encoder-concat, ladder floor)</h3>
+<p>Concatenate each modality’s 32-d representation into
+<strong><code>n_mod × 32</code> dims</strong> (64-d for two modalities,
+96-d for three), then a fixed MLP
+<code>Linear(n_mod·32 → 32) + ReLU</code> projects back to
+32-d. Modalities are still encoded separately, but the fusion layer has
+<strong>no per-sample gating, no cross-attention</strong> — the RQ2
+fusion-ladder floor (Baltrušaitis et al., 2019 [P101]; concat baseline
+in GMU [P096]).</p>
+<h3 id="gatedfusion-gated-main-model">4.2 GatedFusion (gated, main model
+✅)</h3>
+<p><code>alpha = softmax(MLP([z_1..z_m]))</code>;
+<code>z = Σ alpha_i · z_i</code>. A small MLP computes per-modality
+weights (convex combination) from the current sample —
+<strong>potentially different every sample, every week</strong>.
+<code>alpha</code> is RQ3’s “modality gate weights” (does this week
+trust finance or shipping more).</p>
+<h3 id="crossmodalattentionfusion-cross-attention-advanced">4.3
+CrossModalAttentionFusion (cross-attention, advanced)</h3>
+<p>Finance <code>z_fin</code> acts as <strong>Query</strong> attending
+over RS/shipping <strong>node tokens</strong> (RS 11 sites + shipping 17
+nodes = 28 tokens):
+<code>z = LN(z_fin + gamma·CrossAttn(z_fin, tokens))</code>, 4 heads.
+Cross-attention weights feed RQ3’s “which node/lane the financial state
+attends to”.</p>
+<hr />
+<h2 id="backtest-protocol">5. Backtest protocol</h2>
+<p>lookback=<strong>4</strong>, d=<strong>32</strong>,
+gat_layers=<strong>2</strong>, tcn_layers=<strong>2</strong>,
+dropout=0.1, seed=42. Rolling-origin walk-forward:
+<code>min_train=104</code>, refit every 13 weeks, strictly
+leak-free.</p>
+<hr />
+<h2 id="main-results">6. Main results</h2>
+<h3 id="fusion-matrix">6.1 Fusion matrix</h3>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+</colgroup>
+<thead>
+<tr>
+<th>Combo</th>
+<th>Fusion</th>
+<th>RMSE</th>
+<th>skill vs M0</th>
+<th>DirAcc</th>
+<th>CW vs M0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M0</td>
+<td>–</td>
+<td>4.152</td>
+<td>0.0%</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td>Mfin</td>
+<td>–</td>
+<td>4.250</td>
+<td>−2.4%</td>
+<td>0.494</td>
+<td>0.315</td>
+</tr>
+<tr>
+<td>Mfinship</td>
+<td>Concat</td>
+<td>4.149</td>
+<td>+0.06%</td>
+<td>0.525</td>
+<td>0.195</td>
+</tr>
+<tr>
+<td>Mfinship</td>
+<td>Gated</td>
+<td>4.147</td>
+<td>+0.11%</td>
+<td>0.529</td>
+<td>0.166</td>
+</tr>
+<tr>
+<td><strong>Mfinship</strong></td>
+<td><strong>Cross-Attn</strong></td>
+<td><strong>4.121</strong></td>
+<td><strong>+0.74%</strong></td>
+<td>0.549</td>
+<td><strong>0.041</strong> ✅</td>
+</tr>
+<tr>
+<td>Mfinrs</td>
+<td>Concat</td>
+<td>4.232</td>
+<td>−1.93%</td>
+<td>0.533</td>
+<td>0.971</td>
+</tr>
+<tr>
+<td>Mfinrs</td>
+<td>Gated</td>
+<td>4.253</td>
+<td>−2.4%</td>
+<td>0.475</td>
+<td>0.769</td>
+</tr>
+<tr>
+<td>Mfinrs</td>
+<td>Cross-Attn</td>
+<td>4.396</td>
+<td>−5.89%</td>
+<td>0.455</td>
+<td>0.898</td>
+</tr>
+<tr>
+<td>Mfull</td>
+<td>Concat</td>
+<td>4.320</td>
+<td>−4.1%</td>
+<td>0.494</td>
+<td>0.637</td>
+</tr>
+<tr>
+<td>Mfull</td>
+<td>Gated</td>
+<td>4.205</td>
+<td>−1.3%</td>
+<td>0.502</td>
+<td>0.894</td>
+</tr>
+<tr>
+<td><strong>Mfull</strong></td>
+<td><strong>Cross-Attn</strong></td>
+<td><strong>4.147</strong></td>
+<td><strong>+0.12%</strong></td>
+<td>0.564</td>
+<td><strong>0.018</strong> ✅</td>
+</tr>
+</tbody>
+</table>
+<p><strong>New findings from the matrix</strong>:</p>
+<ol type="1">
+<li><strong>Finance+shipping (Mfinship) is skill&gt;0 under all three
+fusions</strong> — the strongest combo; <strong>Cross-Attention is the
+overall best</strong> (+0.74%, RMSE 4.121, CWvsM0 <strong>0.041</strong>
+significantly beating the random walk) — even better than three-modality
+Mfull, showing RS is a net drag.</li>
+<li><strong>Finance+RS (Mfinrs) is skill&lt;0 under all three
+fusions</strong>, with Cross-Attention the worst (−5.89%) — RS noise is
+amplified by cross-attention.</li>
+<li><strong>Gated vs Concat</strong>: gating clearly beats concat for
+three modalities (−1.28% vs −4.06%); for two modalities they are close
+(both carried by the shipping signal).</li>
+</ol>
+<hr />
+<h2 id="rq2-answer">7. RQ2 answer</h2>
+<p><strong>RQ2 asks</strong>: on the same data, does
+<strong>representation-level fusion</strong> beat <strong>flat
+concatenation</strong>? The four paired comparisons below hold
+<strong>modality content fixed</strong> and vary only the fusion
+paradigm (left = deep representation-level / right = flat wide
+table):</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Pair</th>
+<th>Modality content (same)</th>
+<th>Difference (RQ2 core)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M1deep vs M1</td>
+<td>finance only</td>
+<td>TCN encoder vs wide-table Ridge/XGB</td>
+</tr>
+<tr>
+<td>M2deep vs M2</td>
+<td>finance + RS</td>
+<td>gated fusion vs column concat</td>
+</tr>
+<tr>
+<td>M3deep vs M3</td>
+<td>finance + shipping</td>
+<td>GAT+TCN+gated vs 113-column concat</td>
+</tr>
+<tr>
+<td>M4deep vs M4</td>
+<td>all modalities</td>
+<td>3 encoders+gated vs full-modality wide-table concat</td>
+</tr>
+</tbody>
+</table>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 14%" />
+<col style="width: 14%" />
+<col style="width: 14%" />
+<col style="width: 14%" />
+<col style="width: 14%" />
+<col style="width: 14%" />
+<col style="width: 14%" />
+</colgroup>
+<thead>
+<tr>
+<th>Pair</th>
+<th>Flat RMSE</th>
+<th>Deep RMSE</th>
+<th>skill flat</th>
+<th>skill deep</th>
+<th>DM_p (XGB)</th>
+<th>DM_p (Ridge)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M1deep vs M1</td>
+<td>4.368</td>
+<td>4.250</td>
+<td>−5.2%</td>
+<td>−2.4%</td>
+<td>0.097</td>
+<td>0.466</td>
+</tr>
+<tr>
+<td>M2deep vs M2</td>
+<td>4.440</td>
+<td>4.253</td>
+<td>−7.0%</td>
+<td>−2.4%</td>
+<td>0.042 ✅</td>
+<td>0.096</td>
+</tr>
+<tr>
+<td>M3deep vs M3</td>
+<td>4.429</td>
+<td>4.147</td>
+<td>−6.7%</td>
+<td>+0.11%</td>
+<td>0.010 ✅</td>
+<td>0.062</td>
+</tr>
+<tr>
+<td>M4deep vs M4</td>
+<td>4.507</td>
+<td>4.205</td>
+<td>−8.6%</td>
+<td>−1.3%</td>
+<td>0.005 ✅</td>
+<td>0.036 ✅</td>
+</tr>
+</tbody>
+</table>
+<p><strong>How to read it</strong>:</p>
+<ol type="1">
+<li><strong>M3 and M4 pairs</strong>: representation-level fusion
+<strong>significantly</strong> beats flat (XGB side p&lt;0.05; M4
+significant on the Ridge side too).</li>
+<li><strong>M2 pair</strong>: with RS added, deep also
+<strong>significantly</strong> beats flat (XGB p=0.042).</li>
+<li><strong>M1 pair</strong>: finance-only, deep is better but DM does
+not reach 5% (p=0.097) — swapping the encoder alone is not enough;
+alternative data + representation-level fusion is what opens the
+gap.</li>
+<li>This is much stronger than the earlier “deep vs flat M1, all DM
+&gt;0.05” because the comparison is <strong>like-for-like</strong>, not
+“three-modality deep” vs “finance-only flat”.</li>
+</ol>
+<hr />
+<h2 id="rq3-answer">8. RQ3 answer</h2>
+<p>RQ3 asks what the model “depends on” — but it is really <strong>two
+layers of questions</strong> that need <strong>two different kinds of
+evidence</strong>; do not mix them:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>RQ3 sub-question</th>
+<th>What can answer it</th>
+<th>What cannot answer it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Which modality?</strong> (time-varying)</td>
+<td><strong>Modality gate</strong> α_fin / α_rs / α_ship time series
+from M4deep (m4rep)</td>
+<td>node attention, flat SHAP</td>
+</tr>
+<tr>
+<td><strong>Which port/chokepoint?</strong> (spatial)</td>
+<td><strong>Node attention</strong> inside the shipping encoder
+(ship_site_att, 17 nodes); <strong>site attention</strong> in the RS
+encoder (11 AOIs)</td>
+<td>α_shipping in the modality gate</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ <strong>Do not mix the two evidence layers</strong>: a high
+α_shipping <strong>only</strong> means “the <strong>shipping branch
+weighs heavily</strong> in this week’s fused representation” — it does
+<strong>not</strong> mean “the model is looking at Hormuz vs Suez”.
+Port/chokepoint information lives in <strong>GAT → node-attention
+pooling</strong>, <strong>not</strong> in the fusion gate.</p>
+</blockquote>
+</body>
+</html>

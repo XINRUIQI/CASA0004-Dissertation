@@ -1,0 +1,1726 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Flat Model Walkthrough</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="print.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Flat Model Walkthrough</h1>
+</header>
+<h1 id="flat-baseline-m0m4-complete-end-to-end-walkthrough">Flat
+Baseline (M0–M4): Complete End-to-End Walkthrough</h1>
+<blockquote>
+<p><strong>Purpose of this document</strong>: written for someone with
+<strong>no prior knowledge of this project</strong>. It documents the
+“flat baseline” from data download, cloud removal, data cleaning,
+feature engineering, merging, modelling, parameter selection and
+backtesting, all the way to results and analysis — <strong>every step
+spelled out in full</strong>.</p>
+<p><strong>One-sentence definition</strong>: the flat baseline is the
+<strong>core empirical benchmark layer</strong> of this dissertation. It
+“flattens” three data modalities (finance, remote sensing, shipping)
+into one wide table, feeds it to two machine-learning models (Ridge,
+XGBoost), and adds modalities one layer at a time (the ablation ladder
+M0→M4) to test whether each new data type actually helps predict
+next-week oil prices.</p>
+<p>Related logs: <code>00_admin/待整理/flat_baseline_log.md</code>;
+code: <code>04_code/</code>; data: <code>03_data/</code>.</p>
+</blockquote>
+<hr />
+<h2 id="contents">Contents</h2>
+<ol type="1">
+<li><a href="#1">What problem the project solves</a></li>
+<li><a href="#2">Step 0: Raw data download</a></li>
+<li><a href="#3">Step 1: Cloud removal &amp; monthly compositing (remote
+sensing)</a></li>
+<li><a href="#4">Step 2: Data cleaning &amp; feature
+engineering</a></li>
+<li><a href="#5">Step 3: Merging into one matrix</a></li>
+<li><a href="#6">Step 4: Missing values &amp; outliers</a></li>
+<li><a href="#7">Step 5: Dataset assembly for modelling</a></li>
+<li><a href="#8">Step 6: Models &amp; parameter selection</a></li>
+<li><a href="#9">Step 7: Backtesting protocol (how training actually
+works)</a></li>
+<li><a href="#10">Step 8: Main results</a></li>
+<li><a href="#11">Step 9: How results are analysed</a></li>
+<li><a href="#12">Step 10: Robustness checks</a></li>
+<li><a href="#13-rq1-answer">RQ1 answer</a></li>
+</ol>
+<hr />
+<p><a name="1"></a> ## 1. What problem the project solves</p>
+<p><strong>Prediction target</strong>: next-week Brent crude spot price
+(P_{t+1}) (USD/barrel).</p>
+<p><strong>Training approach</strong>: the model does not predict the
+price directly. It predicts the <strong>log return</strong>
+(r_{t+1}=(P_{t+1}/P_t)), then reconstructs the price as (P_{t+1}=P_t
+e^{r}). This is because the price level is non-stationary (trending),
+whereas log returns are more stationary and better suited to
+modelling.</p>
+<p><strong>Core research questions</strong>: - <strong>RQ1</strong>: Can
+satellite remote sensing and shipping data beat a purely financial
+model, and beat the “random walk” strong benchmark? -
+<strong>RQ2</strong>: Is simply “flattening and concatenating” multiple
+data types enough, or is a smarter “modality-aware fusion” needed?</p>
+<p><strong>Ablation ladder (add data layer by layer, isolate each
+modality’s incremental value)</strong>:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Model</th>
+<th>Data used</th>
+<th>Plain meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>M0</strong></td>
+<td>Nothing learned</td>
+<td>“next price = this price”; random walk; the simplest yet very strong
+benchmark</td>
+</tr>
+<tr>
+<td><strong>M1</strong></td>
+<td>Finance/macro (31 cols)</td>
+<td>prices, inventories, VIX, gold, FX, geopolitical risk, etc.</td>
+</tr>
+<tr>
+<td><strong>M2</strong></td>
+<td>M1 + remote sensing (55 cols)</td>
+<td>satellite features: vegetation/water/built-up/bare-soil/night-lights
+at 11 oil sites</td>
+</tr>
+<tr>
+<td><strong>M3</strong></td>
+<td>M1 + shipping (113 cols)</td>
+<td>shipping features: tanker flow through 6 chokepoints, AIS vessel
+presence</td>
+</tr>
+<tr>
+<td><strong>M4</strong></td>
+<td>M1 + M2 + M3</td>
+<td>finance + remote sensing + shipping all together</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Two algorithms per model</strong>: - <strong>Ridge</strong>:
+L2-regularised linear regression; robust but sensitive to
+high-dimensional noise - <strong>XGBoost</strong>: gradient-boosted
+trees; captures non-linearity, more robust to high-dimensional
+redundancy</p>
+<hr />
+<p><a name="2"></a> ## 2. Step 0: Raw data download</p>
+<p>Each of the three modalities has its own sources, all stored under
+<code>03_data/raw/</code> (the entire <code>raw/</code> directory is
+git-ignored).</p>
+<h3 id="m1-financemacro">2.1 M1 finance/macro</h3>
+<p><strong>Location</strong>:
+<code>03_data/raw/01_market_financial/</code></p>
+<table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr>
+<th>Subfolder</th>
+<th>Source</th>
+<th>Content</th>
+<th>Frequency</th>
+<th>Download</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>EIA/</code></td>
+<td>US Energy Information Administration</td>
+<td>Brent/WTI daily spot (.xls), Weekly Petroleum Status Report
+(stocks/production/refinery)</td>
+<td>daily/weekly</td>
+<td>manual .xls</td>
+</tr>
+<tr>
+<td><code>FRED/</code></td>
+<td>Federal Reserve Economic Data</td>
+<td>VIX, dollar index, 10Y Treasury, fed funds rate,
+industrial-materials index</td>
+<td>daily/monthly</td>
+<td>manual + API</td>
+</tr>
+<tr>
+<td><code>Yahoo/</code></td>
+<td>Yahoo Finance</td>
+<td>S&amp;P 500 (^GSPC), oil VIX (^OVX), Brent futures (BZ=F), CAD/USD
+(CADUSD=X), gold (GC=F)</td>
+<td>daily</td>
+<td>yfinance</td>
+</tr>
+<tr>
+<td><code>Other/</code></td>
+<td>Scholar-maintained</td>
+<td>Dallas Fed Kilian global activity index (igrea), Caldara–Iacoviello
+Geopolitical Risk (GPR)</td>
+<td>monthly/daily</td>
+<td>manual</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Download script</strong>: <code>download_m1_raw.py</code>.
+The build script <code>build_m1_weekly.py</code> reads local files
+offline by default; <code>--online</code> fetches FRED / yfinance with
+timeout retries.</p>
+<h3 id="m2-remote-sensing">2.2 M2 remote sensing</h3>
+<p><strong>Location</strong>:
+<code>03_data/raw/02_sentinel2/Channel B/</code> (exported from GEE,
+git-ignored)</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>File</th>
+<th>Sensor</th>
+<th>Content</th>
+<th>Since</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sentinel2_oil_sites_monthly_indices_..._11aoi.csv</code></td>
+<td>Sentinel-2 SR Harmonized</td>
+<td>NDVI/NDWI/NDBI/BSI monthly optical indices</td>
+<td>2017-04</td>
+</tr>
+<tr>
+<td><code>viirs_oil_sites_monthly_nightlights_..._11aoi.csv</code></td>
+<td>VIIRS DNB</td>
+<td>Night-time lights NTL monthly</td>
+<td>2014-01</td>
+</tr>
+<tr>
+<td><code>sentinel2_..._watermask_..._11aoi.csv</code> (robustness)</td>
+<td>Sentinel-2</td>
+<td>with water mask + MNDWI</td>
+<td>2017-04</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Download</strong>: Google Earth Engine (GEE) JavaScript
+export to Google Drive, then synced locally. Scripts
+e.g. <code>extract_sentinel2_monthly_indices_gee.js</code>,
+<code>extract_viirs_monthly_nightlights_gee.js</code>.</p>
+<p><strong>11 oil-infrastructure AOIs (5 km circular
+buffer)</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Short name</th>
+<th>Full name</th>
+<th>Type</th>
+<th>Country</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Houston</td>
+<td>Houston Ship Channel</td>
+<td>port</td>
+<td>USA</td>
+</tr>
+<tr>
+<td>Rotterdam ★</td>
+<td>Port of Rotterdam</td>
+<td>port</td>
+<td>Netherlands</td>
+</tr>
+<tr>
+<td>NingboZhoushan</td>
+<td>Ningbo-Zhoushan Port</td>
+<td>port</td>
+<td>China</td>
+</tr>
+<tr>
+<td>Jamnagar</td>
+<td>Jamnagar Refinery</td>
+<td>refinery</td>
+<td>India</td>
+</tr>
+<tr>
+<td>Jurong</td>
+<td>Singapore Jurong Island</td>
+<td>refinery</td>
+<td>Singapore</td>
+</tr>
+<tr>
+<td>Ulsan</td>
+<td>Ulsan Refinery</td>
+<td>refinery</td>
+<td>South Korea</td>
+</tr>
+<tr>
+<td>Basra</td>
+<td>Basra Oil Terminal</td>
+<td>terminal</td>
+<td>Iraq</td>
+</tr>
+<tr>
+<td>Fujairah ★</td>
+<td>Fujairah Oil Terminal</td>
+<td>terminal</td>
+<td>UAE</td>
+</tr>
+<tr>
+<td>Kharg</td>
+<td>Kharg Island Terminal</td>
+<td>terminal</td>
+<td>Iran</td>
+</tr>
+<tr>
+<td>RasTanura ★</td>
+<td>Ras Tanura Terminal</td>
+<td>terminal</td>
+<td>Saudi Arabia</td>
+</tr>
+<tr>
+<td>Yanbu</td>
+<td>Yanbu Export Terminal</td>
+<td>terminal</td>
+<td>Saudi Arabia</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>★ = the best literature-supported core oil sites; the NTL anomalies
+of these 4 form the “literature” curated arm later.</p>
+</blockquote>
+<h3 id="m3-shipping">2.3 M3 shipping</h3>
+<p><strong>Location</strong>: <code>03_data/raw/03_shipping/</code></p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>Source</th>
+<th>File</th>
+<th>Content</th>
+<th>Frequency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IMF PortWatch</td>
+<td><code>portwatch_chokepoints_daily.csv</code></td>
+<td>6 chokepoint transits (tanker counts/capacity)</td>
+<td>daily</td>
+</tr>
+<tr>
+<td>IMF PortWatch</td>
+<td><code>portwatch_ports_daily.csv</code></td>
+<td>export/import hub tanker tonnage</td>
+<td>daily</td>
+</tr>
+<tr>
+<td>Global Fishing Watch</td>
+<td><code>gfw_chokepoint_vessel_presence_monthly.csv</code></td>
+<td>6 chokepoint AIS vessel presence</td>
+<td>monthly</td>
+</tr>
+</tbody>
+</table>
+<p><strong>6 chokepoints</strong>: hormuz, suez, malacca, mandeb (Bab
+el-Mandeb), panama, cape (Cape of Good Hope).</p>
+<hr />
+<p><a name="3"></a> ## 3. Step 1: Cloud removal &amp; monthly
+compositing (M2 only)</p>
+<p>Cloud removal is a remote-sensing-specific step, done entirely at the
+<strong>GEE export stage</strong> (the build script reads
+already-cloud-free monthly indices).</p>
+<h3 id="sentinel-2-optical-ndvindwindbibsi-three-step-cloud-removal">3.1
+Sentinel-2 optical (NDVI/NDWI/NDBI/BSI) — three-step cloud removal</h3>
+<ol type="1">
+<li><strong>Scene pre-filter</strong>: whole-scene
+<code>CLOUDY_PIXEL_PERCENTAGE ≤ 60</code> (<code>CLOUD_FILTER</code>),
+dropping heavily clouded images first.</li>
+<li><strong>Double cloud mask (per pixel)</strong>:
+<ul>
+<li>s2cloudless cloud probability <code>&lt; 40</code>
+(<code>CLD_PRB_THRESH</code>) = clear sky</li>
+<li>plus SCL scene-classification mask, removing SCL ∈ {3 cloud shadow,
+8 medium-prob cloud, 9 high-prob cloud, 10 cirrus, 11 snow/ice}</li>
+</ul></li>
+<li><strong>Monthly median composite</strong>: take the
+<strong>median</strong> of all clear-sky pixels in the month (median is
+most robust to residual cloud) → <code>reduceRegions(mean)</code> within
+each 5 km AOI, <code>scale=20m</code>.</li>
+</ol>
+<p><strong>Quality records (not modelled, diagnostics only)</strong>:
+<code>valid_obs_count</code> (number of valid scenes in the composite),
+<code>cloud_probability</code>. These are “how cloudy” diagnostics and
+are <strong>not used as predictors</strong> (to avoid learning
+“cloudiness” as a price signal).</p>
+<h3 id="viirs-night-lights-ntl">3.2 VIIRS night-lights (NTL)</h3>
+<ol type="1">
+<li><strong>Quality mask</strong>: remove <code>avg_rad &lt; 0</code>
+(stray light / artefacts).</li>
+<li><strong>Zonal stats</strong>:
+<code>reduceRegions(mean/max/stdDev)</code> within the 5 km AOI,
+<code>scale=500m</code>, taking <code>avg_rad</code> mean as the light
+level.</li>
+</ol>
+<p>VIIRS has good continuity (since 2014) with almost no cloud gaps;
+Sentinel-2 is cloud-affected and has month-gaps at some sites early
+on.</p>
+<h3 id="bands-formulas">3.3 Bands &amp; formulas</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Index</th>
+<th>Formula (GEE bands)</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NDVI</td>
+<td>(B8−B4)/(B8+B4)</td>
+<td>vegetation greenness</td>
+</tr>
+<tr>
+<td>NDWI</td>
+<td>(B3−B8)/(B3+B8)</td>
+<td>surface water/moisture</td>
+</tr>
+<tr>
+<td>NDBI</td>
+<td>(B11−B8)/(B11+B8)</td>
+<td>built-up / impervious</td>
+</tr>
+<tr>
+<td>BSI</td>
+<td>((B11+B4)−(B8+B2))/((B11+B4)+(B8+B2))</td>
+<td>bare soil / storage yards</td>
+</tr>
+<tr>
+<td>NTL</td>
+<td>VIIRS DNB <code>avg_rad</code> mean</td>
+<td>night-time light / activity intensity</td>
+</tr>
+</tbody>
+</table>
+<h3 id="b4-water-mask-robustness-variant-optional">3.4 B4 water-mask
+robustness variant (optional)</h3>
+<p>For offshore terminals such as Basra/Kharg where NDWI is dominated by
+water, GEE is re-run with a water mask: per image compute
+MNDWI=(B3−B11)/(B3+B11), classify <code>MNDWI&gt;0</code> as water, and
+mask those pixels out of NDVI/NDBI/BSI (land only). Outputs
+<code>s2_land_px</code> (land-pixel fraction).</p>
+<hr />
+<p><a name="4"></a> ## 4. Step 2: Data cleaning &amp; feature
+engineering</p>
+<p>Each modality has one build script turning raw data into a
+<strong>leakage-safe weekly table</strong>, all aligned to
+<strong>week-ending Friday (W-FRI)</strong>.</p>
+<h3 id="m1-finance-build_m1_weekly.py">4.1 M1 finance:
+<code>build_m1_weekly.py</code></h3>
+<p><strong>Output</strong>: <code>m1_weekly_features.csv</code> (1043
+weeks × 35 cols, 2006–2025; trimmed to 2019–2025 for modelling)</p>
+<p><strong>Pipeline</strong>: 1. Build the 2006–2025 Friday grid 2.
+<strong>Daily→weekly</strong>: <code>resample("W-FRI").last()</code>
+(Friday close) 3. <strong>EIA weekly report</strong>: align to report
+Friday → shift <code>+1 week</code> (report published the following
+Wednesday; anti-leakage) 4. <strong>Monthly macro</strong>: month-end
+align + forward-fill to weekly → shift <code>+1 or +5 weeks</code> 5.
+<strong>Derived</strong>: log returns, spreads, inventory changes,
+roll-week dummy, etc.</p>
+<p><strong>Publication lags (anti-leakage, crucial)</strong>:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Source</th>
+<th>Weekly conversion</th>
+<th>Lag</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Daily prices/macro</td>
+<td>Friday last value</td>
+<td>0 (available at Friday close)</td>
+</tr>
+<tr>
+<td>EIA weekly (WPSR)</td>
+<td>report-Friday align</td>
+<td><strong>+1 week</strong></td>
+</tr>
+<tr>
+<td>GPR geopolitical risk (monthly)</td>
+<td>month-end + ffill</td>
+<td>+1 week</td>
+</tr>
+<tr>
+<td>Kilian REA / IMF industrial materials (monthly)</td>
+<td>month-end + ffill</td>
+<td>+5 weeks</td>
+</tr>
+</tbody>
+</table>
+<p><strong>31 modelled columns</strong> (after 2026-07 trimming):</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Group</th>
+<th>Variables</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Prices/derived (5)</td>
+<td>brent_price, wti_price, brent_log_return, wti_log_return,
+brent_wti_spread</td>
+</tr>
+<tr>
+<td>EIA weekly (12, +1w)</td>
+<td>crude_stocks_excl_spr, cushing_stocks, crude_production,
+crude_imports, crude_exports, refinery_crude_input,
+refinery_utilisation, gasoline_supplied, distillate_supplied,
+jet_fuel_supplied, crude_stocks_change, cushing_stocks_change</td>
+</tr>
+<tr>
+<td>Macro-financial (5)</td>
+<td>vix, dollar_index, treasury_10y, fed_funds_rate,
+sp500_log_return</td>
+</tr>
+<tr>
+<td>Derived market/macro (9)</td>
+<td>ovx, gpr, gold_return, global_econ_activity,
+nonoil_industrial_commodity, brent_f1_spot_log_basis, brent_roll_week,
+cadusd_log_return, dgs10_change</td>
+</tr>
+</tbody>
+</table>
+<h3 id="m2-remote-sensing-build_m2_weekly.py">4.2 M2 remote sensing:
+<code>build_m2_weekly.py</code></h3>
+<p><strong>Output</strong>: <code>m2_weekly_features.csv</code> (365
+weeks × 155 cols, 2019–2025)</p>
+<p><strong>The core cleaning step = converting raw levels into
+“within-site de-seasonalised standardised anomalies (anom)”</strong>
+(the main modelled form for M2). Two steps, all expanding-window and
+past-only (no leakage):</p>
+<ol type="1">
+<li><strong>De-seasonalise</strong>: for each (site, index), take the
+historical same-month climatology <code>clim</code> (e.g. the average of
+all Januaries), residual <code>resid = level − clim</code>. Positive =
+greener/brighter than the same month in past years.</li>
+<li><strong>Within-site z-score</strong>:
+<code>anom = (resid − μ)/σ</code>, where μ, σ use
+<code>expanding(min_periods=12)</code> (at least 12 months of history).
+Gives “how many standard deviations off”.</li>
+</ol>
+<blockquote>
+<p>Because ≥12 months of history are required, <strong>the first 12
+months of each series are NaN</strong>; combined with early cloud gaps,
+some sites (Jurong/Ningbo/Ulsan) have more early missingness.</p>
+</blockquote>
+<p><strong>Three forms</strong>:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Form</th>
+<th>Meaning</th>
+<th>Modelled?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>level</code></td>
+<td>raw monthly value</td>
+<td>❌ not in main analysis (scale-incomparable, seasonal)</td>
+</tr>
+<tr>
+<td><strong><code>anom</code></strong></td>
+<td>within-site de-seasonalised z-score</td>
+<td>✅ <strong>main modelled form (55 cols)</strong></td>
+</tr>
+<tr>
+<td><code>mom</code></td>
+<td>month-over-month diff</td>
+<td>❌ EDA table only</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Month→week alignment (as-of join, no fake
+ffill)</strong>:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>OBS_DAY=15</code></td>
+<td>15</td>
+<td>representative obs date = month start + 14 days</td>
+</tr>
+<tr>
+<td><code>PUB_LAG_DAYS=15</code></td>
+<td>15</td>
+<td>conservative availability = month end + 15 days (simulated release
+lag)</td>
+</tr>
+<tr>
+<td>Alignment</td>
+<td><code>merge_asof(backward)</code></td>
+<td>each Friday takes the most recent “already-published” monthly
+obs</td>
+</tr>
+<tr>
+<td><code>MAX_AGE_DAYS=100</code></td>
+<td>100</td>
+<td>older than 100 days = modality unavailable</td>
+</tr>
+</tbody>
+</table>
+<p>Each week also carries <code>age</code> (staleness in days) and
+<code>mask</code> (availability), making missing/stale explicit rather
+than copying a month’s value into several identical fake weekly
+values.</p>
+<p><strong>55 modelled columns</strong>: 5 indices × 11 AOIs, named
+<code>{index}_anom_{site}</code> (e.g. <code>NTL_anom_Fujairah</code>).
+<strong>Not modelled</strong>: 55 levels, 22 age, 22 avail
+(timeliness-not-signal or near-zero variance in-window).</p>
+<h3 id="m3-shipping-aggregate_shipping_to_weekly.py">4.3 M3 shipping:
+<code>aggregate_shipping_to_weekly.py</code></h3>
+<p><strong>Output</strong>: <code>m3_weekly_features.csv</code> (750
+weeks × 123 cols; trimmed to 2019–2025)</p>
+<p><strong>Pipeline</strong>: 1. <strong>PortWatch daily</strong> →
+<code>resample("W-FRI").sum()</code> weekly sum → shift
+<code>+1 week</code> 2. <strong>GFW monthly</strong> → month-end align +
+ffill to weekly → shift <code>+4 weeks</code> 3. Concatenate the three
+sources on a <strong>union index</strong> (fixes an old inner-join
+sample-loss bug: 727→362) 4. <strong>Derived</strong>:
+<code>tanker_share</code>, <code>n_tanker_wow_pct</code>,
+<code>avg_tanker_size</code>, cross-chokepoint aggregates, etc.</p>
+<p><strong>Publication lags</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Weekly conversion</th>
+<th>Lag</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PortWatch (daily)</td>
+<td>daily → Friday sum</td>
+<td><strong>+1 week</strong></td>
+</tr>
+<tr>
+<td>GFW (monthly)</td>
+<td>month-end + ffill</td>
+<td><strong>+4 weeks</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>113 modelled columns (full tier, main model)</strong>:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Source</th>
+<th>Cols</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GFW</td>
+<td>49</td>
+<td>6 chokepoints × (total_hours, total_vessels, cargo_hours, mom_pct,
+bunker_hours, other_hours, other_share, mean_presence) + 1
+aggregate</td>
+</tr>
+<tr>
+<td>PortWatch chokepoints</td>
+<td>~57</td>
+<td>6 × (n_tanker, n_total, capacity_tanker, capacity, tanker_share,
+tanker_cap_share, avg_tanker_size, n_tanker_wow_pct,
+capacity_tanker_4w_ma) + 3 aggregates</td>
+</tr>
+<tr>
+<td>PortWatch ports</td>
+<td>7</td>
+<td>export/import hub tonnage, net, asymmetry, log-ratio, etc.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Why 113-col full and not 38-col core?</strong> See §12.2 —
+core empirically is the weakest and non-significant for XGB; SHAP shows
+the most valuable derived columns all lie outside core.</p>
+</blockquote>
+<hr />
+<p><a name="5"></a> ## 5. Step 3: Merging into one matrix</p>
+<p><code>build_feature_matrix.py</code> aligns the three weekly tables
+on Friday and concatenates them into the single modelling dataset.</p>
+<p><strong>Output</strong>:
+<code>03_data/processed/merge/outputs/weekly_feature_matrix.csv</code></p>
+<p><strong>Dimensions: 365 weeks × 212 cols</strong> (2019-01-04 to
+2025-12-26)</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Block</th>
+<th>Cols</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M1 finance</td>
+<td>31</td>
+<td>features</td>
+</tr>
+<tr>
+<td>M2 remote sensing</td>
+<td>55</td>
+<td>anom only (level/age/avail not merged)</td>
+</tr>
+<tr>
+<td>M3 shipping</td>
+<td>113</td>
+<td>full tier, all shipping cols</td>
+</tr>
+<tr>
+<td>mask (modality availability)</td>
+<td>11</td>
+<td><code>avail_*</code>, <strong>not features</strong> (near-zero
+variance in-window)</td>
+</tr>
+<tr>
+<td>target</td>
+<td>2</td>
+<td><code>target_price_next</code>, <code>target_log_return_next</code>,
+generated at modelling time, <strong>not features</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Anti-leakage re-check</strong>: the merge does not re-apply
+lags (EIA already +1w in M1, merge sets
+<code>EIA_WPSR_LAG_WEEKS=0</code> to avoid +2w); each modality lags at
+source, merge only re-checks; all leakage self-checks pass.</p>
+<p><strong>Why the window is 2019–2025</strong>: the largest
+intersection where all three modalities exist. PortWatch only covers
+2019+, so the standard comparison window starts in 2019.</p>
+<hr />
+<p><a name="6"></a> ## 6. Step 4: Missing values &amp; outliers</p>
+<p>(Figures below are measured on the actual matrix: 365 × 212 = 77,380
+cells)</p>
+<h3 id="missing-value-overview">6.1 Missing-value overview</h3>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Total NaN</td>
+<td><strong>553 (0.71%)</strong></td>
+</tr>
+<tr>
+<td>Infinite values</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td>Columns with zero NaN</td>
+<td>134 / 212</td>
+</tr>
+</tbody>
+</table>
+<h3 id="missingness-by-modality">6.2 Missingness by modality</h3>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 22%" />
+<col style="width: 22%" />
+<col style="width: 22%" />
+<col style="width: 16%" />
+</colgroup>
+<thead>
+<tr>
+<th>Modality</th>
+<th style="text-align: right;">Cols</th>
+<th style="text-align: right;">Total NaN</th>
+<th style="text-align: right;">Share</th>
+<th>Where</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M1 finance</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0%</td>
+<td>none</td>
+</tr>
+<tr>
+<td><strong>M2 remote sensing</strong></td>
+<td style="text-align: right;">55</td>
+<td style="text-align: right;"><strong>480</strong></td>
+<td style="text-align: right;">2.4%</td>
+<td>early cloud gaps + 12-month history</td>
+</tr>
+<tr>
+<td>M3 shipping</td>
+<td style="text-align: right;">113</td>
+<td style="text-align: right;">71</td>
+<td style="text-align: right;">0.2%</td>
+<td>week-over-week first week</td>
+</tr>
+<tr>
+<td>mask</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0%</td>
+<td>none</td>
+</tr>
+<tr>
+<td>target</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">—</td>
+<td>last week has no “next price”</td>
+</tr>
+</tbody>
+</table>
+<p>M2 missingness concentrates in three sites early on: Jurong (59 weeks
+per index), NingboZhoushan (37), Ulsan (24), because anom needs ≥12
+months of history plus early Sentinel-2 cloud gaps.</p>
+<h3 id="how-missing-values-are-handled">6.3 How missing values are
+handled</h3>
+<p>At the dataset-assembly layer (<code>fill_features</code> in
+<code>data.py</code>):</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>X.ffill().fillna(<span class="fl">0.0</span>)</span></code></pre></div>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Step</th>
+<th>Action</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>① <code>ffill()</code></td>
+<td>forward-fill with historical values</td>
+<td>no leakage (past only)</td>
+</tr>
+<tr>
+<td>② <code>fillna(0.0)</code></td>
+<td>residual NaN → 0</td>
+<td>neutral value (for a z-score anomaly, 0 = no anomaly)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key</strong>: residual NaN after filling only fall in the
+warm-up (first 104 weeks), never in the test period → all M0–M4 land on
+the <strong>exact same 257 test weeks</strong>, so RMSE differences
+reflect feature content only.</p>
+<h3 id="how-outliers-are-handled">6.4 How outliers are handled</h3>
+<p><strong>No explicit deletion or winsorisation</strong> — outliers are
+controlled indirectly via “transformation + model regularisation”.
+Measured extremes:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Type</th>
+<th>Range</th>
+<th>Handling</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RS anomaly z-score</td>
+<td>−5.96 to 9.21 (43 with |z|&gt;5)</td>
+<td><strong>kept</strong> (genuine extreme events: COVID, Red Sea
+disruption)</td>
+</tr>
+<tr>
+<td>Week-over-week wow_pct</td>
+<td>up to ±158%</td>
+<td><strong>kept</strong> (genuine flow spikes)</td>
+</tr>
+<tr>
+<td>inf</td>
+<td>0</td>
+<td>intercepted at source: anomaly ±inf→NaN; avg_size→NaN when
+n_tanker=0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Three indirect anti-outlier mechanisms</strong>: 1.
+<strong>Transformation</strong>: remote sensing uses within-site z-score
+anomalies (de-seasonalised, de-scaled); finance uses log returns (not
+price levels) 2. <strong>Ridge</strong>: StandardScaler + strong L2
+regularisation (α up to 1000) suppresses extremes 3.
+<strong>XGBoost</strong>: trees split on thresholds, inherently robust
+to outliers/scale</p>
+<p>Keeping genuine extremes is deliberate — they correspond to COVID,
+Red Sea/Houthi and similar real events; deleting them would discard
+signal.</p>
+<hr />
+<p><a name="7"></a> ## 7. Step 5: Dataset assembly for modelling
+(<code>data.py</code>)</p>
+<h3 id="column-selection-by-modality">7.1 Column selection (by
+modality)</h3>
+<p>Columns are selected by the dictionary’s <code>modality</code> field,
+never <code>target_*</code> or <code>avail_*</code> (mask).</p>
+<h3 id="lag-flattening-lookback4">7.2 Lag flattening (lookback=4)</h3>
+<p>Each feature is flattened over the past 4 weeks:
+<code>{var}_lag0</code> (this week), <code>_lag1</code>,
+<code>_lag2</code>, <code>_lag3</code> (3 weeks ago). Modelled dimension
+= raw cols × 4.</p>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Raw feature cols</th>
+<th>×4 lag</th>
+<th>Modelled dim</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M0</td>
+<td>0 (rule benchmark)</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>M1</td>
+<td>31</td>
+<td>×4</td>
+<td><strong>124</strong></td>
+</tr>
+<tr>
+<td>M2</td>
+<td>31+55=86</td>
+<td>×4</td>
+<td><strong>344</strong></td>
+</tr>
+<tr>
+<td>M3</td>
+<td>31+113=144</td>
+<td>×4</td>
+<td><strong>576</strong></td>
+</tr>
+<tr>
+<td>M4</td>
+<td>31+55+113=199</td>
+<td>×4</td>
+<td><strong>796</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="target-construction">7.3 Target construction</h3>
+<ul>
+<li>Training label: <code>r_next = ln(P.shift(-1)/P)</code>, indexed at
+t, representing (r_{t+1})</li>
+<li>Reconstruction: (P_{t+1}=P_t e^{r})</li>
+<li>Features <strong>never contain</strong> target or mask</li>
+</ul>
+<hr />
+<p><a name="8"></a> ## 8. Step 6: Models &amp; parameter selection</p>
+<h3 id="m0-random-walk-built-in-rule-not-a-trained-model">8.1 M0 random
+walk (built-in rule, not a trained model)</h3>
+<pre><code>r_hat = 0  →  P_hat = P_t   (&quot;next price = this price&quot;)</code></pre>
+<p>Emitted every week as the benchmark. M0 RMSE ≈
+<strong>4.152</strong>.</p>
+<h3 id="ridge-linear-strong-regularisation">8.2 Ridge (linear + strong
+regularisation)</h3>
+<p><strong>Pipeline</strong> (fit inside the training fold only, no
+leakage):</p>
+<pre><code>VarianceThreshold(0.0)  →  StandardScaler()  →  Ridge(alpha)</code></pre>
+<ul>
+<li>Default <code>alpha=10.0</code></li>
+<li>Tuning grid:
+<code>alpha ∈ {0.1, 1.0, 10.0, 100.0, 1000.0}</code></li>
+<li>Logic: higher dimension needs larger α; L4 untuned RMSE 5.91, tuned
+drops to 4.26</li>
+</ul>
+<h3 id="xgboost-gradient-boosted-trees">8.3 XGBoost (gradient-boosted
+trees)</h3>
+<p><strong>Pipeline</strong>:
+<code>VarianceThreshold(0.0) → XGBRegressor</code> (trees need no
+scaling)</p>
+<p><strong>Default params</strong>:
+<code>n_estimators=300, max_depth=3, learning_rate=0.05, subsample=0.8, colsample_bytree=0.8, reg_lambda=1.0</code></p>
+<p><strong>Tuning grid (2×2×2=8 combos)</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Candidates</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>max_depth</td>
+<td>2, 3</td>
+</tr>
+<tr>
+<td>learning_rate</td>
+<td>0.03, 0.05</td>
+</tr>
+<tr>
+<td>n_estimators</td>
+<td>200, 400</td>
+</tr>
+<tr>
+<td>subsample</td>
+<td>0.8 (fixed)</td>
+</tr>
+<tr>
+<td>colsample_bytree</td>
+<td>0.8 (fixed)</td>
+</tr>
+<tr>
+<td>reg_lambda</td>
+<td>1.0 (fixed)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Anti-overfitting design</strong> (crucial for small-sample
+high-dimension): shallow trees (depth 2–3), 80% row/column subsampling,
+L2 regularisation.</p>
+<h3 id="how-parameters-are-chosen-inner-validation">8.4 How parameters
+are chosen (inner validation)</h3>
+<p>Within each refit fold:</p>
+<pre><code>Training fold (e.g. 200 weeks)
+  ├── earlier part → fit
+  └── last 52 weeks → validate, pick the hyperparams with lowest RMSE
+If the fold &lt; 82 weeks (52+30) → use defaults</code></pre>
+<p>After selecting the best hyperparams, the model is retrained on the
+<strong>full training fold</strong>, then predicts. Tuning <strong>never
+touches the test set</strong>.</p>
+<hr />
+<p><a name="9"></a> ## 9. Step 7: Backtesting protocol (how training
+actually works)</p>
+<p>An <strong>expanding-window rolling-origin (walk-forward)</strong>
+backtest. Code: <code>04_code/src/backtest/rolling.py</code>.</p>
+<h3 id="key-parameters">9.1 Key parameters</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Total weeks</td>
+<td>365</td>
+<td>2019-01-04 to 2025-12-26</td>
+</tr>
+<tr>
+<td>lookback</td>
+<td>4 weeks</td>
+<td>each feature flattened over this + 3 prior weeks</td>
+</tr>
+<tr>
+<td>min_train</td>
+<td>104 weeks</td>
+<td>first 104 weeks accumulate data only, no forecast (≈2-year
+warm-up)</td>
+</tr>
+<tr>
+<td>retrain_every</td>
+<td>13 weeks</td>
+<td>refit once per quarter</td>
+</tr>
+<tr>
+<td>val_weeks</td>
+<td>52 weeks</td>
+<td>last 52 weeks of the training fold for inner validation</td>
+</tr>
+<tr>
+<td>Test weeks</td>
+<td>257</td>
+<td>≈2021–2025</td>
+</tr>
+<tr>
+<td>seed</td>
+<td>42</td>
+<td>random seed</td>
+</tr>
+</tbody>
+</table>
+<h3 id="core-idea-analogy">9.2 Core idea (analogy)</h3>
+<p>Imagine you are an analyst in early 2021, forecasting next week’s oil
+price every Friday: you can only train on data “before today”; as time
+advances your history grows (expanding window); you don’t retrain weekly
+but update the model once a quarter (every 13 weeks).</p>
+<h3 id="step-by-step">9.3 Step by step</h3>
+<p><strong>Phase 1 (weeks 1–104, warm-up)</strong>: accumulate data
+only, no forecasts.</p>
+<p><strong>Phase 2 (week 105, first forecast)</strong>: 1. Training data
+= weeks 1–104 (104 samples) 2. Inner tuning: split the training set into
+“earlier fit + last 52 weeks validate”; Ridge tries 5 α’s, XGB tries 8
+combos, each picks the lowest validation RMSE 3. Retrain Ridge and XGB
+on all 104 weeks with the best params 4. Forecast next week’s price for
+week 105 5. Record the M0 benchmark</p>
+<p><strong>Phase 3 (weeks 106–117)</strong>: reuse the week-105 models
+to forecast week by week, no retrain.</p>
+<p><strong>Phase 4 (week 118, second refit)</strong>:
+<code>(118−104)%13==0</code> triggers a refit; training data = weeks
+1–117 (now larger); re-tune and retrain.</p>
+<p><strong>Loop to the end</strong>:</p>
+<pre><code>Week 105  train(104 samples) → forecast 105–117
+Week 118  train(117 samples) → forecast 118–130
+...
+Last time train(~360 samples) → forecast final weeks</code></pre>
+<h3
+id="precise-answer-to-how-many-models-training-weeks-validation-weeks">9.4
+Precise answer to “how many models / training weeks / validation
+weeks”</h3>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Question</th>
+<th>Answer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>How many models trained</td>
+<td>2 per fold (Ridge+XGB); ~20 folds × 2 ≈ 40 fits; M0 not trained</td>
+</tr>
+<tr>
+<td>Training weeks</td>
+<td>expanding: 104 (first) → ~360 (last)</td>
+</tr>
+<tr>
+<td>Validation weeks</td>
+<td>the <strong>last 52 weeks</strong> of each training fold (then
+retrain on full fold)</td>
+</tr>
+<tr>
+<td>Test weeks</td>
+<td><strong>257</strong> (2021–2025), shared by M0–M4</td>
+</tr>
+</tbody>
+</table>
+<h3 id="why-designed-this-way">9.5 Why designed this way</h3>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Design</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Train on past only</td>
+<td>strict no leakage (walk-forward)</td>
+</tr>
+<tr>
+<td>Expanding window</td>
+<td>mimics reality: more history over time</td>
+</tr>
+<tr>
+<td>min_train=104</td>
+<td>first forecast already has 2 years + enough for 52-week validation +
+matches M2’s 12-month anomaly history</td>
+</tr>
+<tr>
+<td>retrain_every=13</td>
+<td>quarterly update, balancing timeliness and compute</td>
+</tr>
+<tr>
+<td>Same protocol M0–M4</td>
+<td>differences come from data/model only — fair</td>
+</tr>
+</tbody>
+</table>
+<h3
+id="literature-support-this-is-the-standard-oil-forecasting-paradigm">9.6
+Literature support (this is the standard oil-forecasting paradigm)</h3>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Paper</th>
+<th>Backtest method</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P053 Alquist, Kilian &amp; Vigfusson (2013)</td>
+<td>real-time alignment + recursive/expanding window + DM test; random
+walk as strong benchmark</td>
+</tr>
+<tr>
+<td>P054 Baumeister &amp; Kilian (2015)</td>
+<td>real-time recursive forecast combinations</td>
+</tr>
+<tr>
+<td>P072 Costa et al. (2021)</td>
+<td>expanding-window pseudo-out-of-sample</td>
+</tr>
+<tr>
+<td>P076 Yılmaz &amp; Zehir (2026)</td>
+<td>rolling out-of-sample + multi-horizon + DM</td>
+</tr>
+<tr>
+<td>P025 Hao &amp; Wang (2023, remote-sensing→oil)</td>
+<td>recursive real-time OOS + Clark–West</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><a name="10"></a> ## 10. Step 8: Main results</p>
+<p><strong>Main baseline (L4_tuned, 257 test weeks, M0
+RMSE=4.152)</strong>:</p>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 22%" />
+<col style="width: 22%" />
+<col style="width: 22%" />
+<col style="width: 16%" />
+</colgroup>
+<thead>
+<tr>
+<th>Model</th>
+<th style="text-align: right;">RMSE ($/bbl)</th>
+<th style="text-align: right;">skill vs M0</th>
+<th style="text-align: right;">CW_p vs M1 (modality significant?)</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M0_RW</td>
+<td style="text-align: right;">4.152</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+<td>random-walk benchmark</td>
+</tr>
+<tr>
+<td>M1_Ridge</td>
+<td style="text-align: right;">4.256</td>
+<td style="text-align: right;">−2.5%</td>
+<td style="text-align: right;">—</td>
+<td>financial baseline</td>
+</tr>
+<tr>
+<td>M1_XGB</td>
+<td style="text-align: right;">4.368</td>
+<td style="text-align: right;">−5.2%</td>
+<td style="text-align: right;">—</td>
+<td>one of the best RMSE</td>
+</tr>
+<tr>
+<td>M2_Ridge</td>
+<td style="text-align: right;">4.414</td>
+<td style="text-align: right;">−6.3%</td>
+<td style="text-align: right;">0.474</td>
+<td>+RS, linear not sig.</td>
+</tr>
+<tr>
+<td>M2_XGB</td>
+<td style="text-align: right;">4.440</td>
+<td style="text-align: right;">−6.9%</td>
+<td style="text-align: right;"><strong>0.085</strong> ❌</td>
+<td>+RS, marginally not sig.</td>
+</tr>
+<tr>
+<td>M3_Ridge</td>
+<td style="text-align: right;">4.430</td>
+<td style="text-align: right;">−6.7%</td>
+<td style="text-align: right;">0.264</td>
+<td>+shipping</td>
+</tr>
+<tr>
+<td>M3_XGB</td>
+<td style="text-align: right;">4.429</td>
+<td style="text-align: right;">−6.7%</td>
+<td style="text-align: right;"><strong>0.0002</strong> ✅</td>
+<td>+shipping, highly sig.</td>
+</tr>
+<tr>
+<td>M4_Ridge</td>
+<td style="text-align: right;">4.525</td>
+<td style="text-align: right;">−9.0%</td>
+<td style="text-align: right;">0.314</td>
+<td>all, linear not sig.</td>
+</tr>
+<tr>
+<td>M4_XGB</td>
+<td style="text-align: right;">4.507</td>
+<td style="text-align: right;">−8.6%</td>
+<td style="text-align: right;"><strong>0.009</strong> ✅</td>
+<td>all, sig. but worst RMSE</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Three core findings</strong>: 1. <strong>No model beats
+M0</strong> (all skill &lt; 0) — weekly oil prices are very close to a
+random walk, an expected strong benchmark. 2. <strong>RS alone (M2) not
+significant</strong> (0.085); <strong>shipping alone (M3)
+significant</strong> (0.0002); <strong>all modalities (M4)
+significant</strong> (0.009). 3. <strong>Counter-intuitive
+point</strong>: M4 is significant yet its RMSE (4.507) is worse than M1
+(4.368) — because RMSE asks “how large is the final error”, while
+Clark-West asks “after penalising the larger model for estimating extra
+parameters, does the added feature carry directional signal”. Signal
+exists, but flat concatenation cannot exploit it.</p>
+<hr />
+<p><a name="11"></a> ## 11. Step 9: How results are analysed</p>
+<h3 id="three-tier-evidence-chain">11.1 Three-tier evidence chain</h3>
+<pre><code>Tier 1 (accuracy): RMSE / MAE / skill vs M0  → &quot;how large is the error? beats M0?&quot;
+Tier 2 (significance): DM / Clark-West         → &quot;is the improvement significant or chance?&quot;
+Tier 3 (interpretation): SHAP / LOAO / LOMO    → &quot;which variables? which sites matter?&quot;</code></pre>
+<h3 id="roles-of-metrics-and-tests">11.2 Roles of metrics and tests</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Use</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RMSE / MAE</td>
+<td>average forecast error</td>
+<td>accuracy metric</td>
+</tr>
+<tr>
+<td>skill vs M0</td>
+<td>1 − RMSE/RMSE_M0</td>
+<td>relative to random walk</td>
+</tr>
+<tr>
+<td>DirAcc</td>
+<td>direction hit rate</td>
+<td>accuracy metric</td>
+</tr>
+<tr>
+<td><strong>Diebold–Mariano</strong></td>
+<td>vs M0 (non-nested)</td>
+<td>econometric test</td>
+</tr>
+<tr>
+<td><strong>Clark–West</strong></td>
+<td>vs M1 (nested)</td>
+<td>correct test for nested models</td>
+</tr>
+<tr>
+<td><strong>SHAP</strong></td>
+<td>which variables/modalities used</td>
+<td>ML interpretability (≠ causation, ≠ significance)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Why DM for M0 and CW for M1</strong>: M2/M3/M4 are nested
+extensions of M1 (M1 plus features). For nested models the standard DM
+is biased (the larger model estimates extra parameters whose true value
+is zero); Clark-West corrects exactly this bias. M0 is non-nested vs the
+models, so DM is used.</p>
+<h3 id="interpreting-significant-but-worse-rmse-m4">11.3 Interpreting
+“significant but worse RMSE” (M4)</h3>
+<ul>
+<li><strong>RMSE</strong>: final error → M4(4.507) &gt; M1(4.368),
+adding features made it worse</li>
+<li><strong>Clark-West</strong>: after removing the noise penalty, does
+the added modality carry directional signal → p=0.009 significant</li>
+</ul>
+<p>Analogy: the added modality is like a verbose analyst — it has a
+little genuine signal (CW significant) but carries too much noise (RMSE
+worsens). → Flat concatenation cannot exploit it, motivating
+modality-aware fusion (RQ2).</p>
+<hr />
+<p><a name="12"></a> ## 12. Step 10: Robustness checks (all
+completed)</p>
+<h3 id="overview-of-extended-analyses">12.1 Overview of extended
+analyses</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Analysis</th>
+<th>Modality</th>
+<th>Key finding</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>lookback sweep</td>
+<td>M1</td>
+<td>tuning matters most; Ridge worsens with lookback, XGB immune</td>
+</tr>
+<tr>
+<td>literature arm (4 NTL cols)</td>
+<td>M2</td>
+<td>XGB CW=0.022 ✅, few-and-precise &gt; all 55</td>
+</tr>
+<tr>
+<td>leave-one-AOI-out</td>
+<td>M2</td>
+<td>all sites |dRMSE|≤0.05, no essential positive-contribution site</td>
+</tr>
+<tr>
+<td>SHAP</td>
+<td>M2</td>
+<td>NDVI/NDWI on top; financial features still dominate Top-5</td>
+</tr>
+<tr>
+<td>C2 dim-reduction (PCA/ElasticNet)</td>
+<td>M2</td>
+<td>PCA gives XGB the biggest gain (decorrelation)</td>
+</tr>
+<tr>
+<td>B4 water mask</td>
+<td>M2</td>
+<td>XGB CW 0.085→0.028 ✅ (significant after removing water noise)</td>
+</tr>
+<tr>
+<td>2×2 sparsity six arms</td>
+<td>M2</td>
+<td>cutting sites or indices either way crosses into significance (aoi4
+strongest 0.0055)</td>
+</tr>
+<tr>
+<td>leave-one-channel-out</td>
+<td>M3</td>
+<td>core(38) not sig.; full/tanker/portwatch sig.</td>
+</tr>
+<tr>
+<td>SHAP</td>
+<td>M3</td>
+<td>Top: hormuz tanker share, suez wow_pct (Red Sea mechanism)</td>
+</tr>
+<tr>
+<td>leave-one-modality-out</td>
+<td>M4</td>
+<td>M1-only best RMSE globally; adding M2 to M1+M3 worsens it</td>
+</tr>
+<tr>
+<td>SHAP modality shares</td>
+<td>M4</td>
+<td>shipping 51.8% &gt; finance 33.7% &gt; RS 14.5%</td>
+</tr>
+</tbody>
+</table>
+<h3 id="why-shipping-uses-113-col-full-not-38-col-core">12.2 Why
+shipping uses 113-col full, not 38-col core</h3>
+<p>Leave-one-channel-out results:</p>
+<table>
+<thead>
+<tr>
+<th>Shipping subset</th>
+<th style="text-align: right;">XGB RMSE</th>
+<th style="text-align: right;">CW_p vs M1</th>
+<th>Sig.</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>core (38)</td>
+<td style="text-align: right;">4.476</td>
+<td style="text-align: right;">0.096</td>
+<td>❌</td>
+</tr>
+<tr>
+<td><strong>full (113)</strong></td>
+<td style="text-align: right;"><strong>4.429</strong></td>
+<td style="text-align: right;"><strong>0.0002</strong></td>
+<td>✅</td>
+</tr>
+<tr>
+<td>tanker-only</td>
+<td style="text-align: right;">4.343</td>
+<td style="text-align: right;">0.0018</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>portwatch-only</td>
+<td style="text-align: right;">4.356</td>
+<td style="text-align: right;">0.0003</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>core is the weakest and the only non-significant
+one</strong></li>
+<li>SHAP Top-10 are all derived columns dropped by core (tanker_share,
+n_tanker_wow_pct, tanker_cap_share, avg_tanker_size)</li>
+<li>Conclusion: <strong>the hand-picked core happens to delete the
+shipping signal XGB values most</strong> → switch to full</li>
+<li>This is opposite to M2’s “few-and-precise” — an M3-specific
+phenomenon</li>
+</ul>
+<hr />
+<p><a name="13"></a> ## 13. RQ1 answer</p>
+<p><strong>RQ1</strong>: Can satellite remote sensing and shipping data
+beat a purely financial model (M1), and beat the random walk (M0)?</p>
+<h3 id="can-we-beat-the-random-walk-m0">13.1 Can we beat the random walk
+M0?</h3>
+<p><strong>No.</strong> All M1–M4 configurations have negative skill vs
+M0 (RMSE above M0’s 4.152); even the best model M1_XGB (4.368) is 5.2%
+worse than M0. Weekly Brent is very close to a random walk, consistent
+with P053 — this is not model failure but confirmation that M0 is an
+extremely strong benchmark.</p>
+<h3 id="can-we-beat-the-financial-baseline-m1">13.2 Can we beat the
+financial baseline M1?</h3>
+<p><strong>It depends on the modality:</strong></p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>Modality</th>
+<th>vs M1 (XGB, main spec)</th>
+<th>RMSE vs M1_XGB (4.368)</th>
+<th>RQ1 verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>M2 remote sensing</strong></td>
+<td>CW_p = <strong>0.085</strong> ❌ not sig.</td>
+<td>4.440 (worse)</td>
+<td><strong>Cannot beat M1</strong></td>
+</tr>
+<tr>
+<td><strong>M3 shipping</strong></td>
+<td>CW_p = <strong>0.0002</strong> ✅ highly sig.</td>
+<td>4.429 (slightly worse)</td>
+<td><strong>CW sig., but RMSE not improved</strong></td>
+</tr>
+<tr>
+<td><strong>M4 all modalities</strong></td>
+<td>CW_p = <strong>0.009</strong> ✅ sig.</td>
+<td>4.507 (worst)</td>
+<td><strong>CW sig., but RMSE clearly worse</strong></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Remote sensing (M2)</strong>: flat concatenation of all 55
+anom cols does not yield significant nested increment vs M1; Ridge is
+also not significant (CW_p = 0.474). Robustness checks show signal
+exists but is diluted — the 4-col literature NTL arm (CW_p = 0.022 ✅),
+water-mask anom-55 (CW_p = 0.028 ✅), and sparsity arms (cutting sites
+or indices) can cross into significance, indicating <strong>weak
+information that full flat fusion cannot exploit</strong>.</li>
+<li><strong>Shipping (M3)</strong>: full 113-col XGB is highly
+significant vs M1 (CW_p = 0.0002); SHAP points to Hormuz tanker share
+and Suez week-over-week change (Red Sea mechanism). Yet RMSE remains
+slightly above M1_XGB — <strong>signal present, not converted to
+accuracy gain</strong>.</li>
+<li><strong>All modalities (M4)</strong>: XGB nested increment is
+significant (CW_p = 0.009), driven mainly by M3 full; adding M2 to M1+M3
+actually worsens XGB (LOMO: M1-only has the best RMSE globally).
+<strong>Flat multi-modal concatenation cannot improve both accuracy and
+significance.</strong></li>
+</ul>
+<h3 id="overall-conclusion">13.3 Overall conclusion</h3>
+<p>Under the flat baseline, <strong>no configuration beats both M0 and
+M1 on RMSE</strong>; shipping and the full-modality model show
+significant nested increment vs M1 in Clark–West terms, but
+high-dimensional flat concatenation buries the signal in noise and
+cannot convert it into out-of-sample accuracy. RQ1’s answer is a
+<strong>qualified no</strong> — alternative data is not useless, but
+<strong>simple flat concatenation is insufficient to unlock its
+value</strong> (→ motivation for RQ2).</p>
+</body>
+</html>

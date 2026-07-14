@@ -21,12 +21,22 @@ from .deep_dataset import apply_scalers, fit_scalers
 from .fusion import DeepForecastModel
 
 # config name -> (ordered modalities, short model name, fusion_type)
+# The three fusion mechanisms (concat / gated / xattn) are exposed for every
+# multimodal combo so the RQ2 fusion-ladder matrix can be filled uniformly:
+#   finance+shipping (finship), finance+RS (finrs), all three (m4*).
 CONFIGS = {
     "ship": (["ship"], "GNN", "gated"),
     "fin": (["fin"], "TCN", "gated"),
     "rs": (["rs"], "RS", "gated"),
-    "fusion": (["fin", "ship"], "Fusion", "gated"),
-    "finrs": (["fin", "rs"], "FinRS", "gated"),        # finance + RS (no shipping)
+    # finance + shipping (renamed from 'fusion' -> 'finship'); 3 fusion mechanisms
+    "finship": (["fin", "ship"], "Finship", "gated"),
+    "finship_concat": (["fin", "ship"], "FinshipConcat", "concat"),
+    "finship_xattn": (["fin", "ship"], "FinshipXattn", "xattn"),
+    # finance + RS (no shipping); 3 fusion mechanisms
+    "finrs": (["fin", "rs"], "FinRS", "gated"),
+    "finrs_concat": (["fin", "rs"], "FinRSConcat", "concat"),
+    "finrs_xattn": (["fin", "rs"], "FinRSXattn", "xattn"),
+    # all three modalities; 3 fusion mechanisms
     "m4rep": (["fin", "rs", "ship"], "M4rep", "gated"),
     "m4xattn": (["fin", "rs", "ship"], "M4xattn", "xattn"),
     "m4concat": (["fin", "rs", "ship"], "M4concat", "concat"),  # encoder-concat rung

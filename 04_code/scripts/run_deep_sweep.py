@@ -48,7 +48,7 @@ from models.deep_dataset import build_deep_dataset      # noqa: E402
 from models.deep_rolling import CONFIGS, rolling_origin_deep  # noqa: E402
 
 OUT_DIR = data.ROOT / "05_outputs/baselines/deep"
-LABELS = {"fusion": "Mfusion", "m4rep": "Mfull", "m4xattn": "Mxattn",
+LABELS = {"finship": "Mfinship", "m4rep": "Mfull", "m4xattn": "Mxattn",
           "ship": "Mship", "fin": "Mfin", "rs": "Mrs",
           "finrs": "Mfinrs", "m4concat": "Mconcat"}
 
@@ -62,11 +62,11 @@ def experiments() -> list[dict]:
     gat/tcn/rs_kind/lr/wd/dropout)."""
     # 1) multi-seed stability — now includes m4xattn (cross-attention).
     seed = [dict(group="seed", config=c, seed=s, lookback=4, d=32, **_DEF)
-            for c in ["fusion", "m4rep", "m4xattn"] for s in [42, 1, 2]]
+            for c in ["finship", "m4rep", "m4xattn"] for s in [42, 1, 2]]
     # 2) hyperparameter grid on the gated fusion.
-    hyper = [dict(group="hyper", config="fusion", seed=42, lookback=lb, d=d, **_DEF)
+    hyper = [dict(group="hyper", config="finship", seed=42, lookback=lb, d=d, **_DEF)
              for lb in [4, 8, 12] for d in [32, 64]]
-    hyper += [dict(group="hyper", config="fusion", seed=42, lookback=8, d=32,
+    hyper += [dict(group="hyper", config="finship", seed=42, lookback=8, d=32,
                    **{**_DEF, "gat": 1, "tcn": 1})]
     # 3) RS branch (weakest modality): embedding type + small reg grid.
     rs = [dict(group="rs", config="rs", seed=42, lookback=4, d=32,
@@ -86,7 +86,7 @@ def experiments() -> list[dict]:
             for dp in [0.1, 0.3]:
                 if (lr, wd, dp) == (1e-3, 1e-4, 0.1):
                     continue   # == fusion default already in seed/hyper
-                reg.append(dict(group="reg", config="fusion", seed=42, lookback=4,
+                reg.append(dict(group="reg", config="finship", seed=42, lookback=4,
                                 d=32, **{**_DEF, "lr": lr, "wd": wd, "dropout": dp}))
     return seed + hyper + rs + reg
 

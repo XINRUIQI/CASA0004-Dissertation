@@ -1,15 +1,4 @@
-# Meeting 04 — Spoken Script (Bilingual) / 口播讲稿（双语）
-
-> **Say in English.** Chinese below is for your own reference only.
-> **用英语讲。** 中文仅供你自己对照，不必念出来。
-> No detailed numbers · simple words · ~10–15 min + discussion
-> 详细版 / Full version: `Meeting04_prep_20260707.md`
-
----
-
 ## Part 1 — Why fuse, not flat-concatenate / 为什么要融合（3–4 min）
-
-### The big picture / 大背景
 
 **EN:**
 
@@ -22,6 +11,8 @@ So if we add remote sensing or shipping data, it's not enough to just "add more 
 文献里反复说：油价预测最简单的基准很强——假设下周价格和这周差不多，很多复杂模型打不过。加遥感、航运不能只是多加几列，要真的用起来；扁平拼接的问题就是信息进去了但用不好。
 
 ---
+
+
 
 ### Three modalities, three different structures / 三个模态结构不同
 
@@ -45,6 +36,8 @@ I'm not the first person to think this way. People already use graph neural netw
 
 ---
 
+
+
 ### Flat models can't re-weight by regime / 不能按时期动态调权
 
 **EN:**
@@ -61,6 +54,8 @@ That's why I use **gated fusion** — the model learns, at each time point, how 
 
 ---
 
+
+
 ### Missing data, lags, different frequencies / 缺失、滞后、频率不同
 
 **EN:**
@@ -74,6 +69,8 @@ The literature has tools for this — missing-modality training, irregular time 
 遥感月度且有云、航运有发布滞后、金融周度——三种数据不同步、不完整，扁平表很难处理。文献里有缺失模态、不规则时序等方法，扁平拼接基本用不上。
 
 ---
+
+
 
 ### The gap in the literature / 文献空白
 
@@ -90,6 +87,123 @@ As far as I can tell, **no one** has kept all three heterogeneous modalities —
 现有工作绝大多数还是做成几列数字拼进模型；有的预测贸易/需求不是价格；有的只有一两个模态。据我掌握，还没有人在周频 Brent 上同时保留三模态做表示级融合，并与扁平方法公平对照——这是我要填的空白。
 
 ---
+
+
+
+## 1. 为什么要融合多模态，而不是扁平拼接（文献支撑）/ Why fuse, not flat-concatenate (with literature)
+
+**中文：** 核心论点：油价预测的随机游走极强，任何另类数据都必须被**高效**利用；而把三个结构迥异的模态压成一张宽表，会在信息进入模型前就把结构和信号浪费掉。**本节的目的，是让每一个设计决策都能指到具体文献。**
+
+**EN:**  Core argument: the random-walk benchmark in oil forecasting is very strong, so any alternative data must be used *efficiently*; compressing three structurally different modalities into one wide table wastes their structure and signal before the model ever sees it.
+
+### 1.1 前提：油价预测的三条铁律 / The three hard facts of oil forecasting
+
+**中文：**
+
+- **随机游走极强**：Alquist–Kilian–Vigfusson 预测手册 [P053] 确立"不变（随机游走）基准"是复杂模型难以战胜的强基线；Foroutan & Lahmiri [P001] 提醒单步价格误差因 P_{t+1}\approx P_t 而"看起来很好"。→ 任何加进来的信号都必须**证明**自己，且要被高效利用（扁平拼接的低效正是问题）。
+- **要用机制特征**：Kilian [P052] 把油价冲击分解为供给 / 总需求 / 预防性需求；变量应覆盖这些机制通道，而非"凑够十个"。
+- **组合不同机制优于单一模型**：Baumeister & Kilian [P054] 表明跨不同经济机制的预测**组合**通常优于任一单模型——这正是"多模态 + 按模态消融"的经济学依据（RQ1）。
+
+**EN:** The random walk is a benchmark complex models routinely fail to beat [P053], and single-step price-level errors look deceptively good because P_{t+1}\approx P_t [P001]; predictors should span supply/demand/precautionary mechanisms [P052]; and combinations across *different* mechanisms tend to beat any single model [P054] — the rationale for a multimodal, modality-by-modality design (RQ1).
+
+### 1.2 每个模态都有结构，扁平拼接把结构丢了 / Each modality has structure that flat concatenation discards
+
+**中文：**
+
+- **定义层面**：Baltrušaitis 等多模态综述 [P101] 把"把 NDVI、船舶计数、宏观变量拼成一张表"明确归类为**早期特征级融合**；其对立面是用**模态专属编码器**学联合表示（representation-level）。本研究做的正是后者。
+- **航运本质是图**：现有原油航运工作已把港口/咽喉建成图节点——Ouyang 等 [P062]（供应链图卷积 + LSTM 预测油轮流量）、Liang 等 [P066]（时空多图网络）、Graph WaveNet [P091]；IMF PortWatch [P070] 提供咽喉/港口过境序列。扁平的"每节点计数列"把这张网络拓扑丢了。
+- **卫星是高维影像**：EO 基础模型 Prithvi-EO-2.0 [P094] / SatMAE [P095] 的**冻结编码器**能产出可迁移影像表示；且因传感器结构/噪声不同，多模态 EO 模型用**模态专属编码器**（如 CROMA [P105]）先分别编码再融合——几列 NDVI 做不到。
+- **原始辐射/NDVI 是错误的表示**：Polinov 等 [P024] 指出单港 NTL–油轮相关几乎为零（NTL 不是数船器）；Gibson 等 [P032] 指出 NTL 擅长横截面差异、拙于**站内时间变化** → 所以用**站内标准化异常**而非原始值（Hao & Wang [P025] 的可观测性通道同理）。
+- **先例**：Gohari 等 Modality-aware Transformer [P039] 在金融时序上证明"模态感知结构 > 朴素拼接"，且给出可解释的跨模态注意力。
+
+**EN:** The multimodal survey [P101] classifies "concatenating NDVI, vessel counts and macro variables into one table" as *early feature-level fusion*; the alternative is a joint representation via modality-specific encoders. Shipping is intrinsically a **graph** — crude-oil work already models ports/chokepoints as graph nodes [P062][P066][P091][P070], structure a flat count-per-node table discards. Satellite data is high-dimensional imagery best handled by **frozen EO foundation models** [P094][P095] with modality-specific encoders [P105]. Raw radiance/NDVI is the wrong representation (NTL is not a tanker counter [P024]; NTL captures cross-sectional but not within-site temporal variation [P032]), hence within-site anomalies [P025]. And a modality-aware design already beats naïve concatenation on financial series [P039].
+
+### 1.3 扁平模型无法按时期动态调权 / Flat models cannot weight modalities per regime
+
+**中文：**
+
+- 有用的预测变量**随时间与预测期变化**（Costa 等 [P072]）；扁平模型给的是**静态**特征权重，说不出"这一周多看航运"。
+- **门控多模态单元** [P096] 学习输入相关的门控，动态给每个模态加权，并**自带可解释性**——直接对应本研究的门控融合与 **RQ3**。
+- 交叉注意力 [P111][P112]、共享/专属特征分解 [P109] 在 EO 基准上**一致优于朴素拼接**——支持把 Cross-Attention 作为对照臂。
+
+**EN:** Useful predictors change over time and horizon [P072], yet a flat model gives *static* feature weights. Gated Multimodal Units [P096] learn input-dependent gates that weight each modality and provide built-in interpretability (→ RQ3); cross-attention [P111][P112] and shared/specific decompositions [P109] consistently beat naïve concatenation on EO benchmarks — motivating the Cross-Attention comparison arm.
+
+### 1.4 高维、异构、缺失、异步：扁平模型处理不好 / High-dim, heterogeneous, missing, asynchronous — flat models handle these poorly
+
+**中文：**
+
+- **异构**：光学与雷达的通道结构/噪声不同 → 需模态专属编码器（CROMA [P105]，及 DOFA [P106] / OmniSat [P107] / TerraFM [P108] 一系）。
+- **缺失模态**（云遮挡月度影像 + 发布滞后航运不可避免）：多模态 Transformer 在缺失输入下急剧退化，除非专门做缺失训练（Ma 等 [P097]）；ModDrop [P100]、ShaSpec [P114]、RobSense [P113]、PyViT-FUSE 的 band-drop [P110] 都是应对方案。
+- **不规则/异步观测**（月度影像对齐周度价格）：GRU-D [P098]、mTAN [P099] 用掩码 + 距上次观测时间 / 连续时间嵌入处理。
+- 这也解释了我扁平基线里"线性 Ridge 吃不下 113 维航运"（见 §1.6 / §4.1）。
+
+**EN:** Sensors differ in channel structure and noise, so each needs a modality-specific encoder [P105][P106][P107][P108]. Missing modalities are unavoidable (cloud-limited monthly imagery + publication-lagged shipping): multimodal transformers degrade sharply unless trained for it [P097], addressed by ModDrop [P100], ShaSpec [P114], RobSense [P113] and band-drop [P110]. Irregular/asynchronous observation (monthly imagery vs weekly price) is handled by GRU-D [P098] and mTAN [P099]. This also explains why linear Ridge cannot use 113-d shipping in my flat baselines (§1.6/§4.1).
+
+### 1.5 空白：现有油价 + 另类数据研究都停在扁平拼接 / The gap: existing work stops at flat fusion
+
+**中文：** 少数把另类数据接到油价的研究，都止步于"多源异构特征融合（扁平表）"：Hao & Wang [P025]、Bricongne 等 [P069] 各喂**单一**工程信号进标准模型（后者预测需求而非价格）；PortWatch [P070]、Jung [P068] 把船舶/影像转成表格指标 nowcast **贸易**而非价格（且指出无单一融合配置全局最优）；方法最丰富的 GWNet-Attn [P063] 只有变量图、仅 WTI 期货、无影像/航运；Modality-aware Transformer [P039] 是文本+数值两模态、利率而非商品。**没有一个**在**周频 Brent** 上保留三个异构模态并做表示级融合——这就是本研究填的空白。
+
+**EN:** The few alternative-data-to-oil studies all stop at multi-source heterogeneous *flat* feature fusion: [P025][P069] feed a single engineered signal into a standard model (the latter predicts demand, not price); [P070][P068] convert vessels/imagery into tabular indicators that nowcast *trade*, not price (and note no single fusion config is universally best); the richest precedents remain unimodal/bimodal — GWNet-Attn [P063] (variable graph, WTI futures only, no image/shipping) and the Modality-aware Transformer [P039] (text+numeric, interest rates). **None** preserves three heterogeneous modalities and fuses them at the representation level for weekly Brent.
+
+### 1.6 我的扁平基线已实证暴露这个局限 / My own flat baselines already expose it empirically
+
+**中文：**（数字见 §4.1）扁平拼接把遥感/航运接到强金融基线上 → 增量被稀释；**航运"模型敏感"**（XGB CW 0.0002 能用、线性 Ridge 0.264 用不了）；**最优子集因模型而异**（人工精选 core 对 XGB 反而不是最优）。这与 Costa [P072]"有用变量随时间/模型而变"一致，是扁平融合局限的直接症状。→ **假设**：保留结构 + 模态专属编码 + 门控融合，应能用上扁平**浪费掉**的信号。
+
+**EN:** (Numbers in §4.1.) Flat fusion onto a strong financial baseline dilutes the increment; shipping is model-sensitive (XGB CW 0.0002 usable, linear Ridge 0.264 not); the optimal subset is model-dependent (hand-picked core not best for XGB) — consistent with [P072] and a direct symptom of the flat-fusion limitation. **Hypothesis:** preserving structure + modality-specific encoding + gated fusion should recover the signal flat fusion wastes.
+
+## 2. 我的框架 / My framework
+
+**中文：** 模态感知的时空融合框架——每个模态先由**专属编码器**学一个 32 维表示，再由**门控加权**动态组合，端到端预测下一周 Brent 价格。
+
+```text
+【三模态编码】
+金融序列  ── Finance Encoder (TCN) ──────────────────────────────► z_fin  (32维)
+
+卫星影像  ──► 冻结 Prithvi-EO-2.0 ──► embedding (1024维)
+                                      │
+                                      ▼
+                            时间注意力 + AOI-site 注意力
+                                      │
+                                      ▼
+                                   z_rs  (32维)
+
+航运动态图 ── GAT(空间) → TCN(时间) → 节点注意力池化 ─────────────► z_ship (32维)
+
+【融合与预测】
+金融数据 ──► z_fin  ──┐
+卫星数据 ──► z_rs   ──┼──► 门控加权 ──► z_fused ──► 回归头 ──► r̂（涨跌幅）
+航运数据 ──► z_ship ──┘                              │
+                                                    ▼
+                              P̂_{t+1} = P_t × e^(r̂)  （预测下周油价，美元/桶）
+```
+
+**EN:** A modality-aware spatio-temporal fusion framework: each modality is first encoded into a 32-d representation, then combined by **gated weighting** into an end-to-end next-week Brent price predictor.
+
+```text
+[Modality encoders]
+Financial series  ── Finance Encoder (TCN) ───────────────────────► z_fin  (32-d)
+
+Satellite imagery ──► frozen Prithvi-EO-2.0 ──► embedding (1024-d)
+                                              │
+                                              ▼
+                            temporal attention + AOI-site attention
+                                              │
+                                              ▼
+                                           z_rs  (32-d)
+
+Shipping graph    ── GAT(spatial) → TCN(temporal) → node-attn pool ─► z_ship (32-d)
+
+[Fusion & prediction]
+Finance  ──► z_fin  ──┐
+RS       ──► z_rs   ──┼──► gated weighting ──► z_fused ──► regression head ──► r̂ (log return)
+Shipping ──► z_ship ──┘                                              │
+                                                                     ▼
+                                           P̂_{t+1} = P_t × exp(r̂)  (next-week Brent, USD/bbl)
+```
+
+
+
+
 
 ### What my own flat baselines showed / 我的扁平实验说明了什么
 
@@ -113,6 +227,8 @@ So my reading is: the problem may not be "is there any signal at all?" but **"ho
 
 ---
 
+
+
 ### One-line summary / 小结
 
 **EN:**
@@ -124,39 +240,6 @@ I'm not trying to invent a brand-new fusion operator or loss function. The build
 **中文（参考）：**
 
 我不是要发明新算子或新损失。文献里零件都有。我的贡献更像是集成——把这些方法拼起来，第一次在周频 Brent 上公平比较表示级融合和扁平融合。
-
----
-
-## Part 2 — What the framework looks like / 框架长什么样（2–3 min）
-
-**EN:**
-
-The overall idea is quite simple — think of three pipelines that meet in the middle.
-
-**Pipeline one: finance.** The financial series goes through a small temporal encoder and comes out as a compact vector.
-
-**Pipeline two: remote sensing.** Satellite images go through a pretrained model called Prithvi to get embeddings. I **don't fine-tune** it — the weekly sample is too small and I'd worry about overfitting. Then I add temporal and site attention to pull together information across oil sites and months.
-
-**Pipeline three: shipping.** I don't treat this as a normal table. I treat it as a **graph**: eleven oil sites plus six chokepoints — seventeen nodes in total. A graph attention layer learns spatial relationships; a temporal model learns how things change over time; then everything is pooled into one vector.
-
-Those three vectors go into **gated fusion**. The model decides how much to trust finance, remote sensing or shipping at each point in time. After fusion, it predicts next week's Brent price.
-
-I've also set up a few comparison arms:
-
-- finance only, shipping only, remote sensing only — to test single-modality value;
-- finance plus shipping with gating — this is the most promising result so far;
-- all three modalities;
-- simple concatenation and cross-attention — to compare fusion methods.
-
-And this maps cleanly onto my three research questions:
-
-- **RQ1**: do remote sensing and shipping add value on top of finance?
-- **RQ2**: does representation-level fusion beat flat fusion? — that's the core one.
-- **RQ3**: can gating weights tell us which modality the model relies on, and when?
-
-**中文（参考）：**
-
-整体三条流水线汇到中间：金融→时序编码器；遥感→Prithvi 提 embedding（不微调）+ 时间/站点注意力；航运→十七节点图（GAT 学空间 + 时序学时间）→ 门控融合 → 预测下周油价。对照臂：单模态、金融+航运门控、全模态、拼接与交叉注意力。对应 RQ1 增量价值、RQ2 融合方式（核心）、RQ3 可解释性。
 
 ---
 
@@ -179,6 +262,8 @@ I'll break this into four blocks.
 四块：① 数据管线理顺、防泄漏、删云量留有效观测、建航运动态图；② 扁平 M0–M4 跑完（随机游走/Ridge/XGB/深度早融合）+ 检验/SHAP/稳健性，作对照标尺；③ 融合层写进代码并跑通，训练稳定、无 R² 崩溃；④ 文献补齐、Ch2 草稿、Ch3 动笔，上次会议要求都做了。
 
 ---
+
+
 
 ## Part 4 — What the results look like / 结果怎么样（2–3 min）
 
@@ -221,18 +306,6 @@ Same data, same evaluation protocol — flat concatenation wastes the signal; re
 **中文（参考）：**
 
 不讲具体数字，只说方向。扁平层：随机游走依然很强，我会如实写；但遥感/航运相对金融基线有时确有增量，只是绝对精度仍打不过随机游走——两者不矛盾。航运换模型效果差很多，说明信号在、扁平用不好；SHAP 显示航运贡献最大。结论：数据不是没信号，是融合方式有问题。融合层：同一份航运数据，扁平早融合用不了，图神经网络编码后增量变显著；金融+航运门控融合是第一个误差略好于随机游走的配置（统计还不算特别稳）；全模态门控也有显著增量；遥感分支还偏弱待调。最想记住的一句：不是碾压一切的模型，而是融合方式真的 matters——同样数据同样协议，扁平浪费信号，表示级融合能把信号捡回来，RQ2 已有初步证据。
-
----
-
-## If asked: next steps / 如果对方问下一步（~30 sec）
-
-**EN:**
-
-Short term, three things: finish the fusion layer — cross-attention, missing-modality handling, remote-sensing tuning, gating visualisations; put flat and fusion results in one fair comparison table to answer RQ2 properly; and push on chapters 3 and 4.
-
-**中文（参考）：**
-
-短期三件事：融合层收尾（交叉注意力、缺失模态、遥感调参、门控可视化）；扁平和融合结果放同一张公平对照表正式答 RQ2；推进 Ch3/Ch4 写作。
 
 ---
 

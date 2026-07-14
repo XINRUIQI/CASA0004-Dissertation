@@ -1,7 +1,40 @@
-DONE seed=42 meanpool: skill=-1.28% DirAcc=50.2 CWp=0.894
-DONE seed=42 meanpool_anom: skill=+0.05% DirAcc=53.3 CWp=0.042
-DONE seed=1 meanpool: skill=-1.18% DirAcc=49.4 CWp=0.717
-DONE seed=1 meanpool_anom: skill=-0.83% DirAcc=48.2 CWp=0.708
-DONE seed=2 meanpool: skill=-0.20% DirAcc=45.9 CWp=0.111
-DONE seed=2 meanpool_anom: skill=-0.13% DirAcc=49.8 CWp=0.150
-DONE seed=3 meanpool: skill=-2.08% DirAcc=47.5 CWp=0.933
+[meanpool/m4rep/seed=42] rolling...
+DONE meanpool/m4rep/seed=42 skill=-1.28% DirAcc=50.2%
+[meanpool/m4rep/seed=0] rolling...
+DONE meanpool/m4rep/seed=0 skill=-0.69% DirAcc=49.4%
+[meanpool/m4rep/seed=1] rolling...
+DONE meanpool/m4rep/seed=1 skill=-1.18% DirAcc=49.4%
+[meanpool/m4rep/seed=2] rolling...
+DONE meanpool/m4rep/seed=2 skill=-0.20% DirAcc=45.9%
+[meanpool/m4rep/seed=3] rolling...
+DONE meanpool/m4rep/seed=3 skill=-2.08% DirAcc=47.5%
+[meanpool_anom/m4rep/seed=42] rolling...
+DONE meanpool_anom/m4rep/seed=42 skill=+0.05% DirAcc=53.3%
+[meanpool_anom/m4rep/seed=0] rolling...
+DONE meanpool_anom/m4rep/seed=0 skill=-0.99% DirAcc=42.4%
+[meanpool_anom/m4rep/seed=1] rolling...
+DONE meanpool_anom/m4rep/seed=1 skill=-0.83% DirAcc=48.2%
+[meanpool_anom/m4rep/seed=2] rolling...
+DONE meanpool_anom/m4rep/seed=2 skill=-0.13% DirAcc=49.8%
+[meanpool_anom/m4rep/seed=3] rolling...
+DONE meanpool_anom/m4rep/seed=3 skill=-0.82% DirAcc=50.6%
+
+========================================================================================
+MULTI-SEED 3A  raw meanpool vs meanpool_anom  (seeds=[42, 0, 1, 2, 3], epochs=80, lb=4)
+========================================================================================
+
+[m4rep] Mfull   per-seed skill vs M0 (%)  /  DirAcc (%)
+   seed  raw_skill  anom_skill   Δskill  raw_DA  anom_DA
+     42      -1.28        0.05    +1.33    50.2     53.3
+      0      -0.69       -0.99    -0.29    49.4     42.4
+      1      -1.18       -0.83    +0.35    49.4     48.2
+      2      -0.20       -0.13    +0.07    45.9     49.8
+      3      -2.08       -0.82    +1.26    47.5     50.6
+  ---
+  raw  skill  mean=-1.09% std=0.70  DirAcc mean=48.5%
+  anom skill  mean=-0.54% std=0.47  DirAcc mean=48.9%
+  Δskill mean=+0.54%  ΔDirAcc mean=+0.4pp  anom>raw in 4/5 seeds  paired t p=0.168
+  VERDICT: anom STABLE improvement -> consider upgrading
+
+========================================================================================
+saved -> /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/deep/rs_anom_multiseed.csv   elapsed 1091s

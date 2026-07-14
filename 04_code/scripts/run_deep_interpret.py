@@ -55,7 +55,7 @@ def main() -> None:
 
     df = data.load_matrix(); dico = data.load_dict()
     ds = build_deep_dataset(df, dico, lookback=args.lookback)
-    modalities, _ = CONFIGS["m4rep"]
+    modalities, _, _ = CONFIGS["m4rep"]
     node_ids = ds["node_ids"]
     sites = ds["sites"]
     n_aoi = len(sites)

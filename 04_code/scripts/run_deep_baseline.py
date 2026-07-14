@@ -6,7 +6,7 @@ baseline (backtest.data + backtest.rolling), the deep modality encoders:
 
   Mship  = z_ship (17-node heterogeneous shipping graph GAT+TCN)   [RQ1 shipping]
   Mfin   = z_fin  (finance TCN)                                    [deep finance ref]
-  Mfusion= gated(z_fin, z_ship) -> head                           [RQ2 representation arm]
+  Mfinship=gated(z_fin, z_ship) -> head                           [RQ2 representation arm]
   Mfinrs = gated(z_fin, z_rs)   -> head          [RS incr. over finance, no shipping]
   Mconcat= concat(z_fin,z_rs,z_ship) -> MLP head [encoder-concat rung of RQ2 ladder]
 
@@ -14,7 +14,7 @@ and the flat M1 (Ridge/XGB) on the identical weeks as the reference. It reports
 RMSE / skill vs M0 plus the STATISTICALLY VALID test for each comparison:
   * CW vs M0 (random walk)  does the model beat the no-change benchmark?
                             (valid: M0's r_hat=0 is nested in every model)
-  * CW nested increments    Mfusion vs Mfin, M4rep vs Mfusion, finrs vs fin
+  * CW nested increments    Mfinship vs Mfin, M4rep vs Mfinship, finrs vs fin
                             (valid: the base modality is nested in the fused one)
   * DM (non-nested)         deep vs flat M1, and gated vs concat
                             (Clark-West is INVALID for these non-nested pairs;
@@ -30,8 +30,8 @@ Outputs (-> 05_outputs/baselines/deep/):
   deep_backtest.png       price tracks + RMSE + skill bars
 
 Run:
-  python3 04_code/scripts/run_deep_baseline.py                 # ship,fin,fusion
-  python3 04_code/scripts/run_deep_baseline.py --modes fusion  # subset
+  python3 04_code/scripts/run_deep_baseline.py                 # ship,fin,finship
+  python3 04_code/scripts/run_deep_baseline.py --modes finship # subset
   python3 04_code/scripts/run_deep_baseline.py --epochs 40 --lookback 8
 """
 
@@ -61,8 +61,10 @@ from models.deep_rolling import CONFIGS, rolling_origin_deep  # noqa: E402
 
 OUT_DIR = data.ROOT / "05_outputs/baselines/deep"
 LABELS = {"ship": "Mship", "fin": "Mfin", "rs": "Mrs",
-          "fusion": "Mfusion", "finrs": "Mfinrs", "m4rep": "Mfull",
-          "m4xattn": "Mxattn", "m4concat": "Mconcat"}
+          "finship": "Mfinship", "finship_concat": "Mfinship",
+          "finship_xattn": "Mfinship",
+          "finrs": "Mfinrs", "finrs_concat": "Mfinrs", "finrs_xattn": "Mfinrs",
+          "m4rep": "Mfull", "m4xattn": "Mxattn", "m4concat": "Mconcat"}
 
 
 def compare_row(merged: pd.DataFrame, small_col: str, large_col: str, name: str,
@@ -125,9 +127,10 @@ def make_plot(merged, summ, model_cols, path):
 
 def main() -> None:
     ap = argparse.ArgumentParser(description="Deep representation-level fusion baseline.")
-    ap.add_argument("--modes", default="fin,ship,rs,fusion,finrs,m4rep,m4concat",
-                    help="comma list of deep configs "
-                         "(fin/ship/rs/fusion/finrs/m4rep/m4xattn/m4concat)")
+    ap.add_argument("--modes", default="fin,ship,rs,finship,finrs,m4rep,m4concat",
+                    help="comma list of deep configs (fin/ship/rs/"
+                         "finship[_concat/_xattn]/finrs[_concat/_xattn]/"
+                         "m4rep/m4xattn/m4concat)")
     ap.add_argument("--lookback", type=int, default=4, help="deep sequence lookback (weeks); main model = 4 (aligns flat protocol; adaptive TCN uses dense conv at lb<=5)")
     ap.add_argument("--min-train", type=int, default=104)
     ap.add_argument("--retrain-every", type=int, default=13)
@@ -192,8 +195,8 @@ def main() -> None:
     have = set(deep_cols)
     cand = [
         # --- valid nested Clark-West: added modality over its own base ---
-        ("Mfull_M4rep", "Mfusion_Fusion", "RS incr. (M4rep vs fin+ship)", True),
-        ("Mfusion_Fusion", "Mfin_TCN", "shipping incr. (fusion vs fin)", True),
+        ("Mfull_M4rep", "Mfinship_Finship", "RS incr. (M4rep vs fin+ship)", True),
+        ("Mfinship_Finship", "Mfin_TCN", "shipping incr. (finship vs fin)", True),
         ("Mfinrs_FinRS", "Mfin_TCN", "rs incr. (finrs vs fin)", True),
         # --- deep vs flat M1: NON-nested (different model class) -> DM ---
         ("Mfull_M4rep", "M1_Ridge", "full rep vs flat M1", False),
