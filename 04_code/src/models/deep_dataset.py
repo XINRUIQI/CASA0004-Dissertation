@@ -105,7 +105,7 @@ def _build_rs_full(weeks: pd.DatetimeIndex, sites: list[str],
 
 def build_deep_dataset(df: pd.DataFrame, dico: pd.DataFrame,
                        npz_path: "Path | str" = GRAPH17_NPZ,
-                       lookback: int = 8, with_rs: bool = True,
+                       lookback: int = 4, with_rs: bool = True,
                        rs_kind: str = "meanpool",  # or cls / meanpool_anom / cls_anom
                        window_start: str = data.WINDOW_START,
                        window_end: str = data.WINDOW_END) -> dict:
@@ -230,7 +230,7 @@ if __name__ == "__main__":
     import backtest.data as _d
     df = _d.load_matrix()
     dico = _d.load_dict()
-    ds = build_deep_dataset(df, dico, lookback=8)
+    ds = build_deep_dataset(df, dico, lookback=4)
     print("aligned deep dataset:")
     for k in ["aoi", "choke", "adj", "fin"]:
         print(f"  {k:6s}: {ds[k].shape}")

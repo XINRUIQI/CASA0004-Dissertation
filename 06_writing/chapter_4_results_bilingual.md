@@ -67,18 +67,18 @@ Table 4.2 reports selected deep configurations on the same 257-week span (seed 4
 | Model | RMSE | Skill vs M0 | DirAcc | CW vs M0 | Notes |
 |-------|-----:|------------:|-------:|---------:|-------|
 | M0 random walk | 4.152 | 0.0% | – | – | Benchmark |
-| Deep finance (Mfin) | 4.250 | −2.4% | 0.494 | 0.315 | Finance encoder only |
-| Deep RS (Mrs) | 4.247 | −2.3% | 0.459 | 0.928 | RS encoder only |
-| Deep shipping (Mship) | 4.168 | −0.4% | 0.506 | 0.496 | Shipping graph only |
-| **Deep M3 (Mfinship, gated)** | **4.147** | **+0.11%** | 0.529 | 0.166 | Finance + shipping |
-| Deep M2 (Mfinrs, gated) | 4.253 | −2.4% | 0.475 | 0.769 | Finance + RS |
-| Deep M4 (Mfull, gated) | 4.205 | −1.3% | 0.502 | 0.894 | All three modalities |
-| Deep M3 (xattn) | 4.121 | +0.74% | 0.549 | **0.041** | Higher ceiling, less stable |
-| Deep M4 (xattn) | 4.147 | +0.12% | 0.564 | **0.018** | Significant CW vs M0; seed-sensitive |
+| Deep finance (M1_Deep) | 4.250 | −2.4% | 0.494 | 0.315 | Finance encoder only |
+| Deep RS (M_rs_deep) | 4.247 | −2.3% | 0.459 | 0.928 | RS encoder only |
+| Deep shipping (M_ship_GNN) | 4.168 | −0.4% | 0.506 | 0.496 | Shipping graph only |
+| **M3_Deep_gated (M3_Deep_gated, gated)** | **4.147** | **+0.11%** | 0.529 | 0.166 | Finance + shipping |
+| M2_Deep_gated (M2_Deep_gated, gated) | 4.253 | −2.4% | 0.475 | 0.769 | Finance + RS |
+| M4_Deep_gated (M4_Deep_gated, gated) | 4.205 | −1.3% | 0.502 | 0.894 | All three modalities |
+| M3_Deep_gated (xattn) | 4.121 | +0.74% | 0.549 | **0.041** | Higher ceiling, less stable |
+| M4_Deep_gated (xattn) | 4.147 | +0.12% | 0.564 | **0.018** | Significant CW vs M0; seed-sensitive |
 
-Within the deep arm, adding shipping to finance is the clearest modality gain: nested CW for Mfinship versus Mfin is highly significant (p ≈ 0.0006). Adding remote sensing alone does not produce a competitive deep model, and adding RS on top of finance+shipping does not improve gated M4 relative to gated M3. Cross-attention can push M3/M4 skill above zero with significant CW versus M0 in the main seed, but multi-seed checks show larger variance than gated fusion (Section 4.5). The honest headline for the stable gated specification is therefore modest: deep M3 achieves a small positive skill, while M0 remains a very strong competitor and gated M4 does not dominate M3.
+Within the deep arm, adding shipping to finance is the clearest modality gain: nested CW for M3_Deep_gated versus M1_Deep is highly significant (p ≈ 0.0006). Adding remote sensing alone does not produce a competitive deep model, and adding RS on top of finance+shipping does not improve gated M4 relative to gated M3. Cross-attention can push M3/M4 skill above zero with significant CW versus M0 in the main seed, but multi-seed checks show larger variance than gated fusion (Section 4.5). The honest headline for the stable gated specification is therefore modest: deep M3 achieves a small positive skill, while M0 remains a very strong competitor and gated M4 does not dominate M3.
 
-在深度分支内，向金融加入航运是最清晰的模态收益：Mfinship 相对 Mfin 的嵌套 CW 高度显著（p ≈ 0.0006）。单独加入遥感无法形成有竞争力的深度模型；在金融+航运之上再加遥感，门控 M4 也不优于门控 M3。交叉注意力可在主种子下把 M3/M4 的 skill 推到零以上并对 M0 的 CW 显著，但多种子检查显示其方差大于门控融合（第 4.5 节）。对稳定的门控设定，诚实表述应是：深度 M3 取得小幅正 skill，而 M0 仍是很强的竞争者，门控 M4 并不主导 M3。
+在深度分支内，向金融加入航运是最清晰的模态收益：M3_Deep_gated 相对 M1_Deep 的嵌套 CW 高度显著（p ≈ 0.0006）。单独加入遥感无法形成有竞争力的深度模型；在金融+航运之上再加遥感，门控 M4 也不优于门控 M3。交叉注意力可在主种子下把 M3/M4 的 skill 推到零以上并对 M0 的 CW 显著，但多种子检查显示其方差大于门控融合（第 4.5 节）。对稳定的门控设定，诚实表述应是：深度 M3 取得小幅正 skill，而 M0 仍是很强的竞争者，门控 M4 并不主导 M3。
 
 ## 4.4 Flat versus deep comparison
 ## 4.4 扁平与深度比较
@@ -92,17 +92,17 @@ RQ2 要求按信息集进行**配对**比较，而不是只比较各族的最优
 
 | Information set | Flat reference | Deep reference | Directional reading |
 |-----------------|----------------|----------------|---------------------|
-| M1 Finance | Ridge 4.332 / XGB 4.771 | Mfin 4.250 | Deep finance improves on flat finance RMSE, but still negative skill vs M0 |
-| M2 +RS | Ridge/XGB worse than M0 | Mfinrs 4.253 | No evidence that deep RS fusion recovers a strong signal |
-| M3 +Shipping | XGB 4.456 (CW vs M1 strong; skill < 0) | Mfinship 4.147 (skill +0.11%) | Clearest paired gain for representation-level shipping |
-| M4 All | XGB 4.470 (skill < 0) | Mfull gated 4.205 / xattn 4.147 | Deep M4 can approach or slightly exceed M0 in selected specs; not uniformly dominant |
+| M1 Finance | Ridge 4.332 / XGB 4.771 | M1_Deep 4.250 | Deep finance improves on flat finance RMSE, but still negative skill vs M0 |
+| M2 +RS | Ridge/XGB worse than M0 | M2_Deep_gated 4.253 | No evidence that deep RS fusion recovers a strong signal |
+| M3 +Shipping | XGB 4.456 (CW vs M1 strong; skill < 0) | M3_Deep_gated 4.147 (skill +0.11%) | Clearest paired gain for representation-level shipping |
+| M4 All | XGB 4.470 (skill < 0) | M4_Deep_gated gated 4.205 / xattn 4.147 | M4_Deep_gated can approach or slightly exceed M0 in selected specs; not uniformly dominant |
 
 | 信息集 | 扁平对照 | 深度对照 | 方向性解读 |
 |--------|----------|----------|------------|
-| M1 金融 | Ridge 4.332 / XGB 4.771 | Mfin 4.250 | 深度金融改善扁平金融 RMSE，但相对 M0 仍为负 skill |
-| M2 +遥感 | Ridge/XGB 差于 M0 | Mfinrs 4.253 | 无证据表明深度遥感融合恢复了强信号 |
-| M3 +航运 | XGB 4.456（对 M1 的 CW 强；skill < 0） | Mfinship 4.147（skill +0.11%） | 表示级航运的配对收益最清晰 |
-| M4 全模态 | XGB 4.470（skill < 0） | Mfull 门控 4.205 / 交叉注意力 4.147 | 选定设定下深度 M4 可接近或略超 M0；并非一致占优 |
+| M1 金融 | Ridge 4.332 / XGB 4.771 | M1_Deep 4.250 | 深度金融改善扁平金融 RMSE，但相对 M0 仍为负 skill |
+| M2 +遥感 | Ridge/XGB 差于 M0 | M2_Deep_gated 4.253 | 无证据表明深度遥感融合恢复了强信号 |
+| M3 +航运 | XGB 4.456（对 M1 的 CW 强；skill < 0） | M3_Deep_gated 4.147（skill +0.11%） | 表示级航运的配对收益最清晰 |
+| M4 全模态 | XGB 4.470（skill < 0） | M4_Deep_gated 门控 4.205 / 交叉注意力 4.147 | 选定设定下深度 M4 可接近或略超 M0；并非一致占优 |
 
 Under strict non-nested DM tests, deep models do not uniformly and significantly dominate their flat counterparts across all information sets. The strongest and most coherent paired evidence appears in **shipping-inclusive** settings, where representation-level encoding of maritime structure helps more than flat concatenation of high-dimensional shipping columns. Finance+RS pairs remain weak in both architectures. Accordingly, the results support a cautious claim: deep models outperformed their flat counterparts in selected multimodal settings, particularly when shipping information was included — not a blanket statement that deep models consistently beat flat models.
 
@@ -142,7 +142,7 @@ Primary interpretability focuses on models with the clearest predictive value. F
 
 主要可解释性分析聚焦预测价值最清晰的模型。对深度模型而言，即 skill 非负或接近零、且模态结构具有经济连贯性的含航运设定。门控与注意力诊断显示，相对遥感，模型更依赖航运表示，这与绩效表一致。
 
-Supplementary SHAP is reported for flat M4/M3 XGBoost even though these models do not beat M0, because they show significant nested gains over M1. Global mean-|SHAP| on flat M4 attributes about **56%** of contribution to shipping, **31%** to finance and **13%** to remote sensing. This is interpreted narrowly: shipping helps explain why flat XGBoost improves on finance-only M1; it is not a claim of absolute forecast superiority over the random walk.
+Supplementary SHAP is reported for M4_Flat/M3 XGBoost even though these models do not beat M0, because they show significant nested gains over M1. Global mean-|SHAP| on M4_Flat attributes about **56%** of contribution to shipping, **31%** to finance and **13%** to remote sensing. This is interpreted narrowly: shipping helps explain why flat XGBoost improves on finance-only M1; it is not a claim of absolute forecast superiority over the random walk.
 
 对扁平 M4/M3 XGBoost 报告补充性 SHAP，尽管它们未击败 M0，因为它们相对 M1 显示显著嵌套收益。扁平 M4 的全局 mean-|SHAP| 大约将 **56%** 贡献归于航运、**31%** 归于金融、**13%** 归于遥感。解释应狭义理解：航运有助于说明为何扁平 XGBoost 优于仅金融的 M1；这并非宣称其绝对预测优于随机游走。
 

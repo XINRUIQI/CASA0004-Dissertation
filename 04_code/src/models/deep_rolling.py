@@ -17,30 +17,31 @@ import pandas as pd
 import torch
 import torch.nn as nn
 
+from model_naming import DEEP_CONFIG_ALIASES, resolve_deep_config
+
 from .deep_dataset import apply_scalers, fit_scalers
 from .fusion import DeepForecastModel
 
-# config name -> (ordered modalities, short model name, fusion_type)
-# The three fusion mechanisms (concat / gated / xattn) are exposed for every
-# multimodal combo so the RQ2 fusion-ladder matrix can be filled uniformly:
-#   finance+shipping (finship), finance+RS (finrs), all three (m4*).
+# config name -> (ordered modalities, full model column name, fusion_type)
+# Tensor keys fin/rs/ship are unchanged (modality channels, not model labels).
+# Old CLI keys (fin, finship, m4rep, …) resolve via resolve_deep_config().
 CONFIGS = {
-    "ship": (["ship"], "GNN", "gated"),
-    "fin": (["fin"], "TCN", "gated"),
-    "rs": (["rs"], "RS", "gated"),
-    # finance + shipping (renamed from 'fusion' -> 'finship'); 3 fusion mechanisms
-    "finship": (["fin", "ship"], "Finship", "gated"),
-    "finship_concat": (["fin", "ship"], "FinshipConcat", "concat"),
-    "finship_xattn": (["fin", "ship"], "FinshipXattn", "xattn"),
-    # finance + RS (no shipping); 3 fusion mechanisms
-    "finrs": (["fin", "rs"], "FinRS", "gated"),
-    "finrs_concat": (["fin", "rs"], "FinRSConcat", "concat"),
-    "finrs_xattn": (["fin", "rs"], "FinRSXattn", "xattn"),
-    # all three modalities; 3 fusion mechanisms
-    "m4rep": (["fin", "rs", "ship"], "M4rep", "gated"),
-    "m4xattn": (["fin", "rs", "ship"], "M4xattn", "xattn"),
-    "m4concat": (["fin", "rs", "ship"], "M4concat", "concat"),  # encoder-concat rung
+    "m1_deep": (["fin"], "M1_Deep", "gated"),
+    "m_ship_gnn": (["ship"], "M_ship_GNN", "gated"),
+    "m_rs_deep": (["rs"], "M_rs_deep", "gated"),
+    "m3_deep_gated": (["fin", "ship"], "M3_Deep_gated", "gated"),
+    "m3_deep_concat": (["fin", "ship"], "M3_Deep_Concat", "concat"),
+    "m3_deep_xattn": (["fin", "ship"], "M3_Deep_XAttn", "xattn"),
+    "m2_deep_gated": (["fin", "rs"], "M2_Deep_gated", "gated"),
+    "m2_deep_concat": (["fin", "rs"], "M2_Deep_Concat", "concat"),
+    "m2_deep_xattn": (["fin", "rs"], "M2_Deep_XAttn", "xattn"),
+    "m4_deep_gated": (["fin", "rs", "ship"], "M4_Deep_gated", "gated"),
+    "m4_deep_xattn": (["fin", "rs", "ship"], "M4_Deep_XAttn", "xattn"),
+    "m4_deep_concat": (["fin", "rs", "ship"], "M4_Deep_Concat", "concat"),
 }
+# Back-compat: old keys point at the same tuples (resolve_deep_config still preferred).
+for _old, _new in DEEP_CONFIG_ALIASES.items():
+    CONFIGS[_old] = CONFIGS[_new]
 
 
 def _to_tensors(scaled: dict, device: str) -> dict:
@@ -126,13 +127,18 @@ def rolling_origin_deep(ds: dict, label: str, config: str, min_train: int = 104,
                         batch: int = 32, val_weeks: int = 52,
                         device: str = "cpu", verbose: bool = True,
                         model_kwargs: "dict | None" = None) -> pd.DataFrame:
-    """Walk-forward deep backtest for one config -> res DataFrame."""
+    """Walk-forward deep backtest for one config -> res DataFrame.
+
+    Column name is the canonical model id (e.g. M3_Deep_gated). `label` is
+    kept for attrs only; column naming uses CONFIGS model id.
+    """
+    config = resolve_deep_config(config)
     modalities, mname, ftype = CONFIGS[config]
     idx = ds["idx"]
     Pt, Pn = ds["P_t"], ds["P_next"]
     rn, rnow = ds["r_next"], ds["r_now"]
     n = len(idx)
-    col = f"{label}_{mname}"
+    col = mname  # full model id (M1_Deep, M3_Deep_gated, …)
 
     model = None
     r_mean = r_std = 0.0

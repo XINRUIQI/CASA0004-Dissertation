@@ -43,7 +43,7 @@
 
 > 以下为 **2026-06-22 开工前** 的记录，保留作历史；当前均已在 B0–B1 解决。
 
-1. `03_data/processed/M2/` ~~为空~~ → 已有周频特征表、聚合脚本，并通过 `build_feature_matrix.py` + `04_code/scripts/run_baseline.py` 接入 M0–M4 消融（原 `01_literature/Test/` 已废弃）。
+1. `03_data/processed/M2/` ~~为空~~ → 已有周频特征表、聚合脚本，并通过 `build_feature_matrix.py` + `04_code/scripts/flat/run_baseline.py` 接入 M0–M4 消融（原 `01_literature/Test/` 已废弃）。
 2. ~~月度原始水平值、无 z-score、无异步对齐~~ → B1 已实现站点 expanding z-score（anom）+ as-of 周对齐 + `days_since_obs`。
 
 ---
@@ -101,7 +101,7 @@
   - `m2_eda_weekly.csv`（tidy 长表：date, site_id, site_type, index, level, anom, mom, age, cloud…，供 EDA/面板分析）。
   - B4 水体掩膜版：`m2_weekly_features_watermask.csv`（365×188）+ `m2_eda_weekly_watermask.csv`（`--watermask`）。
 - 同步在 `03_data/Dataset/Dataset_Overview4.ipynb` 的 M2 词典里补 Channel B 逐变量说明；完整列字典见 `03_data/processed/M2/m2_ChannelB_data_dictionary.md`。
-- **验收**：`m2_weekly_features.csv` 经 `03_data/processed/merge/py/build_feature_matrix.py` 并入 `weekly_feature_matrix.csv`，由 `04_code/scripts/run_baseline.py --modality M2` 读入。
+- **验收**：`m2_weekly_features.csv` 经 `03_data/processed/merge/py/build_feature_matrix.py` 并入 `weekly_feature_matrix.csv`，由 `04_code/scripts/flat/run_baseline.py --modality M2` 读入。
 - **产出（2026-06-23）**：脚本 `build_m2_weekly.py`；`outputs/m2_weekly_features.csv`（365 周 × 154 特征：5 指标 ×11 站 ×(level+anom) + 2 模态 ×11 站 ×(age+avail)）+ `m2_eda_weekly.csv`（20075 行 tidy）。S2 可用率 0.998 / NTL 1.000，anom 缺失 3%。防泄漏 sanity 通过（level 月内重复、`days_since_obs` 每周 +7、发布滞后下新观测才跳变）。
 
 
@@ -122,12 +122,12 @@
 
 ### B3 — 增量价值 + 可解释性消融 ✅ 已完成（2026-06-23；M1 基线 2026-07-03 重跑）
 
-- 建模层：`04_code/src/backtest/` + `04_code/scripts/run_baseline.py`（替代旧 `01_literature/Test/`）。
+- 建模层：`04_code/src/backtest/` + `04_code/scripts/flat/run_baseline.py`（替代旧 `01_literature/Test/`）。
 - 跑 **M0 / M1 / M1+M2** 表格模型（Ridge + XGB；Channel B 为 tabular，深度模型留给主框架）。
 - 检验：**Diebold–Mariano / Clark–West**（嵌套模型 vs M1 用 Clark–West）。
-- 解释：**SHAP**（`04_code/scripts/m2/shap_m2.py`）——按 RS 指数 / AOI 聚合。
+- 解释：**SHAP**（`04_code/scripts/flat/M2_Flat/shap_m2.py`）——按 RS 指数 / AOI 聚合。
 - **leave-one-AOI-out**（`run_baseline.py --leave-one-aoi-out`）；~~按站点类型~~ 分组消融 **未单独实现**（B2 仅有类型复合 EDA）。
-- **降维对照 C2**（`04_code/scripts/m2/robustness_m2.py`）：All-55 / PCA-90% / ElasticNet / SHAP-top20。
+- **降维对照 C2**（`04_code/scripts/flat/M2_Flat/robustness_m2.py`）：All-55 / PCA-90% / ElasticNet / SHAP-top20。
 - **验收**：✅ "M1 vs M1+ChannelB" 对比表 + SHAP 图 + LOAO；已回答 RQ1。
 
 
@@ -137,7 +137,7 @@
 
 | 项                         | 脚本 / 产物                                                                                                  |
 | ------------------------- | -------------------------------------------------------------------------------------------------------- |
-| 主基线 M0/M1/M2              | `run_baseline.py --modality M2 --m2-features anom` → `05_outputs/baselines/m2/baseline_metrics_anom.csv` |
+| 主基线 M0/M1/M2              | `run_baseline.py --modality M2 --m2-features anom` → `05_outputs/baselines/Flat/M2_Flat/baseline_metrics_anom.csv` |
 | literature 子集（4 NTL_anom） | `--m2-features literature` → `baseline_metrics_literature.csv`                                           |
 | level 对照（B4）              | `--m2-features level` → `baseline_metrics_level.csv`                                                     |
 | LOAO                      | `--leave-one-aoi-out` → `baseline_loao_anom.csv`                                                         |
@@ -186,7 +186,7 @@
 ### B4 — 稳健性 + 写作 + 为 RQ2 铺路 🔶 大部分完成（2026-06-23）
 
 - 稳健性：
-  - ✅ lookback 1/4/8 周 × anom/literature/level → `04_code/scripts/m2/sweep_m2.py` → `sweep_m2_summary.csv`
+  - ✅ lookback 1/4/8 周 × anom/literature/level → `04_code/scripts/flat/M2_Flat/sweep_m2.py` → `sweep_m2_summary.csv`
   - ✅ level vs anom（见 sweep `level` contract + 主基线 `--m2-features level`）
   - ✅ leave-one-AOI-out（B3 已做）
   - ✅ **水体掩膜版** GEE → `build_m2_weekly.py --watermask` → `build_feature_matrix.py --m2-csv ...watermask.csv` → `run_baseline.py --matrix weekly_feature_matrix_watermask.csv --tag watermask`；M2 XGB CW_p **0.006 → 8.5e-5**（增量更强，结论保守）
@@ -206,7 +206,7 @@
 
 ## 3.5 已实现脚本说明（B0–B4）
 
-> 数据工程脚本路径 `03_data/processed/M2/py/`，数据产物 `03_data/processed/M2/outputs/`；建模/消融脚本 `04_code/scripts/`，结果 `05_outputs/baselines/m2/`。
+> 数据工程脚本路径 `03_data/processed/M2/py/`，数据产物 `03_data/processed/M2/outputs/`；建模/消融脚本 `04_code/scripts/`，结果 `05_outputs/baselines/Flat/M2_Flat/`。
 
 
 
@@ -275,10 +275,10 @@
 | 项      | 内容                                                                                                                            |
 | ------ | ----------------------------------------------------------------------------------------------------------------------------- |
 | **输入** | `processed/merge/outputs/weekly_feature_matrix.csv`（55 anom 已 merge）                                                          |
-| **运行** | `python3 04_code/scripts/run_baseline.py --modality M2 --m2-features anom`                                                    |
-|        | `python3 04_code/scripts/run_baseline.py --modality M2 --leave-one-aoi-out`                                                   |
-|        | `python3 04_code/scripts/run_baseline.py --modality M2 --matrix weekly_feature_matrix_watermask.csv --tag watermask`          |
-| **输出** | `05_outputs/baselines/m2/baseline_metrics_*.csv` / `baseline_predictions_*.csv` / `backtest_*.png` / `baseline_loao_anom.csv` |
+| **运行** | `python3 04_code/scripts/flat/run_baseline.py --modality M2 --m2-features anom`                                                    |
+|        | `python3 04_code/scripts/flat/run_baseline.py --modality M2 --leave-one-aoi-out`                                                   |
+|        | `python3 04_code/scripts/flat/run_baseline.py --modality M2 --matrix weekly_feature_matrix_watermask.csv --tag watermask`          |
+| **输出** | `05_outputs/baselines/Flat/M2_Flat/baseline_metrics_*.csv` / `baseline_predictions_*.csv` / `backtest_*.png` / `baseline_loao_anom.csv` |
 
 
 ---
@@ -290,7 +290,7 @@
 
 | 项      | 内容                                                                          |
 | ------ | --------------------------------------------------------------------------- |
-| **运行** | `python3 04_code/scripts/m2/shap_m2.py`                                     |
+| **运行** | `python3 04_code/scripts/flat/M2_Flat/shap_m2.py`                                     |
 | **输出** | `shap_anom.png`；`shap_xgb_m2_by_{index,aoi}.csv`；`shap_topN_anom.csv`（供 C2） |
 
 
@@ -303,7 +303,7 @@
 
 | 项      | 内容                                                                              |
 | ------ | ------------------------------------------------------------------------------- |
-| **运行** | `python3 04_code/scripts/m2/robustness_m2.py`                                   |
+| **运行** | `python3 04_code/scripts/flat/M2_Flat/robustness_m2.py`                                   |
 | **输出** | `c2_summary.csv` / `c2_overview.png`（All-55 / PCA-90 / ElasticNet / SHAP-top20） |
 
 
@@ -316,7 +316,7 @@
 
 | 项      | 内容                                                                                     |
 | ------ | -------------------------------------------------------------------------------------- |
-| **运行** | `python3 04_code/scripts/m2/sweep_m2.py`                                               |
+| **运行** | `python3 04_code/scripts/flat/M2_Flat/sweep_m2.py`                                               |
 | **输出** | `sweep_m2_summary.csv` / `sweep_m2_overview.png`（anom / literature / level × L1/L4/L8） |
 
 

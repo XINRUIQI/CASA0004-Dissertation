@@ -201,7 +201,7 @@ def _zscore_time(x: np.ndarray) -> np.ndarray:
     return np.nan_to_num((x - m) / s)
 
 
-def load_graph17_windows(npz_path: Path, lookback: int = 8, stride: int = 1,
+def load_graph17_windows(npz_path: Path, lookback: int = 4, stride: int = 1,
                          standardize: bool = True):
     """Load the 17-node bundle and cut rolling lookback windows.
     Returns (aoi (W,L,11,Fa), choke (W,L,6,Fc), adj (W,L,17,17), end_weeks)."""
@@ -224,7 +224,7 @@ def load_graph17_windows(npz_path: Path, lookback: int = 8, stride: int = 1,
 def _smoke() -> None:
     root = Path(__file__).resolve().parents[3]
     npz = root / "03_data" / "processed" / "M3" / "outputs" / "m3_graph17_tensors.npz"
-    A, C, Ad, ew = load_graph17_windows(npz, lookback=8)
+    A, C, Ad, ew = load_graph17_windows(npz, lookback=4)
     print(f"windows: aoi{tuple(A.shape)} choke{tuple(C.shape)} adj{tuple(Ad.shape)}")
     print(f"end weeks: {ew[0]} .. {ew[-1]} ({len(ew)} windows)")
 

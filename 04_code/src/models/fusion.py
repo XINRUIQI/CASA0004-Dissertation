@@ -4,8 +4,8 @@ Modality-aware fusion + regression head for the representation-level baseline
 rolling backtest can compare them under the identical protocol:
 
   mode="ship"    z_ship only            (shipping representation, RQ1)
-  mode="fin"     z_fin only             (finance deep baseline)
-  mode="fusion"  gated(z_fin, z_ship)   (finance + shipping, RQ2 representation arm)
+  mode uses modalities subset of ("fin","rs","ship") — tensor channel keys,
+  not model display names. Display names are M1_Deep / M3_Deep_gated / etc.
 
 Output is the predicted next-week log return r_hat (B,), plus an interpretability
 dict (site attention over the 17 nodes; modality gate weights for fusion) for

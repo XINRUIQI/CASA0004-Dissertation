@@ -344,7 +344,7 @@ Sentinel-2 波段：`B2` = 蓝、`B3` = 绿、`B4` = 红、`B8` = 近红外（NI
 
 ## 6. 建模合约：154 列 → 用哪些（`--m2-features`）
 
-> 决策依据见 channelB plan §3 B3；建模入口 `04_code/scripts/run_baseline.py --modality M2 --m2-features {...}` 与 `04_code/src/backtest/data.py`。**只有 55 个 anom 列被并入统一特征矩阵** `03_data/processed/merge/outputs/weekly_feature_matrix.csv`（另派生 `avail_m2`）；level/age/avail 留在 `m2_weekly_features.csv` 供稳健性/EDA，不并入。
+> 决策依据见 channelB plan §3 B3；建模入口 `04_code/scripts/flat/run_baseline.py --modality M2 --m2-features {...}` 与 `04_code/src/backtest/data.py`。**只有 55 个 anom 列被并入统一特征矩阵** `03_data/processed/merge/outputs/weekly_feature_matrix.csv`（另派生 `avail_m2`）；level/age/avail 留在 `m2_weekly_features.csv` 供稳健性/EDA，不并入。
 
 
 | `--m2-features` | 列数  | 内容                                                       | 用途                   |

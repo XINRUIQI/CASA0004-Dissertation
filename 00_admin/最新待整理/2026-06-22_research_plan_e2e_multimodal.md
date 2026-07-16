@@ -202,7 +202,7 @@
 - **协议**：rolling-origin（expanding，min_train=104 周，tune 时 retrain_every=13），lookback=4 周（导师设定），目标单任务回归 r_{t+1}，还原 \hat P_{t+1}=P_t e^{\hat r_{t+1}}。
 - **模型**：M0（随机游走）+ M1_Ridge + M1_XGB，开启**内层时间验证调参**（`--tune`：Ridge alpha + XGB 小网格，验证集 = 训练折尾部 52 周）；feature_mode=all 为主，returns（趋势列平稳化）作稳健性附加。
 - **主对照锁定 =** `L4_tuned`（lookback=4 + tune，与 4 周设定一致且为当前最强扁平基线）；另保留 `L1`（lookback=1，38 维、~30s）作轻量 sanity。
-- **当前 M0/M1 结果**（260 测试周 2021–2025，M0 RMSE=4.14）：L4_tuned Ridge=4.38（skill −5.9%）、L12 XGB=4.70（−13.6%）；扁平 M1 仍未超 M0，但调参后差距由强显著（DM≈5.0）收敛到边缘（DM≈1.7）。代码 `04_code/scripts/run_baseline.py` + `m1/sweep_m1.py`；详见 `00_admin/待整理/flat_baseline_log.md`。
+- **当前 M0/M1 结果**（260 测试周 2021–2025，M0 RMSE=4.14）：L4_tuned Ridge=4.38（skill −5.9%）、L12 XGB=4.70（−13.6%）；扁平 M1 仍未超 M0，但调参后差距由强显著（DM≈5.0）收敛到边缘（DM≈1.7）。代码 `04_code/scripts/flat/run_baseline.py` + `04_code/scripts/flat/M1_Flat/sweep_m1.py`；详见 `00_admin/待整理/flat_baseline_log.md`。
 
 > ✅ 数据接线（已修复 2026-06-23）：EIA +1w 滞后下沉到 **M1 源头**（`build_m1_weekly.py`）；merge 层 `build_feature_matrix.py` 已设 `EIA_WPSR_LAG_WEEKS=0`「仅复查、不再 shift」，自检改为「EIA == M1 原列 unchanged」。重跑标准窗 365×320 / full 1067×320，无泄漏自检全 OK。三模态统一为「各自滞后、merge 仅复查」。
 

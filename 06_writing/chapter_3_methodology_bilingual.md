@@ -1,5 +1,5 @@
-# Chapter 3 — Data and Methods
-# 第 3 章 — 数据与方法
+# Chapter 3 — Methodology
+# 第 3 章 — 研究方法
 
 This chapter describes the empirical design used to answer RQ1–RQ3. The guiding principle is fairness: flat and deep models are compared on the same information sets, the same forecast timeline and the same leakage-safe validation protocol. Detailed variable dictionaries, hyperparameter grids and long feature tables are placed in the Appendix so that the chapter remains focused on design choices that affect inference.
 

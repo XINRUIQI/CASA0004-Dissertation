@@ -37,9 +37,9 @@ Two patterns dominate. First, **no model beats M0** — every skill value is neg
 
 **RQ2 — flat vs modality-aware fusion.** Even within flat feature fusion, *how* a modality is handled already matters. The 119 high-dimensional shipping features yield a strongly significant increment under XGBoost (p = 2.5e-5) yet **no significant increment under the linear Ridge model** (p = 0.48), whose RMSE worsens to 4.59 — the high-dimensional, collinear shipping block overwhelms a flat linear model while the tree model can still exploit it. Whether a representation-level, modality-aware fusion extracts this signal more effectively than any flat baseline is precisely the question the contribution layer (Chapter 5) is designed to answer.
 
-**Modality attribution (SHAP).** On the M4 XGBoost model, global mean-|SHAP| attributes **56% of predictive contribution to shipping, 31% to finance and 13% to remote sensing** (Figure 4.x, `../05_outputs/baselines/m4/shap_m4.png`), consistent with the chokepoint tanker signals (Hormuz/Suez) being the strongest non-price inputs.
+**Modality attribution (SHAP).** On the M4 XGBoost model, global mean-|SHAP| attributes **56% of predictive contribution to shipping, 31% to finance and 13% to remote sensing** (Figure 4.x, `../05_outputs/baselines/Flat/M4_Flat/shap_m4.png`), consistent with the chokepoint tanker signals (Hormuz/Suez) being the strongest non-price inputs.
 
-![M4 SHAP modality contribution](../05_outputs/baselines/m4/shap_m4.png)
+![M4 SHAP modality contribution](../05_outputs/baselines/Flat/M4_Flat/shap_m4.png)
 
 **Robustness.** (i) Applying an MNDWI water mask to water-dominated export terminals *strengthens* the remote-sensing increment (M2 XGB Clark–West p = 0.006 → 8.5e-5), supporting the interpretation that water-surface noise had been diluting the optical indices. (ii) Leave-one-AOI-out shows that dropping most individual sites slightly *reduces* RMSE, i.e. the remote-sensing increment is **diffuse across sites rather than driven by any single AOI**, and warns against per-site overfitting. (iii) Both learned model families remain numerically stable under the shared protocol.
 

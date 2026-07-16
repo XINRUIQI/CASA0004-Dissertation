@@ -446,7 +446,7 @@ GFW            →  月频 AIS 存在时长/船数（6 咽喉，2012+，补充�
 
 本节记录 PortWatch 特征族的**文献/官方依据**、**原生 vs 派生性质**、建议的 **core / extended / control / aggregate / directional 分层**，以及一组 **稳健性/消融模型设计**（Core / B / C / D / E）。评估日期：2026-07-03。
 
-> ⚠️ **本节为设计文档，代码未改**：分层与消融臂尚未写入 `04_code/scripts/m3/robustness_m3.py` 的 `select_m3_arm()`，也未重跑任何模型；字段定义与单位见 §4.2–§4.3、§5，此处不重复。
+> ⚠️ **本节为设计文档，代码未改**：分层与消融臂尚未写入 `04_code/scripts/flat/M3_Flat/robustness_m3.py` 的 `select_m3_arm()`，也未重跑任何模型；字段定义与单位见 §4.2–§4.3、§5，此处不重复。
 
 ### 10.1 文献支撑评估表（原生 vs 派生）
 
@@ -527,7 +527,7 @@ PortWatch 是 IMF 为监测海运贸易与关键航道中断构建的 AIS 指标
 | [REF-PW-6] | 官方报告 | **UNCTAD** — Review of Maritime Transport（船队按 数量 + 总 DWT + average vessel size 报告） | https://unctad.org/en/PublicationChapters/rmt2017ch2_en.pdf | `avg_tanker_size` 的行业先例（count / total DWT / avg size 并报） |
 | [REF-PW-7] | 数据接口 | **IMF PortWatch ArcGIS FeatureServer** — `Daily_Chokepoints_Data` / `Daily_Ports_Data`（org `weJ1QsnbMYJlCHdG`） | https://services9.arcgis.com/weJ1QsnbMYJlCHdG/ArcGIS/rest/services/ | 原生字段 `n_*`/`capacity_*`/`import_tanker`/`export_tanker` 出处 |
 
-**项目内交叉引用**：P070 → `01_literature/reading_notes/03 Shipping/P070.md`；PortWatch 下载 → `03_data/raw/03_shipping/IMF Portwatch/download_portwatch_{chokepoints,ports}.py`；建模选列 → `04_code/src/backtest/data.py`；消融臂 → `04_code/scripts/m3/robustness_m3.py`（待新增 Core/B/C/D/E）。
+**项目内交叉引用**：P070 → `01_literature/reading_notes/03 Shipping/P070.md`；PortWatch 下载 → `03_data/raw/03_shipping/IMF Portwatch/download_portwatch_{chokepoints,ports}.py`；建模选列 → `04_code/src/backtest/data.py`；消融臂 → `04_code/scripts/flat/M3_Flat/robustness_m3.py`（待新增 Core/B/C/D/E）。
 
 ---
 
@@ -748,9 +748,9 @@ python build_emodnet_weekly.py                        # EMODnet zonal（欧洲�
 | `finance_encoder.py` | `z_fin`：M1 金融序列 → 小型因果 TCN → 32 维 |
 | `fusion.py` | `GatedFusion`（softmax 门控）+ `DeepForecastModel`（mode = ship / fin / fusion）→ 回归头 → r_hat |
 | `deep_rolling.py` | rolling-origin 深度训练循环（Adam + inner-val 早停 + 每 fold 目标标准化），输出与 `backtest.metrics` 兼容的 res 表 |
-| `scripts/run_deep_baseline.py` | 入口：跑 ship/fin/fusion + 读入 flat M1 预测 + evaluate + Clark-West |
+| `04_code/scripts/deep/run_deep_baseline.py` | 入口：跑 ship/fin/fusion + 读入 flat M1 预测 + evaluate + Clark-West |
 
-> ⚠️ **工程注意**：`run_deep_baseline.py` **不 import xgboost**（不重跑 flat M1，改读 `05_outputs/baselines/m1/baseline_predictions.csv`）——xgboost 与 torch 同进程在 macOS 因重复 OpenMP runtime **段错误**。需先 `run_baseline.py --modality M1` 生成该预测。
+> ⚠️ **工程注意**：`04_code/scripts/deep/run_deep_baseline.py` **不 import xgboost**（不重跑 flat M1，改读 `05_outputs/baselines/Flat/M1_Flat/baseline_predictions.csv`）——xgboost 与 torch 同进程在 macOS 因重复 OpenMP runtime **段错误**。需先 `run_baseline.py --modality M1` 生成该预测。
 
 **结果**（253 共同测试周 2021-02 ~ 2025-12，`epochs=80` 早停，`seed=42`）：
 
@@ -777,4 +777,4 @@ python build_emodnet_weekly.py                        # EMODnet zonal（欧洲�
 - **仍未显著击败 M0**：所有模型 DM_p(vs M0) 均不显著（与本项目一贯的诚实结论一致：周频 Brent 随机游走极强）。
 - ⚠️ **caveat**：Mfusion/Mship 相对 flat M1 的 CW 为**近似嵌套**（深度模型含相同金融输入 + 表示学习，非严格线性嵌套）；小样本（253 周）、未做深度超参 sweep、单 seed；z_rs 未接入。
 
-**产物**：`05_outputs/baselines/deep/`（`deep_metrics.csv` / `deep_cw.csv` / `deep_predictions.csv` / `deep_backtest.png`）。复现：`python3 04_code/scripts/run_deep_baseline.py --modes ship,fin,fusion --lookback 8 --epochs 80`。
+**产物**：``05_outputs/baselines/Deep/_cross/`（`deep_metrics.csv` / `deep_cw.csv` / `deep_predictions.csv` / `deep_backtest.png`）+ 各 `M*_Deep/baseline_*.csv`。复现：`python3 04_code/scripts/deep/run_deep_baseline.py --modes ship,fin,fusion --lookback 8 --epochs 80`。
