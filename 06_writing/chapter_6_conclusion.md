@@ -1,19 +1,9 @@
 # Chapter 6 — Conclusion *(~400–700)*
 
-# 第 6 章 — 结论 *(约 400–700 词)*
-
 *No subsections (Taylor): a few continuous paragraphs summarising key findings and their implications.*
-
-*不设小节（Taylor）：用若干连续段落总结关键发现及其含义。*
 
 Short-horizon oil-price surprises matter for hedging, budgeting and market-risk decisions, yet weekly Brent is hard to improve upon once a no-change benchmark is imposed. This dissertation therefore asked whether satellite remote sensing and maritime shipping add predictive information beyond financial time series for one-week-ahead Brent prices, and whether modality-aware representation-level fusion outperforms flat feature fusion. The design used a shared leakage-safe rolling-origin protocol, an M0–M4 information ladder, paired Flat (Ridge/XGBoost) and Deep (modality encoders plus gated or cross-attention fusion) models, and formal nested and non-nested forecast tests.
 
-短期限油价意外关系到对冲、预算与市场风险决策，但一旦施加不变预测基准，周度 Brent 很难被改善。本论因此检验卫星遥感与航运能否在金融时序之外为提前一周 Brent 价格提供增量信息，以及模态感知表示级融合是否优于扁平特征融合。设计采用共享无泄漏滚动起点协议、M0–M4 信息阶梯、配对 Flat（Ridge/XGBoost）与 Deep（模态编码器加门控或交叉注意力融合）模型，以及正式的嵌套与非嵌套预测检验。
-
 No Flat model beats M0, though shipping still helps relative to financial time series while remote sensing does not. Under Deep, finance plus shipping (M3) shows only a small positive skill versus M0, and adding remote sensing (M4) does not clearly dominate M3. At matched sets, Deep outperforms Flat most clearly once shipping enters. Where forecasts improve on M0, multi-seed-stable diagnostics show substantial average shipping-gate weight and Hormuz as the only cross-seed-stable chokepoint focus; Red Sea event-window gate moves are not locked. These readings describe model dependence, not causal price drivers.
 
-无 Flat 模型打过 M0，尽管航运相对金融时序仍有帮助而遥感没有。在 Deep 下，金融加航运（M3）相对 M0 仅有小幅正 skill，再加遥感（M4）并不明显主导 M3。匹配集上 Deep 在航运进入后相对 Flat 优势最清晰。相对 M0 有改善处，多种子稳定诊断显示航运门控平均权重可观，霍尔木兹为唯一跨 seed 稳定咽喉焦点；红海事件窗门控不写死。这些解读描述模型依赖，而非价格因果驱动。
-
 The contribution is integrative: a leakage-safe nested multimodal comparison of financial time series, remote sensing and shipping; paired Flat–Deep contrasts at matched information sets; joint reporting of nested increments and absolute skill versus M0; and interpretability kept behind a predictive-value and multi-seed filter. For risk-management and energy-crisis monitoring agendas already raised in the introduction, the practical change is evaluative rather than operational—require double tests against financial time series and M0, and treat only cross-seed-stable diagnostics as discussable model reliance. Alternative data and representation-level fusion can help, but strong baselines come first and absolute gains remain modest.
-
-贡献是集成性的：金融时序、遥感与航运的无泄漏嵌套多模态对照；匹配信息集上的配对 Flat–Deep；同时报告嵌套增量与相对 M0 的绝对 skill；以及置于预测价值与多种子过滤之后的可解释性。对绪论已提出的风险管理与能源危机监测议程，可改变的是评估方式而非操作规则——要求相对金融时序与 M0 的双重检验，并仅把跨 seed 稳定诊断当作可讨论的模型依赖。另类数据与表示级融合可以有用，但强基线优先，绝对增益仍然有限。

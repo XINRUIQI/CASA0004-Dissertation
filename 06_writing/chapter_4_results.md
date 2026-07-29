@@ -1,46 +1,72 @@
-# Chapter 4 — Results
+# Chapter 4 — Results *(~2,500–3,200)*
 
-*(Draft v1, 2026-07-03. Numbers from `05_outputs/baselines/`; test window 257 weeks,
-2021-01 to 2025-12. Figures referenced by relative path.)*
+## 4.1 Descriptive overview
 
-## 4.1 Exploratory data analysis
+This chapter reports out-of-sample one-week-ahead Brent price forecasts on the common scored span in Section 3.9 (257 weeks, 22 January 2021–19 December 2025). Relative performance versus the no-change benchmark M0 is summarised by RMSE skill (Murphy, 1988), defined in Section 3.10 as
 
-The prediction target — the weekly Brent log return — has a near-zero mean and pronounced volatility clustering, so the no-change random walk (M0) is an extremely strong benchmark: on the 257-week test set its price RMSE is **4.15 USD/barrel**, the number every learned model is measured against.
+\[
+\mathrm{Skill}=100\times\left(1-\frac{\mathrm{RMSE}_{\mathrm{model}}}{\mathrm{RMSE}_{\mathrm{M0}}}\right).
+\]
 
-The mechanism-level EDA of the remote-sensing channel (Channel B) tempers expectations for the alternative modalities. Site-type composite anomalies (port / refinery / terminal) correlate only weakly with Brent returns (|corr| < 0.15), and most of the stronger correlations sit at **negative lags** — remote-sensing activity tends to react to, or move with, prices rather than lead them, a cautious signal for RQ1. The clearest exception is night-time-water dynamics at Middle-East export terminals (`NDWI_terminal`), which leads at lag +1 (Granger p = 0.029) but is fragile under multiple-comparison correction. This weak, mostly coincident structure is precisely why the study relies on formal Diebold–Mariano / Clark–West testing rather than visual inspection.
+Positive skill means lower RMSE than M0; negative skill means worse. On this span M0 RMSE is 4.152 USD/barrel. Weekly Brent log returns have near-zero mean and clear volatility clustering. Exploratory remote-sensing anomalies show only weak contemporaneous association with returns, and several stronger associations occur at non-positive leads. Shipping is treated as a noisy trade-and-congestion proxy, not as a direct measure of next week’s price. The chapter follows Flat results (RQ1), Deep results, paired Flat–Deep comparisons (RQ2), robustness, and interpretability where predictive value exists (RQ3).
 
-## 4.2 Model performance
+## 4.2 Flat-model results
 
-All three model families were run under the identical locked protocol (2019–2026, lookback 4, expanding rolling-origin, single-task regression of \(r_{t+1}\) reconstructed to price). Table 4.1 reports every modality × model cell.
+Table 4.1 summarises Flat performance. Every learned Flat model has negative skill versus M0. Relative to financial time series M1, adding shipping in M3 still improves performance, while remote sensing in M2 does not show a clear gain over M1; the full Flat set M4 raises absolute RMSE further.
 
-**Table 4.1 — M0–M4 out-of-sample performance (price RMSE, 257 test weeks)**
+**Table 4.1 — Flat out-of-sample performance** *(n = 257)*
 
-| Modality | Model | RMSE | MAE | DirAcc | Skill vs M0 | DM_p (beats M0) | CW_p (vs M1) |
-|----------|-------|-----:|----:|-------:|------------:|----------------:|-------------:|
-| **M0** | Random walk | **4.152** | 3.011 | – | 0.0% | – | – |
-| M1 Finance | Ridge | 4.332 | 3.081 | 0.490 | −4.3% | 0.91 | – |
-| | XGB | 4.771 | 3.406 | 0.525 | −14.9% | 0.98 | – |
-| M2 +Remote sensing | Ridge | 4.411 | 3.208 | 0.518 | −6.3% | 0.96 | 0.212 |
-| | XGB | 4.643 | 3.300 | 0.506 | −11.8% | 0.98 | **0.006** |
-| M3 +Shipping | Ridge | 4.592 | 3.278 | 0.502 | −10.6% | 0.96 | 0.481 |
-| | XGB | 4.456 | 3.227 | 0.498 | −7.3% | 0.96 | **2.5e-5** |
-| M4 All | Ridge | 4.560 | 3.313 | 0.482 | −9.8% | 0.96 | 0.228 |
-| | XGB | 4.470 | 3.284 | 0.502 | −7.7% | 0.99 | **1.7e-4** |
+| Set | Content                           | Ridge RMSE | Ridge skill vs M0 | XGB RMSE | XGB skill vs M0 |
+| --- | --------------------------------- | ---------- | ----------------- | -------- | --------------- |
+| M0  | no-change benchmark               | 4.152      | —                 | 4.152    | —               |
+| M1  | financial time series only        | 4.256      | −2.5%             | 4.368    | −5.2%           |
+| M2  | financial time series + RS        | 4.414      | −6.3%             | 4.440    | −6.9%           |
+| M3  | financial time series + shipping  | 4.430      | −6.7%             | 4.429    | −6.7%           |
+| M4  | financial time series + RS + ship | 4.525      | −9.0%             | 4.507    | −8.6%           |
 
-*Skill > 0 beats the random walk; DM_p is the one-sided p that the model beats M0 (< 0.05 = significantly better); CW_p is the Clark–West nested increment over M1 (< 0.05 = significant). Bold marks significant nested increments.*
+Nested Clark–West tests versus M1 can detect incremental information from added modalities under selected learners, especially when shipping enters. Diebold–Mariano tests against M0 remain consistent with negative skill: a nested gain over financial time series is not evidence of beating M0. Directional accuracy is auxiliary and does not reverse the RMSE ranking.
 
-Two patterns dominate. First, **no model beats M0** — every skill value is negative and no DM test is significant, confirming the difficulty of weekly Brent forecasting; among the learned models the tuned Ridge on the financial set stays closest to the random walk (M1 skill −4.3%). Second, **relative to the financial baseline M1, the added modalities do carry a statistically significant nested increment**: under XGBoost the Clark–West test is significant for M2 (p = 0.006), M3 (p = 2.5e-5) and M4 (p = 1.7e-4).
+## 4.3 Deep-model results
 
-## 4.3 Key findings
+Table 4.2 summarises Deep performance by information set. For M1 only the finance encoder applies; its result is placed in the gated column for comparability. M1 and M2 both fail to beat M0. Financial time series plus shipping (M3) improves on M0 under gated and cross-attention fusion, with modest skill of about +0.11% (gated) and +0.74% (cross-attention). Nested Deep contrasts likewise identify shipping as the clearest modality gain over Deep M1. Gated M4 does not clearly dominate M3: adding remote sensing on top often fails to cut absolute error further.
 
-**RQ1 — incremental value.** Remote sensing and shipping provide a *statistically significant nested increment* over the finance-only model under XGBoost (Clark–West: M2 p = 0.006, M3 p = 2.5e-5, M4 p = 1.7e-4), though the increment is model-dependent — it does not reach significance under the linear Ridge. However, this must be stated with an honest nuance: **a significant Clark–West increment over M1 is not the same as beating M0** — no configuration achieves positive skill against the random walk. The contribution of alternative data is therefore *detectable but modest* at the weekly horizon.
+Gated fusion is the main reported Deep design; cross-attention is a comparative architecture with a higher single-seed ceiling but greater sensitivity (Section 4.5). Encoder-concatenation and the full fusion matrix are in the appendix.
 
-**RQ2 — flat vs modality-aware fusion.** Even within flat feature fusion, *how* a modality is handled already matters. The 119 high-dimensional shipping features yield a strongly significant increment under XGBoost (p = 2.5e-5) yet **no significant increment under the linear Ridge model** (p = 0.48), whose RMSE worsens to 4.59 — the high-dimensional, collinear shipping block overwhelms a flat linear model while the tree model can still exploit it. Whether a representation-level, modality-aware fusion extracts this signal more effectively than any flat baseline is precisely the question the contribution layer (Chapter 5) is designed to answer.
+**Table 4.2 — Deep out-of-sample performance** *(gated = main reported fusion)*
 
-**Modality attribution (SHAP).** On the M4 XGBoost model, global mean-|SHAP| attributes **56% of predictive contribution to shipping, 31% to finance and 13% to remote sensing** (Figure 4.x, `../05_outputs/baselines/Flat/M4_Flat/shap_m4.png`), consistent with the chokepoint tanker signals (Hormuz/Suez) being the strongest non-price inputs.
+| Set | Content                           | Gated RMSE | Gated skill vs M0 | Xattn RMSE | Xattn skill vs M0 |
+| --- | --------------------------------- | ---------- | ----------------- | ---------- | ----------------- |
+| M0  | no-change benchmark               | 4.152      | —                 | 4.152      | —                 |
+| M1  | financial time series only        | 4.250      | −2.4%             | —          | —                 |
+| M2  | financial time series + RS        | 4.253      | −2.4%             | —          | —                 |
+| M3  | financial time series + shipping  | 4.147      | **+0.11%**        | 4.121      | **+0.74%**        |
+| M4  | financial time series + RS + ship | 4.205      | −1.3%             | 4.147      | +0.12%            |
 
-![M4 SHAP modality contribution](../05_outputs/baselines/Flat/M4_Flat/shap_m4.png)
+## 4.4 Flat versus Deep
 
-**Robustness.** (i) Applying an MNDWI water mask to water-dominated export terminals *strengthens* the remote-sensing increment (M2 XGB Clark–West p = 0.006 → 8.5e-5), supporting the interpretation that water-surface noise had been diluting the optical indices. (ii) Leave-one-AOI-out shows that dropping most individual sites slightly *reduces* RMSE, i.e. the remote-sensing increment is **diffuse across sites rather than driven by any single AOI**, and warns against per-site overfitting. (iii) Both learned model families remain numerically stable under the shared protocol.
+Table 4.3 compares Flat and Deep at matched information sets for RQ2. The percentage columns are each model’s skill versus M0, not the Flat-to-Deep RMSE change.
 
-**Summary.** The core empirical layer establishes a credible, leakage-safe, three-family baseline in which (a) the random walk is unbeaten, (b) remote sensing and shipping nonetheless add significant nested information over finance, and (c) the linear-vs-tree contrast on the high-dimensional shipping block already signals that *how* modalities are combined matters — motivating the modality-aware contribution layer (Chapter 5).
+Deep gains are clearest once shipping enters. Deep M1 improves on Flat M1 in RMSE but remains negative versus M0. Finance-plus-RS pairs stay weak in both families. The clearest paired gain is M3: Flat skill −6.7% versus Deep gated +0.11%. Deep M4 has lower RMSE than Flat M4 but neither gated Deep M4 nor the Flat counterpart beats M0, and gated Deep M4 does not dominate Deep M3. The Deep advantage is therefore conditional on shipping-inclusive settings rather than uniform across all pairs.
+
+**Table 4.3 — Paired Flat versus Deep**
+
+| Pair | Flat RMSE | Deep RMSE | Flat skill vs M0 | Deep skill vs M0 |
+| ---- | --------- | --------- | ---------------- | ---------------- |
+| M1   | 4.368     | 4.250     | −5.2%            | −2.4%            |
+| M2   | 4.440     | 4.253     | −6.9%            | −2.4%            |
+| M3   | 4.429     | 4.147     | −6.7%            | +0.11%           |
+| M4   | 4.507     | 4.205     | −8.6%            | −1.3%            |
+
+## 4.5 Robustness and sensitivity
+
+Appendix B collects the full robustness tables. Flat checks (lookback, remote-sensing variants, shipping tiers, leave-one-modality-out for M4) leave the main ranking unchanged: no Flat model beats M0; shipping still helps relative to M1; remote sensing remains weak and any nested Flat RS signal is diffuse rather than single-site driven.
+
+Deep checks cover seeds, lookback, representation size, fusion type, and early versus late windows. Gated finance-plus-shipping remains the more stable small positive-skill configuration; cross-attention can look stronger on one seed but varies more across seeds. Larger encoder width than the locked setting tends to worsen performance on the short weekly sample. The matched-set Deep advantage over Flat, especially with shipping, survives these checks.
+
+## 4.6 Interpretability
+
+Interpretability is restricted to Deep specifications that improve on M0—primarily Deep M3. Claims follow a multi-seed rule (seeds 42, 1 and 2): only cross-seed-stable foci are locked in the main text. Modality gates give each modality’s fusion-weight share; shipping node attention identifies which graph locations receive weight. A high shipping gate does not mean the model is “looking at Hormuz”; spatial detail lives in node attention.
+
+For Deep M3, mean gates are about 0.56 (financial time series) and 0.44 (shipping). Week-level shipping-gate paths are unstable across seeds, so fine-grained single-seed event stories are not warranted. Event-window checks (±8 weeks) retain only the Russia–Ukraine announcement window (February 2022) as a cross-seed co-rising case. EU oil-ban and OPEC+ cut windows co-move but shipping weight falls; the Houthi Red Sea window (November 2023) is unstable (2↑1↓) and is not locked. Spatially, Hormuz is the only chokepoint in the top set for all three seeds (3/3). Supporting figures are in Appendix B.
+
+These diagnostics describe model dependence under a stability filter. They do not identify causal drivers of Brent prices.
