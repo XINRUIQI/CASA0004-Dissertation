@@ -4,7 +4,13 @@
 >
 > **One-sentence definition**: the flat baseline is the **core empirical benchmark layer** of this dissertation. It "flattens" three data modalities (finance, remote sensing, shipping) into one wide table, feeds it to two machine-learning models (Ridge, XGBoost), and adds modalities one layer at a time (the ablation ladder M0→M4) to test whether each new data type actually helps predict next-week oil prices.
 >
-> Related logs: `00_admin/待整理/flat_baseline_log.md`; code: `04_code/`; data: `03_data/`.
+> **Last updated**: 2026-07-28 (paths → `最新待整理/`; clarifies 365×213 matrix and flat vs deep GFW lags; adds main-analysis vs robustness + RQ2 bridge; main-result numbers remain 2026-07-03/05 L4_tuned)
+>
+> **Experiment log**: `00_admin/最新待整理/flat_baseline_log.md`  
+> **Variable list**: `00_admin/最新待整理/2026-07-28_扁平模型变量清单.md`  
+> **Progress overview**: `00_admin/最新待整理/2026-07-15_研究方案与进度总览.md`  
+> **Deep counterpart**: `deep_model_full_walkthrough_EN.md`  
+> **Code / data**: `04_code/` · `03_data/`
 
 ---
 
@@ -22,7 +28,8 @@
 10. [Step 8: Main results](#10)
 11. [Step 9: How results are analysed](#11)
 12. [Step 10: Robustness checks](#12)
-13. [Appendix: full variable lists & commands](#13)
+13. [Main analysis vs robustness + bridge to RQ2](#13)
+14. [Document index & reproduction](#14)
 
 ---
 
@@ -230,12 +237,16 @@ Each week also carries `age` (staleness in days) and `mask` (availability), maki
 3. Concatenate the three sources on a **union index** (fixes an old inner-join sample-loss bug: 727→362)
 4. **Derived**: `tanker_share`, `n_tanker_wow_pct`, `avg_tanker_size`, cross-chokepoint aggregates, etc.
 
-**Publication lags**:
+**Publication lags (flat arm; do not mix with deep graph)**:
 
-| Source | Weekly conversion | Lag |
-|---|---|---|
-| PortWatch (daily) | daily → Friday sum | **+1 week** |
-| GFW (monthly) | month-end + ffill | **+4 weeks** |
+| Source | Weekly conversion | Lag | Note |
+|---|---|---|---|
+| PortWatch (daily) | daily → Friday sum | **+1 week** | Shared by flat M3 and deep-graph chokepoint nodes |
+| GFW (**monthly presence**) | month-end + ffill | **+4 weeks** | **Only** the flat 113-col `gfw_*` block |
+| GFW event / voyage / O-D (deep graph) | event → W-FRI | **+2 weeks** | See deep walkthrough; **not** flat table columns |
+| GFW SAR dark vessels | month-end + ffill | **+4 weeks** | Deep graph node features; **not** in flat main model |
+
+> If older notes say "GFW +2 weeks" in bulk, that is the deep-graph **event/voyage** stream — **not** flat GFW presence.
 
 **113 modelled columns (full tier, main model)**:
 
@@ -256,10 +267,11 @@ Each week also carries `age` (staleness in days) and `mask` (availability), maki
 
 **Output**: `03_data/processed/merge/outputs/weekly_feature_matrix.csv`
 
-**Dimensions: 365 weeks × 212 cols** (2019-01-04 to 2025-12-26)
+**Dimensions (disk check 2026-07-28)**: **365 weeks × 213 cols** = `week_ending_friday` + **212 data cols** (2019-01-04 to 2025-12-26). Tables below still split the **212 data cols** (excluding the date index).
 
 | Block | Cols | Note |
 |---|---|---|
+| Date index | 1 | `week_ending_friday` (not a feature) |
 | M1 finance | 31 | features |
 | M2 remote sensing | 55 | anom only (level/age/avail not merged) |
 | M3 shipping | 113 | full tier, all shipping cols |
@@ -268,14 +280,16 @@ Each week also carries `age` (staleness in days) and `mask` (availability), maki
 
 **Anti-leakage re-check**: the merge does not re-apply lags (EIA already +1w in M1, merge sets `EIA_WPSR_LAG_WEEKS=0` to avoid +2w); each modality lags at source, merge only re-checks; all leakage self-checks pass.
 
-**Why the window is 2019–2025**: the largest intersection where all three modalities exist. PortWatch only covers 2019+, so the standard comparison window starts in 2019.
+**Why the window is 2019–2025**: the largest intersection where all three modalities exist. PortWatch only covers 2019+, so the standard comparison window starts in 2019. Longer history: `weekly_feature_matrix_full.csv` (~1067 weeks; not used in main analysis).
+
+**Variable detail**: see `2026-07-28_扁平模型变量清单.md`.
 
 ---
 
 <a name="6"></a>
 ## 6. Step 4: Missing values & outliers
 
-(Figures below are measured on the actual matrix: 365 × 212 = 77,380 cells)
+(Figures below are measured on the actual matrix: 365 weeks × **212 data cols** ≈ 77,380 cells; the CSV also has 1 date-index column)
 
 ### 6.1 Missing-value overview
 
@@ -581,9 +595,45 @@ Leave-one-channel-out results:
 ---
 
 <a name="13"></a>
-## 13. Appendix
+## 13. Main analysis vs robustness + bridge to RQ2
 
-### 13.1 Reproduction commands
+### 13.1 Main-analysis specification (formal answers; do not cherry-pick)
+
+| Layer | Main-analysis spec | Why this one |
+| --- | --- | --- |
+| M0 | Random walk \(\hat P=P_t\) | Theoretical benchmark |
+| M1 | Finance 31 cols, **L4_tuned** | Supervisor 4-week lookback + full finance set |
+| M2 | Full 11-site **anom-55** | Most naive "stuff everything in"; no hand-picking |
+| M3 | Shipping **full 113** cols | Full shipping (hand-picked core is worse for XGB) |
+| M4 | M1+M2+M3 full | Full multimodal flat concat |
+
+**Robustness arms** (literature / aoi4 / watermask / LOAO / LOCHO / LOMO / lookback sweep, etc.) only answer "does the conclusion survive a different subset or denoising?" — they **reinforce** the main conclusion and are **not promoted** to main analysis (otherwise = p-hacking, and it would undercut the RQ2 story that "flat cannot harvest the signal → need fusion").
+
+### 13.2 Bridge to RQ2 (deep representation-level fusion)
+
+The flat layer's honest negative results (none beat M0; full M2 not significant; M3/M4 have CW signal but no RMSE gain) are exactly the motivation for the method-integration layer. Next:
+
+- **Full deep walkthrough**: `deep_model_full_walkthrough_EN.md`
+- **RQ2 pairing table** (matched information-set Flat XGB vs Deep): progress overview §2.6 / deep walkthrough §12.5
+  - Takeaway: deep significantly beats flat XGB on M3/M4 (with shipping); main model remains **Gated**; xattn is strong on a single seed but unstable
+
+---
+
+<a name="14"></a>
+## 14. Document index & reproduction
+
+| Use | Path |
+| --- | --- |
+| This file (flat full walkthrough) | `00_admin/最新待整理/flat_baseline_full_walkthrough_EN.md` |
+| Flat experiment number log | `00_admin/最新待整理/flat_baseline_log.md` (§7–§12; §13 deep first run is **lb=8 history** — official deep results are in the deep walkthrough) |
+| Variable list | `00_admin/最新待整理/2026-07-28_扁平模型变量清单.md` |
+| Progress overview | `00_admin/最新待整理/2026-07-15_研究方案与进度总览.md` |
+| Deep walkthrough | `00_admin/最新待整理/deep_model_full_walkthrough_EN.md` |
+| Feature matrix | `03_data/processed/merge/outputs/weekly_feature_matrix.csv` |
+| Flat entry | `04_code/scripts/flat/run_baseline.py` + `flat/M{1..4}_Flat/` |
+| Outputs | `05_outputs/baselines/Flat/M*_Flat/` |
+
+### 14.1 Reproduction commands
 
 ```bash
 # 1) Data build
@@ -610,7 +660,7 @@ python3 04_code/scripts/flat/M4_Flat/shap_m4.py
 python3 04_code/scripts/flat/M4_Flat/robustness_m4.py
 ```
 
-### 13.2 Output directories
+### 14.2 Output directories
 
 ```
 05_outputs/baselines/Flat/
@@ -620,9 +670,7 @@ python3 04_code/scripts/flat/M4_Flat/robustness_m4.py
   M4_Flat/  baseline_metrics_anom.csv, shap_*, robustness_m4_*, sweep_*
 ```
 
-Full experiment log: `00_admin/待整理/flat_baseline_log.md`
-
-### 13.3 Code structure
+### 14.3 Code structure
 
 ```
 04_code/
@@ -637,7 +685,3 @@ Full experiment log: `00_admin/待整理/flat_baseline_log.md`
   deep/                      run_deep_* + diagnostics
   tools/                     subperiod_eval, migrate, relocate
 ```
-
-### 13.4 One-sentence summary
-
-> The flat baseline demonstrates that, on top of a strong financial baseline M1, simply **flattening and concatenating** remote-sensing/shipping features dilutes the marginal increment — even worsening RMSE; only curated subsets (4-col literature, M3 full/tanker, water-mask variant) or the full-modality CW are marginally significant. This directly supports **RQ2**: modality-aware representation-level fusion (encoder → low-dim embedding → gated fusion) is needed, rather than piling on more flat columns.

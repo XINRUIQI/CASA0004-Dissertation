@@ -1,5 +1,9 @@
 # 项目逻辑与结果总览
 
+> **最后更新**：2026-07-28  
+> **用途**：一页讲清「逻辑 + 主结果 + RQ 回答」；细节数字与稳健性表见 `2026-07-15_研究方案与进度总览.md`。  
+> **配套**：扁平变量 → `2026-07-28_扁平模型变量清单.md`；进度 → `2026-07-15_研究方案与进度总览.md`；结构 → `2026-07-07_File Structure.md`。
+
 ---
 
 ## 0. 一句话定位
@@ -35,7 +39,7 @@
 
 - **对外目标**：下一周 Brent 现货价 P_{t+1}（美元/桶，周五截止，W-FRI）
 - **训练目标**：对数收益 r_{t+1}=\ln(P_{t+1}/P_t)，还原 \hat P_{t+1}=P_t\cdot e^{\hat r}
-- **样本窗**：2019–2025，合并矩阵约 **365 周**；共同测试期 **257 周（~2021–2025）**
+- **样本窗**：2019–2025，合并矩阵 **365 周 × 213 列**（含 `week_ending_friday`；数据列 212 = 31+55+113+11 avail+2 target）；共同测试期 **257 周（~2021–2025）**
 - **M0 基准 RMSE**：≈ **4.152** $/bbl
 
 
@@ -126,15 +130,19 @@
 - **来源**：IMF PortWatch（油轮过境/港口流量）、GFW AIS（船舶存在/航次）
 - **扁平臂**：113 列 full tier（core 38 列仅作稳健性——对 XGB 反而最弱）
 - **深度臂**：**17 节点动态异质图**（11 AOI + 6 咽喉）→ GAT + TCN + 节点注意力 → 32-d
-- **关键滞后**：PortWatch +1 周；GFW 航次 +2 周
+- **关键滞后（扁平 vs 深度勿混写）**：
+  - 扁平：GFW **月频 presence +4 周**；PortWatch **+1 周**
+  - 深度图：GFW **event/航次/O-D +2 周**；SAR 暗船 **+4 周**（未进扁平 113 列）
 - **脚本**：`03_data/processed/M3/py/aggregate_shipping_to_weekly.py`、`build_m3_graph17.py`
 
 
 
 ### 3.4 合并矩阵
 
-- `03_data/processed/merge/outputs/weekly_feature_matrix.csv`：**365 周 × 212 列**
+- `03_data/processed/merge/outputs/weekly_feature_matrix.csv`：**365 周 × 213 列**（去掉日期索引后常称 212 数据列）
+- 长历史：`weekly_feature_matrix_full.csv`（~1067 周，主分析未用）
 - 无泄漏：as-of 合并、发布滞后、训练折内 fit scaler/筛选器
+- 变量清单：`00_admin/最新待整理/2026-07-28_扁平模型变量清单.md`
 
 ---
 
@@ -220,19 +228,23 @@
 ### 5.3 深度表示级融合 ✅
 
 - [x] 三模态编码器 + 门控/拼接/交叉注意力融合
-- [x] 与扁平同协议 rolling-origin 回测
+- [x] 与扁平同协议 rolling-origin 回测（主协议 lookback=**4**）
 - [x] 多 seed / lookback / dropout / RS pool 稳健性 sweep
 - [x] RQ3：门控权重、节点/站点注意力、交叉注意力可视化
-- [x] 产物：`05_outputs/baselines/Deep/`（`M*_Deep/` + `_cross/`）
+- [x] **RQ3 多 seed 稳定性（2026-07-16）**：seeds {42,1,2}；Hormuz Top-5 = 3/3；α_shipping 周度相关弱 → 正文只写跨 seed 稳定焦点
+- [x] 产物：`05_outputs/baselines/Deep/`（`M*_Deep/` + `_cross/`；含 `deep_gate_stability.csv`）
 
 
 
-### 5.4 写作与文档（进行中）
+### 5.4 写作与文档（2026-07-28 刷新）
 
-- [x] 论文 outline（`outline.md`）
-- [x] 扁平/深度完整流程 walkthrough（中英）
-- [x] 章节初稿（Introduction、Discussion、Conclusion 双语版）
-- [ ] 文献综述主题稿、Methodology 正文、Results 整合
+- [x] Meeting 04（2026-07-08）：停止大改模型 → Phase 04 写作为主（`research_diary_phase4.md`）
+- [x] 论文 outline 最新版：`06_writing/Outline/20260728_outline_brief.md`（按 Taylor 反馈修订）
+- [x] Ch2 文献综述最新双语稿：`Chapter 2  Literature Review/20260728_literature_review_双语.md`
+- [x] 章节双语草稿：Ch1 / Ch3 / Ch4 / Ch5 / Ch6；Appendix A–C
+- [x] 扁平/深度完整流程 walkthrough（中英）；进度总览 / 项目逻辑 / 变量清单已对齐
+- [ ] **当前主线**：按 07-28 outline **合稿润色**（Ch1 空白+回应；Ch3 先 M0；Ch4 按 RQ + skill vs M0；Ch5 Implications；Ch6 连续段落）
+- [ ] Meeting 05（2026-07-29）读稿 → 之后进 `07_submission/`
 
 
 
@@ -346,13 +358,14 @@
 ### 6.4 可解释性（RQ3）
 
 
-| 层级             | 发现                                                                       |
-| -------------- | ------------------------------------------------------------------------ |
-| **Flat SHAP**  | M3 霍尔木兹 tanker share、苏伊士 wow；M4 模态占比 shipping≈52% > finance≈34% > RS≈15% |
-| **Deep 门控 α**  | 均值 finance≈0.44 > RS≈0.35 > shipping≈0.21；扰动期 α_shipping 上升              |
-| **Deep 节点注意力** | 航运图聚焦霍尔木兹咽喉 + 出口终端；RS 站点注意力偏 P004/P008/P009                              |
-| **Cross-Attn** | 金融 Query 对航运 token 权重≈0.575 > RS≈0.425；与门控倚重方向相反                         |
-| ** caveat**    | 高 α_shipping ≠ 模型「在看 Hormuz」——空间细节在节点/站点注意力层，非融合门控                       |
+| 层级 | 发现 |
+| --- | --- |
+| **Flat SHAP** | M3 霍尔木兹 tanker share、苏伊士 wow；M4 模态占比 shipping≈52% > finance≈34% > RS≈15% |
+| **Deep 门控 α** | 均值 finance≈0.44 > RS≈0.35 > shipping≈0.21；跨 seed 排序稳定 |
+| **多 seed 稳定性（07-16）** | Hormuz 进 Top-5 = **3/3**；RS 稳定站：Ningbo / Rotterdam；α_shipping 周度相关弱；事件窗仅俄乌 3/3 同向上升可写，红海窗不写死 |
+| **Deep 节点注意力** | 航运图聚焦霍尔木兹 + 出口终端；写作只宣称跨 seed 稳定焦点 |
+| **Cross-Attn** | 金融 Query 对航运 token≈0.575 > RS≈0.425；与门控倚重方向相反；xattn 解释性放附录 |
+| **caveat** | 高 α_shipping ≠ 模型「在看 Hormuz」——空间细节在节点/站点注意力层；关联≠因果 |
 
 
 
@@ -429,7 +442,7 @@
 | ------- | --------------------------------------------------------------------------------- |
 | **RQ1** | 扁平层无一击败 M0；航运有显著嵌套信号（CW vs M1），RS 弱除非稀疏化/去噪；深度 finship/xattn 可 skill>0 但仍难显著击败 M0 |
 | **RQ2** | 配对比较：深度在 M3/M4（含航运）显著优于扁平；门控 > concat；xattn 单 seed 最佳但不稳                          |
-| **RQ3** | 门控、SHAP、节点/站点注意力提供互补解释；航运在扰动窗口权重上升，空间焦点与已知供给冲击机制一致（关联≠因果）                         |
+| **RQ3** | 门控、SHAP、节点/站点注意力互补；跨 seed 稳定焦点为 Hormuz（及 RS Ningbo/Rotterdam）；α_shipping 周度不稳故事件叙事须克制（关联≠因果） |
 
 
 ---
@@ -440,22 +453,26 @@
 
 ```text
 casa0004 Dissertation/
-├── 03_data/          # raw + processed（M1/M2/M3/merge）
-├── 04_code/          # 回测内核 + 模型 + 脚本入口
-├── 05_outputs/       # baselines/Flat/M*_Flat/ + Deep/ 图表与 metrics
-├── 06_writing/       # outline、walkthrough、章节草稿、本文档
-└── 00_admin/         # 会议记录、研究日志、进度总览
+├── 00_admin/最新待整理/   # 进度总览、变量清单、本文件、walkthrough
+├── 01_literature/         # 矩阵 + 笔记 + 往年样例
+├── 03_data/               # raw + processed（M1/M2/M3/merge）
+├── 04_code/               # flat / deep 脚本 + encoders
+├── 05_outputs/baselines/  # Flat/ + Deep/ + subperiod/
+├── 06_writing/            # Outline/ · Chapter 2/ · 各章双语 · Appendix/
+└── 07_submission/         # 交稿占位
 ```
 
 
-| 复现入口     | 命令/路径                                                       |
-| -------- | ----------------------------------------------------------- |
-| 扁平 M0–M4 | `04_code/scripts/flat/run_baseline.py`                           |
-| 深度融合     | `04_code/scripts/deep/run_deep_baseline.py`                      |
-| 深度稳健性    | `04_code/scripts/deep/run_deep_sweep.py`                         |
-| 深度可解释性   | `04_code/scripts/deep/run_deep_interpret.py`                     |
-| 特征矩阵     | `03_data/processed/merge/outputs/weekly_feature_matrix.csv` |
-| 17 节点图   | `03_data/processed/M3/outputs/m3_graph17_tensors.npz`       |
+| 复现入口 | 命令/路径 |
+| --- | --- |
+| 扁平 M0–M4 | `04_code/scripts/flat/run_baseline.py` |
+| 深度融合 | `04_code/scripts/deep/run_deep_baseline.py` |
+| 深度稳健性 | `04_code/scripts/deep/run_deep_sweep.py` |
+| 深度可解释性 / 多 seed | `04_code/scripts/deep/run_deep_interpret.py --seeds 42,1,2` |
+| 特征矩阵 | `03_data/processed/merge/outputs/weekly_feature_matrix.csv` |
+| 17 节点图 | `03_data/processed/M3/outputs/m3_graph17_tensors.npz` |
+| 当前 outline | `06_writing/Outline/20260728_outline_brief.md` |
+| Ch2 最新稿 | `06_writing/Chapter 2  Literature Review/20260728_literature_review_双语.md` |
 
 
 ---
@@ -468,7 +485,7 @@ casa0004 Dissertation/
 2. **航运 > 遥感**——扁平与深度一致；航运信号与咽喉流量/地缘扰动机制吻合。
 3. **扁平融合的局限**正是 RQ2 的动机——高维 anom / 异构航运列拼进宽表，增量被稀释或噪声放大。
 4. **表示级融合**在含航运的多模态设定下更有效地 harvest 信号，但复杂度与 seed 敏感性（尤其 xattn）是真实代价。
-5. **下一步写作重点**：Ch3 方法与协议、Ch4 按 RQ 组织结果（非 Flat-block → Deep-block）、Ch5 区分 CW 显著 vs M0 技能。
+5. **下一步（07-28）**：按 `20260728_outline_brief.md` 合稿润色；Meeting 05（07-29）前可读稿；RQ3 正文只写跨 seed 稳定焦点；深度 LOAO/leave-one-node 为可选、不阻塞交稿。
 
 ---
 

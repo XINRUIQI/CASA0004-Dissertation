@@ -6,7 +6,12 @@
 >
 > **它要回答的核心问题（RQ2）**：相同数据下，**保留模态结构的表示级融合** 是否优于 **把所有列压成一张表的扁平融合**？
 >
-> 对应代码：`04_code/src/models/`（编码器 + 融合 + 回测内核）、`04_code/scripts/deep/run_deep_*.py`（5 个入口脚本）；结果：`05_outputs/baselines/Deep/`（`M*_Deep/` + `_cross/`）；总览：`00_admin/2026-07-05_研究方案与进度总览.md` §2.4。
+> **最后更新**：2026-07-28（补 RQ3 多 seed 稳定性、Flat–Deep 配对表、路径与滞后口径；主结果数字仍为 2026-07-07 lookback=4 协议）
+>
+> **对应代码**：`04_code/src/models/`（编码器 + 融合 + 回测内核）、`04_code/scripts/deep/run_deep_*.py`；结果：`05_outputs/baselines/Deep/`（`M*_Deep/` + `_cross/`）  
+> **进度总览**：`00_admin/最新待整理/2026-07-15_研究方案与进度总览.md` §2.4 / §2.4.1 / §2.6  
+> **扁平对照**：`flat_baseline_full_walkthrough_CN.md` · `flat_baseline_log.md`  
+> **项目逻辑**：`项目逻辑与结果总览_CN.md`
 
 ---
 
@@ -41,7 +46,7 @@
 
 | | 扁平融合（baseline） | 表示级融合（本文深度模型） |
 |---|---|---|
-| 处理方式 | 三模态所有列**拍平**拼成一张宽表（212 列） | 三模态各自进**专属编码器**学 32 维表示 |
+| 处理方式 | 三模态所有列**拍平**拼成一张宽表（**199 特征列**入模；矩阵另含 mask/target） | 三模态各自进**专属编码器**学 32 维表示 |
 | 模型 | Ridge / XGBoost / LSTM early-fusion | 三编码器 + 门控/交叉注意力融合 |
 | 模态结构 | 丢失（列之间无结构） | 保留（时序、图、AOI 站点结构都在编码器里） |
 | 缺失模态 | 靠填充值硬塞 | 编码器 + 掩码 + modality dropout 显式建模 |
@@ -155,10 +160,20 @@
 
 这是**第二个关键创新**：不再把航运拍成一堆数值列，而是显式建成一张**图**——节点是港口和咽喉道，边是船的实际航次（O-D 流量），并且**每周动态变化**。
 
-### 5.1 清洗与滞后（`aggregate_shipping_to_weekly.py` + `build_m3_graph_weekly.py`）
+### 5.1 清洗与滞后（`aggregate_shipping_to_weekly.py` + `build_m3_graph17.py`）
 
 - **统一到 W-FRI（周五截止周）**：PortWatch 日频求和到周；GFW 月频 ffill 到周；用 **union 索引**（不是取交集），确保 GFW 早期（2012+）和 PortWatch 晚期样本都不丢（修复了旧版 727→362 掉样本 bug）。
-- **发布滞后（无泄漏关键）**：值只能在其真实发布后使用——PortWatch **+1 周**，GFW 港访/航次 **+2 周**，GFW SAR 暗船月频 **+4 周**。wow_pct/4w_ma 等派生量在滞后**之前**先算好，再整体前移。
+- **发布滞后（无泄漏关键；扁平臂 vs 深度图勿混写）**：
+
+
+| 数据流 | 脚本 | 滞后 | 用于 |
+| --- | --- | --- | --- |
+| GFW **月频 presence**（扁平 113 列中的 `gfw_*`） | `aggregate_shipping_to_weekly.py` | **+4 周** | **扁平 M3**（本深度 walkthrough 不直接喂这 113 列） |
+| PortWatch | 同上 | **+1 周** | 扁平；深度图咽喉节点也用 PW 聚合 |
+| GFW **event / 港访 / 航次 / O-D 边** | `build_m3_graph17.py` | **+2 周** | **深度 17 节点图**（近实时 AIS，保守 2 周） |
+| GFW SAR 暗船（月频） | `build_m3_graph17.py` | **+4 周** | 深度图节点特征（未进扁平主模型） |
+
+- wow_pct/4w_ma 等派生量在滞后**之前**先算好，再整体前移。
 - **数据质量裁剪**：港口停泊时长上限 720h（30 天，超出=AIS 长停/拼接伪影 → NaN）；航次过境上限 90 天（超出=中途未观测停靠 → 均值置 NaN，但边仍计数）。
 
 ### 5.2 17 节点异质图的组装（`build_m3_graph17.py`）
@@ -220,8 +235,9 @@
 
 ### 7.5 样本量
 
-- 合并矩阵：**365 周 × 212 列**（31 M1 + 55 M2 + 113 M3 + 11 mask + 2 target）。
+- 合并矩阵 CSV：**365 周 × 213 列** = `week_ending_friday` + **212 数据列**（31 M1 + 55 M2 anom + 113 M3 + 11 mask + 2 target）。深度不直接用 anom/航运宽表列，但与扁平共用同一周索引与目标。
 - 深度对齐后的可用样本 N 视 lookback 而定；回测 `min_train=104`（前 104 周暖机不测），**共同测试期 257 周（2021–2025）**。
+- ⚠️ **历史注**：2026-07-05 曾用 lookback=**8** 做表示级融合「首跑」（见 `flat_baseline_log.md` §13）；**正式主协议自 2026-07-07 起锁 lookback=4** 以对齐扁平 L4。下文数字均为 lb=4。
 
 ---
 
@@ -387,6 +403,25 @@ lookback=**4**、d=**32**、gat_layers=**2**、tcn_layers=**2**、dropout=0.1、
 5. **遥感表示内在弱**：M_rs_deep −2.3%、DirAcc 0.459（<0.5），cls 更差（−11%），加到 fin+ship 无增量——冻结 Prithvi 单模态对**周频**油价帮助有限（与扁平 M2 结论一致）。
 6. 以上强化 RQ2：弱增量需要模态感知融合才能方向一致叠加。
 
+### 12.5 Flat vs Deep 配对（RQ2 写作主表）
+
+**按信息集固定模态内容、只换架构**（深度：M1→`fin`，M2→`m2_deep_gated`，M3→`m3_deep_gated`，M4→`m4_deep_gated`；扁平对照为同信息集 XGB / Ridge）：
+
+
+| 配对 | Flat XGB RMSE | Deep RMSE | skill flat | skill deep | DM vs XGB | DM vs Ridge |
+| --- | --- | --- | --- | --- | --- | --- |
+| M1 | 4.368 | 4.250 | −5.2% | −2.4% | 0.097 | 0.466 |
+| M2 | 4.440 | 4.253 | −7.0% | −2.4% | **0.042** ✅ | 0.096 |
+| M3 | 4.429 | 4.147 | −6.7% | **+0.11%** | **0.010** ✅ | 0.062 |
+| M4 | 4.507 | 4.205 | −8.6% | −1.3% | **0.005** ✅ | **0.036** ✅ |
+
+
+**读法**：
+
+- 深度在 **M2/M3/M4（尤其含航运）** 上显著优于扁平 XGB；M1 alone 未达 5%。
+- **不能宣称「深度永远更好」**——增益主要在多模态 + 航运。
+- **与 §12.2–12.3 并存**：对照扁平 **M1** 用 DM（更保守，fusion DM=0.061 未显著）；对照**同信息集扁平 XGB** 用配对表（Ch4 RQ2 主表）。写作以配对表为主、DM vs M1 作补充。
+
 ---
 
 <a name="13"></a>
@@ -398,6 +433,7 @@ lookback=**4**、d=**32**、gat_layers=**2**、tcn_layers=**2**、dropout=0.1、
 - **超参 sweep（fusion,seed42）**：lb=8 d=32 最优（+0.34%，DMvsM1 0.041）> lb=4（+0.11%）> lb=12（负）；**d=64 一律变差**（佐证「编码器维度要小」）。**主模型仍锁 lb=4** 以对齐扁平做公平对比。
 - **RS 正则网格（P1-5）**：meanpool 全负（最佳 −0.90%）、cls −11%——**RS 弱是内在的，调参救不了**。
 - **主 fusion 正则网格（P1-6）**：整片 skill≈0，dp=0.3 略好（+0.29%）——**主模型对正则稳健**。
+- **可选未做（非交稿阻塞）**：深度 leave-one-AOI / leave-one-Hormuz-node（见进度总览 §3.5）。
 
 ---
 
@@ -406,13 +442,42 @@ lookback=**4**、d=**32**、gat_layers=**2**、tcn_layers=**2**、dropout=0.1、
 
 脚本：`run_deep_interpret.py`（门控 + 节点注意力）+ `run_deep_xattn_viz.py`（交叉注意力）。walk-forward 时额外记录每周的融合 info dict，绝不看未来。
 
+### 14.1 单 seed=42 主图（叙事起点）
+
 - **模态门控均值（门控主模型）**：金融 **0.44** > 遥感 **0.348** > 航运 **0.212**。把门控权重画成时间堆叠图，叠上已知供给/地缘事件线（俄乌 2022-02、EU 禁俄油 2022-06、OPEC+ 意外减产 2023-04、胡塞红海袭击 2023-11）看时间吻合度。
 - **航运节点注意力**：最关注 **霍尔木兹咽喉** + P003/P009/P001/P005（对应红海绕行/出口终端叙事）。
 - **遥感站点注意力**：最关注 P004/P008/P009/P001/P006（出口终端 AOI）。
 - **交叉注意力（金融 Query 对 28 token）**：→ 航运 **0.575** / → 遥感 **0.425**；Top token 是遥感站但权重高度均匀（~0.04），注意力「很平」→ 呼应遥感信息弱/冗余。
 - **一个讨论点**：两种融合机制对「遥感 vs 航运」倚重**相反**（门控 RS>航运；xattn 航运>RS）。
+- **caveat**：高 α_shipping ≠ 模型「在看 Hormuz」——空间细节在**节点/站点注意力**层，不在融合门控本身。
 
-产物：`deep_gate_weekly.csv`、`deep_interpret.png`、`deep_xattn_weekly.csv`、`deep_xattn_viz.png`。
+产物（seed42）：`deep_gate_weekly.csv`、`deep_interpret.png`、`deep_xattn_weekly.csv`、`deep_xattn_viz.png`（多在 `05_outputs/baselines/Deep/M4_Deep/`）。
+
+### 14.2 多 seed 门控/注意力稳定性（2026-07-16，seeds={42,1,2}）✅
+
+脚本：`run_deep_interpret.py --seeds 42,1,2 --lookback 4`。产物：`deep_gate_stability.csv` / `deep_gate_corr.csv` / `deep_gate_events.csv` / `deep_gate_band_weekly.csv` / `deep_interpret_stability.png` + `deep_gate_weekly_seed{S}.csv`。
+
+**模态均值 α（跨 seed）**：finance ≈ 0.44–0.48 > rs ≈ 0.30–0.35 > shipping ≈ 0.21–0.26（**排序稳定**）。
+
+**α_shipping 周度相关（seed 间）**：Pearson 弱且不一致（42↔1 ≈ 0.10，42↔2 ≈ 0.13，1↔2 ≈ **−0.31**）——**周度轨迹不稳**，不宜按单 seed 讲细事件故事。
+
+**事件窗 Δα_shipping（post−pre，±8 周）**：
+
+| 事件 | 同向？ | 解读 |
+| --- | --- | --- |
+| Russia–Ukraine (2022-02) | ✅ 3/3 **上** | 唯一稳健「航运门控抬升」窗 |
+| EU RU oil ban / OPEC+ cut | ✅ 3/3 **下** | 同向但是下降，勿写成供给冲击抬升 |
+| Houthi Red Sea (2023-11) | ✗ 2↑1↓ | **不稳**，勿写死 |
+
+**空间注意力 Top-5 频次（写作可宣称的稳定焦点）**：
+
+| 焦点 | freq | 写作口径 |
+| --- | ---: | --- |
+| **hormuz（霍尔木兹）** | **3/3** | ✅ 唯一跨 seed 稳定的咽喉焦点 |
+| P003 RasTanura / P009 Ulsan / P006 Ningbo | 2/3 | 可提「偶发伴随」，不单列机制 |
+| RS：**P006 Ningbo-Zhoushan、P001 Rotterdam** | **3/3** | ✅ 跨 seed 稳定的 RS 站 |
+
+> **写作原则**：只写「跨 seed 稳定的焦点」（Hormuz；RS 的 Ningbo / Rotterdam）。α_shipping 周度相关弱 → 事件叙事仅保留俄乌窗同向上升；红海窗不写死。xattn 解释性仍放附录。
 
 ---
 
@@ -437,7 +502,7 @@ lookback=**4**、d=**32**、gat_layers=**2**、tcn_layers=**2**、dropout=0.1、
 <a name="16"></a>
 ## 16. 一句话总结 + 复现命令
 
-**一句话**：RQ1 增量弱（遥感尤甚，全模型 CWvsM0 均不显著、仍难破 M0）；**RQ2 部分正向**——最硬证据是「金融表示上加航运表示」嵌套 CW **0.00057** 显著、且门控>拼接，但用严格 DM 对照扁平 M1 **未达显著**（方向一致）；**RQ3 门控与注意力可解释**（金融主导、聚焦霍尔木兹与出口终端，两融合机制倚重相反）。交叉注意力单 seed 可最佳但多 seed 不稳，列进阶。
+**一句话**：RQ1 增量弱（遥感尤甚，全模型 CWvsM0 均不显著、仍难破 M0）；**RQ2 部分正向**——最硬证据是「金融表示上加航运表示」嵌套 CW **0.00057** 显著、门控>拼接，且 **同信息集配对**下深度在 M3/M4 显著优于扁平 XGB，但用严格 DM 对照扁平 M1 **未达显著**（方向一致）；**RQ3** 门控与注意力可解释，但须按 **多 seed 稳定焦点**写（Hormuz；RS Ningbo/Rotterdam），勿写死红海窗。交叉注意力单 seed 可最佳但多 seed 不稳，列进阶。
 
 **复现命令**：
 ```bash
@@ -447,16 +512,17 @@ python3 04_code/scripts/flat/run_baseline.py --modality M1
 # 1) 上游数据（如需重建）
 python3 03_data/processed/M2/py/build_m2_weekly.py                 # 遥感月→周
 python3 03_data/processed/M2/py/precompute_s2_embeddings.py        # Prithvi embedding
-python3 03_data/processed/M3/py/aggregate_shipping_to_weekly.py    # 航运→周
-python3 03_data/processed/M3/py/build_m3_graph_weekly.py           # AOI 图
-python3 03_data/processed/M3/py/build_m3_graph17.py                # 17 节点图张量
+python3 03_data/processed/M3/py/aggregate_shipping_to_weekly.py    # 航运→周（扁平 +4w GFW）
+python3 03_data/processed/M3/py/build_m3_graph_weekly.py           # AOI 图中间产物
+python3 03_data/processed/M3/py/build_m3_graph17.py                # 17 节点图张量（event +2w）
 
 # 2) 深度主结果 + 检验
-python3 04_code/scripts/deep/run_deep_baseline.py                      # 主结果表
-python3 04_code/scripts/deep/run_deep_sweep.py                         # 稳健性 sweep
-python3 04_code/scripts/deep/run_deep_interpret.py                     # RQ3 门控/节点注意力
-python3 04_code/scripts/deep/run_deep_xattn_viz.py                     # RQ3 交叉注意力
-python3 04_code/scripts/deep/run_deep_advanced.py                     # 进阶消融
+python3 04_code/scripts/deep/run_deep_baseline.py                  # 主结果表
+python3 04_code/scripts/deep/run_deep_fusion_matrix.py             # 3×3 融合矩阵
+python3 04_code/scripts/deep/run_deep_sweep.py                     # 稳健性 sweep
+python3 04_code/scripts/deep/run_deep_interpret.py --seeds 42,1,2 --lookback 4   # RQ3 + 多 seed 稳定性
+python3 04_code/scripts/deep/run_deep_xattn_viz.py                 # RQ3 交叉注意力
+python3 04_code/scripts/deep/run_deep_advanced.py                 # 进阶消融
 ```
 
 ---
@@ -467,13 +533,13 @@ python3 04_code/scripts/deep/run_deep_advanced.py                     # 进阶�
 ### A. 数据规格
 | 项 | 值 |
 |---|---|
-| 统一窗口 | 2019-01-01 ~ 2025-12-31 |
-| 合并矩阵 | 365 周 × 212 列（31 M1 + 55 M2 + 113 M3 + 11 mask + 2 target） |
+| 统一窗口 | 2019-01-04 ~ 2025-12-26（365 周） |
+| 合并矩阵 | **365 × 213**（含 `week_ending_friday`）；数据列 212 = 31+55+113+11+2 |
 | 共同测试期 | 257 周（2021–2025） |
 | 预测目标 | r_{t+1}=ln(P_{t+1}/P_t)，还原价格 P̂=P_t·e^r̂ |
-| lookback（主） | 4 周 |
+| lookback（主） | **4 周**（07-05 首跑曾用 8，仅作历史/超参臂） |
 | RS 发布滞后 | 月末 + 15 天（as-of backward） |
-| 航运滞后 | PortWatch +1w、GFW 港访/航次 +2w、SAR +4w |
+| 航运滞后 | 扁平 GFW presence **+4w**；深度图 GFW event/O-D **+2w**；PortWatch **+1w**；SAR **+4w** |
 
 ### B. 模型/训练超参
 | 项 | 值 |
@@ -486,7 +552,7 @@ python3 04_code/scripts/deep/run_deep_advanced.py                     # 进阶�
 | 优化器 | Adam，lr=1e-3，weight_decay=1e-4 |
 | batch / epochs | 32 / 80（inner-val 早停 patience=12） |
 | 梯度裁剪 | max_norm=5.0 |
-| 回测 | min_train=104，retrain_every=13，seed=42 |
+| 回测 | min_train=104，retrain_every=13，seed=42（主表）；稳健性另含 seeds {1,2} |
 
 ### C. 图节点与咽喉
 - **11 AOI**：P001 Rotterdam、P002 Fujairah、P003 RasTanura、P004 Jurong、P005 Houston、P006 NingboZhoushan、P007 Jamnagar、P008 Basra、P009 Ulsan、P010 Kharg、P011 Yanbu。
@@ -499,7 +565,10 @@ python3 04_code/scripts/deep/run_deep_advanced.py                     # 进阶�
 | 融合 | `04_code/src/models/fusion.py` |
 | 数据对齐 | `04_code/src/models/deep_dataset.py` |
 | 回测内核 | `04_code/src/models/deep_rolling.py` |
-| 入口脚本 | `04_code/scripts/deep/run_deep_{baseline,sweep,interpret,advanced,xattn_viz}.py` |
+| 入口脚本 | `04_code/scripts/deep/run_deep_{baseline,sweep,interpret,advanced,fusion_matrix,xattn_viz}.py` |
 | 图张量 | `03_data/processed/M3/outputs/m3_graph17_tensors.npz` |
 | Prithvi embedding | `03_data/processed/M2/outputs/s2_prithvi_emb_meanpool.npy` |
 | 结果 | `05_outputs/baselines/Deep/{M*_Deep,_cross}/` |
+| RQ3 多 seed | `…/M4_Deep/deep_gate_stability.csv` 等 |
+| 进度总览 | `00_admin/最新待整理/2026-07-15_研究方案与进度总览.md` |
+| 扁平 walkthrough | `00_admin/最新待整理/flat_baseline_full_walkthrough_CN.md` |

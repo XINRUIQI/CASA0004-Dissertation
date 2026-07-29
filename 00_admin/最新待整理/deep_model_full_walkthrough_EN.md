@@ -2,11 +2,16 @@
 
 > **Purpose**: for a reader **completely new to this project**, document **every single step** of the deep (representation-level) model — from downloading data, cloud removal, data cleaning, satellite representation learning, shipping-graph construction, three-encoder fusion, parameter choices, and the walk-forward backtest, through to results, statistical tests, interpretability, and robustness.
 >
-> **In one line**: the deep model is the **method-integration / empirical-test layer (the contribution)** of the dissertation. Instead of engineering remote sensing / shipping into more numeric columns and stacking them into one wide table (that is the *flat baseline*, see `flat_baseline_full_walkthrough_CN.md`), it uses **three modality-specific encoders** to learn separate **representations (embeddings)** of "financial state / remote-sensing activity / shipping network", then **dynamically fuses** them via **gating / cross-attention** to predict next-week Brent price end-to-end.
+> **In one line**: the deep model is the **method-integration / empirical-test layer (the contribution)** of the dissertation. Instead of engineering remote sensing / shipping into more numeric columns and stacking them into one wide table (that is the *flat baseline*, see `flat_baseline_full_walkthrough_EN.md`), it uses **three modality-specific encoders** to learn separate **representations (embeddings)** of "financial state / remote-sensing activity / shipping network", then **dynamically fuses** them via **gating / cross-attention** to predict next-week Brent price end-to-end.
 >
 > **The core question it answers (RQ2)**: on the same data, does **modality-aware representation-level fusion** beat **flat feature fusion** (flatten all columns into one table)?
 >
-> Code: `04_code/src/models/` (encoders + fusion + backtest kernel) and `04_code/scripts/deep/run_deep_*.py` (5 entry scripts); results: `05_outputs/baselines/Deep/`（`M*_Deep/` + `_cross/`）; overview: `00_admin/2026-07-05_研究方案与进度总览.md` §2.4.
+> **Last updated**: 2026-07-28 (adds RQ3 multi-seed stability, Flat–Deep pairing table, path & lag clarifications; main-result numbers remain the 2026-07-07 lookback=4 protocol)
+>
+> **Code**: `04_code/src/models/` (encoders + fusion + backtest kernel), `04_code/scripts/deep/run_deep_*.py`; results: `05_outputs/baselines/Deep/` (`M*_Deep/` + `_cross/`)  
+> **Progress overview**: `00_admin/最新待整理/2026-07-15_研究方案与进度总览.md` §2.4 / §2.4.1 / §2.6  
+> **Flat counterpart**: `flat_baseline_full_walkthrough_EN.md` · `flat_baseline_log.md`  
+> **Project logic**: `项目逻辑与结果总览_CN.md`
 
 ---
 
@@ -41,7 +46,7 @@
 
 | | Flat fusion (baseline) | Representation-level fusion (this deep model) |
 |---|---|---|
-| Handling | flatten all columns of 3 modalities into one wide table (212 cols) | each modality goes through its **own encoder** to a 32-d representation |
+| Handling | flatten all columns of 3 modalities into one wide table (**199 feature cols** modelled; matrix also has mask/target) | each modality goes through its **own encoder** to a 32-d representation |
 | Model | Ridge / XGBoost / LSTM early-fusion | 3 encoders + gated / cross-attention fusion |
 | Modality structure | lost (no structure across columns) | preserved (temporal, graph, AOI-site structure live inside encoders) |
 | Missing modality | forced in via fill values | modelled explicitly via encoder + mask + modality dropout |
@@ -155,10 +160,20 @@ For each (site, month) patch (single frame, T=1):
 
 The **second key innovation**: instead of flattening shipping into numeric columns, it is built explicitly as a **graph** — nodes are ports and chokepoints, edges are actual ship voyages (O-D flow), and the graph **changes every week**.
 
-### 5.1 Cleaning and lagging (`aggregate_shipping_to_weekly.py` + `build_m3_graph_weekly.py`)
+### 5.1 Cleaning and lagging (`aggregate_shipping_to_weekly.py` + `build_m3_graph17.py`)
 
 - **Unify to W-FRI (Friday-ending weeks)**: PortWatch daily → weekly sum; GFW monthly ffill → weekly; using a **union index** (not intersection) so neither GFW-early (2012+) nor PortWatch-late samples are lost (fixes an old 727→362 sample-drop bug).
-- **Publication lags (key to leak-free)**: a value may only be used after its real-world release — PortWatch **+1 week**, GFW port-visit/voyage **+2 weeks**, GFW SAR dark-vessel monthly **+4 weeks**. Derived quantities (wow_pct/4w_ma) are computed *before* the lag, then the whole block is shifted forward.
+- **Publication lags (key to leak-free; do not mix flat arm vs deep graph)**:
+
+
+| Stream | Script | Lag | Used for |
+| --- | --- | --- | --- |
+| GFW **monthly presence** (`gfw_*` in flat 113 cols) | `aggregate_shipping_to_weekly.py` | **+4 weeks** | **Flat M3** (this deep walkthrough does not feed those 113 cols directly) |
+| PortWatch | same | **+1 week** | Flat; also used for deep-graph chokepoint nodes |
+| GFW **event / port-visit / voyage / O-D edges** | `build_m3_graph17.py` | **+2 weeks** | **Deep 17-node graph** (near-real-time AIS, conservative 2 weeks) |
+| GFW SAR dark vessels (monthly) | `build_m3_graph17.py` | **+4 weeks** | Deep graph node features (not in flat main model) |
+
+- Derived quantities (wow_pct/4w_ma) are computed *before* the lag, then the whole block is shifted forward.
 - **Data-quality clips**: port-visit dwell capped at 720 h (30 days; longer = AIS long-stay / stitching artefact → NaN); voyage transit capped at 90 days (longer = an unobserved intermediate call → mean set NaN, but the edge still counts).
 
 ### 5.2 Assembling the 17-node heterogeneous graph (`build_m3_graph17.py`)
@@ -220,8 +235,9 @@ Only dates whose **graph window and finance window are both complete** are kept 
 
 ### 7.5 Sample size
 
-- Merged matrix: **365 weeks × 212 cols** (31 M1 + 55 M2 + 113 M3 + 11 mask + 2 target).
+- Merged matrix CSV: **365 weeks × 213 cols** = `week_ending_friday` + **212 data cols** (31 M1 + 55 M2 anom + 113 M3 + 11 mask + 2 target). Deep does not feed anom/shipping wide-table columns directly, but shares the same weekly index and target as flat.
 - Aligned deep samples N depend on lookback; backtest `min_train=104` (first 104 weeks warm-up, not tested); **common test span = 257 weeks (2021–2025)**.
+- ⚠️ **Historical note**: 2026-07-05 first representation-level run used lookback=**8** (see `flat_baseline_log.md` §13); **the official main protocol locks lookback=4 from 2026-07-07** to align with flat L4. Numbers below are all lb=4.
 
 ---
 
@@ -387,6 +403,25 @@ A tiny RMSE difference means nothing without **significance testing** (`04_code/
 5. **The RS representation is intrinsically weak**: M_rs_deep −2.3%, DirAcc 0.459 (<0.5), cls even worse (−11%), adds nothing on top of fin+ship — a frozen single-modality Prithvi helps little for **weekly** oil price (consistent with flat M2).
 6. All of the above reinforce RQ2: weak increments need modality-aware fusion to add up in a consistent direction.
 
+### 12.5 Flat vs Deep pairing (RQ2 writing main table)
+
+**Fix the information set (modality content), change only the architecture** (deep: M1→`fin`, M2→`m2_deep_gated`, M3→`m3_deep_gated`, M4→`m4_deep_gated`; flat counterpart = same information-set XGB / Ridge):
+
+
+| Pair | Flat XGB RMSE | Deep RMSE | skill flat | skill deep | DM vs XGB | DM vs Ridge |
+| --- | --- | --- | --- | --- | --- | --- |
+| M1 | 4.368 | 4.250 | −5.2% | −2.4% | 0.097 | 0.466 |
+| M2 | 4.440 | 4.253 | −7.0% | −2.4% | **0.042** ✅ | 0.096 |
+| M3 | 4.429 | 4.147 | −6.7% | **+0.11%** | **0.010** ✅ | 0.062 |
+| M4 | 4.507 | 4.205 | −8.6% | −1.3% | **0.005** ✅ | **0.036** ✅ |
+
+
+**How to read**:
+
+- Deep significantly beats flat XGB on **M2/M3/M4 (especially with shipping)**; M1 alone does not reach 5%.
+- **Do not claim "deep is always better"** — gains concentrate in multimodal + shipping settings.
+- **Coexists with §12.2–12.3**: DM vs flat **M1** is the more conservative test (fusion DM=0.061, not significant); DM vs **matched-information-set flat XGB** is the Ch4 RQ2 main table. Write with the pairing table as primary, DM vs M1 as a supplement.
+
 ---
 
 <a name="13"></a>
@@ -398,6 +433,7 @@ Script: `04_code/scripts/deep/run_deep_sweep.py` → `deep_sweep_summary.csv` (l
 - **Hyperparameter sweep (fusion, seed42)**: lb=8 d=32 best (+0.34%, DMvsM1 0.041) > lb=4 (+0.11%) > lb=12 (negative); **d=64 is always worse** (evidence that "encoder dimension must be small"). **The main model still locks lb=4** to align the flat protocol for a fair comparison.
 - **RS regularisation grid (P1-5)**: meanpool all negative (best −0.90%), cls −11% — **RS weakness is intrinsic, not fixable by tuning**.
 - **Main fusion regularisation grid (P1-6)**: the whole grid is skill≈0, dp=0.3 slightly better (+0.29%) — **the main model is robust to regularisation**.
+- **Optional, not blocking submission**: deep leave-one-AOI / leave-one-Hormuz-node (see progress overview §3.5).
 
 ---
 
@@ -406,13 +442,42 @@ Script: `04_code/scripts/deep/run_deep_sweep.py` → `deep_sweep_summary.csv` (l
 
 Scripts: `run_deep_interpret.py` (gate + node attention) + `run_deep_xattn_viz.py` (cross-attention). During walk-forward, the fusion info dict is additionally recorded per week — never peeking at the future.
 
+### 14.1 Single seed=42 main figures (narrative starting point)
+
 - **Mean modality gate (gated main model)**: finance **0.44** > RS **0.348** > shipping **0.212**. The gate weights are plotted as a time stackplot overlaid with known supply / geopolitical event lines (Russia–Ukraine 2022-02, EU RU oil ban 2022-06, OPEC+ surprise cut 2023-04, Houthi Red Sea 2023-11) to check temporal alignment.
 - **Shipping node attention**: most attended is the **Hormuz chokepoint** + P003/P009/P001/P005 (matching the Red-Sea-rerouting / export-terminal narrative).
 - **RS site attention**: most attended P004/P008/P009/P001/P006 (export-terminal AOIs).
 - **Cross-attention (finance Query over 28 tokens)**: → shipping **0.575** / → RS **0.425**; top tokens are RS sites but the weights are highly uniform (~0.04), i.e. attention is "flat" → echoes weak/redundant RS information.
 - **A discussion point**: the two fusion mechanisms rank "RS vs shipping" **oppositely** (gating RS>shipping; xattn shipping>RS).
+- **Caveat**: a high α_shipping does **not** mean the model is "looking at Hormuz" — spatial detail lives in the **node/site attention** layer, not in the fusion gate itself.
 
-Outputs: `deep_gate_weekly.csv`, `deep_interpret.png`, `deep_xattn_weekly.csv`, `deep_xattn_viz.png`.
+Outputs (seed42): `deep_gate_weekly.csv`, `deep_interpret.png`, `deep_xattn_weekly.csv`, `deep_xattn_viz.png` (mostly under `05_outputs/baselines/Deep/M4_Deep/`).
+
+### 14.2 Multi-seed gate / attention stability (2026-07-16, seeds={42,1,2}) ✅
+
+Script: `run_deep_interpret.py --seeds 42,1,2 --lookback 4`. Outputs: `deep_gate_stability.csv` / `deep_gate_corr.csv` / `deep_gate_events.csv` / `deep_gate_band_weekly.csv` / `deep_interpret_stability.png` + `deep_gate_weekly_seed{S}.csv`.
+
+**Mean modality α (across seeds)**: finance ≈ 0.44–0.48 > rs ≈ 0.30–0.35 > shipping ≈ 0.21–0.26 (**rank order stable**).
+
+**Week-level α_shipping correlation across seeds**: Pearson is weak and inconsistent (42↔1 ≈ 0.10, 42↔2 ≈ 0.13, 1↔2 ≈ **−0.31**) — **weekly trajectories are unstable**; do not tell fine-grained event stories from a single seed.
+
+**Event-window Δα_shipping (post−pre, ±8 weeks)**:
+
+| Event | Same sign? | Reading |
+| --- | --- | --- |
+| Russia–Ukraine (2022-02) | ✅ 3/3 **up** | Only robust "shipping-gate rises" window |
+| EU RU oil ban / OPEC+ cut | ✅ 3/3 **down** | Same direction but a *fall* — do not write as supply-shock uplift |
+| Houthi Red Sea (2023-11) | ✗ 2↑1↓ | **Unstable** — do not lock in |
+
+**Spatial attention Top-5 frequency (stable foci safe to claim in writing)**:
+
+| Focus | freq | Writing stance |
+| --- | ---: | --- |
+| **hormuz** | **3/3** | ✅ Only cross-seed-stable chokepoint focus |
+| P003 RasTanura / P009 Ulsan / P006 Ningbo | 2/3 | Mention as occasional companions, not mechanisms |
+| RS: **P006 Ningbo-Zhoushan, P001 Rotterdam** | **3/3** | ✅ Cross-seed-stable RS sites |
+
+> **Writing rule**: claim only **cross-seed-stable foci** (Hormuz; RS Ningbo / Rotterdam). Weak weekly α_shipping correlation → keep event narrative to the Russia–Ukraine co-rising window only; do not lock the Red Sea window. Keep xattn interpretability in the appendix.
 
 ---
 
@@ -437,7 +502,7 @@ Script: `run_deep_advanced.py` → `deep_advanced_summary.csv` (lookback=4, seed
 <a name="16"></a>
 ## 16. One-line summary + reproduction commands
 
-**One line**: RQ1 increments are weak (RS especially; all models' CWvsM0 non-significant, still hard to beat M0); **RQ2 partially positive** — the hardest evidence is "adding a shipping representation on top of a finance representation" with nested CW **0.00057** significant, plus gating > concat, but under a strict DM against M1_Flat it is **not significant** (directionally consistent); **RQ3 gate and attention are interpretable** (finance-dominated, focused on Hormuz and export terminals, with the two fusion mechanisms ranking modalities oppositely). Cross-attention can be single-seed best but is multi-seed unstable, hence listed as advanced.
+**One line**: RQ1 increments are weak (RS especially; all models' CWvsM0 non-significant, still hard to beat M0); **RQ2 partially positive** — hardest evidence is nested CW **0.00057** for adding shipping on finance, gating > concat, and under **matched information-set pairing** deep significantly beats flat XGB on M3/M4, but under strict DM vs flat M1 it is **not significant** (directionally consistent); **RQ3** gates/attention are interpretable but must follow **multi-seed stable foci** (Hormuz; RS Ningbo/Rotterdam) — do not lock the Red Sea window. Cross-attention can be single-seed best but is multi-seed unstable → advanced.
 
 **Reproduction commands**:
 ```bash
@@ -447,16 +512,17 @@ python3 04_code/scripts/flat/run_baseline.py --modality M1
 # 1) Upstream data (if rebuilding)
 python3 03_data/processed/M2/py/build_m2_weekly.py                 # RS monthly -> weekly
 python3 03_data/processed/M2/py/precompute_s2_embeddings.py        # Prithvi embeddings
-python3 03_data/processed/M3/py/aggregate_shipping_to_weekly.py    # shipping -> weekly
-python3 03_data/processed/M3/py/build_m3_graph_weekly.py           # AOI graph
-python3 03_data/processed/M3/py/build_m3_graph17.py                # 17-node graph tensor
+python3 03_data/processed/M3/py/aggregate_shipping_to_weekly.py    # shipping -> weekly (flat GFW +4w)
+python3 03_data/processed/M3/py/build_m3_graph_weekly.py           # AOI graph intermediates
+python3 03_data/processed/M3/py/build_m3_graph17.py                # 17-node graph tensor (event +2w)
 
 # 2) Deep main results + tests
-python3 04_code/scripts/deep/run_deep_baseline.py                      # main results table
-python3 04_code/scripts/deep/run_deep_sweep.py                         # robustness sweep
-python3 04_code/scripts/deep/run_deep_interpret.py                     # RQ3 gate / node attention
-python3 04_code/scripts/deep/run_deep_xattn_viz.py                     # RQ3 cross-attention
-python3 04_code/scripts/deep/run_deep_advanced.py                     # advanced ablations
+python3 04_code/scripts/deep/run_deep_baseline.py                  # main results table
+python3 04_code/scripts/deep/run_deep_fusion_matrix.py             # 3×3 fusion matrix
+python3 04_code/scripts/deep/run_deep_sweep.py                     # robustness sweep
+python3 04_code/scripts/deep/run_deep_interpret.py --seeds 42,1,2 --lookback 4   # RQ3 + multi-seed stability
+python3 04_code/scripts/deep/run_deep_xattn_viz.py                 # RQ3 cross-attention
+python3 04_code/scripts/deep/run_deep_advanced.py                 # advanced ablations
 ```
 
 ---
@@ -467,13 +533,13 @@ python3 04_code/scripts/deep/run_deep_advanced.py                     # advanced
 ### A. Data specs
 | Item | Value |
 |---|---|
-| Unified window | 2019-01-01 ~ 2025-12-31 |
-| Merged matrix | 365 weeks × 212 cols (31 M1 + 55 M2 + 113 M3 + 11 mask + 2 target) |
+| Unified window | 2019-01-04 ~ 2025-12-26 (365 weeks) |
+| Merged matrix | **365 × 213** (incl. `week_ending_friday`); 212 data cols = 31+55+113+11+2 |
 | Common test span | 257 weeks (2021–2025) |
 | Target | r_{t+1}=ln(P_{t+1}/P_t), reconstruct P̂=P_t·e^r̂ |
-| lookback (main) | 4 weeks |
+| lookback (main) | **4 weeks** (07-05 first run used 8; historical / hyperparameter arm only) |
 | RS publication lag | month-end + 15 days (as-of backward) |
-| Shipping lags | PortWatch +1w, GFW port-visit/voyage +2w, SAR +4w |
+| Shipping lags | flat GFW presence **+4w**; deep-graph GFW event/O-D **+2w**; PortWatch **+1w**; SAR **+4w** |
 
 ### B. Model / training hyperparameters
 | Item | Value |
@@ -486,7 +552,7 @@ python3 04_code/scripts/deep/run_deep_advanced.py                     # advanced
 | Optimiser | Adam, lr=1e-3, weight_decay=1e-4 |
 | batch / epochs | 32 / 80 (inner-val early stopping, patience=12) |
 | Gradient clip | max_norm=5.0 |
-| Backtest | min_train=104, retrain_every=13, seed=42 |
+| Backtest | min_train=104, retrain_every=13, seed=42 (main table); robustness also seeds {1,2} |
 
 ### C. Graph nodes and chokepoints
 - **11 AOI**: P001 Rotterdam, P002 Fujairah, P003 RasTanura, P004 Jurong, P005 Houston, P006 NingboZhoushan, P007 Jamnagar, P008 Basra, P009 Ulsan, P010 Kharg, P011 Yanbu.
@@ -499,7 +565,10 @@ python3 04_code/scripts/deep/run_deep_advanced.py                     # advanced
 | Fusion | `04_code/src/models/fusion.py` |
 | Data alignment | `04_code/src/models/deep_dataset.py` |
 | Backtest kernel | `04_code/src/models/deep_rolling.py` |
-| Entry scripts | `04_code/scripts/deep/run_deep_{baseline,sweep,interpret,advanced,xattn_viz}.py` |
+| Entry scripts | `04_code/scripts/deep/run_deep_{baseline,sweep,interpret,advanced,fusion_matrix,xattn_viz}.py` |
 | Graph tensor | `03_data/processed/M3/outputs/m3_graph17_tensors.npz` |
 | Prithvi embeddings | `03_data/processed/M2/outputs/s2_prithvi_emb_meanpool.npy` |
 | Results | `05_outputs/baselines/Deep/{M*_Deep,_cross}/` |
+| RQ3 multi-seed | `…/M4_Deep/deep_gate_stability.csv` etc. |
+| Progress overview | `00_admin/最新待整理/2026-07-15_研究方案与进度总览.md` |
+| Flat walkthrough | `00_admin/最新待整理/flat_baseline_full_walkthrough_EN.md` |

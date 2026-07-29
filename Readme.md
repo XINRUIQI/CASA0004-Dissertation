@@ -1,128 +1,122 @@
-# Thesis Project — CASA0004 Dissertation
+# CASA0004 Dissertation — Reproduction Entry Point
 
-## 论文题目
+**Working title**: A Modality-Aware Spatio-Temporal Fusion Framework for Brent Crude Oil Forecasting Using Financial Time Series, Satellite Imagery and Maritime Networks
 
-暂定：
+**One-liner**: Under a shared leakage-safe rolling-origin protocol, compare flat feature concatenation (Flat) vs representation-level multimodal fusion (Deep); test whether remote sensing / shipping add out-of-sample value over a finance baseline and a random-walk benchmark; and interpret modality and spatial-node importance.
 
-## 研究问题
+---
 
-RQ1:
-RQ2:
-RQ3:
+## Quick start (recommended)
 
-## 核心论点
+Processed weekly matrices and deep tensors are already in the repo. Reproducing the main tables does **not** require re-downloading raw data or installing `transformers` / re-running Prithvi.
 
-本文认为：
+```bash
+# 0) Environment (Python 3.9.x; tested 3.9.6 / macOS)
+cd "/path/to/casa0004 Dissertation"
+python3 -m venv .venv && source .venv/bin/activate
+python3 -m pip install -r 04_code/requirements.txt
 
-## 项目结构
+# 1) Flat baselines M0–M4 (run M1 first: deep scripts read its predictions)
+python3 04_code/scripts/flat/run_baseline.py --modality M1
+python3 04_code/scripts/flat/run_baseline.py --modality M2 --m2-features anom
+python3 04_code/scripts/flat/run_baseline.py --modality M3
+python3 04_code/scripts/flat/run_baseline.py --modality M4
 
-```
-├── 00_admin/              — 行政管理
-│   ├── meeting_notes/     — 导师会议记录（每次一个 .md）
-│   ├── supervisor_feedback/ — 导师反馈汇总 + 待办清单
-│   ├── research_diary.md  — 每日研究日志
-│   ├── task_list.md       — 任务清单
-│   └── timeline.md        — 项目时间线
-│
-├── 01_literature/         — 文献管理
-│   ├── papers_pdf/        — PDF 原文（不上传 Git）
-│   ├── reading_notes/     — 每篇文献一个 .md 阅读笔记
-│   ├── literature_matrix.xlsx — 文献矩阵总表
-│   └── references.bib     — Zotero 导出的引用库
-│
-├── 02_ai_conversations/   — AI 对话记录
-│   ├── chatgpt_exports/   — ChatGPT 等工具导出
-│   ├── useful_outputs/    — 有价值的 AI 输出
-│   └── prompt_log.md      — AI 使用日志（最重要）
-│
-├── 03_data/               — 数据管理
-│   ├── raw/               — 原始数据（不修改）
-│   │   ├── oil_prices/
-│   │   ├── ais/
-│   │   ├── satellite/
-│   │   └── official_reports/
-│   ├── processed/         — 清洗后的数据
-│   ├── external_sources.md — 外部数据源清单
-│   └── data_dictionary.xlsx — 数据字典
-│
-├── 04_code/               — 代码
-│   ├── notebooks/         — Jupyter notebooks
-│   ├── scripts/           — Python 脚本
-│   ├── src/               — 可复用模块
-│   └── README.md
-│
-├── 05_outputs/            — 输出成果
-│   ├── figures/
-│   ├── tables/
-│   ├── maps/
-│   └── model_results/
-│
-├── 06_writing/            — 论文写作（Markdown 先写，后转 Word）
-│   ├── outline.md
-│   ├── chapter_1_introduction.md
-│   ├── chapter_2_literature_review.md
-│   ├── chapter_3_methodology.md
-│   ├── chapter_4_results.md
-│   ├── chapter_5_discussion.md
-│   └── references_notes.md
-│
-├── 07_submission/         — 最终提交
-│   ├── final_pdf/
-│   ├── appendix/
-│   └── reproducibility_pack/
-│
-├── .gitignore
-└── Readme.md
+# 2) Deep main results (representation-level fusion)
+python3 04_code/scripts/deep/run_deep_baseline.py
+
+# 3) Optional: sub-period / fusion matrix / interpretability
+python3 04_code/scripts/tools/subperiod_eval.py
+python3 04_code/scripts/deep/run_deep_fusion_matrix.py
+python3 04_code/scripts/deep/run_deep_interpret.py --seeds 42,1,2 --lookback 4
 ```
 
-## 文件命名规则
+**Full command list, prerequisites, robustness scripts** → [`04_code/README.md`](04_code/README.md)  
+**Submission reproducibility pack index** → [`07_submission/reproducibility_pack/README.md`](07_submission/reproducibility_pack/README.md)
 
+---
+
+## Research questions
+
+| RQ | Question | Method |
+| --- | --- | --- |
+| **RQ1** | Do RS / shipping add OOS value over M1 and relative to M0? | Flat M0–M4; CW vs M1; DM vs M0 |
+| **RQ2** | Under the same data, does representation-level fusion beat flat concat? | Flat vs Deep paired comparison |
+| **RQ3** | Relative importance of modalities / spatial nodes across regimes? | Flat SHAP; Deep gate α, attention |
+
+---
+
+## Project layout
+
+```text
+casa0004 Dissertation/
+├── 00_admin/                 # diaries, meetings, plans, walkthroughs
+├── 01_literature/            # matrix, reading notes, PDFs (local)
+├── 02_ai_conversations/      # AI usage log
+├── 03_data/
+│   ├── raw/                  # raw inputs (gitignore; keep locally)
+│   ├── processed/            # M1/M2/M3 + merge weekly products (modelling reads these)
+│   └── Dataset/              # external_sources.md, etc.
+├── 04_code/
+│   ├── requirements.txt
+│   ├── scripts/flat|deep|tools/
+│   └── src/backtest|models/
+├── 05_outputs/baselines/     # Flat / Deep / subperiod results
+├── 06_writing/               # chapters, outline, appendices
+└── 07_submission/            # final submission + reproducibility_pack
 ```
-YYYY-MM-DD_topic_version.ext
-```
 
-示例：
-- `2026-05-22_literature_search_v01.md`
-- `2026-05-23_dataset_inventory_v02.xlsx`
-- `2026-06-01_supervisor_feedback_meeting2.md`
+### Key files required for modelling
 
-## 文献管理：三层结构
+| File | Role |
+| --- | --- |
+| `03_data/processed/merge/outputs/weekly_feature_matrix.csv` | Shared weekly matrix (~365×213) for Flat + Deep |
+| `03_data/processed/merge/outputs/weekly_feature_dictionary.csv` | Feature dictionary (modality / names) |
+| `03_data/processed/M3/outputs/m3_graph17_tensors.npz` | Deep 17-node shipping graph |
+| `03_data/processed/M2/outputs/s2_prithvi_emb_{meanpool,cls}.npy` + `s2_prithvi_emb_index.csv` | Frozen Prithvi embeddings (precomputed) |
+| `05_outputs/baselines/Flat/M1_Flat/baseline_predictions.csv` | Flat M1 predictions read by deep scripts |
 
-1. **PDF 原文** → `01_literature/papers_pdf/AuthorYear_shorttitle.pdf`
-2. **阅读笔记** → `01_literature/reading_notes/Author_Year.md`
-3. **文献矩阵** → `01_literature/literature_matrix.xlsx`
+---
 
-## 数据管理原则
+## Locked protocol (Flat = Deep)
 
-- `raw/` = 原始数据，**不修改**
-- `processed/` = 清洗后的数据
-- 所有数据来源记录在 `external_sources.md`
+| Item | Value |
+| --- | --- |
+| Window | 2019–2025 (merged matrix); scored test ≈ **257 weeks** |
+| lookback / min_train / retrain_every / val_weeks | **4 / 104 / 13 / 52** |
+| Target | \(r_{t+1}=\ln(P_{t+1}/P_t)\), reconstructed to next-week price |
+| Seed | Main analysis **42** |
+| Metrics / tests | RMSE · MAE · DirAcc · skill vs M0; DM (HLN); Clark–West |
 
-## 每日工作流
+Details: [`06_writing/Appendix/appendix_C_config.md`](06_writing/Appendix/appendix_C_config.md).
 
-1. 打开 Cursor workspace
-2. 看 `task_list.md`
-3. 更新当天 `research_diary.md`
-4. 阅读文献，写 `reading_notes`
-5. 把文献加入 `literature_matrix`
-6. 有新数据源就写进 `external_sources.md`
-7. 用 AI 后记录进 `prompt_log.md`
-8. 把成熟内容转移到 `chapter_x.md`
-9. 每天 Git commit 一次
+---
 
-## 章节结构
+## Document index
 
-1. Introduction
-2. Literature Review
-3. Methodology
-4. Results
-5. Discussion
-6. Conclusion
+| Purpose | Path |
+| --- | --- |
+| **Code runbook** | [`04_code/README.md`](04_code/README.md) |
+| **Repro pack index** | [`07_submission/reproducibility_pack/README.md`](07_submission/reproducibility_pack/README.md) |
+| Logic + main results (CN one-pager) | `00_admin/最新待整理/项目逻辑与结果总览_CN.md` |
+| Flat end-to-end walkthrough | `00_admin/最新待整理/flat_baseline_full_walkthrough_{CN,EN}.md` |
+| Deep end-to-end walkthrough | `00_admin/最新待整理/deep_model_full_walkthrough_{CN,EN}.md` |
+| Variable inventory | `00_admin/最新待整理/2026-07-28_扁平模型变量清单.md` |
+| Progress overview | `00_admin/最新待整理/2026-07-15_研究方案与进度总览.md` |
+| Directory map | `00_admin/最新待整理/2026-07-07_File Structure.md` |
+| Data / config appendices | `06_writing/Appendix/appendix_{A_data,C_config}.md` |
+| External sources | `03_data/Dataset/external_sources.md` |
 
-## 写作规则
+---
 
-- 不直接引用 AI 生成内容
-- 所有事实必须有正式来源
-- 使用英式英语 / 中文学术风格
-- 每段必须有明确论点
-- 文献引用使用 Zotero citekey
+## Rebuild from raw (optional)
+
+Only if you need to redo feature engineering; requires local `03_data/raw/` (not in git). Order: see [`04_code/README.md`](04_code/README.md) § Data rebuild. Prithvi embedding export is a **one-off offline** step outside this `requirements.txt` environment.
+
+---
+
+## Conventions
+
+- Preferred filenames: `YYYY-MM-DD_topic_version.ext`
+- `raw/` is read-only; modelling reads `processed/`; results go to `05_outputs/`
+- Claims in the thesis need formal sources; AI drafts must be checked before chapter use
