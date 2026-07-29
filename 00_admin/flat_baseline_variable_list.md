@@ -3,8 +3,8 @@
 > **对应数据**：`03_data/processed/merge/outputs/weekly_feature_matrix.csv`  
 > **矩阵形状（2026-07-28 磁盘核对）**：**365 周 × 213 列** = `week_ending_friday` + **212** 数据列（31 M1 + 55 M2 anom + 113 M3 + 11 `avail_*` + 2 `target_*`）；区间 2019-01-04 ~ 2025-12-26。  
 > **最后更新**：2026-07-28（承接 2026-07-07 版；澄清列数口径、M3 发布滞后分层、文档路径）  
-> **上一版**：`00_admin/最新待整理/2026-07-07_扁平模型变量清单.md`（历史快照）  
-> **结果记录**：`00_admin/最新待整理/flat_baseline_log.md` · 进度总览 `2026-07-15_研究方案与进度总览.md`
+> **Previous version**: `00_admin/最新待整理/2026-07-07_扁平模型变量清单.md` (historical snapshot)  
+> **Experiment log**: `00_admin/最新待整理/flat_baseline_log.md` · progress overview `2026-07-15_研究方案与进度总览.md`
 
 ---
 
