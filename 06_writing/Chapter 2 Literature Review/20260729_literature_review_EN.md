@@ -22,6 +22,8 @@ Across these studies, machine learning is associated with greater flexibility in
 
 ## 2.2 Shipping activity and oil markets
 
+
+
 ### 2.2.1 AIS-based measurement of seaborne trade
 
 Automatic Identification System (AIS) data record vessel identities, positions and movements rather than the quantities or types of cargo carried. A growing literature has nevertheless developed methods for converting these records into estimates of maritime trade. Adland, Jia and Strandenes (2017) compare AIS-derived estimates of seaborne crude-oil exports with customs statistics. Their aggregate estimates align reasonably well with official data, although discrepancies vary across countries and periods because pipelines and transshipment are not fully observed. Yan et al. (2020) combine tanker trajectories with vessel shape, size and draught to estimate voyage-level oil flows. Their estimates for major importers and exporters are strongly correlated with Joint Organisations Data Initiative (JODI) statistics, and their 2017 results identify the Middle East–Malacca–East Asia corridor as the largest route in the global marine oil network.
@@ -44,6 +46,8 @@ Ouyang et al. (2022) construct a crude-oil maritime transportation network from 
 
 ## 2.3 Satellite imagery and remote sensing
 
+
+
 ### 2.3.1 Remote sensing as economic measurement
 
 Remote sensing provides repeated observations of infrastructure, emissions and activity patterns, but different sensors measure different physical phenomena. Night-time lights record emitted radiance; atmospheric observations can capture pollutants such as tropospheric NO₂; cloud products describe observation conditions; and optical or synthetic-aperture radar imagery records surface structure. Economic interpretations are therefore usually tied to a specific mechanism linking the observed signal to an activity of interest.
@@ -61,6 +65,8 @@ Other studies use imagery to measure infrastructure or trade rather than prices.
 These applications show that the economic content of remote sensing is specific to the observed signal and outcome. Cloud cover has been studied as a constraint on information, NO₂ as an indicator of combustion and demand, high-resolution imagery as a measure of infrastructure, and combined satellite features as indicators of port trade. Evidence obtained for one of these mechanisms does not automatically extend to other sensors, spatial scales or economic outcomes.
 
 ## 2.4 Multimodal learning and heterogeneous data
+
+
 
 ### 2.4.1 Multimodal learning and fusion strategies
 
@@ -88,6 +94,8 @@ Together, these studies distinguish between two sources of incompleteness that a
 
 ## 2.5 Forecast evaluation and model interpretation
 
+
+
 ### 2.5.1 Measuring and comparing predictive accuracy
 
 Forecast evaluation involves both the choice of an evaluation criterion and the assessment of uncertainty around observed performance differences. Point forecasts are commonly summarised using loss measures such as mean absolute error and root mean squared error. Probabilistic forecasts can instead be evaluated using proper scoring rules, including the Brier score for binary outcomes and log loss (Gneiting and Raftery, 2007). Directional forecasts have also motivated specialised procedures. Pesaran and Timmermann (1992), for example, develop a test of whether predicted and realised directions are independent.
@@ -98,7 +106,7 @@ Formal comparison tests examine whether observed loss differences are distinguis
 
 ### 2.5.2 Model interpretation and its limits
 
-The increasing use of machine learning in forecasting has been accompanied by greater interest in post-hoc interpretation. SHAP provides an additive decomposition of an individual prediction into feature attributions (Lundberg and Lee, 2017). Aggregating these attributions across observations can produce global summaries of model behaviour, while grouping features can provide higher-level summaries. The resulting values depend, however, on how the absence of a feature is represented and on assumptions about relationships among predictors.
+The increasing use of machine learning in forecasting has been accompanied by greater interest in post-hoc interpretation. SHAP provides an additive decomposition of an individual prediction into feature attributions (Lundberg and Lee, 2017). Aggregating these attributions across observations can produce global summaries of model behaviour, while grouping features can provide higher-level summaries. The resulting values depend, fhowever, on how the absence of a feature is represented and on assumptions about relationships among predictors.
 
 Feature dependence is particularly important in economic data. Aas, Jullum and Løland (2021) show that independence-based SHAP procedures may evaluate unrealistic combinations of correlated predictors and develop approximations that account for dependence. Their results demonstrate that feature attribution is not invariant to the distributional assumptions used to construct the comparison.
 
@@ -106,18 +114,24 @@ Some model architectures also expose internal weights that can be inspected. The
 
 ## 2.6 Synthesis, research gap and positioning
 
+
+
 ### 2.6.1 Synthesis of the literature
 
 Four conclusions emerge from the review. Oil-price forecasting is difficult because oil prices are highly persistent and the no-change benchmark is strong. Economic and financial predictors are widely used in this literature because they capture persistence, uncertainty, monetary conditions, exchange-rate channels and market expectations. Shipping and remote-sensing data are plausible alternative-data sources, but they are noisy and indirect proxies rather than direct measurements of future prices. Multimodal learning offers tools for preserving modality-specific structure, but these tools have not been systematically tested for commodity-price forecasting with heterogeneous shipping and satellite inputs.
 
 The following table summarises the observable signal, economic channel and main limitation of each of the four literatures, with key citations for each strand.
 
-| Data source / literature | Observable signal | Economic channel | Main limitation | Key references |
-| --- | --- | --- | --- | --- |
-| Financial and oil-market variables | Lagged price, inventories, production/refinery activity, volatility, GPR, rates, exchange rates, futures/market indicators | Persistence, uncertainty, macro-financial conditions, market expectations | Strong benchmark; difficult to improve upon | Kilian (2009); Alquist, Kilian and Vigfusson (2013); Baumeister and Kilian (2015); Costa et al. (2021); Yılmaz and Zehir (2026) |
-| Shipping / AIS / PortWatch | Tanker flows, port calls, chokepoint transits, capacity-weighted activity | Physical trade, supply disruption, congestion, regional flow changes | Directionality, noisy cargo inference, missing AIS activity | Adland, Jia and Strandenes (2017); Yan et al. (2020); Arslanalp, Marini and Tumbarello (2019); Arslanalp et al. (2026); Mi et al. (2022, 2023); Paolo et al. (2024); Ouyang et al. (2022); Liang et al. (2022); Zhao et al. (2022) |
-| Remote sensing | Night-time lights, NO₂, cloud cover, site-level imagery or embeddings | Industrial activity, demand conditions, inventory observability, infrastructure signals | Indirect mechanism, weak within-site temporal variation, cloud/missing data | Gibson et al. (2021); Polinov, Bookman and Levin (2022); Small (2021); Hao and Wang (2023); Wang et al. (2019); Bricongne et al. (2026); Jung (2026) |
-| Multimodal learning | Modality-specific representations and fusion | Preservation of heterogeneous structure before prediction | Limited direct evidence in oil-price forecasting | Baltrušaitis, Ahuja and Morency (2019); Arevalo et al. (2017); Gohari et al. (2024); Cong et al. (2022); Fuller, Millard and Green (2023); Szwarcman et al. (2026); Ma et al. (2022) |
+
+| Data source / literature           | Observable signal                                                                                                          | Economic channel                                                                        | Main limitation                                                             | Key references                                                                                                                                                                                                                     |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Financial and oil-market variables | Lagged price, inventories, production/refinery activity, volatility, GPR, rates, exchange rates, futures/market indicators | Persistence, uncertainty, macro-financial conditions, market expectations               | Strong benchmark; difficult to improve upon                                 | Kilian (2009); Alquist, Kilian and Vigfusson (2013); Baumeister and Kilian (2015); Costa et al. (2021); Yılmaz and Zehir (2026)                                                                                                    |
+| Shipping / AIS / PortWatch         | Tanker flows, port calls, chokepoint transits, capacity-weighted activity                                                  | Physical trade, supply disruption, congestion, regional flow changes                    | Directionality, noisy cargo inference, missing AIS activity                 | Adland, Jia and Strandenes (2017); Yan et al. (2020); Arslanalp, Marini and Tumbarello (2019); Arslanalp et al. (2026); Mi et al. (2022, 2023); Paolo et al. (2024); Ouyang et al. (2022); Liang et al. (2022); Zhao et al. (2022) |
+| Remote sensing                     | Night-time lights, NO₂, cloud cover, site-level imagery or embeddings                                                      | Industrial activity, demand conditions, inventory observability, infrastructure signals | Indirect mechanism, weak within-site temporal variation, cloud/missing data | Gibson et al. (2021); Polinov, Bookman and Levin (2022); Small (2021); Hao and Wang (2023); Wang et al. (2019); Bricongne et al. (2026); Jung (2026)                                                                               |
+| Multimodal learning                | Modality-specific representations and fusion                                                                               | Preservation of heterogeneous structure before prediction                               | Limited direct evidence in oil-price forecasting                            | Baltrušaitis, Ahuja and Morency (2019); Arevalo et al. (2017); Gohari et al. (2024); Cong et al. (2022); Fuller, Millard and Green (2023); Szwarcman et al. (2026); Ma et al. (2022)                                               |
+
+
+
 
 ### 2.6.2 Research gap
 
@@ -136,6 +150,8 @@ These gaps concern three related issues: whether alternative data contain increm
 These gaps motivate the research questions stated in Section 1.2. This dissertation addresses them through an empirical comparison of one-week-ahead Brent price forecasts under a shared out-of-sample design: financial time series are expanded with shipping and/or remote sensing, and flat feature fusion is paired with modality-aware fusion on matched information sets. Interpretability is used only to describe modality reliance where forecasts already improve on the no-change benchmark, not as causal evidence. Implementation details follow in Chapter 3.
 
 ---
+
+
 
 ## References
 
