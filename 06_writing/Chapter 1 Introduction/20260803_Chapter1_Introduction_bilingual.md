@@ -8,9 +8,13 @@
 
 ## 摘要 *（约 200 词）*
 
-Brent crude is the main benchmark for internationally traded oil, and its short-term movements affect hedging, budgeting and market-risk decisions. The 2019–2025 period spans the COVID-19 pandemic, the 2022 energy crisis and subsequent market adjustment. This dissertation asks whether satellite remote sensing and maritime shipping data add predictive information beyond financial time series for one-week-ahead Brent price forecasts. It also compares flat feature-level fusion with modality-specific encoding before fusion. Ridge and XGBoost represent the flat approach; deep models encode the three data sources separately and then fuse them. A financial-time-series-only specification is compared with alternatives adding remote sensing, shipping, or both. All models follow the same rolling-origin out-of-sample protocol, use only information available at each forecast date, and are evaluated against a no-change benchmark that sets next week’s price equal to this week’s. On a common evaluation sample, no flat model outperforms this benchmark. Shipping still improves accuracy relative to the financial-time-series-only specification, whereas remote sensing does not. Deep models combining financial time series and shipping data achieve a small gain over the benchmark, but adding remote sensing brings no clear further improvement. The advantage of deep models over flat models is clearest when shipping data are included. Where deep models improve on the benchmark, modality gates and spatial attention are used to show which sources the forecasts rely on. Overall, predictive value depends on the information source and fusion design, not simply on adding more data.
+Brent crude is one of the principal benchmarks for internationally traded oil and a key reference price in the global energy market. Its short-term movements affect energy costs, inflation, trade balances and fiscal revenues, and therefore influence decisions made by firms and governments. Using weekly data from 2019 to 2025, this study examines whether satellite remote-sensing and shipping data provide incremental value beyond financial time series for one-week-ahead Brent price forecasting. It also compares flat feature fusion with modality-specific encoding followed by fusion. Flat models combine all selected inputs in a single feature table, whereas deep models encode each data source separately before fusing the resulting representations. For both model families, the study compares a financial-time-series-only specification with alternatives that add remote sensing, shipping or both.
 
-Brent 原油是国际贸易原油的主要定价基准，其短期波动影响对冲、预算与市场风险决策。2019–2025 年覆盖新冠疫情、2022 年能源危机及随后的市场调整。本论检验卫星遥感与航运数据，能否在金融时序之外，为提前一周的 Brent 价格预测提供增量信息；并比较扁平特征级融合与先分模态编码再融合。Ridge 与 XGBoost 代表扁平路径；深度模型对三类数据源分别编码后再融合。仅用金融时序的设定与加入遥感、航运或二者的备选设定相对照。所有模型共用同一滚动起点样本外协议，仅使用各预测日当时可获信息，并以“下周价格等于本周价格”的不变预测为评价基准。在共同评价样本上，无扁平模型优于该基准；航运相对仅金融时序设定仍改善精度，遥感则没有。深度模型在金融时序加航运时相对基准有小幅增益，再加遥感并无明显进一步改善。深度相对扁平的优势在纳入航运时最清晰。在深度模型打过基准之处，用模态门控与空间注意力展示预测依赖哪些数据源。总体而言，预测价值取决于信息源与融合设计，而非单纯堆加更多数据。
+The models are evaluated against a no-change benchmark that sets next week’s price equal to this week’s price. The results show that no flat model outperforms this benchmark, although shipping data provide limited evidence of incremental predictive information. Deep models combining financial time series and shipping data achieve a small improvement over the benchmark. Remote-sensing data provide no clear additional benefit. The advantage of deep models over flat models is most evident when shipping data are included. This study further uses modality gates to show which data sources the best-performing deep model relies on most. Overall, predictive value depends largely on fusion design rather than simply on adding more data.
+
+Brent 原油是国际贸易原油的主要定价基准之一，也是全球能源市场的核心参考价格。其短期波动会影响能源成本、通胀、贸易收支和财政收入，并影响企业与政府的相关决策。本研究使用 2019—2025 年的周度数据，检验卫星遥感与航运数据能否在金融时序之外，为提前一周的 Brent 价格预测提供增量价值。本研究还比较扁平特征融合与先分模态编码再融合。扁平模型将所有选定输入合并到同一张特征表中，深度模型则分别编码各类数据源，再将其融合。对于两类模型，本研究均比较仅使用金融时序的设定，以及分别加入遥感、航运或二者的设定。
+
+模型以“下周价格等于本周价格”的不变预测作为基准。研究结果表明，没有扁平模型优于该基准，但航运数据表现出有限的增量预测信息。结合金融时序与航运数据的深度模型相对基准取得了小幅改善。遥感数据没有带来明确的额外收益。在加入航运数据时，深度模型相对扁平模型的优势最明显。本研究进一步使用了模态门控展示表现最佳的深度模型主要依赖哪些数据源。总体而言，预测价值在很大程度上取决于融合设计，而不是单纯增加更多数据。
 
 ---
 
@@ -22,58 +26,50 @@ Brent 原油是国际贸易原油的主要定价基准，其短期波动影响�
 
 ### 1.1 重要性与背景
 
-Crude oil occupies a central place in the world economy. Movements in oil prices affect inflation, trade balances, fiscal revenues in producer countries and the operating costs of energy-intensive industries. These effects transmit quickly through financial markets, real activity and supply chains. Oil-price forecasting therefore matters in energy economics, and for governments, firms and investors concerned with risk management, hedging and planning.
+Crude oil occupies a central place in the global economy and energy system. Oil-price movements affect inflation, trade balances, fiscal revenues in producer countries and the operating costs of energy-intensive industries. These effects spread through financial markets, economic activity and supply chains. They therefore shape the risk management, hedging, budgeting and planning decisions of governments, firms and investors. Recent years have shown the costs of unexpected oil-price movements. The COVID-19 period brought an abrupt collapse in demand and an uneven recovery. The 2022 energy crisis then produced major supply and price shocks, followed by only partial normalisation amid continued geopolitical and macroeconomic uncertainty. This volatility increases the importance of reliable oil-price forecasts. It also means that claims about new data or more complex models must be tested against strong and transparent benchmarks.
 
-原油在世界经济中占据核心位置。油价变动影响通胀、贸易差额、产油国财政收入以及高耗能行业的运营成本。这些影响会迅速传导至金融市场、实体活动与供应链。因此油价预测在能源经济学中具有重要性，也关系到政府、企业与投资者的风险管理、对冲与规划。
-
-Oil remains a core commodity in the global energy system. Recent years have underlined how costly price surprises can be. The COVID-19 period brought an abrupt demand collapse and an uneven recovery. The 2022 energy crisis then produced a sharp supply and price shock. The years that followed saw only partial normalisation under continued geopolitical and macroeconomic uncertainty.
-
-石油仍是全球能源体系中的核心商品。近年经历再次表明价格意外的代价有多大。新冠时期出现需求骤降与不均衡复苏。2022 年能源危机带来剧烈的供给与价格冲击。随后几年在持续的地缘与宏观不确定性下只是部分回归常态。
+原油在全球经济和能源体系中占据核心位置。油价变动会影响通胀、贸易差额、产油国财政收入以及高耗能行业的运营成本。这些影响会通过金融市场、经济活动和供应链进一步传导。因此，油价变动会影响政府、企业和投资者的风险管理、对冲、预算与规划决策。近年来的市场变化进一步表明，油价意外波动可能造成较高代价。新冠疫情期间，原油需求骤降，随后出现不均衡复苏。2022 年能源危机又带来显著的供给与价格冲击。此后，市场在持续的地缘政治和宏观经济不确定性下仅实现部分正常化。这种波动提高了可靠油价预测的重要性，也意味着任何关于新数据或更复杂模型能够改善预测的主张，都必须通过强且透明的基准进行检验。
 
 That uncertainty is not only historical. Recent conflict has again shown how quickly oil prices and seaborne trade can move when key maritime choke points are disrupted or avoided. Governments watch such shocks for inflation control, fiscal planning, energy security and trade policy. A better short-term oil-price model would help them gauge risk and timing. It would not replace market judgment, but it could support planning when physical flows and prices shift together. In such an environment, claims that new data or more elaborate models improve forecasts need to be tested carefully against strong and transparent benchmarks.
 
 这种不确定性并非只属于历史。近期冲突再次表明，当关键航运咽喉受阻或被绕行时，油价与海运贸易会迅速变动。政府出于通胀管理、财政规划、能源安全与贸易政策需要监测此类冲击。更可靠的短期油价模型有助于它们评估风险与时机。它不能替代市场判断，但可在实物流动与价格同步变动时支持规划。在这种环境下，任何“新数据”或“更复杂模型”改善预测的主张，都必须对照强且透明的基准加以检验。
 
-Among crude-oil benchmarks, Brent serves as the global pricing benchmark for a large share of internationally traded oil. This dissertation focuses on Friday-ending weekly Brent spot prices over 2019–2025 and on one-week-ahead out-of-sample forecasts. At the weekly horizon, the no-change forecast is difficult to outperform. That simple rule—predicting that next week’s price equals this week’s price—is a demanding reference point. Any claim that alternative data or a new fusion method helps must clear this bar, not only improve on a weaker or differently specified competitor.
+At the weekly horizon, the no-change forecast is difficult to outperform. This simple method predicts that next week’s price will be equal to this week’s price. It therefore provides a demanding benchmark for evaluating alternative data and forecasting methods. A model should not be considered useful merely because it outperforms a weaker or differently specified model. It must also be compared directly with the no-change benchmark.
 
-在原油定价基准中，Brent 是大部分国际贸易原油的全球定价基准。本论聚焦 2019–2025 年周五截止的周度 Brent 现货，以及提前一周的样本外预测。在周度尺度上，不变预测很难被超越。这一简单规则——即预测下周价格等于本周价格——是一道很高的门槛。任何关于另类数据或新融合方法“有用”的主张，都必须越过这道门槛，而不能只相对更弱或设定不同的对手取得改善。
+在周度预测中，不变预测通常很难被超越。这种简单方法假设下周价格等于本周价格，因此为评价另类数据和预测方法提供了一个较高的基准。一个模型不能仅因优于较弱或设定不同的模型而被认为具有预测价值。它还必须与不变预测基准进行直接比较。
 
-These data provide complementary views of the oil system. Financial, macroeconomic and oil-market variables describe market conditions over time. Remote sensing represents spatial activity at specific oil-related sites through spectral indicators, night-time lights and image embeddings. AIS and PortWatch data describe time-varying vessel activity across ports and major chokepoints, including the network relationships between them, and serve as proxies for seaborne trade flows and congestion. Chapter 3 maps the eleven monitoring sites and six maritime chokepoints used in these spatial inputs. In this dissertation, multimodal forecasting therefore refers to combining temporal market data, spatial Earth-observation data and spatiotemporal shipping-network data within the same forecasting task.
+The three data sources considered in this dissertation provide complementary views of the oil system. Financial, macroeconomic and oil-market variables describe changes in market conditions over time. Remote sensing captures spatial activity at selected oil-related sites through spectral indicators, night-time lights and image representations. AIS and PortWatch data describe changes in vessel activity across ports and major chokepoints. They also capture network relationships between locations and provide proxies for seaborne trade flows and congestion. In this dissertation, multimodal forecasting refers to combining temporal market data, spatial Earth-observation data and spatiotemporal shipping-network data in the same forecasting task.
 
-这些数据从不同角度描述石油体系。金融、宏观经济和石油市场变量反映随时间变化的市场状况；遥感数据通过光谱指标、夜光与影像嵌入表征特定石油相关地点的空间活动；AIS 与 PortWatch 数据则描述港口和主要航运咽喉上的时变船舶活动及其网络关系，并作为海运贸易流与拥堵的代理。第 3 章给出这些空间输入所用的十一个监测站点与六个航运咽喉的分布图。因此，本文所称的多模态预测，是指在同一预测任务中融合时间性的市场数据、空间性的对地观测数据，以及具有时空网络结构的航运数据。
+本研究考察的三类数据从不同角度描述石油市场。金融、宏观经济和石油市场变量反映市场状况随时间的变化。遥感数据通过光谱指标、夜间灯光和影像表征，描述特定石油相关地点的空间活动。AIS 与 PortWatch 数据描述港口和主要航运咽喉的船舶活动变化。它们还保留不同地点之间的网络关系，并可作为海运贸易流量和拥堵情况的代理变量。本文所称的多模态预测，是指在同一预测任务中结合时间性的市场数据、空间性的对地观测数据，以及具有时空网络结构的航运数据。
 
-Two practical difficulties follow. First, the signals are noisy and arrive on different schedules. They may also respond to prices rather than lead them, and the weekly sample is relatively small. Second, a common approach is to organise heterogeneous inputs in a single feature table and combine them before modelling. That flat early-fusion approach is convenient for classical models such as Ridge regression or gradient-boosted trees. It does not explicitly model modality-specific structure. This includes temporal dynamics in financial time series, site structure in remote sensing, and network structure in shipping.
+These data create two practical challenges. First, the signals are noisy and arrive on different schedules. They may also respond to oil prices rather than predict them, while the available weekly sample is relatively small. Second, a common approach places all heterogeneous inputs in a single feature table before modelling. This flat feature-fusion approach is convenient for conventional models such as Ridge regression and gradient-boosted trees. However, it does not explicitly preserve the temporal structure of financial time series, the site structure of remote sensing or the network structure of shipping data.
 
-由此带来两点实践困难。第一，信号嘈杂且到达节奏不一。它们也可能是对价格的响应而非领先，同时周度样本量相对较小。第二，一种常见做法是把异质输入整理成一张特征表，并在建模前加以组合。这种扁平早融合便于 Ridge 或梯度提升树等经典模型。但并未显式建模各模态特有结构。这包括金融时序的时间动态、遥感的站点结构，以及航运的网络结构。
+这些数据带来两项实际挑战。第一，各类信号含有噪声，观测频率和发布时间也不相同。它们还可能是对油价变化的反应，而不是油价的领先信号。同时，可用的周度样本相对较小。第二，一种常见方法是在建模前将所有异质输入放入同一张特征表中。这种扁平特征融合方法便于应用 Ridge 回归和梯度提升树等传统模型，但无法明确保留金融时序的时间结构、遥感数据的站点结构以及航运数据的网络结构。
 
-This raises the empirical question addressed in this dissertation. Can remote sensing and shipping improve one-week-ahead Brent price forecasts beyond **financial time series** and the no-change benchmark? And when the underlying data are held fixed, does keeping each modality’s structure before fusion outperform flat feature fusion? The detailed research gap is developed after the literature review in Chapter 2. The next section states the aim and research questions.
+This dissertation therefore addresses two empirical questions. First, do remote-sensing and shipping data improve one-week-ahead Brent price forecasts when they are added to financial time series? Can the resulting models outperform the no-change benchmark? Second, when the underlying data remain the same, does encoding each modality separately before fusion perform better than combining all inputs in a single feature table? The next section presents the study aim and formal research questions.
 
-这正是本论要回答的实证问题：遥感与航运能否在**金融时序**与不变预测基准之上，改善提前一周的 Brent **价格**预测？在底层数据保持不变时，先保留各模态结构再融合，是否优于扁平特征融合？详细研究空白在第 2 章文献综述之后展开。下一节给出研究目标与研究问题。
+因此，本研究主要回答两个实证问题。第一，在金融时序中加入遥感与航运数据，能否改善提前一周的 Brent 价格预测？由此得到的模型能否优于不变预测基准？第二，在使用相同底层数据的情况下，先分别编码各类数据再进行融合，是否比将所有输入合并到同一张特征表中表现更好？下一节将介绍本研究的目标和正式研究问题。
 
 ### 1.2 Aim and research questions
 
 ### 1.2 研究目标与研究问题
 
-The aim of this dissertation is not to propose a new neural-network building block. It is to build one reproducible comparison framework for the same weekly Brent **price** forecasting task under a shared protocol. The framework combines financial time series with satellite and shipping inputs. It uses a rolling design that never uses future information, and it tests whether one forecast improves on another. Flat feature fusion places all inputs in one table before modelling. Representation-level fusion encodes each modality first, then combines the representations. The contribution is integration and fair comparison, not a new model operator. Implementation details follow in Chapter 3.
+The main aim of this dissertation is to develop a reproducible comparison framework for evaluating how different data sources and model designs perform in one-week-ahead Brent price forecasting. The framework combines financial time-series data, satellite remote-sensing data and shipping data. It uses a rolling-origin forecasting design that prevents the use of future information and applies formal statistical tests to compare predictive performance. Flat feature fusion places all inputs in a single feature table before modelling. Representation-level fusion encodes each modality separately and then combines the resulting representations. This framework enables consistent comparisons of the incremental value of different data sources and the effects of different fusion designs.
 
-本论的目标不是提出一种新的神经网络构件，而是在共享协议下，为同一周度 Brent **价格**预测任务构建一套可复现的对照框架。该框架将金融时序与卫星、航运输入结合；采用不使用未来信息的滚动设计，并检验一个预测是否优于另一个。扁平特征融合在建模前将全部输入放入同一特征表。表示级融合先对各模态分别编码，再融合所得表征。贡献是集成与公平比较，而非新的模型算子。实施细节见第 3 章。
+本研究的主要目标是构建一套可复现的对照框架，用于评估不同数据来源和模型设计在提前一周的 Brent 价格预测中的表现。该框架结合金融时序数据、卫星遥感数据和航运数据。框架采用滚动起点预测设计，以避免使用未来信息，并通过正式统计检验比较不同模型的预测表现。扁平特征融合在建模前将所有输入放入同一张特征表中。表示级融合则分别编码各类数据，再将所得表征进行融合。该框架能够一致地比较不同数据来源的增量价值，以及不同融合设计对预测表现的影响。
 
-Three research questions organise the study.
+The study is organised around three research questions.
 
-三项研究问题组织全文。
+本研究围绕以下三个研究问题展开。
 
-**RQ1.** Do remote-sensing and shipping indicators add incremental out-of-sample value over financial time series and the no-change benchmark?
+**RQ1.** Compared with models using only financial time-series data, do remote-sensing and shipping data improve one-week-ahead Brent price forecasts?
 
-**RQ1.** 遥感与航运指标是否在金融时序与不变预测基准之上带来样本外增量价值？
+**RQ1.** 与仅使用金融时序数据的模型相比，加入遥感与航运数据能否改善提前一周的 Brent 价格预测？
 
-**RQ2.** Does modality-aware representation-level fusion outperform flat feature fusion when both use the same underlying data and the same evaluation protocol?
+**RQ2.** When using the same underlying data, does modality-aware representation-level fusion outperform flat feature fusion?
 
-**RQ2.** 在相同底层数据与相同评估协议下，模态感知的表示级融合是否优于扁平特征融合？
+**RQ2.** 在使用相同底层数据的情况下，模态感知的表示级融合是否优于扁平特征融合？
 
-**RQ3.** Can modality-level interpretability reveal which signals the model relies on across different market conditions?
+**RQ3.** Which data sources do the models rely on under different market conditions?
 
-**RQ3.** 模态级可解释性能否揭示模型在不同市场条件下依赖哪些信号？
-
-The logic is sequential. First ask whether the data help. Then ask whether fusion architecture matters. Then, only where predictive value exists, ask what the model relies on.
-
-逻辑是递进的。先问数据是否有用。再问融合架构是否重要。最后仅在已有预测价值之处，问模型依赖什么。
+**RQ3.** 模型在不同市场条件下依赖哪些数据来源？

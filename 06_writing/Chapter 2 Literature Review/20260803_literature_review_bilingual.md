@@ -1,276 +1,167 @@
-# Chapter 2 — Literature Review (~4000)
+# Chapter 2 — Literature Review
 
-# 第 2 章 — 文献综述 *（约 4000 词）*
+# 第 2 章 — 文献综述
 
-This chapter reviews how oil-price forecasts are built and judged. It covers econometric and machine-learning oil-price models, shipping and remote-sensing proxies, multimodal fusion, and evaluation practice. It then states the research gap this dissertation addresses.
+This chapter reviews the main bodies of literature that support the study. It first examines the economic drivers and empirical benchmarks of crude-oil price forecasting, followed by the application of machine-learning methods. It then reviews how shipping activity reflects oil-market conditions and how satellite remote sensing provides oil-market information. Next, it introduces multimodal learning and fusion methods. Finally, it identifies the research gaps and positions this dissertation within the existing literature.
 
-本章综述油价预测如何构建与评判。内容涵盖计量与机器学习油价模型、航运与遥感代理、多模态融合以及评估实践。随后提出本论所针对的研究空白。
+本章综述支撑本研究的主要文献。首先介绍原油价格预测的经济驱动因素和经验预测基准，随后讨论机器学习方法在油价预测中的应用。接下来介绍航运活动如何反映油市状况，以及卫星遥感如何提供与油市相关的信息。随后介绍多模态学习及其融合方法。最后，本章提出研究空白，并说明本文在现有文献中的定位。
 
-## 2.1 Crude-oil price forecasting
+## 2.1 Crude-oil price drivers and forecasting benchmarks
 
-## 2.1 原油价格预测
+## 2.1 原油价格驱动因素与预测基准
 
-### 2.1.1 Structural accounts and empirical benchmarks
+Research on oil-price movements shows that similar price changes can arise from economically different sources. Kilian (2009) distinguishes among shocks to global crude-oil production, shocks to aggregate demand for industrial commodities and demand shocks specific to the oil market. Oil prices respond differently to these shocks, and each shock has a different relationship with global economic activity and oil production. This distinction provides an economic basis for using variables related to supply, demand, market expectations and macroeconomic conditions in oil-price forecasting.
 
-### 2.1.1 结构解释与经验基准
+油价变动研究表明，相似的价格变化可能来自经济含义不同的冲击。Kilian（2009）区分全球原油产量冲击、工业品总需求冲击，以及石油市场特有的需求冲击。油价对这些冲击的反应不同，各类冲击与全球经济活动和原油产量的关系也不相同。这一区分为在油价预测中使用供给、需求、市场预期和宏观经济条件等变量提供了经济理论基础。
 
-Research on oil-price movements emphasises that similar price changes may arise from economically different sources. Kilian (2009) distinguishes among shocks to global crude-oil production, shocks to aggregate demand for industrial commodities and demand shocks specific to the oil market. The responses of the real price of oil differ across these shocks. So do their relationships with global economic activity and oil production. This structural account has been influential because it separates supply disturbances from changes in general economic activity and oil-market-specific demand. It does not treat every oil-price movement as the outcome of a single process.
+A separate literature examines whether these economic relationships produce accurate forecasts. Alquist, Kilian and Vigfusson (2013) compare a wide range of forecasting models with the no-change forecast, which sets the future spot price equal to the current price. Many alternative models fail to outperform this simple benchmark consistently, particularly in real-time and out-of-sample evaluations. They also distinguish economic predictability from practical forecastability. A variable may have an economic relationship with future oil prices without reducing forecast errors in a finite out-of-sample period. Baumeister and Kilian (2015) find that combining forecasts from several econometric models can produce more stable results across periods and forecast horizons than relying on a single model. These studies establish the no-change forecast as an important benchmark and show that model performance can vary substantially across evaluation periods.
 
-油价变动研究强调：相似的价格变化可能来自经济含义不同的冲击来源。Kilian（2009）区分全球原油产量冲击、工业品总需求冲击以及石油市场特有的需求冲击。真实油价对这些冲击的响应不同。它们与全球经济活动和石油产量的关系也不同。这一结构解释之所以有影响，是因为它把供给扰动与一般经济活动变化、以及油市特有需求区分开来。它并不把每一次油价波动都当作同一过程的结果。
+另一类文献考察这些经济关系能否产生准确的预测。Alquist、Kilian 与 Vigfusson（2013）将多种预测模型与不变预测进行比较。不变预测将未来现货价格设为当前价格。许多备选模型无法持续优于这一简单基准，尤其是在实时和样本外评价中。他们还区分经济上的可预测性与实际的可预报性。某个变量可能与未来油价存在经济关系，但未必能在有限的样本外时期降低预测误差。Baumeister 与 Kilian（2015）发现，组合多个计量模型的预测，可能比依赖单一模型在不同阶段和预测期上取得更稳定的结果。这些研究确立了不变预测作为重要评价基准的地位，也表明模型表现可能随评价时期发生较大变化。
 
-A separate literature examines whether these and other economic relationships generate useful forecasts. Alquist, Kilian and Vigfusson (2013) compare a wide range of models with the no-change forecast, which sets the future spot price equal to the current price. Many alternatives fail to improve consistently on this benchmark, particularly in real time and out of sample. They also distinguish population predictability from forecastability. An economic variable may be related to future oil prices. That relationship does not guarantee lower forecast errors in a finite evaluation sample. Baumeister and Kilian (2015) study forecast combinations across six econometric specifications. Combinations can produce more stable performance across horizons and periods than individual models. This literature characterises oil-price forecasting as a setting in which simple benchmarks remain competitive and model rankings are often unstable.
+## 2.2 Machine learning in crude-oil price forecasting
 
-另有文献考察这些及其他经济关系能否产生有用的预测。Alquist、Kilian 与 Vigfusson（2013）将大量模型与不变预测比较。不变预测将未来现货价设为当前价格。许多备选模型并不能持续优于该基准，尤其是在实时与样本外情形下。他们还区分总体可预测性与可预报性。某一经济变量可能与未来油价相关。这种关系并不保证在有限评价样本中带来更低的预测误差。Baumeister 与 Kilian（2015）研究六种计量设定的预测组合。组合往往比单一模型在跨期限与跨时期上更稳定。该文献把油价预测刻画为简单基准仍具竞争力、而模型排序常不稳定的设定。
+## 2.2 机器学习在原油价格预测中的应用
 
-### 2.1.2 Evidence from machine-learning forecasts
+Machine learning has expanded the range of methods used in oil-price forecasting. These methods can process large predictor sets and capture nonlinear relationships and interactions. Costa et al. (2021) evaluate 23 methods using 315 macroeconomic and financial variables. They find that no single method performs best at every forecast horizon. Machine-learning methods are competitive at short horizons, but econometric, market-based and combined forecasts also perform strongly in some settings. Yılmaz and Zehir (2026) compare econometric and tree-based models for Brent returns using macro-financial and geopolitical variables. LightGBM produces the most consistent results across their reported settings, but the broader comparison again shows that performance depends on the forecast horizon, predictor set and evaluation design.
 
-### 2.1.2 机器学习预测证据
+机器学习扩大了原油价格预测使用的方法范围。这些方法能够处理较大的预测变量集合，并刻画非线性关系与变量交互。Costa 等（2021）使用 315 个宏观经济和金融变量，比较 23 种预测方法。他们发现，没有一种方法在所有预测期上都表现最佳。机器学习方法在短预测期上具有竞争力，但计量模型、市场型预测和预测组合在部分设定下同样表现较强。Yılmaz 与 Zehir（2026）使用宏观金融和地缘政治变量，比较用于 Brent 收益预测的计量模型和树模型。LightGBM 在其报告的设定中表现最稳定，但整体比较再次表明，模型表现取决于预测期、预测变量集合和评价设计。
 
-Machine learning has widened the set of methods used in oil-price forecasting, particularly in studies with large predictor sets. Costa et al. (2021) evaluate 23 methods using 315 macroeconomic and financial variables in a pseudo-out-of-sample forecasting exercise. They find that no single method dominates across all forecast horizons. Machine-learning methods are competitive at short horizons. At horizons of up to six months, the strongest forecasts include LASSO-based models, oil-futures-based forecasts, a vector error-correction model and the Schwartz–Smith model. Forecast combinations become more relevant at longer horizons. These horizon-dependent results caution against treating XGBoost—or any other algorithm—as a default choice without horizon-specific evaluation. Using monthly Brent returns together with the geopolitical risk index, the VIX volatility index and the US ten-year Treasury yield, Yılmaz and Zehir (2026) compare econometric and tree-based models under a rolling-origin design. LightGBM records the most consistent performance across their reported horizons and train–test configurations. Both studies show that rankings vary with the horizon, predictor set and evaluation design.
+Deep-learning studies focus more directly on learning temporal representations. Foroutan and Lahmiri (2024) compare a range of methods for next-day WTI and Brent spot-price forecasting and report strong performance from temporal convolutional networks and LightGBM. Simsek et al. (2024) combine LSTM-based feature extraction with XGBoost for WTI price prediction. Graph-based methods have also been introduced. Zhao, Xue and Cheng (2023), for example, model time-varying relationships among economic and financial variables and use a spatial–temporal graph neural network to forecast WTI futures. Their graph represents statistical relationships among predictors rather than a physical transportation network.
 
-机器学习扩大了油价预测所用方法集，尤其是在大预测变量集研究中。Costa 等（2021）在伪样本外预测中用 315 个宏观与金融变量评估 23 种方法。他们发现没有单一方法在所有预测期上都占优。机器学习方法在短预测期上具有竞争力。在至多六个月的预测期上，最强预测包括基于 LASSO 的模型、基于原油期货的预测、向量误差修正模型与 Schwartz–Smith 模型。更长预测期上预测组合更相关。这些依赖预测期的结果提醒：不宜在缺少期限特异评估时，把 XGBoost——或任何其他算法——当作默认选择。Yılmaz 与 Zehir（2026）以月度 Brent 收益结合地缘政治风险指数、VIX 波动率指数与美国十年期国债收益率，在滚动起点设计下比较计量与树模型。在其报告的预测期与训练–测试配置上，LightGBM 表现最稳定。两项研究都表明，排序会随预测期、预测变量集与评估设计而变化。
+深度学习研究更直接地关注时间表征的学习。Foroutan 与 Lahmiri（2024）比较多种用于次日 WTI 和 Brent 现货价格预测的方法，并报告时序卷积网络和 LightGBM 具有较强表现。Simsek 等（2024）将基于 LSTM 的特征提取与 XGBoost 结合，用于预测 WTI 价格。图模型也开始用于油价预测。例如，Zhao、Xue 与 Cheng（2023）对经济和金融变量之间的时变关系进行建模，并使用时空图神经网络预测 WTI 期货。其图结构表示预测变量之间的统计关系，而不是实际的运输网络。
 
-Deep-learning and hybrid studies focus more directly on learned temporal representations. Foroutan and Lahmiri (2024) compare 16 models for next-day WTI (West Texas Intermediate, the main US crude benchmark) and Brent spot-price forecasting. Temporal Convolutional Networks (TCN) and LightGBM are among the strongest methods in their experiments. TCN produces the lowest Brent errors across the input lengths considered. Simsek et al. (2024) combine Long Short-Term Memory (LSTM) feature extraction with XGBoost regression and report very high in-sample explanatory power. The two studies differ in their targets, evaluation samples, preprocessing and reported performance measures. More generally, comparisons based on highly persistent price levels are difficult to interpret. Small one-step errors may partly reflect the proximity of consecutive prices rather than large gains in predictive content.
+Overall, machine learning provides greater flexibility for modelling high-dimensional data, nonlinearities and temporal interactions. However, the literature does not establish that one class of models consistently dominates conventional econometric or market-based approaches. Reported performance depends strongly on the target, horizon, sample, information set and benchmark. These findings support the use of a common rolling out-of-sample design and a no-change benchmark when comparing different data sources and model architectures.
 
-深度学习与混合研究更直接关注学得的时间表征。Foroutan 与 Lahmiri（2024）比较 16 种模型用于次日 WTI（西得克萨斯中质原油，美国主要原油基准）与 Brent 现货价格预测。时间卷积网络（Temporal Convolutional Network, TCN）与 LightGBM 属于实验中最强的方法。在所考虑的输入长度上，TCN 的 Brent 误差最低。Simsek 等（2024）将长短期记忆（Long Short-Term Memory, LSTM）特征提取与 XGBoost 回归结合，并报告极高的样本内解释力。两项研究在目标、评价样本、预处理与报告的表现度量上不同。更一般地，基于高度持续的价格水平做比较难以解释。较小的一步误差可能部分反映相邻价格接近，而非预测内容的大幅提升。
+总体而言，机器学习能够更灵活地处理高维数据、非线性关系和时间交互。然而，现有文献并未证明某一类模型能够持续优于传统计量模型或市场型预测。报告的模型表现高度依赖预测目标、预测期、样本、信息集和评价基准。这些结论支持在比较不同数据来源和模型架构时，采用共同的滚动样本外设计和不变预测基准。
 
-Graph-based methods represent another development in this literature. Zhao, Xue and Cheng (2023) use self-attention to estimate time-varying interactions among economic and financial variables. They apply Graph WaveNet (Wu et al., 2019) to multi-step WTI futures forecasting. The graph in their model represents statistical relationships among predictors rather than a geographic or transport network. The proposed model outperforms the fitted baselines reported in the study. The evaluation does not include a no-change price forecast.
+## 2.3 Shipping activity as an oil-market signal
 
-图方法是该文献的另一发展。Zhao、Xue 与 Cheng（2023）用自注意力估计经济与金融变量间的时变交互。他们将 Graph WaveNet（Wu 等，2019）用于多步 WTI 期货预测。其图表示的是预测变量之间的统计关系，而非地理或运输网络。所提模型优于文中报告的拟合基线。评价未包含不变价格预测。
+## 2.3 作为油市信号的航运活动
 
-Across these studies, machine learning is associated with greater flexibility in modelling high-dimensional predictors, nonlinearities and temporal interactions. The empirical results do not, however, establish a stable ranking in which a single class of algorithms consistently dominates econometric models, market-based forecasts or forecast combinations. Differences in targets, horizons, samples and benchmarks remain central to the variation in reported results.
+A large share of international crude-oil trade is transported by sea. Shipping activity can therefore provide information about physical oil flows, regional supply conditions, congestion and disruptions at ports or major chokepoints. Automatic Identification System (AIS) data record vessel identities, positions and movements. Although they do not directly record cargo quantities, processed AIS observations can be used to estimate tanker movements and maritime trade.
 
-综合这些研究，机器学习与在高维预测变量、非线性与时间交互建模上的更大灵活性相关。然而经验结果并未确立稳定排序，使某一类算法持续主导计量模型、市场型预测或预测组合。目标、预测期、样本与基准的差异，仍是报告结果变异的核心原因。
+国际原油贸易中有很大一部分通过海运完成。因此，航运活动可以提供有关实物原油流动、区域供给状况、港口拥堵以及主要航运咽喉中断的信息。船舶自动识别系统（AIS）数据记录船舶身份、位置和移动。尽管 AIS 不直接记录货物数量，但经过处理的 AIS 观测可以用于估计油轮活动和海运贸易。
 
-## 2.2 Shipping activity and oil markets
+Adland, Jia and Strandenes (2017) compare AIS-based estimates of seaborne crude-oil exports with customs statistics and find that aggregate estimates are broadly consistent with official data. Yan et al. (2020) combine tanker trajectories with vessel characteristics and draught information to estimate voyage-level oil flows. Their estimates for major oil-importing and oil-exporting countries are strongly correlated with Joint Organisations Data Initiative statistics. These studies provide evidence that vessel movements can serve as proxies for the physical transportation of crude oil.
 
-## 2.2 航运活动与石油市场
+Adland、Jia 与 Strandenes（2017）将基于 AIS 的海运原油出口估计与海关统计进行比较，发现总量估计与官方数据大体一致。Yan 等（2020）结合油轮轨迹、船舶特征和吃水信息，估计航次层面的石油流量。他们对主要石油进口国和出口国的估计与联合组织数据倡议的统计数据高度相关。这些研究表明，船舶移动可以作为原油实物运输的代理变量。
 
-### 2.2.1 AIS-based measurement of seaborne trade
+AIS-based indicators can also improve the timeliness of trade measurement. Arslanalp, Marini and Tumbarello (2019) construct high-frequency trade indicators from vessel movements and port calls. IMF PortWatch extends this approach by combining information on vessel activity, ports, chokepoints, ship characteristics and estimated carrying capacity to produce daily indicators of maritime trade (Arslanalp et al., 2026). Compared with conventional trade statistics, these data can describe changes in maritime activity with shorter reporting delays.
 
-### 2.2.1 基于 AIS 的海运贸易测度
+AIS 指标还可以提高贸易测量的及时性。Arslanalp、Marini 与 Tumbarello（2019）利用船舶移动和港口停靠构建高频贸易指标。IMF PortWatch 在此基础上结合船舶活动、港口、航运咽喉、船舶特征和估计运力，生成日度海运贸易指标（Arslanalp 等，2026）。与传统贸易统计相比，这些数据能够以更短的报告延迟反映海运活动变化。
 
-Automatic Identification System (AIS) data record vessel identities, positions and movements rather than the quantities or types of cargo carried. A growing literature has nevertheless developed methods for converting these records into estimates of maritime trade. Adland, Jia and Strandenes (2017) compare AIS-derived estimates of seaborne crude-oil exports with customs statistics. Their aggregate estimates align reasonably well with official data. Discrepancies still vary across countries and periods because pipelines and transshipment are not fully observed. Yan et al. (2020) combine tanker trajectories with vessel shape, size and draught to estimate voyage-level oil flows. Their estimates for major importers and exporters are strongly correlated with Joint Organisations Data Initiative (JODI) statistics. Their 2017 results identify the Middle East–Malacca–East Asia corridor as the largest route in the global marine oil network.
+However, the relationship between shipping activity and future oil prices is not necessarily one-directional. Mi et al. (2022) identify relationships between oil-price changes and tanker port-call frequency, docking time, gross tonnage and the number of tankers at ports in major crude-exporting countries. Mi et al. (2023) also find nonlinear and regionally heterogeneous relationships between oil prices and tanker port calls. In both studies, shipping activity responds to oil prices. Their results therefore show that contemporaneous associations do not establish that vessel activity leads future price movements.
 
-自动识别系统（Automatic Identification System, AIS）数据记录船舶身份、位置与移动，而非所载货物的数量或类型。尽管如此，不断增长的文献已发展出将这些记录转化为海运贸易估计的方法。Adland、Jia 与 Strandenes（2017）将 AIS 衍生的海运原油出口估计与海关统计比较。其总量估计与官方数据大体一致。但因管线与转运未被充分观测，国别与时期差异仍存在。Yan 等（2020）结合油轮轨迹与船形、尺寸与吃水，估计航次级油流。其对主要进出口国的估计与联合组织数据倡议（Joint Organisations Data Initiative, JODI）统计高度相关。2017 年结果将中东–马六甲–东亚走廊识别为全球海运石油网络中的最大航线。
+但是，航运活动与未来油价之间并不一定存在单向关系。Mi 等（2022）发现，油价变化与主要原油出口国港口的油轮停靠频率、靠泊时间、总吨位和油轮数量存在关联。Mi 等（2023）也发现，油价与油轮港口停靠数量之间存在非线性和区域异质关系。在这两项研究中，航运活动是对油价变化的反应。因此，这些结果表明，同期相关关系不能证明船舶活动能够领先未来油价。
 
-AIS data have also been used for high-frequency estimates of broader trade activity. Arslanalp, Marini and Tumbarello (2019) construct indicators from filtered port calls and show that they can improve the timeliness of trade monitoring. IMF PortWatch extends this approach by combining vessel movements, port and chokepoint information, ship characteristics and estimated cargo capacity to produce daily indicators of maritime trade (Arslanalp et al., 2026). These studies differ in spatial coverage and commodity detail. They share a reliance on processed vessel activity as an indirect measure of trade.
+AIS-based measures are also indirect and incomplete. Cargo type and quantity must often be inferred from vessel characteristics, routes or draught, and some vessel activity is not observed in public tracking systems. Paolo et al. (2024) show that a meaningful share of transport- and energy-vessel activity is absent from public vessel-position data. These limitations do not make AIS data unusable, but they mean that shipping variables should be treated as noisy proxies for physical trade rather than direct measurements of oil supply.
 
-AIS 数据也被用于更广义贸易活动的高频估计。Arslanalp、Marini 与 Tumbarello（2019）由过滤后的港口停靠构建指标，并表明可改善贸易监测的及时性。IMF PortWatch 扩展该方法，结合船舶移动、港口与咽喉信息、船舶特征与估计运力，生成日度海运贸易指标（Arslanalp 等，2026）。这些研究在空间覆盖与商品细节上不同。但都依赖加工后的船舶活动作为贸易的间接测度。
+AIS 测度还具有间接性和不完整性。货物类型和数量通常需要根据船舶特征、航线或吃水进行推断，部分船舶活动也不会出现在公共追踪系统中。Paolo 等（2024）表明，公共船舶位置数据遗漏了一定比例的运输和能源船舶活动。这些局限并不意味着 AIS 数据无法使用，但意味着航运变量应被视为实物贸易的含噪代理，而不是原油供给的直接测量。
 
-### 2.2.2 Measurement limitations and price–shipping relationships
+The existing literature establishes that shipping data can measure changes in maritime trade and crude-oil transportation. However, direct evidence that these data improve short-term Brent price forecasts remains limited.
 
-### 2.2.2 测度局限与价格–航运关系
+现有文献证明，航运数据可以用于测量海运贸易和原油运输的变化。然而，这些数据能否改善短期 Brent 价格预测，目前仍缺乏充分的直接证据。
 
-The accuracy of AIS-derived indicators depends on how vessel observations are translated into estimates of activity. Simple vessel counts assign the same weight to ships of different sizes. They do not distinguish laden voyages from ballast movements. Vessel capacity and changes in draught provide additional information about likely cargo movement. Draught fields, port calls and vessel classifications may nevertheless be incomplete or inconsistent (Yan et al., 2020; Arslanalp, Marini and Tumbarello, 2019). Transshipment introduces a further difficulty. A vessel’s observed itinerary may not coincide with the economic origin or final destination of its cargo (Adland, Jia and Strandenes, 2017).
+## 2.4 Maritime networks and graph-based modelling
 
-AIS 衍生指标的准确性，取决于如何将船舶观测转化为活动估计。简单船舶计数对不同尺寸船舶赋予相同权重。它也不区分满载航次与压载航行。船舶运力与吃水变化可提供货物移动的额外信息。但吃水字段、港口停靠与船舶分类可能不完整或不一致（Yan 等，2020；Arslanalp、Marini 与 Tumbarello，2019）。转运带来进一步困难。船舶观测航程未必与货物的经济起点或最终目的地一致（Adland、Jia 与 Strandenes，2017）。
+## 2.4 海运网络与图模型
 
-Coverage is also incomplete. Paolo et al. (2024) combine satellite imagery with vessel-position data. They estimate that 21–30% of transport- and energy-vessel activity is absent from public tracking systems. Part of this gap may reflect weak satellite reception rather than deliberate non-broadcasting by vessels. AIS-derived measures consequently observe only part of maritime activity. They also contain errors arising from reception, classification and cargo attribution.
+Maritime-network studies provide a way to preserve relationships among locations. Aggregate indicators summarise port calls, vessel counts or chokepoint traffic, whereas network models represent ports or regions as nodes and vessel movements as links. This representation retains connections between locations and allows activity at one part of the network to be modelled in relation to activity elsewhere.
 
-覆盖也不完整。Paolo 等（2024）结合卫星影像与船舶位置数据。他们估计 21–30% 的运输与能源船舶活动未出现在公共追踪系统中。部分缺口可能反映卫星接收弱，而非船舶故意不广播。因此，AIS 衍生测度只观测到海上活动的一部分。它也含有来自接收、分类与货物归属的误差。
+海运网络研究提供了保留不同地点之间关系的方法。总量指标通常汇总港口停靠、船舶数量或航运咽喉流量，而网络模型将港口或地区表示为节点，将船舶移动表示为连接。这种表示方式能够保留不同地点之间的联系，并使网络中某一部分的活动可以结合其他地点的活动进行建模。
 
-Studies of oil prices and tanker activity add a separate interpretive issue. Mi et al. (2022) examine associations between oil-price changes and tanker port-call frequency, average docking time, total gross tonnage and the number of distinct tankers at ports in major crude-exporting countries. Mi et al. (2023) also model tanker port calls as a response to oil prices. They report nonlinear and regionally heterogeneous relationships. Their dependent variable is shipping activity rather than oil prices. The results therefore document price-to-shipping responses. They also show why contemporaneous correlations between the two series do not establish a single direction of influence.
+Ouyang et al. (2022) construct a crude-oil transportation network and use an LSTM–GCN model to forecast weekly traffic at network nodes. Liang et al. (2022) use a spatiotemporal multigraph convolutional network for vessel-traffic forecasting, while Zhao et al. (2022) use a dynamic graph neural network to predict regional vessel inflows, outflows and traffic volumes. These studies show that maritime activity is relational and changes over time. Preserving this structure may therefore provide information that is lost when shipping activity is reduced to a small set of aggregate indicators.
 
-油价与油轮活动研究另增解释问题。Mi 等（2022）考察油价变化与主要原油出口国港口油轮停靠频率、平均靠泊时间、总吨位及不同油轮数量的关联。Mi 等（2023）也将油轮港口停靠建模为对油价的响应。他们报告非线性与区域异质关系。其因变量是航运活动而非油价。因此结果记录的是价格到航运的响应。这也说明两序列同期相关为何不能确立单一影响方向。
+Ouyang 等（2022）构建原油海运网络，并使用 LSTM–GCN 预测网络节点的周度交通流。Liang 等（2022）使用时空多图卷积网络预测船舶交通，Zhao 等（2022）则使用动态图神经网络预测区域船舶流入、流出和交通量。这些研究表明，海上活动具有关系结构并随时间变化。因此，保留这种结构可能提供将航运活动压缩为少量总量指标时丢失的信息。
 
-### 2.2.3 Network models of maritime flows
+The literature shows that network representations can capture relationships between ports and routes. However, these methods have mainly been used to forecast shipping activity itself. There is limited direct evidence on whether graph-based representations of maritime networks improve oil-price forecasts.
 
-### 2.2.3 海运流网络模型
+现有文献表明，网络表示能够刻画港口和航线之间的关系。然而，这些方法主要用于预测航运活动本身。关于海运网络的图表示能否改善油价预测，目前仍缺乏直接证据。
 
-Maritime activity is represented in different ways across the vessel-flow literature. Aggregate studies use port calls, vessel counts, capacity-weighted transits or chokepoint volumes. Network studies represent ports or regions as nodes and vessel movements as links. The latter representation retains origin–destination relationships. It also allows traffic at one location to be modelled in relation to activity elsewhere in the network.
+## 2.5 Remote sensing as an oil-market signal
 
-船舶流文献以不同方式表示海上活动。总量研究使用港口停靠、船舶计数、运力加权通行或咽喉流量。网络研究则将港口或区域表示为节点、船舶移动表示为边。后者保留起点–终点关系。它也使一处交通可相对网络其他位置的活动加以建模。
+## 2.5 作为油市信号的遥感数据
 
-Ouyang et al. (2022) construct a crude-oil maritime transportation network from vessel trajectories, route information, crude-oil berths and supply–demand links. Their LSTM–Graph Convolutional Network (GCN) forecasts weekly traffic flows at network nodes. Liang et al. (2022) use a spatiotemporal multigraph convolutional network for fine-grained vessel-traffic forecasting. Zhao et al. (2022) employ a dynamic graph neural network to predict regional vessel inflows, outflows and traffic volumes. These studies address different spatial scales and definitions of traffic. All treat maritime movement as a relational and time-varying process.
+Remote sensing provides repeated observations of oil-related infrastructure, industrial activity and maritime locations. Satellite observations may therefore contain information about oil demand, storage, port activity and trade. However, their economic meaning depends on the physical signal being measured and the mechanism connecting that signal to the oil market.
 
-Ouyang 等（2022）由船舶轨迹、航线信息、原油泊位与供需连接构建原油海运网络。其 LSTM–图卷积网络（Graph Convolutional Network, GCN）预测网络节点的周度交通流。Liang 等（2022）用时空多图卷积网络做细粒度船舶交通预测。Zhao 等（2022）用动态图神经网络预测区域船舶流入、流出与交通量。这些研究针对不同空间尺度与交通定义。但都将海上移动视为关系性且时变的过程。
+遥感能够重复观测石油相关基础设施、工业活动和海上地点。因此，卫星观测可能包含有关石油需求、储存、港口活动和贸易的信息。不过，遥感数据的经济含义取决于其测量的物理信号，以及该信号与石油市场之间的具体联系。
 
-## 2.3 Satellite imagery and remote sensing
+Several studies connect satellite observations with oil-market conditions. Hao and Wang (2023) use cloud-cover observations above floating-roof oil tanks in major US storage areas. They find that greater cloud cover in one week predicts lower WTI returns in the following week. Their explanation is that cloud cover limits the observation of storage facilities and reduces the inventory information available to market participants. Bricongne et al. (2026) use satellite observations of tropospheric NO₂ to nowcast national oil demand. They find that NO₂ data improve estimates relative to models using conventional predictors, showing that satellite observations can provide timely information about energy demand.
 
-## 2.3 卫星影像与遥感
+部分研究将卫星观测与油市状况直接联系起来。Hao 与 Wang（2023）使用美国主要储存区浮顶油罐上空的云量观测。他们发现，一周内较高的云量能够预测下一周较低的 WTI 收益。其解释是，云层限制了对储存设施的观测，并减少了市场参与者能够获得的库存信息。Bricongne 等（2026）使用卫星观测到的对流层 NO₂ 对国家石油需求进行现时预测。他们发现，NO₂ 数据相对于使用传统预测变量的模型改善了估计结果，说明卫星观测能够及时反映能源需求变化。
 
-### 2.3.1 Remote sensing as economic measurement
+Other studies use satellite imagery to measure oil-related infrastructure and trade. Wang et al. (2019) estimate the dimensions and structural capacity of oil tanks from high-resolution imagery. Jung (2026) combines radar observations, night-time lights and port characteristics to nowcast port-level maritime trade. Polinov, Bookman and Levin (2022) also identify a relationship between night-time lights and shipping activity in anchorage areas. Together, these studies show that remote sensing can capture physical and economic activity connected to oil storage and maritime trade.
 
-### 2.3.1 作为经济测度的遥感
+其他研究使用卫星影像测量石油相关基础设施和贸易。Wang 等（2019）根据高分辨率影像估计油罐的尺寸和结构容量。Jung（2026）结合雷达观测、夜间灯光和港口特征，对港口级海运贸易进行现时预测。Polinov、Bookman 与 Levin（2022）也发现夜间灯光与锚地航运活动之间存在关系。这些研究共同表明，遥感可以捕捉与石油储存和海运贸易相关的实体与经济活动。
 
-Remote sensing provides repeated observations of infrastructure, emissions and activity patterns. Different sensors measure different physical phenomena. Night-time lights record emitted radiance. Atmospheric observations can capture pollutants such as tropospheric NO₂. Cloud products describe observation conditions. Optical or synthetic-aperture radar imagery records surface structure. Economic interpretations are therefore usually tied to a specific mechanism linking the observed signal to an activity of interest.
+However, remote-sensing variables remain indirect measures of oil-market conditions. A signal that measures storage capacity does not necessarily reflect current inventories, while port activity does not directly measure future oil prices. Short-term changes may also reflect cloud cover, observation conditions or irregular data availability. Evidence obtained from one sensor or target therefore cannot automatically be applied to another.
 
-遥感提供基础设施、排放与活动模式的重复观测。不同传感器测量不同物理现象。夜光记录发射辐射。大气观测可捕捉对流层 NO₂ 等污染物。云产品描述观测条件。光学或合成孔径雷达影像记录地表结构。因此经济解释通常绑定到连接观测信号与目标活动的具体机制。
+不过，遥感变量仍是油市状况的间接测量。反映储存容量的信号不一定代表当前库存，港口活动也不直接测量未来油价。短期变化还可能受到云层、观测条件或数据不规则性的影响。因此，针对某种传感器或预测对象得到的结论，不能自动推广到其他数据和任务。
 
-Night-time-light studies illustrate how measurement properties vary with spatial and temporal scale. Polinov, Bookman and Levin (2022) find strong cross-sectional associations between Visible Infrared Imaging Radiometer Suite (VIIRS) night-time lights and country-level shipping indicators across hundreds of anchorage areas. They also report that activity is difficult to estimate where only a small number of vessels generate limited light. Gibson et al. (2021) find that VIIRS is more informative than the Defense Meteorological Satellite Program (DMSP) as a spatial proxy for subnational GDP, particularly at finer spatial levels and in less densely populated areas. Both applications are primarily concerned with differences across places.
+Existing studies demonstrate that satellite observations contain information related to oil demand, storage and maritime trade. Nevertheless, there is limited direct evidence on whether remote-sensing indicators or satellite-image representations improve short-term Brent price forecasts after financial and oil-market variables are already included.
 
-夜光研究说明测度性质如何随空间与时间尺度变化。Polinov、Bookman 与 Levin（2022）在数百个锚地发现可见红外成像辐射计套件（Visible Infrared Imaging Radiometer Suite, VIIRS）夜光与国家级航运指标之间存在强截面关联。他们也报告在仅少数船舶产生有限灯光处，活动难以估计。Gibson 等（2021）发现，作为次国家 GDP 的空间代理，VIIRS 比国防气象卫星计划（Defense Meteorological Satellite Program, DMSP）更有信息量，尤其在更细空间尺度与人口密度较低地区。两项应用主要关心跨地点差异。
+现有研究表明，卫星观测包含与石油需求、储存和海运贸易相关的信息。然而，在已经加入金融和油市变量后，遥感指标或卫星影像表征能否改善短期 Brent 价格预测，目前仍缺乏充分的直接证据。
 
-Temporal variation is more difficult to interpret. Small (2021) shows that spatial differences account for most of the observed variation in VIIRS night-time lights. Some month-to-month variation is associated with viewing geometry, atmospheric conditions, background luminance and other features of the imaging process. The literature consequently distinguishes persistent differences in brightness across locations from changes within the same location over time.
+## 2.6 Multimodal learning and data fusion
 
-时间变异更难解释。Small（2021）表明，空间差异解释了 VIIRS 夜光观测变异的大部分。部分月际变异与观测几何、大气条件、背景亮度及其他成像过程特征相关。因此文献区分跨地点亮度的持续差异，与同一地点随时间的变化。
+## 2.6 多模态学习与数据融合
 
-### 2.3.2 Applications to oil, trade and infrastructure
+Multimodal learning refers to methods that process and combine information from two or more types of data. Each type of data is treated as a modality, and the purpose of multimodal learning is to use their complementary information while accounting for differences in structure, scale and availability.
 
-### 2.3.2 对石油、贸易与基础设施的应用
+多模态学习是指处理并结合两种或两种以上数据类型的方法。每一种数据类型都可以被视为一种模态。多模态学习的目标是在考虑不同数据结构、尺度和可得性差异的同时，利用各类数据之间的互补信息。
 
-Remote-sensing variables have been linked to oil markets through several distinct channels. Hao and Wang (2023) use Moderate Resolution Imaging Spectroradiometer (MODIS) cloud-cover observations over floating-roof tanks in eight major US storage areas. They find that greater cloudiness in one week predicts lower WTI returns in the following week. Their explanation is based on information availability. Cloud cover obstructs optical observation of storage tanks and may reduce the inventory information available to market participants. Bricongne et al. (2026) study a different mechanism by using satellite observations of tropospheric NO₂ to nowcast national oil demand. Across advanced and emerging economies, NO₂ improves accuracy relative to autoregressive models and models using conventional predictors. The largest gains are reported for nonlinear models, particularly neural networks.
+Multimodal machine learning combines information from data sources with different structures and measurement processes. Baltrušaitis, Ahuja and Morency (2019) organise multimodal learning around representation, alignment and fusion, among other challenges. For this dissertation, the main distinction is between feature-level fusion and representation-level fusion. Feature-level fusion places observed or engineered variables from all sources in a common feature table before modelling. Representation-level fusion first processes each modality separately and then combines the resulting representations.
 
-遥感变量通过若干不同渠道与油市相连。Hao 与 Wang（2023）使用中分辨率成像光谱仪（Moderate Resolution Imaging Spectroradiometer, MODIS）对美国八个主要储存区浮顶油罐上空的云量观测。他们发现一周云量更高可预测随后一周更低的 WTI 收益。其解释基于信息可得性。云层阻碍对油罐的光学观测，可能减少市场参与者可得的库存信息。Bricongne 等（2026）研究另一机制。他们用对流层 NO₂ 卫星观测对国家石油需求做现时预测。在发达与新兴经济体中，相对自回归模型与使用常规预测变量的模型，NO₂ 改善精度。非线性模型——尤其神经网络——报告的增益最大。
+多模态机器学习将具有不同结构和测量过程的数据来源结合起来。Baltrušaitis、Ahuja 与 Morency（2019）将表示、对齐和融合等问题视为多模态学习的主要挑战。对于本研究，最重要的区别是特征级融合与表示级融合。特征级融合在建模前将不同来源的观测变量或工程化变量放入共同的特征表。表示级融合则先分别处理各类数据，再融合所得表征。
 
-Other studies use imagery to measure infrastructure or trade rather than prices. Wang et al. (2019) estimate the height, radius and structural volume of oil tanks from high-resolution Gaofen-2 optical imagery. Their method measures storage capacity but not the quantity of oil held in a tank at a particular time. Jung (2026) combines Sentinel-1 synthetic-aperture radar measures, VIIRS night-time lights and port attributes in an XGBoost model to nowcast monthly port-level trade. Satellite variables help to track changes within ports over time. Static port characteristics account for much of the cross-sectional variation. In this application, remote-sensing observations enter the model as engineered numeric features rather than learned image representations.
+The two approaches retain different amounts of modality-specific structure. Feature-level fusion is compatible with conventional regression and tree-based models, but it may reduce temporal, spatial and network data to a common tabular format. Representation-level fusion can maintain separate processing streams for different data sources. Arevalo et al. (2017) propose a gated multimodal unit that combines modality-specific representations through input-dependent gates. The contribution of each modality can therefore change across observations. Gohari et al. (2024) apply a related modality-aware approach to financial forecasting by combining textual reports and numerical economic series. Their results show that separate representations and cross-modal interactions can improve performance in a financial time-series setting.
 
-其他研究用影像测度基础设施或贸易而非价格。Wang 等（2019）由高分辨率高分二号光学影像估计油罐高度、半径与结构体积。其方法测度储存容量，而非某一时刻罐内油量。Jung（2026）在 XGBoost 模型中结合 Sentinel-1 合成孔径雷达测度、VIIRS 夜光与港口属性，对月度港口级贸易做现时预测。卫星变量有助于追踪港口内随时间的变化。静态港口特征解释截面变异的大部分。该应用中，遥感观测以工程化数值特征进入模型，而非学得的影像表征。
+两种方法对模态特有结构的保留程度不同。特征级融合可以直接用于传统回归和树模型，但可能会将时间、空间和网络数据压缩为统一的表格格式。表示级融合则可以为不同数据来源保留独立的处理路径。Arevalo 等（2017）提出门控多模态单元，通过依赖输入的门控机制融合各模态表征。因此，不同模态的贡献可以随观测而变化。Gohari 等（2024）将相关的模态感知方法应用于金融预测，结合文本报告和数值经济序列。其结果表明，在金融时间序列场景中，分别建立表征并刻画跨模态交互可能改善预测表现。
 
-These applications show that the economic content of remote sensing is specific to the observed signal and outcome. Cloud cover has been studied as a constraint on information. NO₂ has been studied as an indicator of combustion and demand. High-resolution imagery has been studied as a measure of infrastructure. Combined satellite features have been studied as indicators of port trade. Evidence obtained for one of these mechanisms does not automatically extend to other sensors, spatial scales or economic outcomes.
+Representation learning is also important for satellite imagery. SatMAE (Cong et al., 2022) learns representations from temporal and multispectral satellite observations. Prithvi-EO-2.0 (Szwarcman et al., 2026) is pretrained on global multitemporal Earth-observation imagery and incorporates temporal and location information. CROMA (Fuller, Millard and Green, 2023) separately processes optical and radar observations before producing a joint representation. These models demonstrate that pretrained encoders can preserve spatial, spectral and temporal information that may not be captured by manually engineered satellite indicators. However, their evaluations mainly concern remote-sensing tasks such as classification, segmentation and disaster mapping rather than commodity-price forecasting.
 
-这些应用表明，遥感的经济内容特异于观测信号与结果。云量被研究为信息约束。NO₂ 被研究为燃烧与需求指标。高分辨率影像被研究为基础设施测度。组合卫星特征被研究为港口贸易指标。针对某一机制获得的证据，并不自动延伸到其他传感器、空间尺度或经济结果。
+表示学习对于卫星影像同样重要。SatMAE（Cong 等，2022）从时序和多光谱卫星观测中学习表征。Prithvi-EO-2.0（Szwarcman 等，2026）在全球多时相对地观测影像上进行预训练，并纳入时间和位置信息。CROMA（Fuller、Millard 与 Green，2023）分别处理光学和雷达观测，再生成联合表征。这些模型表明，预训练编码器能够保留人工遥感指标可能无法充分刻画的空间、光谱和时间信息。不过，这些模型主要在分类、分割和灾害制图等遥感任务上接受评价，而不是用于大宗商品价格预测。
 
-## 2.4 Multimodal learning and heterogeneous data
+Multimodal data also create alignment and missing-data problems. Financial data, shipping observations and satellite imagery may be recorded at different frequencies and become available at different times. An entire modality may be missing for some observations, or individual observations within a modality may be irregular or delayed. Ma et al. (2022) show that multimodal models can be sensitive to missing modalities, while Neverova et al. (2016) propose randomly dropping modalities during training to improve robustness. Time-series methods such as GRU-D (Che et al., 2018) and Multi-Time Attention Networks (Shukla and Marlin, 2021) explicitly represent missingness and irregular observation times. These studies show that adding more modalities does not automatically resolve differences in data availability and timing.
 
-## 2.4 多模态学习与异质数据
+多模态数据还会带来对齐与缺失问题。金融数据、航运观测和卫星影像可能具有不同的记录频率，也可能在不同时间变得可用。部分样本可能缺失整个模态，某一模态内部的观测也可能不规则或延迟。Ma 等（2022）表明，多模态模型可能对模态缺失较为敏感。Neverova 等（2016）则提出在训练期间随机移除模态，以提高模型的稳健性。GRU-D（Che 等，2018）和 Multi-Time Attention Networks（Shukla 与 Marlin，2021）等时间序列方法对缺失状态和不规则观测时间进行显式表示。这些研究表明，增加更多模态并不会自动解决数据可得时间和观测频率之间的差异。
 
-### 2.4.1 Multimodal learning and fusion strategies
+Some multimodal architectures provide internal quantities that can be inspected. Modality gates can indicate how strongly the fitted model weights different data sources, while attention mechanisms can show how weights are distributed across inputs or representations. These quantities can help describe model behaviour, but they should not be treated as direct causal explanations. Jain and Wallace (2019) show that different attention patterns can sometimes produce similar predictions. Gates and attention weights therefore indicate how a model processes information, not how the underlying economic system is causally determined.
 
-### 2.4.1 多模态学习与融合策略
+部分多模态架构会产生可供检查的内部量。模态门控可以显示拟合模型为不同数据来源分配的相对权重，注意力机制则可以展示权重如何分布于输入或表征之间。这些量有助于描述模型行为，但不应被直接视为因果解释。Jain 与 Wallace（2019）表明，不同的注意力分布有时可以产生相似的预测。因此，门控和注意力权重反映模型如何处理信息，而不是经济系统如何被因果决定。
 
-Baltrušaitis, Ahuja and Morency (2019) define multimodal machine learning as the processing and relating of information from multiple modalities. Their taxonomy organises the field around five challenges. These are representation, translation, alignment, fusion and co-learning. Within the fusion literature, studies are also commonly distinguished by the stage at which information is combined. Input- or feature-level fusion combines observed or engineered features before modelling. Representation-level fusion combines outputs from modality-specific encoders. Decision-level fusion combines model predictions.
+Existing multimodal research provides methods for preserving temporal, spatial and network structures before fusion. However, there is limited direct evidence on whether such methods outperform flat feature fusion in oil-price forecasting when both approaches use the same underlying information.
 
-Baltrušaitis、Ahuja 与 Morency（2019）将多模态机器学习定义为处理并关联来自多种模态的信息。其分类围绕五类挑战组织该领域。它们是表示、转换、对齐、融合与协同学习。在融合文献中，研究也常按信息组合发生的阶段区分。输入级或特征级融合在建模前组合观测或工程化特征。表示级融合组合模态专属编码器的输出。决策级融合组合模型预测。
+现有多模态研究提供了在融合前保留时间、空间和网络结构的方法。然而，当表示级融合和扁平特征融合使用相同底层信息时，前者能否在油价预测中取得更好表现，仍缺乏直接证据。
 
-These strategies make different assumptions about the structure retained from each data source. Feature-level fusion represents heterogeneous inputs in a common predictor space. It is compatible with many conventional statistical and machine-learning models. Representation-level approaches preserve separate processing streams for at least part of the model. Arevalo et al. (2017) propose the Gated Multimodal Unit. It uses multiplicative gates to combine modality-specific representations in an input-dependent manner. The model was introduced for multimodal classification tasks involving text and images rather than for time-series forecasting.
+## 2.7 Research gaps and positioning of this dissertation
 
-这些策略对各数据源所保留结构作不同假设。特征级融合在共同预测空间中表示异质输入。它兼容许多传统统计与机器学习模型。表示级方法至少在模型的一部分保留分离的处理流。Arevalo 等（2017）提出门控多模态单元。它用乘性门控按输入依赖方式组合模态专属表征。该模型最初用于涉及文本与图像的多模态分类，而非时间序列预测。
+## 2.7 研究空白与本文定位
 
-Gohari et al. (2024) apply modality-aware modelling in a financial time-series setting. Their model uses separate streams together with intra-modal and inter-modal attention to combine Federal Reserve reports and numerical economic series when forecasting US interest rates. It outperforms several Transformer and time-series baselines across most of the reported settings. The application differs from the original gated-unit study in both data and architecture. Both treat the contribution of a modality as something that can vary across observations rather than as a fixed relationship.
+The literature produces four main conclusions. First, short-term oil-price forecasting is difficult, and simple no-change forecasts remain strong benchmarks. Second, shipping data provide timely but indirect measures of physical trade, oil transportation and congestion. Third, remote sensing can measure oil-related demand, infrastructure, port activity and information availability, but the meaning of each signal depends on its physical and economic mechanism. Fourth, multimodal methods can preserve the distinct structures of financial time series, satellite imagery and shipping networks before combining them.
 
-Gohari 等（2024）在金融时序设定中应用模态感知建模。其模型用分离流以及模态内与模态间注意力，在预测美国利率时组合美联储报告与数值经济序列。在多数报告设定上优于若干 Transformer 与时间序列基线。该应用在数据与架构上均不同于原始门控单元研究。但二者都将模态贡献视为可随观测变化，而非固定关系。
+现有文献形成四项主要结论。第一，短期油价预测较为困难，简单的不变预测仍是较强的评价基准。第二，航运数据能够及时但间接地测量实物贸易、原油运输和港口拥堵。第三，遥感可以测量石油相关需求、基础设施、港口活动和信息可得性，但各类信号的意义取决于其具体物理和经济机制。第四，多模态方法可以在融合前保留金融时序、卫星影像和航运网络的不同结构。
 
-### 2.4.2 Representation learning in Earth observation
+Three research gaps follow from these findings.
 
-### 2.4.2 对地观测中的表示学习
+这些结论引出三项研究空白。
 
-Self-supervised learning has expanded the ways in which satellite imagery can be represented. SatMAE (Cong et al., 2022) adapts masked-autoencoder pretraining to temporal and multispectral satellite imagery. It incorporates temporal and spectral information into the learning process. Prithvi-EO-2.0 (Szwarcman et al., 2026) is pretrained on global multitemporal samples from the Harmonized Landsat and Sentinel-2 archive. It also incorporates temporal and location embeddings. Both models use large collections of unlabelled imagery to learn representations that can be transferred to downstream Earth-observation tasks.
+First, the predictive value of shipping and remote-sensing data for Brent prices remains unclear. Oil-price forecasting studies mainly use historical prices, macroeconomic variables, financial indicators and oil-market data. Shipping research more often predicts trade or vessel activity, while remote-sensing research generally measures demand, infrastructure or port activity. These studies show that shipping and satellite observations contain economically relevant information, but they provide limited direct evidence on whether these sources improve one-week-ahead Brent price forecasts beyond financial time-series data.
 
-自监督学习拓展了卫星影像的表示方式。SatMAE（Cong 等，2022）将掩码自编码器预训练适配到时序与多光谱卫星影像。它把时间与光谱信息纳入学习。Prithvi-EO-2.0（Szwarcman 等，2026）在 Harmonized Landsat and Sentinel-2 档案的全球多时相样本上预训练。它也纳入时间与位置嵌入。二者都用大量无标注影像学习可迁移到下游对地观测任务的表征。
+第一，航运与遥感数据对 Brent 价格的预测价值仍不明确。油价预测研究主要使用历史价格、宏观经济变量、金融指标和油市数据。航运研究更多预测贸易或船舶活动，遥感研究通常测量需求、基础设施或港口活动。这些研究表明，航运和卫星观测包含具有经济意义的信息，但关于这些数据能否在金融时序数据之外改善提前一周的 Brent 价格预测，直接证据仍然有限。
 
-CROMA (Fuller, Millard and Green, 2023) focuses on relationships between Earth-observation sensors. It separately encodes spatially and temporally aligned optical and radar observations. It then applies cross-modal contrastive learning and produces a joint representation through a fusion encoder. The separate processing streams reflect differences between optical and radar data in channel structure, noise and physical interpretation.
+Second, existing studies process shipping and remote-sensing data in different ways. Economic applications usually convert these data into numeric indicators and place them in a common feature table. Maritime-network and Earth-observation studies instead use graph models or pretrained encoders to preserve network, spatial or temporal structure. These approaches are usually examined in separate applications rather than compared in the same oil-price forecasting task. The literature therefore does not show whether modality-specific encoding performs better than flat feature fusion when both methods use the same underlying data.
 
-CROMA（Fuller、Millard 与 Green，2023）关注对地观测传感器之间的关系。它分别编码空间与时间对齐的光学与雷达观测。随后施加跨模态对比学习，再经融合编码器生成联合表征。分离处理流反映光学与雷达数据在通道结构、噪声与物理解释上的差异。
+第二，现有研究采用不同方式处理航运和遥感数据。经济学应用通常将这些数据转换为数值指标，再与其他变量共同放入一张特征表。海运网络和对地观测研究则使用图模型或预训练编码器，以保留数据的网络、空间或时间结构。这两类方法通常应用于不同的研究任务，尚未在同一个油价预测任务中进行直接比较。因此，在使用相同底层数据时，模态专属编码是否优于扁平特征融合，目前仍不明确。
 
-Evaluations of SatMAE, Prithvi-EO-2.0 and CROMA primarily cover land-cover classification, semantic segmentation, disaster mapping and related remote-sensing tasks. Across these applications, pretrained encoders provide transferable representations for a range of downstream Earth-observation tasks.
+Third, forecasting studies often use different evaluation settings, and analyses of model reliance are rarely connected directly to predictive improvements. Published studies differ in their forecast targets, horizons, samples, information sets and benchmarks. Their reported results are therefore not always directly comparable. In addition, studies that examine feature importance, modality gates or attention weights often report these results separately from out-of-sample forecasting performance. As a result, the literature provides limited evidence on whether a model’s reliance on a particular data source is associated with an actual improvement over a common benchmark.
 
-对 SatMAE、Prithvi-EO-2.0 与 CROMA 的评估主要覆盖土地覆被分类、语义分割、灾害制图及相关遥感任务。在这些应用中，预训练编码器为一系列下游对地观测任务提供可迁移表征。
+第三，现有预测研究通常采用不同的评价设定，而且模型依赖分析很少与预测改善直接结合。已发表研究使用不同的预测目标、预测期、样本、信息集和评价基准，因此其报告结果并不总能直接比较。此外，分析特征重要性、模态门控或注意力权重的研究，通常将这些结果与样本外预测表现分开报告。因此，现有文献仍无法清楚说明，模型对某一数据来源的依赖是否对应其相对于共同基准的实际预测改善。
 
-### 2.4.3 Missing and irregular observations
+This dissertation addresses these gaps through a shared rolling-origin out-of-sample framework for one-week-ahead Brent price forecasting. It first compares financial time-series data with information sets that add shipping data, remote-sensing data or both. It then compares flat feature fusion with modality-aware representation-level fusion using matched underlying data. All models are evaluated against the same no-change benchmark, and formal statistical tests are used to assess differences in predictive performance. Modality-level interpretation is applied to describe which data sources the better-performing models rely on under different market conditions. These results are interpreted as descriptions of model behaviour rather than evidence of causal relationships.
 
-### 2.4.3 缺失与不规则观测
+本文通过一套共享的滚动起点样本外框架回应这些研究空白。研究首先比较金融时序数据，以及分别加入航运数据、遥感数据或二者的信息集。随后，在使用匹配底层数据的情况下，比较扁平特征融合与模态感知的表示级融合。所有模型均使用相同的不变预测基准进行评价，并通过正式统计检验判断预测表现的差异。模态级解释用于描述表现较好的模型在不同市场条件下依赖哪些数据来源。相关结果仅用于解释模型行为，不作为因果关系的证据。
 
-Multimodal data may be incomplete in more than one sense. In some cases, an entire modality is absent. In others, the modality exists but its observations are irregular, delayed or recorded at a different frequency. The first problem has been studied in the missing-modality literature. Ma et al. (2022) find that multimodal Transformers can be sensitive to the absence of one or more modalities. Robustness varies across fusion strategies and datasets. Neverova et al. (2016) introduce ModDrop, which randomly removes modality channels during training. They report improved robustness in gesture-recognition tasks when inputs are unavailable.
-
-多模态数据可能在不止一种意义上不完整。有时整模态缺失。有时模态存在但其观测不规则、延迟或以不同频率记录。前一问题在缺失模态文献中已有研究。Ma 等（2022）发现多模态 Transformer 可能对一个或多个模态缺失敏感。稳健性随融合策略与数据集而变。Neverova 等（2016）提出 ModDrop，在训练中随机移除模态通道。他们报告在输入不可用时手势识别任务稳健性改善。
-
-A related time-series literature examines irregular observation times. Gated Recurrent Unit for Decay (GRU-D) (Che et al., 2018) incorporates observation masks and the time elapsed since the previous observation. Both missingness and observation age can affect the hidden state. Multi-Time Attention Networks (Shukla and Marlin, 2021) use continuous-time embeddings and attention to represent a variable number of irregularly timed observations. These approaches differ from missing-modality methods. They focus on the timing and availability of observations within a data stream rather than the absence of an entire stream.
-
-相关时间序列文献考察不规则观测时间。衰减门控循环单元（Gated Recurrent Unit for Decay, GRU-D）（Che 等，2018）纳入观测掩码与距上次观测的时间。缺失与观测年龄均可影响隐状态。Multi-Time Attention Networks（Shukla 与 Marlin，2021）用连续时间嵌入与注意力表示可变数量的不规则定时观测。这些方法不同于缺失模态方法。它们关注数据流内观测的时间与可得性，而非整条流的缺失。
-
-Together, these studies distinguish between two sources of incompleteness that are sometimes conflated in multimodal applications. One is the absence of a whole modality. The other is irregular sampling within an available modality. They also show that alignment and missingness are modelling problems in their own right. They are not properties resolved automatically by combining additional data sources.
-
-合在一起，这些研究区分多模态应用中有时被混同的两类不完整来源。一类是整模态缺失。另一类是可用模态内的不规则采样。它们也表明，对齐与缺失本身就是建模问题。它们并非通过堆加更多数据源即可自动解决的属性。
-
-## 2.5 Forecast evaluation and model interpretation
-
-## 2.5 预测评估与模型解释
-
-### 2.5.1 Measuring and comparing predictive accuracy
-
-### 2.5.1 预测精度的度量与比较
-
-Forecast evaluation involves both the choice of an evaluation criterion and the assessment of uncertainty around observed performance differences. Point forecasts are commonly summarised using loss measures such as mean absolute error and root mean squared error. Probabilistic forecasts can instead be evaluated using proper scoring rules, including the Brier score for binary outcomes and log loss (Gneiting and Raftery, 2007). Directional forecasts have also motivated specialised procedures. Pesaran and Timmermann (1992), for example, develop a test of whether predicted and realised directions are independent.
-
-预测评估既涉及评价准则的选择，也涉及对观测表现差异不确定性的评估。点预测常用平均绝对误差与均方根误差等损失度量汇总。概率预测则可用恰当评分规则评价，包括二值结果的 Brier 分数与对数损失（Gneiting 与 Raftery，2007）。方向预测也催生了专门程序。例如 Pesaran 与 Timmermann（1992）提出检验预测方向与实现方向是否独立的检验。
-
-Volatility forecasting raises an additional issue because realised volatility or variance is itself estimated from observed returns. Patton (2011) analyses forecast comparison when the volatility proxy is imperfect. He identifies conditions under which particular loss functions preserve the ranking of competing forecasts. QLIKE has consequently become common in variance-forecast evaluation alongside squared- and absolute-error measures.
-
-波动率预测另增问题，因为已实现波动或方差本身由观测收益估计。Patton（2011）分析波动代理不完美时的预测比较。他识别特定损失函数在何种条件下保持竞争预测的排序。因此，QLIKE 与平方误差、绝对误差度量一道，在方差预测评估中变得常见。
-
-Formal comparison tests examine whether observed loss differences are distinguishable from sampling variation. Diebold and Mariano (1995) develop a general test of equal expected predictive loss. It permits non-quadratic loss functions and serially correlated loss differentials. Clark and West (2007) consider the more specific case of explicitly nested models under squared-error loss. Their adjustment addresses the tendency of parameter estimation in the larger model to increase its out-of-sample error under the null. The two procedures therefore address related but different forecast-comparison settings.
-
-正式比较检验考察观测损失差异能否与抽样变异区分。Diebold 与 Mariano（1995）提出等期望预测损失的一般检验。它允许非二次损失函数与序列相关的损失差。Clark 与 West（2007）考虑平方误差损失下显式嵌套模型的更特殊情形。其调整针对零假设下较大模型参数估计抬高样本外误差的倾向。因此两程序针对相关但不同的预测比较设定。
-
-### 2.5.2 Model interpretation and its limits
-
-### 2.5.2 模型解释及其限度
-
-The increasing use of machine learning in forecasting has been accompanied by greater interest in post-hoc interpretation. SHapley Additive exPlanations (SHAP) provide an additive decomposition of an individual prediction into feature attributions (Lundberg and Lee, 2017). Aggregating these attributions across observations can produce global summaries of model behaviour. Grouping features can provide higher-level summaries. The resulting values depend, however, on how the absence of a feature is represented and on assumptions about relationships among predictors.
-
-机器学习在预测中的更多使用，伴随对事后解释兴趣的上升。SHapley Additive exPlanations（SHAP）将单次预测加性分解为特征归因（Lundberg 与 Lee，2017）。跨观测汇总这些归因可得到模型行为的全局摘要。特征分组可提供更高层摘要。然而所得值取决于如何表示特征缺失，以及对预测变量间关系的假设。
-
-Feature dependence is particularly important in economic data. Aas, Jullum and Løland (2021) show that independence-based SHAP procedures may evaluate unrealistic combinations of correlated predictors. They develop approximations that account for dependence. Their results demonstrate that feature attribution is not invariant to the distributional assumptions used to construct the comparison.
-
-特征依赖在经济数据中尤为重要。Aas、Jullum 与 Løland（2021）表明，基于独立性的 SHAP 程序可能评估相关预测变量的不现实组合。他们发展考虑依赖的近似。其结果说明，特征归因并不对用于构建比较的分布假设不变。
-
-Some model architectures also expose internal weights that can be inspected. The Gated Multimodal Unit of Arevalo et al. (2017), for example, produces input-dependent gate values. Attention-based models assign weights across elements of an input or representation. These quantities describe operations inside the fitted model. Their status as explanations is contested. Jain and Wallace (2019) show that substantially different attention patterns can sometimes produce similar predictions. Attention weights need not align with other measures of feature importance. More generally, feature attributions, gates and attention weights describe relationships within a predictive model. They do not by themselves identify causal effects in the process being forecast.
-
-一些模型架构也暴露可检查的内部权重。例如 Arevalo 等（2017）的门控多模态单元产生输入依赖的门控值。基于注意力的模型对输入或表征的元素赋权。这些量描述拟合模型内部的运算。其作为解释的地位存在争议。Jain 与 Wallace（2019）表明，显著不同的注意力模式有时可产生相似预测。注意力权重未必与其他特征重要性度量对齐。更一般地，特征归因、门控与注意力权重描述的是预测模型内的关系。它们本身并不能识别被预测过程中的因果效应。
-
-## 2.6 Synthesis, research gap and positioning
-
-## 2.6 综合、研究空白与定位
-
-### 2.6.1 Synthesis of the literature
-
-### 2.6.1 文献综合
-
-Four conclusions emerge from the review. Oil-price forecasting is difficult because oil prices are highly persistent and the no-change benchmark is strong. Economic and financial predictors are widely used in this literature because they capture persistence, uncertainty, monetary conditions, exchange-rate channels and market expectations. Shipping and remote-sensing data are plausible alternative-data sources. They are noisy and indirect proxies rather than direct measurements of future prices. Multimodal learning offers tools for preserving modality-specific structure. These tools have not been systematically tested for commodity-price forecasting with heterogeneous shipping and satellite inputs.
-
-综述得出四点结论。油价预测困难，因为油价高度持续且不变预测基准很强。经济与金融预测变量在该文献中被广泛使用，因其捕捉持续性、不确定性、货币条件、汇率渠道与市场预期。航运与遥感数据是合理的另类数据来源。它们是嘈杂且间接的代理，而非未来价格的直接量测。多模态学习提供保留模态特有结构的工具。这些工具尚未在异质航运与卫星输入的大宗商品价格预测中得到系统检验。
-
-The following table summarises the observable signal, economic channel and main limitation of each of the four literatures, with key citations for each strand.
-
-下表汇总四支文献各自的可观测信号、经济渠道与主要局限，并给出各脉络的关键引用。
-
-| Data source / literature | Observable signal | Economic channel | Main limitation | Key references |
-| --- | --- | --- | --- | --- |
-| Financial and oil-market variables | Lagged price, inventories, production/refinery activity, volatility, GPR, rates, exchange rates, futures/market indicators | Persistence, uncertainty, macro-financial conditions, market expectations | Strong benchmark; difficult to improve upon | Kilian (2009); Alquist, Kilian and Vigfusson (2013); Baumeister and Kilian (2015); Costa et al. (2021); Yılmaz and Zehir (2026) |
-| Shipping / AIS / PortWatch | Tanker flows, port calls, chokepoint transits, capacity-weighted activity | Physical trade, supply disruption, congestion, regional flow changes | Directionality, noisy cargo inference, missing AIS activity | Adland, Jia and Strandenes (2017); Yan et al. (2020); Arslanalp, Marini and Tumbarello (2019); Arslanalp et al. (2026); Mi et al. (2022, 2023); Paolo et al. (2024); Ouyang et al. (2022); Liang et al. (2022); Zhao et al. (2022) |
-| Remote sensing | Night-time lights, NO₂, cloud cover, site-level imagery or embeddings | Industrial activity, demand conditions, inventory observability, infrastructure signals | Indirect mechanism, weak within-site temporal variation, cloud/missing data | Gibson et al. (2021); Polinov, Bookman and Levin (2022); Small (2021); Hao and Wang (2023); Wang et al. (2019); Bricongne et al. (2026); Jung (2026) |
-| Multimodal learning | Modality-specific representations and fusion | Preservation of heterogeneous structure before prediction | Limited direct evidence in oil-price forecasting | Baltrušaitis, Ahuja and Morency (2019); Arevalo et al. (2017); Gohari et al. (2024); Cong et al. (2022); Fuller, Millard and Green (2023); Szwarcman et al. (2026); Ma et al. (2022) |
-
-| 数据来源 / 文献 | 可观测信号 | 经济渠道 | 主要局限 | 关键文献 |
-| --- | --- | --- | --- | --- |
-| 金融与油市变量 | 滞后价格、库存、产量/炼厂活动、波动率、GPR、利率、汇率、期货/市场指标 | 持续性、不确定性、宏观金融条件、市场预期 | 基准很强，难以进一步改进 | Kilian (2009); Alquist, Kilian and Vigfusson (2013); Baumeister and Kilian (2015); Costa et al. (2021); Yılmaz and Zehir (2026) |
-| 航运 / AIS / PortWatch | 油轮流量、港口停靠、咽喉通行、运力加权活动 | 实物贸易、供给扰动、拥堵、区域流量变化 | 方向性、嘈杂的货物推断、AIS 活动缺失 | Adland, Jia and Strandenes (2017); Yan et al. (2020); Arslanalp, Marini and Tumbarello (2019); Arslanalp et al. (2026); Mi et al. (2022, 2023); Paolo et al. (2024); Ouyang et al. (2022); Liang et al. (2022); Zhao et al. (2022) |
-| 遥感 | 夜光、NO₂、云量、站点级影像或嵌入 | 工业活动、需求条件、库存可观测性、基础设施信号 | 机制间接、站点内时间变异弱、云/缺失数据 | Gibson et al. (2021); Polinov, Bookman and Levin (2022); Small (2021); Hao and Wang (2023); Wang et al. (2019); Bricongne et al. (2026); Jung (2026) |
-| 多模态学习 | 模态专属表征与融合 | 预测前保留异质结构 | 油价预测中直接证据有限 | Baltrušaitis, Ahuja and Morency (2019); Arevalo et al. (2017); Gohari et al. (2024); Cong et al. (2022); Fuller, Millard and Green (2023); Szwarcman et al. (2026); Ma et al. (2022) |
-
-### 2.6.2 Research gap
-
-### 2.6.2 研究空白
-
-Taken together, the literatures reviewed above reveal three unresolved issues at the intersection of oil-price forecasting, alternative data and multimodal learning.
-
-综合以上文献，在油价预测、另类数据与多模态学习交汇处，揭示出三个未决问题。
-
-First, evidence on the predictive value of shipping and remote-sensing data remains fragmented. Oil-price forecasting studies have concentrated mainly on historical prices and macro-financial or oil-market variables. By contrast, AIS and remote-sensing studies have more often examined maritime traffic, trade, oil demand, infrastructure or information availability. These studies show that shipping and satellite observations contain economically relevant information. There is limited direct evidence on whether they improve one-week-ahead Brent price forecasts beyond established predictors.
-
-第一，航运与遥感数据预测价值的证据仍然碎片化。油价预测研究主要集中在历史价格与宏观金融或油市变量。相比之下，AIS 与遥感研究更常考察海上交通、贸易、石油需求、基础设施或信息可得性。这些研究表明航运与卫星观测含有经济相关信息。关于它们能否在既有预测变量之上改善提前一周 Brent **价格**预测的直接证据有限。
-
-Second, the literatures represent alternative data in different ways. Many economic applications reduce shipping and satellite observations to engineered numeric indicators. Research on maritime networks and Earth-observation foundation models instead preserves relational or spatial structure through graph-based and pretrained representations. These neighbouring literatures demonstrate that such structures can be modelled. They do not provide a controlled comparison between engineered features and learned representations in oil-market forecasting. It therefore remains unclear whether retaining modality-specific structure provides predictive information beyond that contained in the underlying data.
-
-第二，文献以不同方式表示另类数据。许多经济应用将航运与卫星观测压缩为工程化数值指标。海运网络与对地观测基础模型研究则通过图与预训练表征保留关系或空间结构。相邻文献表明此类结构可被建模。但未在油市预测中提供工程化特征与学得表征之间的受控比较。因此，保留模态特有结构是否在底层数据所含信息之外提供预测信息，仍不清楚。
-
-Third, predictive performance and model interpretation are not examined within a consistent comparative setting across studies. Published results differ in their forecast targets, horizons, samples, information sets, benchmarks and evaluation procedures. Some comparisons also change the input data and model architecture simultaneously. It is then difficult to determine whether an observed improvement comes from the additional information, its representation or the forecasting algorithm. Interpretability analyses similarly use different feature-attribution methods or model-internal weights. They are often reported separately from out-of-sample performance. This limits comparison of how models use different information sources across targets and market conditions. Examining predictive performance and model reliance within the same evaluation setting would provide a clearer account of both forecast differences and model behaviour. It would not treat attribution as evidence of causality.
-
-第三，预测表现与模型解释未在各研究间一致的对照设定中加以考察。已发表结果在预测目标、预测期、样本、信息集、基准与评估程序上不同。一些比较还同时改变输入数据与模型架构。此时难以判断观测改善来自额外信息、其表征还是预测算法。可解释性分析同样使用不同的特征归因方法或模型内部权重。它们常与样本外表现分开报告。这限制了跨目标与市场条件比较模型如何使用不同信息源。在同一评估设定中同时考察预测表现与模型依赖，可更清晰说明预测差异与模型行为。这并不把归因当作因果证据。
-
-These gaps concern three related issues. Do alternative data contain incremental predictive information? Does their representation affect forecasting performance? Can predictive performance and model reliance be compared within a common evaluation design?
-
-这些空白涉及三个相关问题。另类数据是否含有增量预测信息？其表征是否影响预测表现？预测表现与模型依赖能否在共同评估设计下加以比较？
-
-### 2.6.3 Positioning of this dissertation
-
-### 2.6.3 本论定位
-
-These gaps motivate the research questions stated in Section 1.2. This dissertation addresses them through an empirical comparison of one-week-ahead Brent price forecasts under a shared out-of-sample design: financial time series are expanded with shipping and/or remote sensing, and flat feature fusion is paired with modality-aware fusion on matched information sets. Interpretability is used only to describe modality reliance where forecasts already improve on the no-change benchmark, not as causal evidence. Implementation details follow in Chapter 3.
-
-这些空白引出第 1.2 节所述研究问题。本论通过共享样本外设计下提前一周 Brent **价格**预测的实证比较加以回应：在金融时序上扩展航运和/或遥感，并在匹配信息集上配对扁平特征融合与模态感知融合。可解释性仅用于在预测已相对不变基准有改善之处描述模态依赖，不作因果证据。实施细节见第 3 章。
 
 ---
 
