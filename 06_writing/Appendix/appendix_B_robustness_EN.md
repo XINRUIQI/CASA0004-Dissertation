@@ -22,19 +22,23 @@ main pipeline exactly.
 | M3_Flat Ridge / XGB | −6.71 / −6.68 | −7.22 / −6.68 | −5.87 / −6.69 |
 | M4_Flat Ridge / XGB | −8.99 / −8.57 | −9.33 / −9.07 | −8.45 / −7.74 |
 | M1_Deep | −2.36 | −1.33 | −4.02 |
-| M_ship_GNN (shipping only) | −0.38 | −0.41 | −0.33 |
+| M_ship_GNN (shipping only) | −0.22 | −0.24 | −0.17 |
 | M_rs_deep (RS only) | −2.30 | −3.07 | −1.04 |
-| **M3_Deep_gated (main)** | **+0.11** | **+0.09** | **+0.14** |
+| **M3_Deep_gated (main)** | **+0.16** | **+0.33** | **−0.13** |
 | M2_Deep_gated | −2.43 | −3.06 | −1.41 |
-| M4_Deep_gated | −1.28 | −2.35 | +0.49 |
-| M4_Deep_Concat | −4.06 | −6.08 | −0.69 |
+| M4_Deep_gated | −0.67 | −1.36 | +0.47 |
+| M4_Deep_Concat | −8.30 | −12.77 | −0.58 |
 
-**Reading**: no flat model beats M0 in either sub-period. Among deep
-models, **M3_Deep_gated is the only configuration with positive skill in both
-sub-periods** (+0.09 / +0.14), i.e. the most stable small gain; M4_Deep_gated is
-negative early and only turns positive late (+0.49), and cross-attention–driven
-M4 gains are concentrated late. This supports gated finance+shipping as the main
-model.
+**Reading**: no flat model beats M0 in either sub-period. Among deep models,
+M3_Deep_gated has both the largest full-sample skill (+0.16) and the strongest
+early-period skill (+0.33), but is marginally negative late (−0.13);
+M4_Deep_gated shows the opposite profile (−1.36 early, +0.47 late), and
+cross-attention–driven M4 gains remain concentrated late. **No deep configuration
+is positive in both sub-periods**, so the small full-sample gain of the main model
+is not evenly distributed over time. Gated finance+shipping is retained as the
+main model on full-sample skill and on the nested shipping increment (Chapter 4);
+this split is reported as a limitation on how stable that gain is, not as
+supporting evidence.
 
 ---
 
@@ -45,14 +49,16 @@ seed 42, lookback 4, 257 weeks. Source: `run_deep_fusion_matrix.py` →
 
 | Combo | Concat | Gated | Cross-Attn | CW p vs M0 (best) |
 | --- | ---: | ---: | ---: | --- |
-| **M3_Deep** (fin+ship) | +0.06 | **+0.11** | **+0.74** | xattn 0.041 ✅ |
+| **M3_Deep** (fin+ship) | −0.22 | **+0.16** | **+1.01** | xattn 0.029 ✅ |
 | M2_Deep (fin+rs) | −1.93 | −2.43 | −5.89 | — |
-| M4_Deep (fin+rs+ship) | −4.06 | −1.28 | +0.12 | xattn 0.018 ✅ |
+| M4_Deep (fin+rs+ship) | −8.30 | −0.67 | +0.33 | xattn 0.026 ✅ |
 
-**Reading**: shipping (M3) is the only combo that clears M0 under any
-fusion; adding RS (M2, M4) never helps at the concat/gated floor. Cross-attention
-gives the single-seed peak but is less stable across seeds (see B.4), so gated is
-the main reported fusion.
+**Reading**: M0 is cleared only where shipping is present, and only under
+adaptive fusion: M3 clears it under gated and cross-attention, M4 only under
+cross-attention, and M2 (fin+rs) never. Plain concatenation clears M0 in no combo,
+so the gain depends on weighting the modalities rather than on stacking them.
+Cross-attention gives the single-seed peak but is less stable across seeds (see
+B.4), so gated is the main reported fusion.
 
 ---
 
@@ -109,14 +115,24 @@ lookback 4; d 32).
 
 | Config | skill vs M0 (3 seeds) | Note |
 | --- | --- | --- |
-| **finship gated** | −0.47% ± 0.86 | **lowest variance, most stable** → main model |
-| m4rep gated | −0.89% ± 0.60 | adding RS gives no gain |
-| m4 xattn | −1.83% ± **2.76** | seed 42 best but seed 2 collapses to −4.98% → not main |
+| **finship gated** | −0.50% ± 0.80 | **best 3-seed mean**; spread far tighter than cross-attention → main model |
+| m4rep gated | −0.93% ± 0.29 | tightest spread, but centred well below M0; adding RS gives no gain |
+| m4 xattn | −1.85% ± **2.80** | seed 42 best (+0.33%) but seed 2 collapses to −5.01% → not main |
+
+All three means are below M0, so the positive headline figures reported in
+Chapter 4 (finship gated +0.16%, cross-attention +1.01%) are seed-42 outcomes
+rather than expected skill: averaged over seeds, no Deep configuration beats the
+no-change benchmark. Gated finance+shipping is selected on the best seed-averaged
+mean and on its low dispersion relative to cross-attention, not on a claim of
+positive expected skill. This is the sharpest single limitation on the Deep
+results and is carried into Chapter 5.
 
 Single-seed (42) hyper-sweep, finship gated: lookback 4/8/12 × d 32/64 →
-lb 8 d 32 best (+0.34%) > lb 4 (+0.11%) > lb 12 (negative); **d 64 always worse**
-(short weekly sample). Main model stays locked at lookback 4, d 32 for flat
-protocol parity.
+lb 8 d 32 best (+0.25%) > lb 4 d 32 (+0.16%) > lb 12 d 32 (−0.08%); **d 64 always
+worse** (−0.76 / −1.11 / −1.11; short weekly sample). Halving encoder depth
+(1 GAT + 1 TCN layer instead of 2 + 2) also degrades skill to −1.26%, so the main
+setting is not simply over-parameterised. Main model stays locked at lookback 4,
+d 32 for flat protocol parity.
 
 ---
 

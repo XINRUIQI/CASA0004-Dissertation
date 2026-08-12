@@ -21,9 +21,9 @@
   fit @ 2025-07-18
   fit @ 2025-10-17
 
-[seed=42] Mean modality gate: {'gate_finance': 0.44, 'gate_rs': 0.348, 'gate_shipping': 0.212}
-[seed=42] Top ship: ['P003', 'P009', 'P001', 'hormuz', 'P006']
-[seed=42] Top rs: ['P004', 'P008', 'P009', 'P001', 'P006']
+[seed=42] Mean modality gate: {'gate_finance': 0.428, 'gate_rs': 0.361, 'gate_shipping': 0.211}
+[seed=42] Top ship: ['P003', 'P009', 'P001', 'P006', 'P005']
+[seed=42] Top rs: ['P004', 'P008', 'P009', 'P007', 'P003']
 
 === seed=1 lookback=4 epochs=80 ===
   fit @ 2021-01-22
@@ -47,9 +47,9 @@
   fit @ 2025-07-18
   fit @ 2025-10-17
 
-[seed=1] Mean modality gate: {'gate_finance': 0.439, 'gate_rs': 0.306, 'gate_shipping': 0.255}
-[seed=1] Top ship: ['mandeb', 'hormuz', 'suez', 'panama', 'cape']
-[seed=1] Top rs: ['P006', 'P004', 'P011', 'P008', 'P001']
+[seed=1] Mean modality gate: {'gate_finance': 0.445, 'gate_rs': 0.302, 'gate_shipping': 0.253}
+[seed=1] Top ship: ['hormuz', 'mandeb', 'suez', 'panama', 'P007']
+[seed=1] Top rs: ['P004', 'P006', 'P008', 'P011', 'P001']
 
 === seed=2 lookback=4 epochs=80 ===
   fit @ 2021-01-22
@@ -73,52 +73,52 @@
   fit @ 2025-07-18
   fit @ 2025-10-17
 
-[seed=2] Mean modality gate: {'gate_finance': 0.479, 'gate_rs': 0.301, 'gate_shipping': 0.22}
-[seed=2] Top ship: ['P002', 'hormuz', 'P003', 'P009', 'P006']
-[seed=2] Top rs: ['P002', 'P009', 'P001', 'P007', 'P006']
+[seed=2] Mean modality gate: {'gate_finance': 0.497, 'gate_rs': 0.282, 'gate_shipping': 0.221}
+[seed=2] Top ship: ['P002', 'P003', 'hormuz', 'P010', 'P009']
+[seed=2] Top rs: ['P001', 'P009', 'P002', 'P004', 'P007']
 
 ========== RQ3 multi-seed stability ==========
 α_shipping pairwise correlations:
  seed_a  seed_b  pearson_alpha_shipping  spearman_alpha_shipping
-     42       1                0.095794                 0.220638
-     42       2                0.132288                 0.211097
-      1       2               -0.307088                -0.366226
+     42       1                0.204815                 0.183338
+     42       2                0.072981                 0.214628
+      1       2               -0.345198                -0.464944
 
 Event-window Δα_shipping (post−pre, ±8w):
 event_date                   event  n_seeds_valid  n_up  n_down  same_direction  delta_seed42  delta_seed1  delta_seed2
-2022-02-24          Russia–Ukraine              3     3       0            True      0.072901     0.018510     0.004947
-2022-06-01 EU RU oil ban announced              3     0       3            True     -0.015726    -0.002653    -0.002713
-2023-04-02      OPEC+ surprise cut              3     0       3            True     -0.007720    -0.004983    -0.033880
-2023-11-19  Houthi Red Sea attacks              3     2       1           False     -0.016881     0.015234     0.006281
+2022-02-24          Russia–Ukraine              3     3       0            True      0.073169     0.018972     0.009033
+2022-06-01 EU RU oil ban announced              3     0       3            True     -0.016443    -0.004713    -0.002197
+2023-04-02      OPEC+ surprise cut              3     1       2           False     -0.011252    -0.004047     0.017751
+2023-11-19  Houthi Red Sea attacks              3     1       2           False     -0.018570     0.022306    -0.009496
 
 Ship Top-5 frequency:
   name  att_mean  rank_mean  freq_top5
-hormuz  0.082978   2.666667          3
-  P003  0.069362   5.000000          2
-  P009  0.063198   6.333333          2
-  P006  0.061939   6.333333          2
-  suez  0.064453   9.000000          1
-  P002  0.063926   6.333333          1
-mandeb  0.062047  10.666667          1
-panama  0.060283  11.000000          1
+hormuz  0.080757   3.333333          2
+  P003  0.069848   5.000000          2
+  P009  0.063153   6.666667          2
+  P007  0.064326   6.666667          1
+  P002  0.063502   6.333333          1
+  P006  0.062999   6.666667          1
+  suez  0.061523   9.000000          1
+  P010  0.059943   7.000000          1
 
->>> Hormuz freq_top5 = 3/3 (att_mean=0.0830, rank_mean=2.67)
+>>> Hormuz freq_top5 = 2/3 (att_mean=0.0808, rank_mean=3.33)
 
 RS Top-5 frequency:
 name  att_mean  rank_mean  freq_top5
-P006  0.101090   3.666667          3
-P001  0.097844   4.000000          3
-P004  0.111335   3.000000          2
-P008  0.095724   5.000000          2
-P009  0.092029   5.333333          2
-P007  0.090674   5.666667          1
-P011  0.086834   7.000000          1
-P002  0.086404   6.666667          1
+P004  0.115176   2.000000          3
+P001  0.104141   4.333333          2
+P008  0.096198   4.666667          2
+P009  0.091780   5.333333          2
+P007  0.089226   5.333333          2
+P006  0.102509   4.666667          1
+P002  0.084142   7.666667          1
+P011  0.080827   7.666667          1
 
 Saved:
-  /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/deep/deep_gate_stability.csv
-  /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/deep/deep_gate_corr.csv
-  /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/deep/deep_gate_events.csv
-  /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/deep/deep_gate_band_weekly.csv
-  /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/deep/deep_interpret_stability.png
+  /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/Deep/M4_Deep/deep_gate_stability.csv
+  /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/Deep/M4_Deep/deep_gate_corr.csv
+  /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/Deep/M4_Deep/deep_gate_events.csv
+  /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/Deep/M4_Deep/deep_gate_band_weekly.csv
+  /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/Deep/M4_Deep/deep_interpret_stability.png
   (+ per-seed deep_gate_weekly_seed*.csv)

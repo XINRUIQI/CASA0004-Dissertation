@@ -1,37 +1,37 @@
 deep dataset N=361 lookback=4  (seed=42, epochs=80)
 
-  Mfinship  concat  skill=+0.06% DirAcc=0.525 CWvsM0=0.1953 DMvsM1=0.0427 RMSE=4.149 (107s)
-  Mfinship  gated   skill=+0.11% DirAcc=0.529 CWvsM0=0.1659 DMvsM1=0.0608 RMSE=4.147 (210s)
-  Mfinship  xattn   skill=+0.74% DirAcc=0.549 CWvsM0=0.0407 DMvsM1=0.0554 RMSE=4.121 (308s)
-  Mfinrs    concat  skill=-1.93% DirAcc=0.533 CWvsM0=0.9710 DMvsM1=0.3726 RMSE=4.232 (323s)
-  Mfinrs    gated   skill=-2.43% DirAcc=0.475 CWvsM0=0.7690 DMvsM1=0.4851 RMSE=4.253 (339s)
-  Mfinrs    xattn   skill=-5.89% DirAcc=0.455 CWvsM0=0.8984 DMvsM1=0.9132 RMSE=4.396 (355s)
-  Mfull     concat  skill=-4.06% DirAcc=0.494 CWvsM0=0.6374 DMvsM1=0.6498 RMSE=4.320 (465s)
-  Mfull     gated   skill=-1.28% DirAcc=0.502 CWvsM0=0.8944 DMvsM1=0.2390 RMSE=4.205 (579s)
-  Mfull     xattn   skill=+0.12% DirAcc=0.564 CWvsM0=0.0178 DMvsM1=0.0878 RMSE=4.147 (684s)
+  M3_Deep   concat  skill=-0.22% DirAcc=0.510 CWvsM0=0.3736 DMvsM1=0.0641 RMSE=4.161 (102s)
+  M3_Deep   gated   skill=+0.16% DirAcc=0.537 CWvsM0=0.1469 DMvsM1=0.0577 RMSE=4.145 (204s)
+  M3_Deep   xattn   skill=+1.01% DirAcc=0.553 CWvsM0=0.0289 DMvsM1=0.0346 RMSE=4.110 (297s)
+  M2_Deep   concat  skill=-1.93% DirAcc=0.533 CWvsM0=0.9710 DMvsM1=0.3726 RMSE=4.232 (311s)
+  M2_Deep   gated   skill=-2.43% DirAcc=0.475 CWvsM0=0.7690 DMvsM1=0.4851 RMSE=4.253 (325s)
+  M2_Deep   xattn   skill=-5.89% DirAcc=0.455 CWvsM0=0.8984 DMvsM1=0.9132 RMSE=4.396 (339s)
+  M4_Deep   concat  skill=-8.30% DirAcc=0.451 CWvsM0=0.6085 DMvsM1=0.8302 RMSE=4.496 (446s)
+  M4_Deep   gated   skill=-0.67% DirAcc=0.494 CWvsM0=0.7781 DMvsM1=0.1326 RMSE=4.180 (550s)
+  M4_Deep   xattn   skill=+0.33% DirAcc=0.560 CWvsM0=0.0257 DMvsM1=0.0561 RMSE=4.138 (652s)
 
 ============================================================
 Skill vs M0 (%)  [>0 beats the random walk]:
-fusion    concat  gated  xattn
-combo                         
-Mfinship   +0.06  +0.11  +0.74
-Mfinrs     -1.93  -2.43  -5.89
-Mfull      -4.06  -1.28  +0.12
+fusion   concat  gated  xattn
+combo                        
+M3_Deep   -0.22  +0.16  +1.01
+M2_Deep   -1.93  -2.43  -5.89
+M4_Deep   -8.30  -0.67  +0.33
 
 CW p vs M0  [<0.05 significantly beats RW]:
-fusion    concat  gated  xattn
-combo                         
-Mfinship  0.1953 0.1659 0.0407
-Mfinrs    0.9710 0.7690 0.8984
-Mfull     0.6374 0.8944 0.0178
+fusion   concat  gated  xattn
+combo                        
+M3_Deep  0.3736 0.1469 0.0289
+M2_Deep  0.9710 0.7690 0.8984
+M4_Deep  0.6085 0.7781 0.0257
 
-DM p vs flat M1_Ridge  [<0.05 significantly beats flat M1]:
-fusion    concat  gated  xattn
-combo                         
-Mfinship  0.0427 0.0608 0.0554
-Mfinrs    0.3726 0.4851 0.9132
-Mfull     0.6498 0.2390 0.0878
+DM p vs M1_Flat_Ridge  [<0.05 significantly beats flat M1_Flat]:
+fusion   concat  gated  xattn
+combo                        
+M3_Deep  0.0641 0.0577 0.0346
+M2_Deep  0.3726 0.4851 0.9132
+M4_Deep  0.8302 0.1326 0.0561
 ============================================================
-Saved: /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/deep/deep_fusion_matrix.csv
-       /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/deep/deep_fusion_matrix.png
-Elapsed 684s
+Saved: /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/Deep/_cross/deep_fusion_matrix.csv
+       /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/Deep/_cross/deep_fusion_matrix.png
+Elapsed 652s

@@ -55,8 +55,10 @@ PW_STATS = ["n_tanker", "n_total", "capacity_tanker", "capacity",
 SAR_STATS = ["detections_total", "detections_dark", "dark_share"]
 
 # AOI <-> chokepoint static association (aoi_oil_infrastructure_sites.md sec.4).
+# P007 (Jamnagar) is a demand-side refinery whose crude slate is dominated by
+# Persian Gulf loadings, so it routes through Hormuz like the export terminals.
 CHOKE_AOI = {
-    "hormuz": ["P002", "P003", "P008", "P010"],
+    "hormuz": ["P002", "P003", "P007", "P008", "P010"],
     "malacca": ["P004", "P006", "P009"],
     "suez": ["P011", "P001"],
     "mandeb": ["P011"],

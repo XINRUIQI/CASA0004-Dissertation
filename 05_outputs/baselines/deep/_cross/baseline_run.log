@@ -1,8 +1,8 @@
 Merged matrix: (365, 212)  2019-01-04 ~ 2025-12-26
-flat M1 (read baseline_predictions): 257 test weeks (2021-01-22~2025-12-19)
+flat M1_Flat (read baseline_predictions): 257 test weeks (2021-01-22~2025-12-19)
 deep dataset: N=361 lookback=4
 
-[fin] rolling-origin deep training...
+[m1_deep] rolling-origin deep training...
     fit #1 @ week 2021-01-22 (train=104)
     fit #2 @ week 2021-04-23 (train=117)
     fit #3 @ week 2021-07-23 (train=130)
@@ -23,7 +23,7 @@ deep dataset: N=361 lookback=4
     fit #18 @ week 2025-04-18 (train=325)
     fit #19 @ week 2025-07-18 (train=338)
     fit #20 @ week 2025-10-17 (train=351)
-[ship] rolling-origin deep training...
+[m_ship_gnn] rolling-origin deep training...
     fit #1 @ week 2021-01-22 (train=104)
     fit #2 @ week 2021-04-23 (train=117)
     fit #3 @ week 2021-07-23 (train=130)
@@ -44,7 +44,7 @@ deep dataset: N=361 lookback=4
     fit #18 @ week 2025-04-18 (train=325)
     fit #19 @ week 2025-07-18 (train=338)
     fit #20 @ week 2025-10-17 (train=351)
-[rs] rolling-origin deep training...
+[m_rs_deep] rolling-origin deep training...
     fit #1 @ week 2021-01-22 (train=104)
     fit #2 @ week 2021-04-23 (train=117)
     fit #3 @ week 2021-07-23 (train=130)
@@ -65,7 +65,7 @@ deep dataset: N=361 lookback=4
     fit #18 @ week 2025-04-18 (train=325)
     fit #19 @ week 2025-07-18 (train=338)
     fit #20 @ week 2025-10-17 (train=351)
-[fusion] rolling-origin deep training...
+[m3_deep_gated] rolling-origin deep training...
     fit #1 @ week 2021-01-22 (train=104)
     fit #2 @ week 2021-04-23 (train=117)
     fit #3 @ week 2021-07-23 (train=130)
@@ -86,7 +86,7 @@ deep dataset: N=361 lookback=4
     fit #18 @ week 2025-04-18 (train=325)
     fit #19 @ week 2025-07-18 (train=338)
     fit #20 @ week 2025-10-17 (train=351)
-[finrs] rolling-origin deep training...
+[m2_deep_gated] rolling-origin deep training...
     fit #1 @ week 2021-01-22 (train=104)
     fit #2 @ week 2021-04-23 (train=117)
     fit #3 @ week 2021-07-23 (train=130)
@@ -107,7 +107,7 @@ deep dataset: N=361 lookback=4
     fit #18 @ week 2025-04-18 (train=325)
     fit #19 @ week 2025-07-18 (train=338)
     fit #20 @ week 2025-10-17 (train=351)
-[m4rep] rolling-origin deep training...
+[m4_deep_gated] rolling-origin deep training...
     fit #1 @ week 2021-01-22 (train=104)
     fit #2 @ week 2021-04-23 (train=117)
     fit #3 @ week 2021-07-23 (train=130)
@@ -128,7 +128,7 @@ deep dataset: N=361 lookback=4
     fit #18 @ week 2025-04-18 (train=325)
     fit #19 @ week 2025-07-18 (train=338)
     fit #20 @ week 2025-10-17 (train=351)
-[m4concat] rolling-origin deep training...
+[m4_deep_concat] rolling-origin deep training...
     fit #1 @ week 2021-01-22 (train=104)
     fit #2 @ week 2021-04-23 (train=117)
     fit #3 @ week 2021-07-23 (train=130)
@@ -156,34 +156,32 @@ Common test weeks: 257 (2021-01-22 ~ 2025-12-19)
                      RMSE      MAE   DirAcc  RMSE_skill_vs_M0  DM_stat  DM_p_better_than_M0  CW_p_vs_M0
 model                                                                                                  
 M0_RW              4.1518   3.0114      NaN            0.0000      NaN                  NaN         NaN
-M1_Ridge           4.2563   3.0901   0.4981           -0.0252   1.5851               0.9429      0.5299
-M1_XGB             4.3684   3.2651   0.5525           -0.0522   2.1206               0.9825      0.1044
-Mfin_TCN           4.2499   3.1154   0.4942           -0.0236   2.0113               0.9773      0.3153
-Mship_GNN          4.1676   3.0129   0.5058           -0.0038   0.5429               0.7062      0.4964
-Mrs_RS             4.2473   3.1037   0.4591           -0.0230   2.3737               0.9908      0.9281
-Mfusion_Fusion     4.1473   3.0189   0.5292            0.0011  -0.1433               0.4431      0.1659
-Mfinrs_FinRS       4.2529   3.1060   0.4747           -0.0243   1.6352               0.9484      0.7690
-Mfull_M4rep        4.2049   3.0570   0.5019           -0.0128   2.1893               0.9853      0.8944
-Mconcat_M4concat   4.3204   3.0828   0.4942           -0.0406   1.1327               0.8708      0.6374
+M1_Flat_Ridge      4.2563   3.0901   0.4981           -0.0252   1.5851               0.9429      0.5299
+M1_Flat_XGB        4.3684   3.2651   0.5525           -0.0522   2.1206               0.9825      0.1044
+M1_Deep            4.2499   3.1154   0.4942           -0.0236   2.0113               0.9773      0.3153
+M_ship_GNN         4.1607   3.0014   0.5175           -0.0022   0.3998               0.6552      0.4498
+M_rs_deep          4.2473   3.1037   0.4591           -0.0230   2.3737               0.9908      0.9281
+M3_Deep_gated      4.1453   3.0120   0.5370            0.0016  -0.1954               0.4226      0.1469
+M2_Deep_gated      4.2529   3.1060   0.4747           -0.0243   1.6352               0.9484      0.7690
+M4_Deep_gated      4.1796   3.0353   0.4942           -0.0067   1.6149               0.9462      0.7781
+M4_Deep_Concat     4.4965   3.1698   0.4514           -0.0830   1.4285               0.9228      0.6085
 Naive_DirPersist      NaN      NaN   0.5097               NaN      NaN                  NaN         NaN
 ====================================================================================================
-CW_p_vs_M0<0.05 => model significantly beats the random walk (the honest benchmark; M0 is nested in every model).
 
-Model comparisons (valid_test = CW for nested, DM for non-nested; one-sided p_value<0.05 => the deep/'large' model is more accurate):
-                    comparison            small            large     valid_test  p_value   CW_p   DM_p
-  RS incr. (M4rep vs fin+ship)   Mfusion_Fusion      Mfull_M4rep     CW(nested)   0.7819 0.7819 0.9494
-shipping incr. (fusion vs fin)         Mfin_TCN   Mfusion_Fusion     CW(nested)   0.0006 0.0006 0.0425
-       rs incr. (finrs vs fin)         Mfin_TCN     Mfinrs_FinRS     CW(nested)   0.0187 0.0187 0.5218
-           full rep vs flat M1         M1_Ridge      Mfull_M4rep DM(non-nested)   0.2390 0.0055 0.2390
-         fin+rs rep vs flat M1         M1_Ridge     Mfinrs_FinRS DM(non-nested)   0.4851 0.0658 0.4851
-             rs-rep vs flat M1         M1_Ridge           Mrs_RS DM(non-nested)   0.4573 0.0281 0.4573
-       shipping-rep vs flat M1         M1_Ridge        Mship_GNN DM(non-nested)   0.1063 0.0013 0.1063
-         concat rep vs flat M1         M1_Ridge Mconcat_M4concat DM(non-nested)   0.6498 0.2011 0.6498
-              gating vs concat Mconcat_M4concat      Mfull_M4rep DM(non-nested)   0.2163 0.0650 0.2163
-NOTE: for deep-vs-flat-M1 and gating-vs-concat, read p_value (=DM); CW_p is kept only to show CW is inflated/invalid for non-nested pairs.
+Model comparisons (CW nested / DM non-nested):
+                    comparison          small          large     valid_test  p_value   CW_p   DM_p
+     RS incr. (M4 vs M3 gated)  M3_Deep_gated  M4_Deep_gated     CW(nested)   0.5463 0.5463 0.8360
+shipping incr. (M3 vs M1 deep)        M1_Deep  M3_Deep_gated     CW(nested)   0.0006 0.0006 0.0405
+      rs incr. (M2 vs M1 deep)        M1_Deep  M2_Deep_gated     CW(nested)   0.0187 0.0187 0.5218
+           full rep vs M1_Flat  M1_Flat_Ridge  M4_Deep_gated DM(non-nested)   0.1326 0.0032 0.1326
+         fin+rs rep vs M1_Flat  M1_Flat_Ridge  M2_Deep_gated DM(non-nested)   0.4851 0.0658 0.4851
+             rs-rep vs M1_Flat  M1_Flat_Ridge      M_rs_deep DM(non-nested)   0.4573 0.0281 0.4573
+       shipping-rep vs M1_Flat  M1_Flat_Ridge     M_ship_GNN DM(non-nested)   0.0916 0.0010 0.0916
+         concat rep vs M1_Flat  M1_Flat_Ridge M4_Deep_Concat DM(non-nested)   0.8302 0.3000 0.8302
+              gating vs concat M4_Deep_Concat  M4_Deep_gated DM(non-nested)   0.0934 0.0158 0.0934
 
-Elapsed 490s
-Saved: /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/deep/deep_metrics.csv
-       /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/deep/deep_cw.csv
-       /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/deep/deep_predictions.csv
-       /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/deep/deep_backtest.png
+Elapsed 471s
+Saved: /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/Deep/_cross/deep_metrics.csv
+       /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/Deep/_cross/deep_cw.csv
+       /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/Deep/_cross/deep_predictions.csv
+       /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/Deep/_cross/deep_backtest.png

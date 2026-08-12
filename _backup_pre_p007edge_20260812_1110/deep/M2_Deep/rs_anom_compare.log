@@ -1,0 +1,57 @@
+
+===== rs_kind = meanpool =====
+[meanpool/rs] rolling...
+DONE meanpool/rs
+[meanpool/finrs] rolling...
+DONE meanpool/finrs
+[meanpool/m4rep] rolling...
+DONE meanpool/m4rep
+gate[meanpool] {'fin': np.float32(0.5442686), 'rs': np.float32(0.34428692), 'ship': np.float32(0.111444384)}
+
+===== rs_kind = meanpool_anom =====
+[meanpool_anom/rs] rolling...
+DONE meanpool_anom/rs
+[meanpool_anom/finrs] rolling...
+DONE meanpool_anom/finrs
+[meanpool_anom/m4rep] rolling...
+DONE meanpool_anom/m4rep
+gate[meanpool_anom] {'fin': np.float32(0.5477528), 'rs': np.float32(0.37585396), 'ship': np.float32(0.07639321)}
+
+============================================================================================
+3A COMPARISON  raw meanpool vs meanpool_anom  (n_common=257, epochs=80, lb=4)
+============================================================================================
+
+[rs] Mrs
+  metric                raw       anom      delta
+  skill_vs_M0%        -2.30      -2.82      -0.51
+  DirAcc%              45.9       48.2       +2.3
+  RMSE                4.247      4.269     +0.021
+  CW_p_vs_M0          0.928      0.799
+  DM_p_vs_M1          0.457      0.548
+  verdict: anom is WORSE/EQUAL (skill delta -0.51%)
+
+[finrs] Mfinrs
+  metric                raw       anom      delta
+  skill_vs_M0%        -2.43      -4.00      -1.56
+  DirAcc%              47.5       46.3       -1.2
+  RMSE                4.253      4.318     +0.065
+  CW_p_vs_M0          0.769      0.881
+  DM_p_vs_M1          0.485      0.744
+  verdict: anom is WORSE/EQUAL (skill delta -1.56%)
+
+[m4rep] Mfull
+  metric                raw       anom      delta
+  skill_vs_M0%        -1.28       0.05      +1.33
+  DirAcc%              50.2       53.3       +3.1
+  RMSE                4.205      4.150     -0.055
+  CW_p_vs_M0          0.894      0.042
+  DM_p_vs_M1          0.239      0.056
+  verdict: anom is BETTER (skill delta +1.33%)
+
+gate alpha (m4rep, mean over samples):
+  meanpool       fin=0.544  rs=0.344  ship=0.111
+  meanpool_anom  fin=0.548  rs=0.376  ship=0.076
+
+============================================================================================
+OVERALL: anom improves skill in 1/3 configs. ROLL BACK 3A (no consistent gain).
+saved -> /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/deep/rs_anom_compare.csv   elapsed 323s

@@ -1,0 +1,189 @@
+Merged matrix: (365, 212)  2019-01-04 ~ 2025-12-26
+flat M1 (read baseline_predictions): 257 test weeks (2021-01-22~2025-12-19)
+deep dataset: N=361 lookback=4
+
+[fin] rolling-origin deep training...
+    fit #1 @ week 2021-01-22 (train=104)
+    fit #2 @ week 2021-04-23 (train=117)
+    fit #3 @ week 2021-07-23 (train=130)
+    fit #4 @ week 2021-10-22 (train=143)
+    fit #5 @ week 2022-01-21 (train=156)
+    fit #6 @ week 2022-04-22 (train=169)
+    fit #7 @ week 2022-07-22 (train=182)
+    fit #8 @ week 2022-10-21 (train=195)
+    fit #9 @ week 2023-01-20 (train=208)
+    fit #10 @ week 2023-04-21 (train=221)
+    fit #11 @ week 2023-07-21 (train=234)
+    fit #12 @ week 2023-10-20 (train=247)
+    fit #13 @ week 2024-01-19 (train=260)
+    fit #14 @ week 2024-04-19 (train=273)
+    fit #15 @ week 2024-07-19 (train=286)
+    fit #16 @ week 2024-10-18 (train=299)
+    fit #17 @ week 2025-01-17 (train=312)
+    fit #18 @ week 2025-04-18 (train=325)
+    fit #19 @ week 2025-07-18 (train=338)
+    fit #20 @ week 2025-10-17 (train=351)
+[ship] rolling-origin deep training...
+    fit #1 @ week 2021-01-22 (train=104)
+    fit #2 @ week 2021-04-23 (train=117)
+    fit #3 @ week 2021-07-23 (train=130)
+    fit #4 @ week 2021-10-22 (train=143)
+    fit #5 @ week 2022-01-21 (train=156)
+    fit #6 @ week 2022-04-22 (train=169)
+    fit #7 @ week 2022-07-22 (train=182)
+    fit #8 @ week 2022-10-21 (train=195)
+    fit #9 @ week 2023-01-20 (train=208)
+    fit #10 @ week 2023-04-21 (train=221)
+    fit #11 @ week 2023-07-21 (train=234)
+    fit #12 @ week 2023-10-20 (train=247)
+    fit #13 @ week 2024-01-19 (train=260)
+    fit #14 @ week 2024-04-19 (train=273)
+    fit #15 @ week 2024-07-19 (train=286)
+    fit #16 @ week 2024-10-18 (train=299)
+    fit #17 @ week 2025-01-17 (train=312)
+    fit #18 @ week 2025-04-18 (train=325)
+    fit #19 @ week 2025-07-18 (train=338)
+    fit #20 @ week 2025-10-17 (train=351)
+[rs] rolling-origin deep training...
+    fit #1 @ week 2021-01-22 (train=104)
+    fit #2 @ week 2021-04-23 (train=117)
+    fit #3 @ week 2021-07-23 (train=130)
+    fit #4 @ week 2021-10-22 (train=143)
+    fit #5 @ week 2022-01-21 (train=156)
+    fit #6 @ week 2022-04-22 (train=169)
+    fit #7 @ week 2022-07-22 (train=182)
+    fit #8 @ week 2022-10-21 (train=195)
+    fit #9 @ week 2023-01-20 (train=208)
+    fit #10 @ week 2023-04-21 (train=221)
+    fit #11 @ week 2023-07-21 (train=234)
+    fit #12 @ week 2023-10-20 (train=247)
+    fit #13 @ week 2024-01-19 (train=260)
+    fit #14 @ week 2024-04-19 (train=273)
+    fit #15 @ week 2024-07-19 (train=286)
+    fit #16 @ week 2024-10-18 (train=299)
+    fit #17 @ week 2025-01-17 (train=312)
+    fit #18 @ week 2025-04-18 (train=325)
+    fit #19 @ week 2025-07-18 (train=338)
+    fit #20 @ week 2025-10-17 (train=351)
+[fusion] rolling-origin deep training...
+    fit #1 @ week 2021-01-22 (train=104)
+    fit #2 @ week 2021-04-23 (train=117)
+    fit #3 @ week 2021-07-23 (train=130)
+    fit #4 @ week 2021-10-22 (train=143)
+    fit #5 @ week 2022-01-21 (train=156)
+    fit #6 @ week 2022-04-22 (train=169)
+    fit #7 @ week 2022-07-22 (train=182)
+    fit #8 @ week 2022-10-21 (train=195)
+    fit #9 @ week 2023-01-20 (train=208)
+    fit #10 @ week 2023-04-21 (train=221)
+    fit #11 @ week 2023-07-21 (train=234)
+    fit #12 @ week 2023-10-20 (train=247)
+    fit #13 @ week 2024-01-19 (train=260)
+    fit #14 @ week 2024-04-19 (train=273)
+    fit #15 @ week 2024-07-19 (train=286)
+    fit #16 @ week 2024-10-18 (train=299)
+    fit #17 @ week 2025-01-17 (train=312)
+    fit #18 @ week 2025-04-18 (train=325)
+    fit #19 @ week 2025-07-18 (train=338)
+    fit #20 @ week 2025-10-17 (train=351)
+[finrs] rolling-origin deep training...
+    fit #1 @ week 2021-01-22 (train=104)
+    fit #2 @ week 2021-04-23 (train=117)
+    fit #3 @ week 2021-07-23 (train=130)
+    fit #4 @ week 2021-10-22 (train=143)
+    fit #5 @ week 2022-01-21 (train=156)
+    fit #6 @ week 2022-04-22 (train=169)
+    fit #7 @ week 2022-07-22 (train=182)
+    fit #8 @ week 2022-10-21 (train=195)
+    fit #9 @ week 2023-01-20 (train=208)
+    fit #10 @ week 2023-04-21 (train=221)
+    fit #11 @ week 2023-07-21 (train=234)
+    fit #12 @ week 2023-10-20 (train=247)
+    fit #13 @ week 2024-01-19 (train=260)
+    fit #14 @ week 2024-04-19 (train=273)
+    fit #15 @ week 2024-07-19 (train=286)
+    fit #16 @ week 2024-10-18 (train=299)
+    fit #17 @ week 2025-01-17 (train=312)
+    fit #18 @ week 2025-04-18 (train=325)
+    fit #19 @ week 2025-07-18 (train=338)
+    fit #20 @ week 2025-10-17 (train=351)
+[m4rep] rolling-origin deep training...
+    fit #1 @ week 2021-01-22 (train=104)
+    fit #2 @ week 2021-04-23 (train=117)
+    fit #3 @ week 2021-07-23 (train=130)
+    fit #4 @ week 2021-10-22 (train=143)
+    fit #5 @ week 2022-01-21 (train=156)
+    fit #6 @ week 2022-04-22 (train=169)
+    fit #7 @ week 2022-07-22 (train=182)
+    fit #8 @ week 2022-10-21 (train=195)
+    fit #9 @ week 2023-01-20 (train=208)
+    fit #10 @ week 2023-04-21 (train=221)
+    fit #11 @ week 2023-07-21 (train=234)
+    fit #12 @ week 2023-10-20 (train=247)
+    fit #13 @ week 2024-01-19 (train=260)
+    fit #14 @ week 2024-04-19 (train=273)
+    fit #15 @ week 2024-07-19 (train=286)
+    fit #16 @ week 2024-10-18 (train=299)
+    fit #17 @ week 2025-01-17 (train=312)
+    fit #18 @ week 2025-04-18 (train=325)
+    fit #19 @ week 2025-07-18 (train=338)
+    fit #20 @ week 2025-10-17 (train=351)
+[m4concat] rolling-origin deep training...
+    fit #1 @ week 2021-01-22 (train=104)
+    fit #2 @ week 2021-04-23 (train=117)
+    fit #3 @ week 2021-07-23 (train=130)
+    fit #4 @ week 2021-10-22 (train=143)
+    fit #5 @ week 2022-01-21 (train=156)
+    fit #6 @ week 2022-04-22 (train=169)
+    fit #7 @ week 2022-07-22 (train=182)
+    fit #8 @ week 2022-10-21 (train=195)
+    fit #9 @ week 2023-01-20 (train=208)
+    fit #10 @ week 2023-04-21 (train=221)
+    fit #11 @ week 2023-07-21 (train=234)
+    fit #12 @ week 2023-10-20 (train=247)
+    fit #13 @ week 2024-01-19 (train=260)
+    fit #14 @ week 2024-04-19 (train=273)
+    fit #15 @ week 2024-07-19 (train=286)
+    fit #16 @ week 2024-10-18 (train=299)
+    fit #17 @ week 2025-01-17 (train=312)
+    fit #18 @ week 2025-04-18 (train=325)
+    fit #19 @ week 2025-07-18 (train=338)
+    fit #20 @ week 2025-10-17 (train=351)
+
+Common test weeks: 257 (2021-01-22 ~ 2025-12-19)
+
+====================================================================================================
+                     RMSE      MAE   DirAcc  RMSE_skill_vs_M0  DM_stat  DM_p_better_than_M0  CW_p_vs_M0
+model                                                                                                  
+M0_RW              4.1518   3.0114      NaN            0.0000      NaN                  NaN         NaN
+M1_Ridge           4.2563   3.0901   0.4981           -0.0252   1.5851               0.9429      0.5299
+M1_XGB             4.3684   3.2651   0.5525           -0.0522   2.1206               0.9825      0.1044
+Mfin_TCN           4.2499   3.1154   0.4942           -0.0236   2.0113               0.9773      0.3153
+Mship_GNN          4.1676   3.0129   0.5058           -0.0038   0.5429               0.7062      0.4964
+Mrs_RS             4.2473   3.1037   0.4591           -0.0230   2.3737               0.9908      0.9281
+Mfusion_Fusion     4.1473   3.0189   0.5292            0.0011  -0.1433               0.4431      0.1659
+Mfinrs_FinRS       4.2529   3.1060   0.4747           -0.0243   1.6352               0.9484      0.7690
+Mfull_M4rep        4.2049   3.0570   0.5019           -0.0128   2.1893               0.9853      0.8944
+Mconcat_M4concat   4.3204   3.0828   0.4942           -0.0406   1.1327               0.8708      0.6374
+Naive_DirPersist      NaN      NaN   0.5097               NaN      NaN                  NaN         NaN
+====================================================================================================
+CW_p_vs_M0<0.05 => model significantly beats the random walk (the honest benchmark; M0 is nested in every model).
+
+Model comparisons (valid_test = CW for nested, DM for non-nested; one-sided p_value<0.05 => the deep/'large' model is more accurate):
+                    comparison            small            large     valid_test  p_value   CW_p   DM_p
+  RS incr. (M4rep vs fin+ship)   Mfusion_Fusion      Mfull_M4rep     CW(nested)   0.7819 0.7819 0.9494
+shipping incr. (fusion vs fin)         Mfin_TCN   Mfusion_Fusion     CW(nested)   0.0006 0.0006 0.0425
+       rs incr. (finrs vs fin)         Mfin_TCN     Mfinrs_FinRS     CW(nested)   0.0187 0.0187 0.5218
+           full rep vs flat M1         M1_Ridge      Mfull_M4rep DM(non-nested)   0.2390 0.0055 0.2390
+         fin+rs rep vs flat M1         M1_Ridge     Mfinrs_FinRS DM(non-nested)   0.4851 0.0658 0.4851
+             rs-rep vs flat M1         M1_Ridge           Mrs_RS DM(non-nested)   0.4573 0.0281 0.4573
+       shipping-rep vs flat M1         M1_Ridge        Mship_GNN DM(non-nested)   0.1063 0.0013 0.1063
+         concat rep vs flat M1         M1_Ridge Mconcat_M4concat DM(non-nested)   0.6498 0.2011 0.6498
+              gating vs concat Mconcat_M4concat      Mfull_M4rep DM(non-nested)   0.2163 0.0650 0.2163
+NOTE: for deep-vs-flat-M1 and gating-vs-concat, read p_value (=DM); CW_p is kept only to show CW is inflated/invalid for non-nested pairs.
+
+Elapsed 490s
+Saved: /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/deep/deep_metrics.csv
+       /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/deep/deep_cw.csv
+       /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/deep/deep_predictions.csv
+       /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/deep/deep_backtest.png

@@ -20,15 +20,15 @@
   fit @ 2025-10-17
 
 Mean finance->token attention (share of 28 tokens):
-  -> RS total 0.425 | -> shipping total 0.575
+  -> RS total 0.412 | -> shipping total 0.588
 Top-8 attended tokens:
-    rs:P004        0.042
-    rs:P011        0.041
-    rs:P007        0.040
-    rs:P008        0.039
-    rs:P009        0.039
-    rs:P006        0.039
-    rs:P002        0.039
-    rs:P001        0.038
-Saved: /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/deep/deep_xattn_weekly.csv
-       /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/deep/deep_xattn_viz.png
+    rs:P011        0.039
+    rs:P008        0.038
+    rs:P007        0.038
+    rs:P002        0.038
+    rs:P004        0.038
+    rs:P006        0.037
+    rs:P003        0.037
+    rs:P009        0.037
+Saved: /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/Deep/M4_Deep/deep_xattn_weekly.csv
+       /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/Deep/M4_Deep/deep_xattn_viz.png

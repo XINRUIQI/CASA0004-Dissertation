@@ -61,9 +61,9 @@ CHOKE = {
     "cape": ("Cape of Good Hope", 18.47, -34.36),
 }
 
-# Appendix A.4.2 static AOI <-> chokepoint edges (12 undirected).
+# Appendix A.4.2 static AOI <-> chokepoint edges (13 undirected).
 EDGES = {
-    "hormuz": ["P002", "P003", "P008", "P010"],
+    "hormuz": ["P002", "P003", "P007", "P008", "P010"],
     "suez": ["P001", "P011"],
     "malacca": ["P004", "P006", "P009"],
     "mandeb": ["P011"],

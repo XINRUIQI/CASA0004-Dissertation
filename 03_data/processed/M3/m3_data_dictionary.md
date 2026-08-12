@@ -715,10 +715,10 @@ python build_emodnet_weekly.py                        # EMODnet zonal（欧洲�
 | `aoi_features` | (391, 11, 11) | AOI 节点特征（同 §12.2） |
 | `choke_features` | (391, 6, 20) | 咽喉节点特征 = gfw(8) + pw(9) + sar(3) |
 | `adjacency_od` | (391, 11, 11) | 动态有向 O-D（AOI 块） |
-| `static_edges` | (17, 17) | AOI↔咽喉静态边（12 条无向） |
-| `adjacency` | (391, 17, 17) | 组合邻接（O-D 动态 + 静态广播，平均 63.8 边/周） |
+| `static_edges` | (17, 17) | AOI↔咽喉静态边（13 条无向） |
+| `adjacency` | (391, 17, 17) | 组合邻接（O-D 动态 + 静态广播，平均 65.8 边/周） |
 
-**静态边**（`aoi_oil_infrastructure_sites.md` §4）：hormuz–{P002,P003,P008,P010}、suez–{P001,P011}、malacca–{P004,P006,P009}、mandeb–P011、cape–P001、panama–P005。配套可读长表 `m3_graph17_choke_nodes_weekly.csv`（6 咽喉 × 391 周）。复现：`python build_m3_graph17.py`。
+**静态边**（`aoi_oil_infrastructure_sites.md` §4）：hormuz–{P002,P003,P007,P008,P010}、suez–{P001,P011}、malacca–{P004,P006,P009}、mandeb–P011、cape–P001、panama–P005。其中 P007（Jamnagar）为需求侧炼厂，原油进料以波斯湾装载为主，故在进口侧连接 hormuz，使每个 AOI 至少有一条走廊边。配套可读长表 `m3_graph17_choke_nodes_weekly.csv`（6 咽喉 × 391 周）。复现：`python build_m3_graph17.py`。
 
 ### 12.10 z_ship 编码器 `04_code/src/models/shipping_encoder.py`
 

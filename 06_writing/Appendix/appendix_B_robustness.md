@@ -29,21 +29,27 @@ main pipeline exactly.
 | M3_Flat Ridge / XGB | −6.71 / −6.68 | −7.22 / −6.68 | −5.87 / −6.69 |
 | M4_Flat Ridge / XGB | −8.99 / −8.57 | −9.33 / −9.07 | −8.45 / −7.74 |
 | M1_Deep | −2.36 | −1.33 | −4.02 |
-| M_ship_GNN (shipping only) | −0.38 | −0.41 | −0.33 |
+| M_ship_GNN (shipping only) | −0.22 | −0.24 | −0.17 |
 | M_rs_deep (RS only) | −2.30 | −3.07 | −1.04 |
-| **M3_Deep_gated (main)** | **+0.11** | **+0.09** | **+0.14** |
+| **M3_Deep_gated (main)** | **+0.16** | **+0.33** | **−0.13** |
 | M2_Deep_gated | −2.43 | −3.06 | −1.41 |
-| M4_Deep_gated | −1.28 | −2.35 | +0.49 |
-| M4_Deep_Concat | −4.06 | −6.08 | −0.69 |
+| M4_Deep_gated | −0.67 | −1.36 | +0.47 |
+| M4_Deep_Concat | −8.30 | −12.77 | −0.58 |
 
 **Reading / 解读**：no flat model beats M0 in either sub-period. Among deep
-models, **M3_Deep_gated is the only configuration with positive skill in both
-sub-periods** (+0.09 / +0.14), i.e. the most stable small gain; M4_Deep_gated is
-negative early and only turns positive late (+0.49), and cross-attention–driven
-M4 gains are concentrated late. This supports gated finance+shipping as the main
-model. / 两个子期内无扁平模型击败 M0；深度模型中 **M3_Deep_gated 是唯一两期都为正
-skill** 的配置（+0.09/+0.14），最稳；M4_Deep_gated 早期为负、晚期才转正
-（+0.49）。这支持以 gated 金融+航运为主模型。
+models, M3_Deep_gated has both the largest full-sample skill (+0.16) and the
+strongest early-period skill (+0.33), but is marginally negative late (−0.13);
+M4_Deep_gated shows the opposite profile (−1.36 early, +0.47 late), and
+cross-attention–driven M4 gains remain concentrated late. **No deep configuration
+is positive in both sub-periods**, so the small full-sample gain of the main model
+is not evenly distributed over time. Gated finance+shipping is retained as the
+main model on full-sample skill and on the nested shipping increment (Chapter 4);
+this split is reported as a limitation on how stable that gain is, not as
+supporting evidence. / 两个子期内无扁平模型击败 M0。深度模型中 M3_Deep_gated 的全
+样本 skill 最高（+0.16）、早期最强（+0.33），但晚期略为负（−0.13）；M4_Deep_gated
+恰好相反（早期 −1.36、晚期 +0.47）。**没有任何深度配置在两个子期都为正**，故主模型
+的小幅全样本增益在时间上分布不均。仍以 gated 金融+航运为主模型，依据是全样本 skill
+与航运嵌套增量（第 4 章）；此处子期划分作为该增益稳定性的局限说明，而非支持性证据。
 
 ---
 
@@ -54,16 +60,19 @@ seed 42, lookback 4, 257 weeks. Source: `run_deep_fusion_matrix.py` →
 
 | Combo / 组合 | Concat | Gated | Cross-Attn | CW p vs M0 (best) |
 | --- | ---: | ---: | ---: | --- |
-| **M3_Deep** (fin+ship) | +0.06 | **+0.11** | **+0.74** | xattn 0.041 ✅ |
+| **M3_Deep** (fin+ship) | −0.22 | **+0.16** | **+1.01** | xattn 0.029 ✅ |
 | M2_Deep (fin+rs) | −1.93 | −2.43 | −5.89 | — |
-| M4_Deep (fin+rs+ship) | −4.06 | −1.28 | +0.12 | xattn 0.018 ✅ |
+| M4_Deep (fin+rs+ship) | −8.30 | −0.67 | +0.33 | xattn 0.026 ✅ |
 
-**Reading / 解读**：shipping (M3) is the only combo that clears M0 under any
-fusion; adding RS (M2, M4) never helps at the concat/gated floor. Cross-attention
-gives the single-seed peak but is less stable across seeds (see B.4), so gated is
-the main reported fusion. / 仅含航运的 M3 在任一融合下可越过 M0；加入遥感（M2/M4）
-在 concat/gated 层从不改善。交叉注意力单 seed 峰值最高但跨 seed 不稳（见 B.4），
-故主报告用 gated。
+**Reading / 解读**：M0 is cleared only where shipping is present, and only under
+adaptive fusion: M3 clears it under gated and cross-attention, M4 only under
+cross-attention, and M2 (fin+rs) never. Plain concatenation clears M0 in no combo,
+so the gain depends on weighting the modalities rather than on stacking them.
+Cross-attention gives the single-seed peak but is less stable across seeds (see
+B.4), so gated is the main reported fusion. / 仅在含航运且使用自适应融合时越过 M0：
+M3 在门控与交叉注意力下越过，M4 仅在交叉注意力下越过，M2（金融+遥感）从不越过。简单
+拼接在任一组合下都未越过 M0，说明增益来自对模态加权而非堆叠。交叉注意力单 seed 峰值
+最高但跨 seed 不稳（见 B.4），故主报告用 gated。
 
 ---
 
@@ -130,17 +139,34 @@ lookback 4; d 32).
 
 | Config / 配置 | skill vs M0 (3 seeds) | Note / 解读 |
 | --- | --- | --- |
-| **finship gated** | −0.47% ± 0.86 | **lowest variance, most stable** → main model |
-| m4rep gated | −0.89% ± 0.60 | adding RS gives no gain |
-| m4 xattn | −1.83% ± **2.76** | seed 42 best but seed 2 collapses to −4.98% → not main |
+| **finship gated** | −0.50% ± 0.80 | **best 3-seed mean**; spread far tighter than cross-attention → main model |
+| m4rep gated | −0.93% ± 0.29 | tightest spread, but centred well below M0; adding RS gives no gain |
+| m4 xattn | −1.85% ± **2.80** | seed 42 best (+0.33%) but seed 2 collapses to −5.01% → not main |
+
+All three means are below M0, so the positive headline figures reported in
+Chapter 4 (finship gated +0.16%, cross-attention +1.01%) are seed-42 outcomes
+rather than expected skill: averaged over seeds, no Deep configuration beats the
+no-change benchmark. Gated finance+shipping is selected on the best seed-averaged
+mean and on its low dispersion relative to cross-attention, not on a claim of
+positive expected skill. This is the sharpest single limitation on the Deep
+results and is carried into Chapter 5.
+
+三个配置的均值均低于 M0，故第 4 章报告的正向数字（finship gated +0.16%、交叉注意力
++1.01%）是 seed=42 的结果而非期望 skill：跨 seed 平均后，没有任何 Deep 配置击败无变化
+基准。选定门控金融+航运的依据是其跨 seed 均值最高、且离散度远小于交叉注意力，而非
+「期望 skill 为正」。这是 Deep 结果最主要的局限，并在第 5 章延续说明。
 
 Single-seed (42) hyper-sweep, finship gated: lookback 4/8/12 × d 32/64 →
-lb 8 d 32 best (+0.34%) > lb 4 (+0.11%) > lb 12 (negative); **d 64 always worse**
-(short weekly sample). Main model stays locked at lookback 4, d 32 for flat
-protocol parity.
+lb 8 d 32 best (+0.25%) > lb 4 d 32 (+0.16%) > lb 12 d 32 (−0.08%); **d 64 always
+worse** (−0.76 / −1.11 / −1.11; short weekly sample). Halving encoder depth
+(1 GAT + 1 TCN layer instead of 2 + 2) also degrades skill to −1.26%, so the main
+setting is not simply over-parameterised. Main model stays locked at lookback 4,
+d 32 for flat protocol parity.
 
-单 seed=42 超参扫描（finship gated）：lb 8/d 32 最优（+0.34%）> lb 4（+0.11%）>
-lb 12（负）；**d 64 一律更差**（短周度样本）。主模型仍锁 lb 4、d 32 以对齐扁平。
+单 seed=42 超参扫描（finship gated）：lb 8/d 32 最优（+0.25%）> lb 4/d 32（+0.16%）>
+lb 12/d 32（−0.08%）；**d 64 一律更差**（−0.76 / −1.11 / −1.11；短周度样本）。将编码器
+层数减半（GAT 与 TCN 各 1 层，而非各 2 层）同样恶化至 −1.26%，说明主设定并非单纯过参数化。
+主模型仍锁 lb 4、d 32 以对齐扁平协议。
 
 ---
 

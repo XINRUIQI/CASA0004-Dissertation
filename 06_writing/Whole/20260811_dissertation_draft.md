@@ -319,11 +319,11 @@ Table 4.2 reports Deep performance by information set. Gated fusion is the main 
 | M0  | no-change benchmark               | 4.152      | —                 | 4.152           | —                      |
 | M1  | financial time series only        | 4.250      | −2.4%             | —               | —                      |
 | M2  | financial time series + RS        | 4.253      | −2.4%             | —               | —                      |
-| M3  | financial time series + shipping  | 4.147      | +0.11%            | 4.121           | +0.74%                 |
-| M4  | financial time series + RS + ship | 4.205      | −1.3%             | 4.147           | +0.12%                 |
+| M3  | financial time series + shipping  | 4.145      | +0.16%            | 4.110           | +1.01%                 |
+| M4  | financial time series + RS + ship | 4.180      | −0.67%            | 4.138           | +0.33%                 |
 
 
-Once shipping is included, gated M3 reduces RMSE to 4.147 (+0.11% skill). Cross-attention on the same set reaches 4.121 (+0.74%) on this reported seed. Shipping is the modality that moves Deep forecasts across the M0 line relative to Deep M1. Gated M4 rises again to 4.205 (−1.3%); cross-attention M4 is near M0 at +0.12% but does not displace gated M3 as the main finding. The gated margin is small and should not be over-read on a short weekly sample; Section 4.5 returns to seed sensitivity.
+Once shipping is included, gated M3 reduces RMSE to 4.145 (+0.16% skill). Cross-attention on the same set reaches 4.110 (+1.01%) on this reported seed. Shipping is the modality that moves Deep forecasts across the M0 line relative to Deep M1. Gated M4 rises again to 4.180 (−0.67%); cross-attention M4 is above M0 at +0.33% but does not displace gated M3 as the main finding. The gated margin is small and should not be over-read on a short weekly sample; Section 4.5 returns to seed sensitivity.
 
 For RQ1 under Deep, shipping-inclusive forecasts clear M0 by a modest margin, while remote sensing does not add a comparable absolute-error gain.
 
@@ -337,11 +337,11 @@ For RQ1 under Deep, shipping-inclusive forecasts clear M0 by a modest margin, wh
 | ---- | --------- | --------- | ---------------- | ---------------- |
 | M1   | 4.368     | 4.250     | −5.2%            | −2.4%            |
 | M2   | 4.440     | 4.253     | −6.9%            | −2.4%            |
-| M3   | 4.429     | 4.147     | −6.7%            | +0.11%           |
-| M4   | 4.507     | 4.205     | −8.6%            | −1.3%            |
+| M3   | 4.429     | 4.145     | −6.7%            | +0.16%           |
+| M4   | 4.507     | 4.180     | −8.6%            | −0.67%           |
 
 
-Deep has lower RMSE than Flat in every matched pair. Finance-only and finance-plus-RS pairs improve on Flat but remain negative versus M0. The decisive pair is M3: Flat skill −6.7% versus gated Deep +0.11%—the only matched pair in which Deep also beats M0. Deep M4 improves on Flat M4 but stays negative versus M0 and does not improve on Deep M3.
+Deep has lower RMSE than Flat in every matched pair. Finance-only and finance-plus-RS pairs improve on Flat but remain negative versus M0. The decisive pair is M3: Flat skill −6.7% versus gated Deep +0.16%—the only matched pair in which Deep also beats M0. Deep M4 improves on Flat M4 but stays negative versus M0 and does not improve on Deep M3.
 
 For RQ2, representation-level Deep modelling reduces RMSE relative to Flat at every matched set, but an M0-beating paired outcome appears only when shipping is included.
 
@@ -349,7 +349,7 @@ For RQ2, representation-level Deep modelling reduces RMSE relative to Flat at ev
 
 Appendix B collects the detailed robustness tables. Flat checks that vary lookback and feature settings produce no Flat specification that beats M0. Finance-only M1 remains the strongest Flat absolute-error baseline; remote sensing stays weak and is not driven by a single site. Nested Clark–West tests versus M1 in Appendix B detect incremental information over the financial baseline for some XGBoost shipping specifications, even when absolute RMSE remains higher than M1 and skill versus M0 remains negative. Shipping can therefore show a nested Flat signal without overturning Table 4.1’s absolute-error ranking.
 
-Deep checks that vary random seeds and fusion choices leave gated finance-plus-shipping as the more stable small positive-skill configuration. Cross-attention can exceed gated fusion on one seed, as in Table 4.2 for M3, but varies more across seeds. Larger encoder width than the main setting tends to worsen performance on the short weekly sample. Sub-period splits leave gated M3 positive in both early and late windows. The matched Deep advantage over Flat, especially with shipping, survives these checks.
+Deep checks that vary random seeds and fusion choices leave gated finance-plus-shipping as the best configuration on average, but not a reliably positive one. Across seeds 42, 1 and 2 its mean skill is −0.50% (± 0.80), so the +0.16% in Table 4.2 is a seed-42 outcome rather than expected skill, and averaged over seeds no Deep configuration beats M0. Cross-attention can exceed gated fusion on one seed, as in Table 4.2 for M3, but is far more dispersed (−1.85% ± 2.80, with one seed at −5.01%). Larger encoder width than the main setting tends to worsen performance on the short weekly sample, as does halving encoder depth. The sub-period split is also less favourable: gated M3 is positive in the early window (+0.33%) but marginally negative in the late window (−0.13%), and no Deep configuration is positive in both. The small full-sample gain is therefore neither evenly distributed over time nor robust to reseeding, and both facts are reported as limitations rather than as further support. The matched Deep advantage over Flat, especially with shipping, survives these checks.
 
 These checks leave the RQ1–RQ2 rankings unchanged: Flat absolute gains remain absent; Deep’s small shipping-centred M0 clearance is the more stable positive case.
 
@@ -357,13 +357,13 @@ These checks leave the RQ1–RQ2 rankings unchanged: Flat absolute gains remain 
 
 Interpretability is restricted to Deep specifications that improve on M0, principally Deep M3, using seeds 42, 1 and 2. Reported patterns are those that agree across seeds. Modality gates give each modality’s fusion-weight share; shipping node attention identifies which graph locations receive weight. A high shipping gate does not by itself mean the model focuses on a particular chokepoint; spatial detail is read from node attention.
 
-For Deep M3, mean gates are about 0.56 (financial time series) and 0.44 (shipping). Week-level shipping-gate paths are unstable across seeds, so single-seed event stories are not warranted. Among pre-specified event windows (±8 weeks), only the Russia–Ukraine announcement window (February 2022) shows a shipping-gate rise across all three seeds. The Red Sea window (November 2023) rises in two seeds and falls in one, and is not retained. Spatially, the Strait of Hormuz is the only chokepoint in the top attention set for all three seeds. Figure 4.1 summarises the main Deep M3 gate and attention diagnostics; further panels are in Appendix B.
+For Deep M3, mean gates are about 0.61 (financial time series) and 0.39 (shipping). Week-level shipping-gate paths are unstable across seeds—pairwise correlations between the weekly paths range from −0.05 to 0.50—so single-seed event stories are not warranted. Among pre-specified event windows (±8 weeks), the Russia–Ukraine announcement window (February 2022) is the only one in which all three seeds move the shipping gate in the same direction, and there the gate falls rather than rises. The Red Sea window (November 2023) is mixed across seeds and is not retained. Spatially, the Strait of Hormuz carries the highest mean shipping-node attention and the best mean rank, but it enters the top-five set in only two of the three seeds, and no chokepoint is top-five in all three. Figure 4.1 summarises the Deep M3 gate and attention diagnostics; further panels are in Appendix B.
 
 Figure 4.1 — Deep M3 modality gates and shipping-node attention (multi-seed summary).
 
 *[Figure 4.1 — Deep M3 interpretability: modality gates and shipping-node attention.]*
 
-For RQ3, when Deep shipping-inclusive forecasts clear M0, the stable main-text reliance pattern is shared weight on finance and shipping, with Hormuz as the only cross-seed spatial focus. These diagnostics describe model dependence after a stability filter; they do not identify causal drivers of Brent prices.
+For RQ3, when Deep shipping-inclusive forecasts clear M0, the stable main-text reliance pattern is shared weight on finance and shipping, with Hormuz the highest-weighted network location but not a focus on which all seeds agree. These diagnostics describe model dependence after a stability filter; they do not identify causal drivers of Brent prices.
 
 ---
 
@@ -389,9 +389,9 @@ The finding sits between two literatures. Flat early fusion remains a convenient
 
 ## 5.3 RQ3 — What does the model rely on when value exists?
 
-RQ3 asked whether modality-level interpretability can show which signals the model relies on when forecasts already have predictive value. Analysis is therefore limited to Deep specifications that improve on M0, principally Deep M3, and follows a multi-seed rule: only patterns that agree across seeds 42, 1 and 2 are treated as main-text findings. Mean modality gates place substantial weight on both financial time series and shipping (about 0.56 and 0.44). Week-by-week shipping-gate paths are unstable across seeds, so fine-grained event stories based on one seed are not warranted. Among the pre-specified disruption windows, only the Russia–Ukraine announcement window of February 2022 shows a shipping-gate rise that co-moves across all three seeds. The Red Sea disruption window centred on November 2023 does not: the shipping gate rises in two seeds and falls in one, and is therefore not reported as a robust main-text result. Spatially, the Strait of Hormuz is the only maritime chokepoint that appears in the top-ranked attention set for all three seeds.
+RQ3 asked whether modality-level interpretability can show which signals the model relies on when forecasts already have predictive value. Analysis is therefore limited to Deep specifications that improve on M0, principally Deep M3, and follows a multi-seed rule: only patterns that agree across seeds 42, 1 and 2 are treated as main-text findings. Mean modality gates place substantial weight on both financial time series and shipping (about 0.61 and 0.39). Week-by-week shipping-gate paths are unstable across seeds, so fine-grained event stories based on one seed are not warranted. Among the pre-specified disruption windows, only the Russia–Ukraine announcement window of February 2022 moves the shipping gate in a direction shared by all three seeds, and there the gate falls rather than rises. The Red Sea disruption window centred on November 2023 does not co-move at all across seeds and is therefore not reported as a robust main-text result. Spatially, the Strait of Hormuz carries the highest mean attention among shipping-graph nodes, but it enters the top-ranked set in only two of the three seeds, so no maritime chokepoint is stable across all three.
 
-That reading matches a cautious view of attention and gates. Such weights describe operations inside a fitted model and need not identify causal features (Jain and Wallace, 2019). It also differs from monitoring narratives—common in energy-security and trade commentary after the 2022 crisis—that treat a single disruption window, or one seed’s chokepoint map, as actionable evidence. The diagnostics support a narrower claim. When Deep shipping-inclusive forecasts outperform M0, the Strait of Hormuz is the only spatial focus stable enough to emphasise in the main text. Event-window gate changes are discussed only where they survive the multi-seed filter. These quantities remain model-dependence diagnostics rather than causal explanations of Brent prices, and they should not be read as stand-alone policy alerts.
+That reading matches a cautious view of attention and gates. Such weights describe operations inside a fitted model and need not identify causal features (Jain and Wallace, 2019). It also differs from monitoring narratives—common in energy-security and trade commentary after the 2022 crisis—that treat a single disruption window, or one seed’s chokepoint map, as actionable evidence. The diagnostics support a narrower claim. When Deep shipping-inclusive forecasts outperform M0, the Strait of Hormuz carries the most attention weight on average, but not consistently enough across seeds to be presented as a stable spatial focus, and no chokepoint clears that bar. Event-window gate changes are discussed only where they survive the multi-seed filter. These quantities remain model-dependence diagnostics rather than causal explanations of Brent prices, and they should not be read as stand-alone policy alerts.
 
 ## 5.4 Implications
 
@@ -403,7 +403,7 @@ More broadly, alternative-data and Earth-observation providers can report nested
 
 ## 5.5 Limitations
 
-Several constraints bound how far the claims can travel. The forecast horizon is weekly, and the scored sample after warm-up is modest, so small skill differences should not be over-interpreted. Alternative-data proxies are noisy and may respond to prices as well as lead them. Frozen Earth-observation embeddings, shipping-graph construction and missingness rules affect Deep results; cross-attention is especially sensitive to the random seed. Matched Flat–Deep comparisons also differ in model class and capacity, so they isolate the overall modelling pathway more cleanly than a single fusion operator. In addition, the Flat and Deep remote-sensing inputs are not identical: Flat uses spectral indices and VIIRS night-light anomalies, whereas Deep uses frozen Sentinel-2 image embeddings and excludes VIIRS. The paired architecture contrast therefore reflects differences in the full modelling pathway, not a pure operator contrast on the same remote-sensing features. Finally, the study does not conduct an economic evaluation of trading or hedging performance, so practical value for desks or ministries remains untested.
+Several constraints bound how far the claims can travel. The forecast horizon is weekly, and the scored sample after warm-up is modest, so small skill differences should not be over-interpreted. Alternative-data proxies are noisy and may respond to prices as well as lead them. Frozen Earth-observation embeddings, shipping-graph construction and missingness rules affect Deep results; cross-attention is especially sensitive to the random seed. Seed sensitivity also bounds the headline Deep result itself: averaged over seeds 42, 1 and 2, gated finance-plus-shipping scores −0.50% against M0, so the positive figures reported for a single seed are not expected skill, and the same specification is positive in the early sub-period but marginally negative in the late one. The Deep gain over M0 should therefore be read as a narrow and unevenly distributed edge rather than a settled one. Matched Flat–Deep comparisons also differ in model class and capacity, so they isolate the overall modelling pathway more cleanly than a single fusion operator. In addition, the Flat and Deep remote-sensing inputs are not identical: Flat uses spectral indices and VIIRS night-light anomalies, whereas Deep uses frozen Sentinel-2 image embeddings and excludes VIIRS. The paired architecture contrast therefore reflects differences in the full modelling pathway, not a pure operator contrast on the same remote-sensing features. Finally, the study does not conduct an economic evaluation of trading or hedging performance, so practical value for desks or ministries remains untested.
 
 ## 5.6 Future research and closing statement
 
@@ -419,7 +419,7 @@ Taken together, the study’s point is evaluative as much as predictive. Alterna
 
 Short-horizon oil-price surprises matter for hedging, budgeting and market-risk decisions. The 2019–2025 window spans the COVID-19 shock, the 2022 energy crisis and later market adjustment, when physical disruption and prices often moved together—yet weekly Brent remains hard to improve upon once a no-change benchmark is imposed. This dissertation therefore asked whether satellite remote sensing and maritime shipping add predictive information beyond financial time series for one-week-ahead Brent prices, and whether modality-aware representation-level fusion outperforms flat feature fusion. The design used a shared leakage-safe rolling-origin protocol, an M0–M4 information ladder, paired Flat (Ridge/XGBoost) and Deep (modality encoders plus gated or cross-attention fusion) models, and formal nested and non-nested forecast tests.
 
-No Flat model beats M0, though shipping still helps relative to financial time series while remote sensing does not. Under Deep, finance plus shipping (M3) shows only a small positive skill versus M0, and adding remote sensing (M4) does not clearly dominate M3. At matched sets, Deep outperforms Flat most clearly once shipping enters. Where forecasts improve on M0, multi-seed-stable diagnostics show substantial average shipping-gate weight and the Strait of Hormuz as the only cross-seed-stable chokepoint focus; Red Sea event-window gate moves do not survive the multi-seed consistency filter and are therefore not treated as robust main-text findings. These readings describe model dependence, not causal price drivers.
+No Flat model beats M0, though shipping still helps relative to financial time series while remote sensing does not. Under Deep, finance plus shipping (M3) shows only a small positive skill versus M0, and adding remote sensing (M4) does not clearly dominate M3. At matched sets, Deep outperforms Flat most clearly once shipping enters. Where forecasts improve on M0, multi-seed diagnostics show substantial average shipping-gate weight, while the Strait of Hormuz leads on mean node attention without being top-ranked in every seed; Red Sea event-window gate moves do not survive the multi-seed consistency filter and are therefore not treated as robust main-text findings. These readings describe model dependence, not causal price drivers.
 
 ## The contribution is integrative: a leakage-safe nested multimodal comparison of financial time series, remote sensing and shipping; paired Flat–Deep contrasts at matched information sets; joint reporting of nested increments and absolute skill versus M0; and interpretability kept behind a predictive-value and multi-seed filter. For risk-management and energy-crisis monitoring agendas already raised in the introduction, the practical change is evaluative rather than operational—require double tests against financial time series and M0, and treat only cross-seed-stable diagnostics as discussable model reliance. Alternative data and representation-level fusion can help, but strong baselines come first and absolute gains remain modest.
 
@@ -551,7 +551,7 @@ AOI-differentiated Sentinel-2 patch sizes. Source:
 | P004 | Jurong Island   | Singapore    | refinery | transit / refining | Malacca       | 103.708, 1.274  |
 | P005 | Houston         | USA          | port     | import / refining  | Panama        | −95.100, 29.736 |
 | P006 | Ningbo-Zhoushan | China        | port     | import             | Malacca       | 121.982, 29.935 |
-| P007 | Jamnagar        | India        | refinery | refining           | —             | 69.860, 22.345  |
+| P007 | Jamnagar        | India        | refinery | refining           | Hormuz        | 69.860, 22.345  |
 | P008 | Basra           | Iraq         | terminal | export             | Hormuz        | 48.810, 29.681  |
 | P009 | Ulsan           | South Korea  | refinery | refining           | Malacca       | 129.343, 35.433 |
 | P010 | Kharg Island    | Iran         | terminal | export             | Hormuz        | 50.324, 29.231  |
@@ -642,7 +642,7 @@ matrix can be rebuilt without code edits. Results in Appendix B.
 
 The Deep shipping branch encodes a **weekly 17-node heterogeneous graph**
 (11 AOIs + 6 chokepoints, fixed order). Combined adjacency is (T, 17, 17),
-averaging ~63.8 edges/week. Sources: `build_m3_graph17.py`,
+averaging ~65.8 edges/week. Sources: `build_m3_graph17.py`,
 `m3_data_dictionary.md` §12, `shipping_encoder.py`.
 
 ### A.4.1 Dynamic O-D voyage edges (AOI→AOI)
@@ -655,13 +655,16 @@ verified (`P006→P004 ≠ P004→P006`). Lag +2 w.
 
 ### A.4.2 Static AOI↔chokepoint edges
 
-Fixed undirected links by geographic association (12 undirected edges), present
-every week (`aoi_oil_infrastructure_sites.md` §4):
+Fixed undirected links by geographic association (13 undirected edges), present
+every week (`aoi_oil_infrastructure_sites.md` §4). Every AOI carries at least one
+corridor link: P007 (Jamnagar) is a demand-side refinery rather than a Gulf
+export terminal, but its crude slate is dominated by Persian Gulf loadings, so it
+is attached to Hormuz on the import side.
 
 
-| Chokepoint | Linked AOIs            |
-| ---------- | ---------------------- |
-| `hormuz`   | P002, P003, P008, P010 |
+| Chokepoint | Linked AOIs                  |
+| ---------- | ---------------------------- |
+| `hormuz`   | P002, P003, P007, P008, P010 |
 | `suez`     | P001, P011             |
 | `malacca`  | P004, P006, P009       |
 | `mandeb`   | P011                   |
@@ -718,20 +721,24 @@ main pipeline exactly.
 | M3_Flat Ridge / XGB        | −6.71 / −6.68 | −7.22 / −6.68 | −5.87 / −6.69 |
 | M4_Flat Ridge / XGB        | −8.99 / −8.57 | −9.33 / −9.07 | −8.45 / −7.74 |
 | M1_Deep                    | −2.36         | −1.33         | −4.02         |
-| M_ship_GNN (shipping only) | −0.38         | −0.41         | −0.33         |
+| M_ship_GNN (shipping only) | −0.22         | −0.24         | −0.17         |
 | M_rs_deep (RS only)        | −2.30         | −3.07         | −1.04         |
-| **M3_Deep_gated (main)**   | **+0.11**     | **+0.09**     | **+0.14**     |
+| **M3_Deep_gated (main)**   | **+0.16**     | **+0.33**     | **−0.13**     |
 | M2_Deep_gated              | −2.43         | −3.06         | −1.41         |
-| M4_Deep_gated              | −1.28         | −2.35         | +0.49         |
-| M4_Deep_Concat             | −4.06         | −6.08         | −0.69         |
+| M4_Deep_gated              | −0.67         | −1.36         | +0.47         |
+| M4_Deep_Concat             | −8.30         | −12.77        | −0.58         |
 
 
-**Reading**: no flat model beats M0 in either sub-period. Among deep
-models, **M3_Deep_gated is the only configuration with positive skill in both
-sub-periods** (+0.09 / +0.14), i.e. the most stable small gain; M4_Deep_gated is
-negative early and only turns positive late (+0.49), and cross-attention–driven
-M4 gains are concentrated late. This supports gated finance+shipping as the main
-model.
+**Reading**: no flat model beats M0 in either sub-period. Among deep models,
+M3_Deep_gated has both the largest full-sample skill (+0.16) and the strongest
+early-period skill (+0.33), but is marginally negative late (−0.13);
+M4_Deep_gated shows the opposite profile (−1.36 early, +0.47 late), and
+cross-attention–driven M4 gains remain concentrated late. **No deep configuration
+is positive in both sub-periods**, so the small full-sample gain of the main model
+is not evenly distributed over time. Gated finance+shipping is retained as the
+main model on full-sample skill and on the nested shipping increment (Chapter 4);
+this split is reported as a limitation on how stable that gain is, not as
+supporting evidence.
 
 ---
 
@@ -745,15 +752,17 @@ seed 42, lookback 4, 257 weeks. Source: `run_deep_fusion_matrix.py` →
 
 | Combo                  | Concat | Gated     | Cross-Attn | CW p vs M0 (best) |
 | ---------------------- | ------ | --------- | ---------- | ----------------- |
-| **M3_Deep** (fin+ship) | +0.06  | **+0.11** | **+0.74**  | xattn 0.041       |
+| **M3_Deep** (fin+ship) | −0.22  | **+0.16** | **+1.01**  | xattn 0.029       |
 | M2_Deep (fin+rs)       | −1.93  | −2.43     | −5.89      | —                 |
-| M4_Deep (fin+rs+ship)  | −4.06  | −1.28     | +0.12      | xattn 0.018       |
+| M4_Deep (fin+rs+ship)  | −8.30  | −0.67     | +0.33      | xattn 0.026       |
 
 
-**Reading**: shipping (M3) is the only combo that clears M0 under any
-fusion; adding RS (M2, M4) never helps at the concat/gated floor. Cross-attention
-gives the single-seed peak but is less stable across seeds (see B.4), so gated is
-the main reported fusion.
+**Reading**: M0 is cleared only where shipping is present, and only under
+adaptive fusion: M3 clears it under gated and cross-attention, M4 only under
+cross-attention, and M2 (fin+rs) never. Plain concatenation clears M0 in no combo,
+so the gain depends on weighting the modalities rather than on stacking them.
+Cross-attention gives the single-seed peak but is less stable across seeds (see
+B.4), so gated is the main reported fusion.
 
 ---
 
@@ -813,15 +822,25 @@ lookback 4; d 32).
 
 | Config            | skill vs M0 (3 seeds) | Note                                                   |
 | ----------------- | --------------------- | ------------------------------------------------------ |
-| **finship gated** | −0.47% ± 0.86         | **lowest variance, most stable** → main model          |
-| m4rep gated       | −0.89% ± 0.60         | adding RS gives no gain                                |
-| m4 xattn          | −1.83% ± **2.76**     | seed 42 best but seed 2 collapses to −4.98% → not main |
+| **finship gated** | −0.50% ± 0.80         | **best 3-seed mean**; spread far tighter than cross-attention → main model |
+| m4rep gated       | −0.93% ± 0.29         | tightest spread, but centred well below M0; adding RS gives no gain |
+| m4 xattn          | −1.85% ± **2.80**     | seed 42 best (+0.33%) but seed 2 collapses to −5.01% → not main |
 
+
+All three means are below M0, so the positive headline figures reported in
+Chapter 4 (finship gated +0.16%, cross-attention +1.01%) are seed-42 outcomes
+rather than expected skill: averaged over seeds, no Deep configuration beats the
+no-change benchmark. Gated finance+shipping is selected on the best seed-averaged
+mean and on its low dispersion relative to cross-attention, not on a claim of
+positive expected skill. This is the sharpest single limitation on the Deep
+results and is carried into Chapter 5.
 
 Single-seed (42) hyper-sweep, finship gated: lookback 4/8/12 × d 32/64 →
-lb 8 d 32 best (+0.34%) > lb 4 (+0.11%) > lb 12 (negative); **d 64 always worse**
-(short weekly sample). Main model stays locked at lookback 4, d 32 for flat
-protocol parity.
+lb 8 d 32 best (+0.25%) > lb 4 d 32 (+0.16%) > lb 12 d 32 (−0.08%); **d 64 always
+worse** (−0.76 / −1.11 / −1.11; short weekly sample). Halving encoder depth
+(1 GAT + 1 TCN layer instead of 2 + 2) also degrades skill to −1.26%, so the main
+setting is not simply over-parameterised. Main model stays locked at lookback 4,
+d 32 for flat protocol parity.
 
 ---
 

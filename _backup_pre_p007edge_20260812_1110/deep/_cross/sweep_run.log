@@ -1,0 +1,79 @@
+Sweep: 32 runs (epochs=60)
+  [1/32] seed  fusion   seed=42 lb=4 d=32 rs=meanpool lr=1e-03 wd=1e-04 dp=0.1 skill=+0.11% CWvsM0=0.1659 DMvsM1=0.0608 (124s)
+  [2/32] seed  fusion   seed=1 lb=4 d=32 rs=meanpool lr=1e-03 wd=1e-04 dp=0.1 skill=-1.46% CWvsM0=0.9673 DMvsM1=0.2583 (229s)
+  [3/32] seed  fusion   seed=2 lb=4 d=32 rs=meanpool lr=1e-03 wd=1e-04 dp=0.1 skill=-0.07% CWvsM0=0.1874 DMvsM1=0.0483 (340s)
+  [4/32] seed  m4rep    seed=42 lb=4 d=32 rs=meanpool lr=1e-03 wd=1e-04 dp=0.1 skill=-1.28% CWvsM0=0.8944 DMvsM1=0.2390 (490s)
+  [5/32] seed  m4rep    seed=1 lb=4 d=32 rs=meanpool lr=1e-03 wd=1e-04 dp=0.1 skill=-1.18% CWvsM0=0.7173 DMvsM1=0.2194 (645s)
+  [6/32] seed  m4rep    seed=2 lb=4 d=32 rs=meanpool lr=1e-03 wd=1e-04 dp=0.1 skill=-0.20% CWvsM0=0.1113 DMvsM1=0.0964 (807s)
+  [7/32] seed  m4xattn  seed=42 lb=4 d=32 rs=meanpool lr=1e-03 wd=1e-04 dp=0.1 skill=+0.12% CWvsM0=0.0178 DMvsM1=0.0878 (961s)
+  [8/32] seed  m4xattn  seed=1 lb=4 d=32 rs=meanpool lr=1e-03 wd=1e-04 dp=0.1 skill=-0.62% CWvsM0=0.2442 DMvsM1=0.1646 (1101s)
+  [9/32] seed  m4xattn  seed=2 lb=4 d=32 rs=meanpool lr=1e-03 wd=1e-04 dp=0.1 skill=-4.98% CWvsM0=0.9873 DMvsM1=0.9444 (1239s)
+  [10/32] hyper fusion   seed=42 lb=4 d=32 rs=meanpool lr=1e-03 wd=1e-04 dp=0.1 skill=+0.11% CWvsM0=0.1659 DMvsM1=0.0608 (1380s)
+  [11/32] hyper fusion   seed=42 lb=4 d=64 rs=meanpool lr=1e-03 wd=1e-04 dp=0.1 skill=-0.95% CWvsM0=0.5865 DMvsM1=0.1691 (1518s)
+  [12/32] hyper fusion   seed=42 lb=8 d=32 rs=meanpool lr=1e-03 wd=1e-04 dp=0.1 skill=+0.34% CWvsM0=0.1013 DMvsM1=0.0414 (1798s)
+  [13/32] hyper fusion   seed=42 lb=8 d=64 rs=meanpool lr=1e-03 wd=1e-04 dp=0.1 skill=-0.78% CWvsM0=0.5032 DMvsM1=0.1501 (3265s)
+  [14/32] hyper fusion   seed=42 lb=12 d=32 rs=meanpool lr=1e-03 wd=1e-04 dp=0.1 skill=-0.39% CWvsM0=0.2596 DMvsM1=0.1029 (3495s)
+  [15/32] hyper fusion   seed=42 lb=12 d=64 rs=meanpool lr=1e-03 wd=1e-04 dp=0.1 skill=-0.36% CWvsM0=0.2209 DMvsM1=0.1168 (5880s)
+  [16/32] hyper fusion   seed=42 lb=8 d=32 rs=meanpool lr=1e-03 wd=1e-04 dp=0.1 skill=+0.14% CWvsM0=0.1658 DMvsM1=0.0669 (13366s)
+  [17/32] rs    rs       seed=42 lb=4 d=32 rs=meanpool lr=1e-03 wd=1e-04 dp=0.1 skill=-2.30% CWvsM0=0.9281 DMvsM1=0.4573 (13375s)
+  [18/32] rs    rs       seed=42 lb=4 d=32 rs=cls      lr=1e-03 wd=1e-04 dp=0.1 skill=-11.03% CWvsM0=0.6875 DMvsM1=0.8961 (13383s)
+  [19/32] rs    rs       seed=42 lb=4 d=32 rs=meanpool lr=1e-03 wd=1e-04 dp=0.3 skill=-0.94% CWvsM0=0.6017 DMvsM1=0.1975 (13391s)
+  [20/32] rs    rs       seed=42 lb=4 d=32 rs=meanpool lr=1e-03 wd=1e-03 dp=0.1 skill=-2.33% CWvsM0=0.9468 DMvsM1=0.4635 (13398s)
+  [21/32] rs    rs       seed=42 lb=4 d=32 rs=meanpool lr=1e-03 wd=1e-03 dp=0.3 skill=-0.90% CWvsM0=0.6052 DMvsM1=0.1953 (13406s)
+  [22/32] rs    rs       seed=42 lb=4 d=32 rs=meanpool lr=3e-04 wd=1e-04 dp=0.1 skill=-1.85% CWvsM0=0.8916 DMvsM1=0.3677 (13414s)
+  [23/32] rs    rs       seed=42 lb=4 d=32 rs=meanpool lr=3e-04 wd=1e-04 dp=0.3 skill=-0.93% CWvsM0=0.7261 DMvsM1=0.1813 (13421s)
+  [24/32] rs    rs       seed=42 lb=4 d=32 rs=meanpool lr=3e-04 wd=1e-03 dp=0.1 skill=-1.64% CWvsM0=0.8744 DMvsM1=0.3272 (13429s)
+  [25/32] rs    rs       seed=42 lb=4 d=32 rs=meanpool lr=3e-04 wd=1e-03 dp=0.3 skill=-0.97% CWvsM0=0.7337 DMvsM1=0.1880 (13436s)
+  [26/32] reg   fusion   seed=42 lb=4 d=32 rs=meanpool lr=1e-03 wd=1e-04 dp=0.3 skill=+0.29% CWvsM0=0.1359 DMvsM1=0.0379 (13536s)
+  [27/32] reg   fusion   seed=42 lb=4 d=32 rs=meanpool lr=1e-03 wd=1e-03 dp=0.1 skill=+0.08% CWvsM0=0.1679 DMvsM1=0.0639 (13629s)
+  [28/32] reg   fusion   seed=42 lb=4 d=32 rs=meanpool lr=1e-03 wd=1e-03 dp=0.3 skill=+0.21% CWvsM0=0.1676 DMvsM1=0.0482 (13727s)
+  [29/32] reg   fusion   seed=42 lb=4 d=32 rs=meanpool lr=3e-04 wd=1e-04 dp=0.1 skill=-0.01% CWvsM0=0.2147 DMvsM1=0.0745 (13845s)
+  [30/32] reg   fusion   seed=42 lb=4 d=32 rs=meanpool lr=3e-04 wd=1e-04 dp=0.3 skill=+0.11% CWvsM0=0.1728 DMvsM1=0.0560 (13976s)
+  [31/32] reg   fusion   seed=42 lb=4 d=32 rs=meanpool lr=3e-04 wd=1e-03 dp=0.1 skill=+0.03% CWvsM0=0.2075 DMvsM1=0.0705 (14093s)
+  [32/32] reg   fusion   seed=42 lb=4 d=32 rs=meanpool lr=3e-04 wd=1e-03 dp=0.3 skill=-0.03% CWvsM0=0.2279 DMvsM1=0.0675 (14229s)
+
+==============================================================================
+Multi-seed stability (skill vs M0; CWvsM0 = beats RW?; DMvsM1 vs flat M1):
+  fusion  : skill -0.47% ± 0.86  | CWvsM0_p 0.4402 (min 0.1659, max 0.9673) | <0.05 in 0/3 | DMvsM1<0.05 in 1/3
+  m4rep   : skill -0.89% ± 0.60  | CWvsM0_p 0.5743 (min 0.1113, max 0.8944) | <0.05 in 0/3 | DMvsM1<0.05 in 0/3
+  m4xattn : skill -1.83% ± 2.76  | CWvsM0_p 0.4164 (min 0.0178, max 0.9873) | <0.05 in 1/3 | DMvsM1<0.05 in 0/3
+
+Hyperparam sweep (fusion, seed=42):
+ lookback  d  gat  skill_vs_M0  DirAcc  CW_p_vs_M0  DM_p_vs_M1
+        4 32    2       0.0011  0.5292      0.1659      0.0608
+        4 64    2      -0.0095  0.4669      0.5865      0.1691
+        8 32    1       0.0014  0.5336      0.1658      0.0669
+        8 32    2       0.0034  0.5534      0.1013      0.0414
+        8 64    2      -0.0078  0.4862      0.5032      0.1501
+       12 32    2      -0.0039  0.5060      0.2596      0.1029
+       12 64    2      -0.0036  0.4940      0.2209      0.1168
+
+RS branch (P1-5) — embedding type @ default reg (lr1e-3/wd1e-4/dp0.1):
+  cls     : skill -11.03%  DirAcc 0.459  CWvsM0_p 0.6875
+  meanpool: skill -2.30%  DirAcc 0.459  CWvsM0_p 0.9281
+  meanpool regularisation grid (best skill first):
+    lr     wd  dropout  skill_vs_M0  DirAcc  CW_p_vs_M0  DM_p_vs_M1
+0.0010 0.0010   0.3000      -0.0090  0.4903      0.6052      0.1953
+0.0003 0.0001   0.3000      -0.0093  0.4591      0.7261      0.1813
+0.0010 0.0001   0.3000      -0.0094  0.4903      0.6017      0.1975
+0.0003 0.0010   0.3000      -0.0097  0.4591      0.7337      0.1880
+0.0003 0.0010   0.1000      -0.0164  0.4553      0.8744      0.3272
+0.0003 0.0001   0.1000      -0.0185  0.4358      0.8916      0.3677
+0.0010 0.0001   0.1000      -0.0230  0.4591      0.9281      0.4573
+0.0010 0.0010   0.1000      -0.0233  0.4280      0.9468      0.4635
+  => best meanpool reg: lr=1e-03 wd=1e-03 dp=0.3 skill=-0.90% (vs default meanpool -2.30%)
+
+Main fusion regularisation grid (P1-6, seed=42 lb=4; best skill first):
+    lr     wd  dropout  skill_vs_M0  DirAcc  CW_p_vs_M0  DM_p_vs_M1
+0.0010 0.0001   0.3000       0.0029  0.5564      0.1359      0.0379
+0.0010 0.0010   0.3000       0.0021  0.5409      0.1676      0.0482
+0.0003 0.0001   0.3000       0.0011  0.5525      0.1728      0.0560
+0.0010 0.0010   0.1000       0.0008  0.5447      0.1679      0.0639
+0.0003 0.0010   0.1000       0.0003  0.5331      0.2075      0.0705
+0.0003 0.0001   0.1000      -0.0001  0.5409      0.2147      0.0745
+0.0003 0.0010   0.3000      -0.0003  0.5486      0.2279      0.0675
+==============================================================================
+
+Elapsed 14229s
+Saved: /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/deep/deep_sweep_summary.csv
+       /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/deep/deep_sweep.png

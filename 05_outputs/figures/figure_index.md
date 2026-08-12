@@ -9,7 +9,7 @@
 | --- | --- | --- | --- |
 | 3.1 | `fig_3_1_research_design` | 研究设计流程图：M0 基准、S1→S2/S3/S4、Flat 与 Deep 配对、共享评估、RQ1–RQ3 | 3.1 节 |
 | 3.2 | `fig_3_2_expanding_window` | 周历上的估计/评估划分：104 周初始估计、20 次重估、257 个评估起点 | 3.2 节，紧随样本计数段 |
-| 3.3 | `fig_3_3_study_sites_map` | 11 个 AOI + 6 个咽喉世界分布图，含 12 条静态 AOI–咽喉边与波斯湾放大图 | 3.3 节 |
+| 3.3 | `fig_3_3_study_sites_map` | 11 个 AOI + 6 个咽喉世界分布图，含 13 条静态 AOI–咽喉边与波斯湾放大图 | 3.3 节 |
 | 3.4 | `fig_3_4_forecast_origin` | 单个预测起点的结构：训练折 + 内部验证周、四周输入窗、提前一周目标 | 3.9 节 |
 
 行号对应 `06_writing/Chapter 3 Methodology/20260811_chapter_3_methodology_bilingual.md`。
@@ -69,19 +69,18 @@ gated / cross-attn 取 `deep_fusion_matrix.csv`，M0 取 `deep_metrics.csv`。�
 `deep_fusion_matrix.csv` 有该结果（RMSE 4.396，skill −5.89%），图中已按数据画出。
 需在“补进表 4.2”与“从图中移除”之间取舍。
 
-**二、图 4.5、4.6、B.1 目前画的是 Deep M4，不是正文声称的 Deep M3。** 正文 4.6 节写明
-分析限于 Deep M3、使用种子 42/1/2，但 `M3_Deep/` 下只有 seed 42 的单种子产物；
-俄乌事件窗与霍尔木兹注意力所依赖的 `deep_gate_events.csv`、`deep_gate_stability.csv`、
-`deep_gate_band_weekly.csv` 均在 `M4_Deep/` 下。补齐 M3 多种子诊断后重绘即可对齐正文：
+**二、图 4.5、4.6、B.1 的 Deep M3 / M4 口径已对齐（2026-08-12 完成）。** 已补跑
 
 ```bash
-python3 04_code/scripts/deep/run_deep_interpret_m3.py --seeds 42,1,2 --lookback 4 --epochs 80
+python3 04_code/scripts/deep/run_deep_interpret_m3.py --seeds 42,1,2
 ```
 
-该脚本已支持多种子，会在 `M3_Deep/` 下生成同名的 stability / events / band 三个文件，
-届时把 `make_result_figures.py` 中这三张图的读取路径由 `M4_Deep` 改为 `M3_Deep` 并加
-`deep_m3_` 前缀即可。若不补跑，则需改正文口径，说明诊断出自 Deep M4——但 M4 gated 的
-skill 为 −1.3%，不满足 RQ3“仅分析优于 M0 的 Deep 设定”的限定。
+在 `M3_Deep/` 下生成 `deep_m3_gate_events.csv`、`deep_m3_gate_stability.csv`、
+`deep_m3_gate_band_weekly.csv` 与三个 seed 的 `deep_m3_gate_weekly_seed*.csv`。
+`make_result_figures.py` 已相应改为：图 4.5 与图 B.1 全部读 M3；图 4.6 左panel（航运节点）
+读 M3，右panel（遥感站点）因 S3 无遥感分支仍读 M4，并在 panel 标题标注所属臂
+（Deep S3 / Deep S4）。图 B.1 按 band 文件中实际存在的模态自动决定面板数（S3 为 2 个）。
+图 4.5、4.6 的标题不再硬编码结论，改为由数据推导，避免结果变化后标题与数字不符。
 
 ## 重新生成
 

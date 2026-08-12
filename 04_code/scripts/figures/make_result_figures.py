@@ -271,7 +271,8 @@ def fig3_subperiod() -> None:
 # F4 - event-window gate shifts
 # --------------------------------------------------------------------------
 def fig4_events() -> None:
-    ev = pd.read_csv(DEEP / "M4_Deep" / "deep_gate_events.csv")
+    # Deep S3 is the M0-clearing arm, so gate diagnostics come from M3 (§3.10).
+    ev = pd.read_csv(DEEP / "M3_Deep" / "deep_m3_gate_events.csv")
     seeds = [("delta_seed42", "seed 42", "o"),
              ("delta_seed1", "seed 1", "s"),
              ("delta_seed2", "seed 2", "^")]
@@ -279,6 +280,11 @@ def fig4_events() -> None:
 
     fig, ax = plt.subplots(figsize=(7.4, 3.4))
     y = np.arange(len(ev))
+    delta_cols = [c for c, _, _ in seeds]
+    dmin = float(ev[delta_cols].to_numpy().min())
+    dmax = float(ev[delta_cols].to_numpy().max())
+    pad = max(dmax - dmin, 1e-3) * 0.12
+    note_x = dmax + pad * 0.6
 
     for i in y:
         agree = bool(ev.loc[i, "same_direction"])
@@ -293,7 +299,7 @@ def fig4_events() -> None:
                     markeredgecolor="white", markeredgewidth=0.6)
         n_up, n_down = int(ev.loc[i, "n_up"]), int(ev.loc[i, "n_down"])
         note = f"{n_up} up, {n_down} down"
-        ax.text(0.088, i, note + ("  (agree)" if agree else "  (mixed)"),
+        ax.text(note_x, i, note + ("  (agree)" if agree else "  (mixed)"),
                 va="center", fontsize=7.5, style="italic",
                 color="black" if agree else C["neg"])
 
@@ -302,10 +308,19 @@ def fig4_events() -> None:
     ax.set_yticklabels([f"{r.event}\n{r.event_date}" for r in ev.itertuples()],
                        fontsize=8)
     ax.set_ylim(-0.6, len(ev) - 0.4)
-    ax.set_xlim(-0.055, 0.135)
+    ax.set_xlim(dmin - pad, dmax + pad * 4.2)
     ax.set_xlabel("Change in mean shipping gate, event window (\u00b18 weeks) minus baseline")
-    ax.set_title("Only the Russia\u2013Ukraine window raises the shipping gate "
-                 "in all three seeds", loc="left")
+    agreed = ev[ev["same_direction"].astype(bool)]
+    if len(agreed) == 1:
+        r = agreed.iloc[0]
+        verb = "raises" if int(r["n_up"]) == 3 else "lowers"
+        title = f"Only the {r['event']} window {verb} the shipping gate in all three seeds"
+    elif len(agreed) == 0:
+        title = "No event window moves the shipping gate consistently across all three seeds"
+    else:
+        title = (f"{len(agreed)} of {len(ev)} event windows move the shipping gate "
+                 f"consistently across all three seeds")
+    ax.set_title(title, loc="left")
 
     handles = [Line2D([], [], marker=mk, linestyle="", color=C["grey"],
                       markersize=6.5, label=lab) for _, lab, mk in seeds]
@@ -324,12 +339,17 @@ def fig4_events() -> None:
 # F5 - node-attention rank stability
 # --------------------------------------------------------------------------
 def fig5_node_attention() -> None:
-    st = pd.read_csv(DEEP / "M4_Deep" / "deep_gate_stability.csv")
+    # Shipping panel from the M0-clearing S3 arm (§3.10); the RS panel only
+    # exists in the S4 arm, so each panel is labelled with its source.
+    ship_st = pd.read_csv(DEEP / "M3_Deep" / "deep_m3_gate_stability.csv")
+    ship_st = ship_st.assign(kind="ship")
+    rs_st = pd.read_csv(DEEP / "M4_Deep" / "deep_gate_stability.csv")
+    st = pd.concat([ship_st, rs_st[rs_st["kind"] == "rs"]], ignore_index=True)
     chokepoints = {"hormuz", "suez", "mandeb", "malacca", "panama", "cape"}
 
     fig, axes = plt.subplots(1, 2, figsize=(9.2, 4.6))
-    for ax, kind, title in [(axes[0], "ship", "Shipping-graph nodes"),
-                            (axes[1], "rs", "Remote-sensing sites")]:
+    for ax, kind, title in [(axes[0], "ship", "Shipping-graph nodes (Deep S3)"),
+                            (axes[1], "rs", "Remote-sensing sites (Deep S4)")]:
         d = st[st["kind"] == kind].sort_values("att_mean").reset_index(drop=True)
         y = np.arange(len(d))
         is_choke = d["name"].isin(chokepoints)
@@ -353,8 +373,15 @@ def fig5_node_attention() -> None:
         mpl.patches.Patch(color=C["gated"], label="maritime chokepoint"),
         mpl.patches.Patch(color=C["ridge"], label="port / infrastructure site"),
     ], loc="lower right")
-    fig.suptitle("Hormuz is the only chokepoint in the top-5 attention set for all "
-                 "three seeds\n(in-bar label = number of seeds ranking the node top-5)",
+    ship = st[st["kind"] == "ship"]
+    top = ship.loc[ship["att_mean"].idxmax()]
+    n_all = int((ship[ship["name"].isin(chokepoints)]["freq_top5"] == 3).sum())
+    lead = (f"{str(top['name']).capitalize()} has the highest mean shipping-node "
+            f"attention, but no chokepoint is top-5 in all three seeds"
+            if n_all == 0 else
+            f"{str(top['name']).capitalize()} leads shipping-node attention; "
+            f"{n_all} chokepoint(s) are top-5 in all three seeds")
+    fig.suptitle(f"{lead}\n(in-bar label = number of seeds ranking the node top-5)",
                  x=0.005, ha="left", fontsize=10)
     fig.tight_layout()
     save(fig, "fig_4_6_node_attention_stability")
@@ -364,19 +391,24 @@ def fig5_node_attention() -> None:
 # F6 - weekly gate paths across seeds
 # --------------------------------------------------------------------------
 def fig6_gate_band() -> None:
-    band = pd.read_csv(DEEP / "M4_Deep" / "deep_gate_band_weekly.csv",
+    # Deep S3 is the M0-clearing arm, so gate paths come from M3 (§3.10).
+    band = pd.read_csv(DEEP / "M3_Deep" / "deep_m3_gate_band_weekly.csv",
                        parse_dates=["date"]).set_index("date")
     seeds = {}
     for s in (42, 1, 2):
-        p = DEEP / "M4_Deep" / f"deep_gate_weekly_seed{s}.csv"
+        p = DEEP / "M3_Deep" / f"deep_m3_gate_weekly_seed{s}.csv"
         if p.exists():
             seeds[s] = pd.read_csv(p, parse_dates=["date"]).set_index("date")
 
     mods = [("finance", "Financial time series", C["xgb"]),
             ("shipping", "Shipping", C["gated"]),
             ("rs", "Remote sensing", C["pos"])]
+    # S3 carries no RS branch; keep only modalities present in the bundle.
+    mods = [m for m in mods if f"gate_{m[0]}_mean" in band.columns]
 
-    fig, axes = plt.subplots(3, 1, figsize=(8.2, 6.4), sharex=True)
+    fig, axes = plt.subplots(len(mods), 1, figsize=(8.2, 2.2 * len(mods)),
+                             sharex=True, squeeze=False)
+    axes = axes[:, 0]
     for ax, (key, label, col) in zip(axes, mods):
         ax.fill_between(band.index, band[f"gate_{key}_lo"], band[f"gate_{key}_hi"],
                         color=col, alpha=0.18, linewidth=0,
@@ -399,7 +431,7 @@ def fig6_gate_band() -> None:
                  fontsize=7, color="#444444")
     axes[0].text(pd.Timestamp("2023-11-28"), 0.9, "Red Sea", fontsize=7,
                  color="#444444")
-    axes[0].set_title("Weekly modality gates (Deep M4): week-to-week paths differ "
+    axes[0].set_title("Weekly modality gates (Deep S3): week-to-week paths differ "
                       "markedly across seeds", loc="left")
     axes[-1].set_xlabel("Evaluation week")
     handles, labels = axes[0].get_legend_handles_labels()

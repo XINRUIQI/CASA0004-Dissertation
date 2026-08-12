@@ -66,13 +66,13 @@ Table 4.2 reports Deep performance by information set. Gated fusion is the main 
 | M0  | no-change benchmark               | 4.152      | —                 | 4.152           | —                      |
 | S1  | financial time series only        | 4.250      | −2.4%             | —               | —                      |
 | S2  | financial time series + RS        | 4.253      | −2.4%             | —               | —                      |
-| S3  | financial time series + shipping  | 4.147      | +0.11%            | 4.121           | +0.74%                 |
-| S4  | financial time series + RS + ship | 4.205      | −1.3%             | 4.147           | +0.12%                 |
+| S3  | financial time series + shipping  | 4.145      | +0.16%            | 4.110           | +1.01%                 |
+| S4  | financial time series + RS + ship | 4.180      | −0.67%            | 4.138           | +0.33%                 |
 
 
-Once shipping is included, gated S3 reduces RMSE to 4.147 (+0.11% skill). Cross-attention on the same set reaches 4.121 (+0.74%) on this reported seed. Shipping is the modality that moves Deep forecasts across the M0 line relative to Deep S1. Gated S4 rises again to 4.205 (−1.3%); cross-attention S4 is near M0 at +0.12% but does not displace gated S3 as the main finding. The gated margin is small and should not be over-read on a short weekly sample; Section 4.5 returns to seed sensitivity.
+Once shipping is included, gated S3 reduces RMSE to 4.145 (+0.16% skill). Cross-attention on the same set reaches 4.110 (+1.01%) on this reported seed. Shipping is the modality that moves Deep forecasts across the M0 line relative to Deep S1. Gated S4 rises again to 4.180 (−0.67%); cross-attention S4 is above M0 at +0.33% but does not displace gated S3 as the main finding. The gated margin is small and should not be over-read on a short weekly sample; Section 4.5 returns to seed sensitivity.
 
-一旦纳入航运，门控 S3 将 RMSE 降至 4.147（+0.11% skill）。同一信息集上交叉注意力在此报告种子上达到 4.121（+0.74%）。相对 Deep S1，航运是使 Deep 预测越过 M0 的模态。门控 S4 回升至 4.205（−1.3%）；交叉注意力 S4 以 +0.12% 接近 M0，但不取代门控 S3 作为主发现。门控增益幅度很小，在较短周度样本上不宜过度解读；第 4.5 节回到种子敏感性。
+一旦纳入航运，门控 S3 将 RMSE 降至 4.145（+0.16% skill）。同一信息集上交叉注意力在此报告种子上达到 4.110（+1.01%）。相对 Deep S1，航运是使 Deep 预测越过 M0 的模态。门控 S4 回升至 4.180（−0.67%）；交叉注意力 S4 以 +0.33% 高于 M0，但不取代门控 S3 作为主发现。门控增益幅度很小，在较短周度样本上不宜过度解读；第 4.5 节回到种子敏感性。
 
 For RQ1 under Deep, shipping-inclusive forecasts clear M0 by a modest margin, while remote sensing does not add a comparable absolute-error gain.
 
@@ -95,13 +95,13 @@ For RQ1 under Deep, shipping-inclusive forecasts clear M0 by a modest margin, wh
 | ---- | --------- | --------- | ---------------- | ---------------- |
 | S1   | 4.368     | 4.250     | −5.2%            | −2.4%            |
 | S2   | 4.440     | 4.253     | −6.9%            | −2.4%            |
-| S3   | 4.429     | 4.147     | −6.7%            | +0.11%           |
-| S4   | 4.507     | 4.205     | −8.6%            | −1.3%            |
+| S3   | 4.429     | 4.145     | −6.7%            | +0.16%           |
+| S4   | 4.507     | 4.180     | −8.6%            | −0.67%           |
 
 
-Deep has lower RMSE than Flat in every matched pair. Finance-only and finance-plus-RS pairs improve on Flat but remain negative versus M0. The decisive pair is S3: Flat skill −6.7% versus gated Deep +0.11%—the only matched pair in which Deep also beats M0. Deep S4 improves on Flat S4 but stays negative versus M0 and does not improve on Deep S3.
+Deep has lower RMSE than Flat in every matched pair. Finance-only and finance-plus-RS pairs improve on Flat but remain negative versus M0. The decisive pair is S3: Flat skill −6.7% versus gated Deep +0.16%—the only matched pair in which Deep also beats M0. Deep S4 improves on Flat S4 but stays negative versus M0 and does not improve on Deep S3.
 
-每一匹配配对中 Deep 的 RMSE 均低于 Flat。仅金融与金融加遥感相对 Flat 有改善，但相对 M0 仍为负。决定性配对是 S3：Flat skill −6.7%，门控 Deep +0.11%——唯一 Deep 同时优于 M0 的匹配对。Deep S4 优于 Flat S4，但相对 M0 仍为负，且未优于 Deep S3。
+每一匹配配对中 Deep 的 RMSE 均低于 Flat。仅金融与金融加遥感相对 Flat 有改善，但相对 M0 仍为负。决定性配对是 S3：Flat skill −6.7%，门控 Deep +0.16%——唯一 Deep 同时优于 M0 的匹配对。Deep S4 优于 Flat S4，但相对 M0 仍为负，且未优于 Deep S3。
 
 For RQ2, representation-level Deep modelling reduces RMSE relative to Flat at every matched set, but an M0-beating paired outcome appears only when shipping is included.
 
@@ -117,9 +117,9 @@ Appendix B collects the detailed robustness tables. Flat checks that vary lookba
 
 附录 B 汇集详细稳健性表。改变回看与特征设定的 Flat 检查均未产生优于 M0 的 Flat 设定。仅金融 S1 仍是最强 Flat 绝对误差基线；遥感仍弱且非单站驱动。附录 B 中相对 S1 的嵌套 Clark–West 检验，在部分 XGBoost 航运设定上检出相对金融基线的增量信息，即便绝对 RMSE 仍高于 S1、相对 M0 的 skill 仍为负。因此航运可在 Flat 下显示嵌套信号，却不推翻表 4.1 的绝对误差排序。
 
-Deep checks that vary random seeds and fusion choices leave gated finance-plus-shipping as the more stable small positive-skill configuration. Cross-attention can exceed gated fusion on one seed, as in Table 4.2 for S3, but varies more across seeds. Larger encoder width than the main setting tends to worsen performance on the short weekly sample. Sub-period splits leave gated S3 positive in both early and late windows. The matched Deep advantage over Flat, especially with shipping, survives these checks.
+Deep checks that vary random seeds and fusion choices leave gated finance-plus-shipping as the best configuration on average, but not a reliably positive one. Across seeds 42, 1 and 2 its mean skill is −0.50% (± 0.80), so the +0.16% in Table 4.2 is a seed-42 outcome rather than expected skill, and averaged over seeds no Deep configuration beats M0. Cross-attention can exceed gated fusion on one seed, as in Table 4.2 for S3, but is far more dispersed (−1.85% ± 2.80, with one seed at −5.01%). Larger encoder width than the main setting tends to worsen performance on the short weekly sample, as does halving encoder depth. The sub-period split is also less favourable: gated S3 is positive in the early window (+0.33%) but marginally negative in the late window (−0.13%), and no Deep configuration is positive in both. The small full-sample gain is therefore neither evenly distributed over time nor robust to reseeding, and both facts are reported as limitations rather than as further support. The matched Deep advantage over Flat, especially with shipping, survives these checks.
 
-改变随机种子与融合方式的 Deep 检查中，门控金融加航运仍是更稳定的小幅正 skill 设定。交叉注意力可在单一种子上超过门控（如表 4.2 的 S3），但跨种子波动更大。大于主设定的编码器宽度在短周度样本上往往恶化表现。子期划分下门控 S3 在早、晚窗均为正。匹配集上 Deep 相对 Flat 的优势——尤其含航运时——在这些检查下仍然成立。
+改变随机种子与融合方式的 Deep 检查中，门控金融加航运平均而言仍是最优配置，但并非稳定为正。在种子 42、1、2 上其平均 skill 为 −0.50%（± 0.80），故表 4.2 中的 +0.16% 是 seed=42 的结果而非期望 skill；跨种子平均后无任何 Deep 配置击败 M0。交叉注意力可在单一种子上超过门控（如表 4.2 的 S3），但离散度大得多（−1.85% ± 2.80，其中一个种子低至 −5.01%）。大于主设定的编码器宽度在短周度样本上往往恶化表现，将编码器层数减半亦然。子期划分同样不利：门控 S3 早窗为正（+0.33%），晚窗略为负（−0.13%），且无任何 Deep 配置在两窗均为正。因此这一小幅全样本增益既未在时间上均匀分布，也不稳健于重新设定种子；两点均作为局限报告，而非进一步的支持证据。匹配集上 Deep 相对 Flat 的优势——尤其含航运时——在这些检查下仍然成立。
 
 These checks leave the RQ1–RQ2 rankings unchanged: Flat absolute gains remain absent; Deep’s small shipping-centred M0 clearance is the more stable positive case.
 
@@ -135,9 +135,9 @@ Interpretability is restricted to Deep specifications that improve on M0, princi
 
 可解释性仅限于相对 M0 有改善的 Deep 设定，主要为 Deep S3，使用种子 42、1 与 2。所报告的模式为跨种子一致者。模态门控给出各模态融合权重份额；航运节点注意力识别图中哪些位置获得较高权重。高航运门控本身不等于模型关注某一咽喉；空间细节由节点注意力读取。
 
-For Deep S3, mean gates are about 0.56 (financial time series) and 0.44 (shipping). Week-level shipping-gate paths are unstable across seeds, so single-seed event stories are not warranted. Among pre-specified event windows (±8 weeks), only the Russia–Ukraine announcement window (February 2022) shows a shipping-gate rise across all three seeds. The Red Sea window (November 2023) rises in two seeds and falls in one, and is not retained. Spatially, the Strait of Hormuz is the only chokepoint in the top attention set for all three seeds. Figure 4.1 summarises the main Deep S3 gate and attention diagnostics; further panels are in Appendix B.
+For Deep S3, mean gates are about 0.61 (financial time series) and 0.39 (shipping). Week-level shipping-gate paths are unstable across seeds—pairwise correlations between the weekly paths range from −0.05 to 0.50—so single-seed event stories are not warranted. Among pre-specified event windows (±8 weeks), the Russia–Ukraine announcement window (February 2022) is the only one in which all three seeds move the shipping gate in the same direction, and there the gate falls rather than rises. The Red Sea window (November 2023) is mixed across seeds and is not retained. Spatially, the Strait of Hormuz carries the highest mean shipping-node attention and the best mean rank, but it enters the top-five set in only two of the three seeds, and no chokepoint is top-five in all three. Figure 4.1 summarises the Deep S3 gate and attention diagnostics; further panels are in Appendix B.
 
-就 Deep S3 而言，门控均值约为金融时序 0.56、航运 0.44。航运门控周度路径跨种子不稳，故不宜讲单种子事件。预先设定事件窗（±8 周）中，仅 2022 年 2 月俄乌公告窗在三种子上同向上升。2023 年 11 月红海窗两升一降，不保留。空间上霍尔木兹是唯一三种子均进入注意力前列的咽喉。图 4.1 汇总 Deep S3 主要门控与注意力诊断；其余面板见附录 B。
+就 Deep S3 而言，门控均值约为金融时序 0.61、航运 0.39。航运门控周度路径跨种子不稳——各种子周度路径两两相关介于 −0.05 与 0.50 之间——故不宜讲单种子事件。预先设定事件窗（±8 周）中，仅 2022 年 2 月俄乌公告窗在三种子上同向移动，且方向为下降而非上升。2023 年 11 月红海窗跨种子方向不一，不保留。空间上，霍尔木兹的航运节点平均注意力与平均排名均居首，但仅在三个种子中的两个进入前五，且无任何咽喉在三种子中均进入前五。图 4.1 汇总 Deep S3 门控与注意力诊断；其余面板见附录 B。
 
 Figure 4.1 — Deep S3 modality gates and shipping-node attention (multi-seed summary).
 
@@ -145,6 +145,6 @@ Figure 4.1 — Deep S3 modality gates and shipping-node attention (multi-seed su
 
 *[图 4.1 — Deep S3 可解释性：模态门控与航运节点注意力。]*
 
-For RQ3, when Deep shipping-inclusive forecasts clear M0, the stable main-text reliance pattern is shared weight on finance and shipping, with Hormuz as the only cross-seed spatial focus. These diagnostics describe model dependence after a stability filter; they do not identify causal drivers of Brent prices.
+For RQ3, when Deep shipping-inclusive forecasts clear M0, the stable main-text reliance pattern is shared weight on finance and shipping, with Hormuz the highest-weighted network location but not a focus on which all seeds agree. These diagnostics describe model dependence after a stability filter; they do not identify causal drivers of Brent prices.
 
-对 RQ3 而言，当含航运的 Deep 预测越过 M0 时，正文稳定的依赖模式是金融与航运共享权重，且霍尔木兹为唯一跨种子空间焦点。这些诊断描述稳定性过滤后的模型依赖，不识别 Brent 价格的因果驱动。
+对 RQ3 而言，当含航运的 Deep 预测越过 M0 时，正文稳定的依赖模式是金融与航运共享权重；霍尔木兹是权重最高的网络位置，但并非所有种子一致认同的焦点。这些诊断描述稳定性过滤后的模型依赖，不识别 Brent 价格的因果驱动。

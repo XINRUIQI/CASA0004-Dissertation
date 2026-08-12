@@ -1,18 +1,18 @@
 deep dataset N=361
 
-  m4concat               skill=-4.06% DirAcc=0.494 CWvsM0=0.6374 DMvsM1=0.6498 n=257 (97s)
-  m4rep_gated            skill=-1.28% DirAcc=0.502 CWvsM0=0.8944 DMvsM1=0.2390 n=257 (195s)
-  m4xattn                skill=+0.12% DirAcc=0.564 CWvsM0=0.0178 DMvsM1=0.0878 n=257 (294s)
-  m4rep_drop0.3          skill=-0.19% DirAcc=0.498 CWvsM0=0.3163 DMvsM1=0.0961 n=257 (386s)
-  m4xattn_drop0.3        skill=+0.62% DirAcc=0.560 CWvsM0=0.0082 DMvsM1=0.0499 n=257 (467s)
-  m4rep_longwin(mt78)    skill=-1.36% DirAcc=0.488 CWvsM0=0.9243 DMvsM1=0.2390 n=283 (569s)
-  m4rep_gated    early(<=2022)  skill=-2.35% CWvsM0=0.9884 n=102
-  m4rep_gated    late(>=2023)   skill=+0.49% CWvsM0=0.0617 n=155
-  m4xattn        early(<=2022)  skill=+0.12% CWvsM0=0.0860 n=102
-  m4xattn        late(>=2023)   skill=+0.12% CWvsM0=0.0552 n=155
+  m4_deep_concat               skill=-8.30% DirAcc=0.451 CWvsM0=0.6085 DMvsM1=0.8302 n=257 (108s)
+  m4_deep_gated                skill=-0.67% DirAcc=0.494 CWvsM0=0.7781 DMvsM1=0.1326 n=257 (212s)
+  m4_deep_xattn                skill=+0.33% DirAcc=0.560 CWvsM0=0.0257 DMvsM1=0.0561 n=257 (317s)
+  m4_deep_gated_drop0.3        skill=-0.17% DirAcc=0.502 CWvsM0=0.3050 DMvsM1=0.0937 n=257 (416s)
+  m4_deep_xattn_drop0.3        skill=+0.63% DirAcc=0.564 CWvsM0=0.0074 DMvsM1=0.0494 n=257 (501s)
+  m4_deep_gated_longwin(mt78)  skill=-0.76% DirAcc=0.491 CWvsM0=0.8360 DMvsM1=0.1326 n=283 (609s)
+  m4_deep_gated  early(<=2022)  skill=-1.36% CWvsM0=0.9874 n=102
+  m4_deep_gated  late(>=2023)   skill=+0.47% CWvsM0=0.0681 n=155
+  m4_deep_xattn  early(<=2022)  skill=+0.04% CWvsM0=0.1066 n=102
+  m4_deep_xattn  late(>=2023)   skill=+0.81% CWvsM0=0.0642 n=155
 
-DM cross-attn vs gated: stat=-0.994 p=0.161 (<0.5 => xattn more accurate)
+DM cross-attn vs gated: stat=-0.918 p=0.180 (<0.5 => xattn more accurate)
 
-Elapsed 570s
-Saved: /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/deep/deep_advanced_summary.csv
-       /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/deep/deep_advanced.png
+Elapsed 609s
+Saved: /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/Deep/M4_Deep/deep_advanced_summary.csv
+       /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/Deep/M4_Deep/deep_advanced.png

@@ -119,7 +119,7 @@ AOI-differentiated Sentinel-2 patch sizes. Source:
 | P004 | Jurong Island / 裕廊岛 | Singapore | refinery | transit / refining | Malacca | 103.708, 1.274 |
 | P005 | Houston / 休斯顿 | USA | port | import / refining | Panama | −95.100, 29.736 |
 | P006 | Ningbo-Zhoushan / 宁波舟山 | China | port | import | Malacca | 121.982, 29.935 |
-| P007 | Jamnagar / 贾姆纳格尔 | India | refinery | refining | — | 69.860, 22.345 |
+| P007 | Jamnagar / 贾姆纳格尔 | India | refinery | refining | Hormuz | 69.860, 22.345 |
 | P008 | Basra / 巴士拉 | Iraq | terminal | export | Hormuz | 48.810, 29.681 |
 | P009 | Ulsan / 蔚山 | South Korea | refinery | refining | Malacca | 129.343, 35.433 |
 | P010 | Kharg Island / 哈格岛 | Iran | terminal | export | Hormuz | 50.324, 29.231 |
@@ -199,7 +199,7 @@ matrix can be rebuilt without code edits. Results in Appendix B.
 
 The Deep shipping branch encodes a **weekly 17-node heterogeneous graph**
 (11 AOIs + 6 chokepoints, fixed order). Combined adjacency is (T, 17, 17),
-averaging ~63.8 edges/week. Sources: `build_m3_graph17.py`,
+averaging ~65.8 edges/week. Sources: `build_m3_graph17.py`,
 `m3_data_dictionary.md` §12, `shipping_encoder.py`.
 
 ### A.4.1 Dynamic O-D voyage edges (AOI→AOI) / 动态航次 O-D 边
@@ -214,12 +214,16 @@ verified (`P006→P004 ≠ P004→P006`). Lag +2 w.
 
 ### A.4.2 Static AOI↔chokepoint edges / 静态 AOI↔咽喉边
 
-Fixed undirected links by geographic association (12 undirected edges), present
-every week (`aoi_oil_infrastructure_sites.md` §4):
+Fixed undirected links by geographic association (13 undirected edges), present
+every week (`aoi_oil_infrastructure_sites.md` §4). Every AOI carries at least one
+corridor link: P007 (Jamnagar) is a demand-side refinery rather than a Gulf
+export terminal, but its crude slate is dominated by Persian Gulf loadings, so it
+is attached to Hormuz on the import side. / 每个 AOI 至少有一条走廊边；P007 为需求
+侧炼厂，原油进料以波斯湾装载为主，故在进口侧连接霍尔木兹。
 
 | Chokepoint | Linked AOIs |
 | --- | --- |
-| `hormuz` | P002, P003, P008, P010 |
+| `hormuz` | P002, P003, P007, P008, P010 |
 | `suez` | P001, P011 |
 | `malacca` | P004, P006, P009 |
 | `mandeb` | P011 |

@@ -98,9 +98,15 @@ AOI-month) rather than the M2 indices; VIIRS is Flat-only.
 
 ### A.2.1 11 oil-infrastructure AOIs
 
-Fixed node order P001–P010 (graph AOI index 0–10). 5 km analysis buffer;
+Fixed node order P001–P011 (graph AOI index 0–10). 5 km analysis buffer;
 AOI-differentiated Sentinel-2 patch sizes. Source:
 `aoi_oil_infrastructure_sites.md`.
+
+The Chokepoint column defines the fixed corridor edges of the shipping graph:
+thirteen undirected AOI–chokepoint links of unit weight, specified ex ante and
+covering all eleven sites. No chokepoint–chokepoint links are used. Dynamic
+AOI–AOI edges are weekly voyage counts and are defined separately
+(`build_m3_graph17.py`, `CHOKE_AOI`).
 
 | ID | Site | Country | Type | Role | Chokepoint | (lon, lat) |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -110,7 +116,7 @@ AOI-differentiated Sentinel-2 patch sizes. Source:
 | P004 | Jurong Island | Singapore | refinery | transit / refining | Malacca | 103.708, 1.274 |
 | P005 | Houston | USA | port | import / refining | Panama | −95.100, 29.736 |
 | P006 | Ningbo-Zhoushan | China | port | import | Malacca | 121.982, 29.935 |
-| P007 | Jamnagar | India | refinery | refining | — | 69.860, 22.345 |
+| P007 | Jamnagar | India | refinery | refining | Hormuz | 69.860, 22.345 |
 | P008 | Basra | Iraq | terminal | export | Hormuz | 48.810, 29.681 |
 | P009 | Ulsan | South Korea | refinery | refining | Malacca | 129.343, 35.433 |
 | P010 | Kharg Island | Iran | terminal | export | Hormuz | 50.324, 29.231 |
@@ -186,7 +192,7 @@ matrix can be rebuilt without code edits. Results in Appendix B.
 
 The Deep shipping branch encodes a **weekly 17-node heterogeneous graph**
 (11 AOIs + 6 chokepoints, fixed order). Combined adjacency is (T, 17, 17),
-averaging ~63.8 edges/week. Sources: `build_m3_graph17.py`,
+averaging ~65.8 edges/week. Sources: `build_m3_graph17.py`,
 `m3_data_dictionary.md` §12, `shipping_encoder.py`.
 
 ### A.4.1 Dynamic O-D voyage edges (AOI→AOI)
@@ -199,12 +205,15 @@ verified (`P006→P004 ≠ P004→P006`). Lag +2 w.
 
 ### A.4.2 Static AOI↔chokepoint edges
 
-Fixed undirected links by geographic association (12 undirected edges), present
-every week (`aoi_oil_infrastructure_sites.md` §4):
+Fixed undirected links by geographic association (13 undirected edges), present
+every week (`aoi_oil_infrastructure_sites.md` §4). Every AOI carries at least one
+corridor link: P007 (Jamnagar) is a demand-side refinery rather than a Gulf
+export terminal, but its crude slate is dominated by Persian Gulf loadings, so it
+is attached to Hormuz on the import side.
 
 | Chokepoint | Linked AOIs |
 | --- | --- |
-| `hormuz` | P002, P003, P008, P010 |
+| `hormuz` | P002, P003, P007, P008, P010 |
 | `suez` | P001, P011 |
 | `malacca` | P004, P006, P009 |
 | `mandeb` | P011 |
