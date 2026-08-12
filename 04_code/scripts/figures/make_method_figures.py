@@ -1,11 +1,11 @@
 """
 Chapter 3 figures: study-site map and expanding-window evaluation design.
 
-Figure 3.2 needs Natural Earth 110m vectors under
+Figure 3.3 needs Natural Earth 110m vectors under
 03_data/raw/00_spatial_anchors/naturalearth/ (ne_110m_land, optional
 ne_110m_admin_0_boundary_lines_land).
 
-    python 04_code/scripts/figures/make_method_figures.py [--only 3.2 3.3]
+    python 04_code/scripts/figures/make_method_figures.py [--only 3.2 3.3 3.4]
 """
 
 from __future__ import annotations
@@ -134,7 +134,7 @@ def save(fig, name: str) -> None:
 
 
 # --------------------------------------------------------------------------
-# Figure 3.2 - study sites
+# Figure 3.3 - study sites
 # --------------------------------------------------------------------------
 def _basemap(ax, bounds) -> None:
     import geopandas as gpd
@@ -179,7 +179,7 @@ def _draw_nodes(ax, offsets, label_sites=True, fontsize=7.5, size=42) -> None:
                         fontweight="bold")
 
 
-def fig32_site_map() -> None:
+def fig33_site_map() -> None:
     if not (NE_DIR / "ne_110m_land.shp").exists():
         raise FileNotFoundError(
             f"Natural Earth 110m land not found under {NE_DIR}. "
@@ -232,13 +232,14 @@ def fig32_site_map() -> None:
     ax.set_title("Eleven oil-infrastructure AOIs and six maritime chokepoints\n"
                  "Edges show the static AOI-chokepoint links in the 17-node "
                  "shipping graph", loc="left")
-    save(fig, "fig_3_2_study_sites_map")
+    save(fig, "fig_3_3_study_sites_map")
 
 
 # --------------------------------------------------------------------------
-# Figure 3.3 - expanding-window evaluation
+# Figures 3.2 and 3.4 - expanding-window evaluation
 # --------------------------------------------------------------------------
-def fig33_expanding_window() -> None:
+def fig32_expanding_window() -> None:
+    """Section 3.2: the estimation/evaluation split on the calendar."""
     test_dates = pd.to_datetime(
         pd.read_csv(FLAT_PRED, usecols=[0]).iloc[:, 0]).sort_values()
     data_start = pd.to_datetime(
@@ -247,12 +248,9 @@ def fig33_expanding_window() -> None:
     n_blocks = math.ceil(n_test / RETRAIN_EVERY)
     week = pd.Timedelta(weeks=1)
 
-    fig = plt.figure(figsize=(9.6, 6.6))
-    gs = fig.add_gridspec(2, 1, height_ratios=[2.15, 1.0], hspace=0.52)
-    ax = fig.add_subplot(gs[0])
-    axb = fig.add_subplot(gs[1])
+    fig, ax = plt.subplots(figsize=(9.6, 4.4))
 
-    # -- panel a: every refit block on the calendar ------------------------
+    # -- every refit block on the calendar ---------------------------------
     for b in range(n_blocks):
         lo = b * RETRAIN_EVERY
         hi = min(lo + RETRAIN_EVERY, n_test)
@@ -290,16 +288,22 @@ def fig33_expanding_window() -> None:
     ax.set_axisbelow(True)
     for sp in ("top", "right", "left"):
         ax.spines[sp].set_visible(False)
-    ax.set_title("(a) Expanding-window backtest: the training set grows, "
+    ax.set_title("Expanding-window backtest: the training set grows, "
                  "the test block always lies ahead of it", loc="left")
     ax.legend(handles=[
         mpl.patches.Patch(color=C["train"], label="training weeks (expanding)"),
         mpl.patches.Patch(color=C["test"],
                           label=f"test block ({RETRAIN_EVERY} weekly forecast "
                                 "origins, model held fixed)"),
-    ], ncol=2, loc="lower left", bbox_to_anchor=(0.0, -0.24))
+    ], ncol=2, loc="lower left", bbox_to_anchor=(0.0, -0.20))
 
-    # -- panel b: anatomy of one forecast ----------------------------------
+    save(fig, "fig_3_2_expanding_window")
+
+
+def fig34_forecast_origin() -> None:
+    """Section 3.9: what one forecast origin looks like inside a test block."""
+    fig, axb = plt.subplots(figsize=(9.6, 2.4))
+
     total = 130
     val0 = total - VAL_WEEKS
     axb.add_patch(Rectangle((0, 0.55), val0, 0.3, color=C["train"], zorder=2))
@@ -334,13 +338,17 @@ def fig33_expanding_window() -> None:
     axb.set_xlim(-6, tgt + 34)
     axb.set_ylim(0.15, 1.22)
     axb.axis("off")
-    axb.set_title(f"(b) Anatomy of one forecast origin (repeated at each of the "
+    axb.set_title(f"Anatomy of one forecast origin (repeated at each of the "
                   f"{RETRAIN_EVERY} weeks in a test block)", loc="left")
 
-    save(fig, "fig_3_3_expanding_window")
+    save(fig, "fig_3_4_forecast_origin")
 
 
-FIGURES = {"3.2": fig32_site_map, "3.3": fig33_expanding_window}
+FIGURES = {
+    "3.2": fig32_expanding_window,
+    "3.3": fig33_site_map,
+    "3.4": fig34_forecast_origin,
+}
 
 
 def main() -> None:

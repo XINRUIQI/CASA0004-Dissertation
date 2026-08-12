@@ -7,12 +7,14 @@
 
 | 图号 | 文件 | 内容 | 建议位置 |
 | --- | --- | --- | --- |
-| 3.1 | `fig_3_1_research_design` | 研究设计流程图：M0 基准、M1→M2/M3/M4、Flat 与 Deep 配对、共享评估、RQ1–RQ3 | 3.1 节，替换第 77 / 79 行占位符 |
-| 3.2 | `fig_3_2_study_sites_map` | 11 个 AOI + 6 个咽喉世界分布图，含 12 条静态 AOI–咽喉边与波斯湾放大图 | 3.3 节，替换第 129 / 131 行占位符 |
-| 3.3 | `fig_3_3_expanding_window` | 扩展窗评估：(a) 20 次重拟合的日历排布；(b) 单次预测的无前视结构 | 3.5 节，替换第 241 / 243 行占位符 |
+| 3.1 | `fig_3_1_research_design` | 研究设计流程图：M0 基准、S1→S2/S3/S4、Flat 与 Deep 配对、共享评估、RQ1–RQ3 | 3.1 节 |
+| 3.2 | `fig_3_2_expanding_window` | 周历上的估计/评估划分：104 周初始估计、20 次重估、257 个评估起点 | 3.2 节，紧随样本计数段 |
+| 3.3 | `fig_3_3_study_sites_map` | 11 个 AOI + 6 个咽喉世界分布图，含 12 条静态 AOI–咽喉边与波斯湾放大图 | 3.3 节 |
+| 3.4 | `fig_3_4_forecast_origin` | 单个预测起点的结构：训练折 + 内部验证周、四周输入窗、提前一周目标 | 3.9 节 |
 
 行号对应 `06_writing/Chapter 3 Methodology/20260811_chapter_3_methodology_bilingual.md`。
-整合稿 `06_writing/Whole/20260811_dissertation_draft.md` 中同样三处占位符位于第 174、204、260 行。
+图 3.2 与图 3.4 原为旧图 3.3 的上下两个面板，现拆为两图：日历视图放 3.2 节，
+单起点结构留在 3.9 节。整合稿 `06_writing/Whole/20260811_dissertation_draft.md` 尚未同步。
 
 图 3.1 另有 Mermaid 版本 `fig_3_1_research_design.mmd`（可在 Typora / Obsidian / GitHub 直接渲染，
 便于改字），`fig_3_1_research_design_mermaid_preview.png` 为其渲染预览。两版内容一致。
@@ -38,7 +40,7 @@
 
 ## 动图（演示用，不入论文）
 
-`anim_expanding_window.gif` 是图 3.3 的动画版：21 帧、约 18 秒、循环播放，
+`anim_expanding_window.gif` 是图 3.2 的动画版：21 帧、约 18 秒、循环播放，
 背景为 Brent 周度价格曲线，训练窗随重拟合逐次扩展，13 周测试块前移，
 已计分周数从 0/257 累加至 257/257。适合答辩或 mini-conference 幻灯片。
 
@@ -50,10 +52,10 @@
 
 ## 数据来源
 
-图 3.2 的 AOI 坐标取自附录 A.2.1；咽喉坐标为 EIA World Oil Transit Chokepoints 的
+图 3.3 的 AOI 坐标取自附录 A.2.1；咽喉坐标为 EIA World Oil Transit Chokepoints 的
 代表坐标，硬编码于绘图脚本顶部（附录 A 目前未列咽喉坐标表，如后续补表需与脚本对齐）。
 
-图 3.3 的切分参数取自 `run_baseline.py` 与 `run_deep_baseline.py` 的 argparse 默认值
+图 3.2 与图 3.4 的切分参数取自 `run_baseline.py` 与 `run_deep_baseline.py` 的 argparse 默认值
 （lookback=4、min_train=104、retrain_every=13、val_weeks=52），测试周边界直接读自
 `baseline_predictions.csv`。
 
@@ -85,10 +87,10 @@ skill 为 −1.3%，不满足 RQ3“仅分析优于 M0 的 Deep 设定”的限�
 
 ```bash
 python3 04_code/scripts/figures/make_design_figure.py    # 图 3.1
-python3 04_code/scripts/figures/make_method_figures.py   # 图 3.2、3.3
+python3 04_code/scripts/figures/make_method_figures.py   # 图 3.2、3.3、3.4
 python3 04_code/scripts/figures/make_result_figures.py   # 图 4.1–4.6、B.1
 ```
 
 `make_result_figures.py` 与 `make_method_figures.py` 支持 `--only` 单独重画，
-参数即图号，例如 `--only 4.1 4.3`。图 3.2 需要 `geopandas` 与
+参数即图号，例如 `--only 4.1 4.3`。图 3.3 需要 `geopandas` 与
 `03_data/raw/00_spatial_anchors/naturalearth/` 下的 Natural Earth 110m 矢量。

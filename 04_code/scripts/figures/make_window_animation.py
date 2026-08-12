@@ -1,5 +1,5 @@
 """
-Animated version of Figure 3.3 - the shared expanding-window backtest.
+Animated version of Figure 3.2 - the shared expanding-window backtest.
 
 One frame per refit: the training window grows, the 13-week test block moves
 ahead of it, and the evaluated part of the Brent series fills in. Intended for

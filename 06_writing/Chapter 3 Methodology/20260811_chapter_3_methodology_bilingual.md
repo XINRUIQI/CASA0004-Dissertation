@@ -1,10 +1,6 @@
 # Chapter 3 — Methodology *(~3,200)*
 
-# 第 3 章 — 方法 *(约 3,200 词)*
-
 ## 3.1 Research design
-
-## 3.1 研究设计
 
 This chapter sets out how the study answers the research questions in Section 1.2. In brief, every learned forecast is judged against a simple no-change benchmark in which next week’s Brent price equals this week’s price. The study then asks whether remote sensing and shipping add useful information beyond financial time series, and whether modelling those inputs as one weekly table differs from encoding each data type separately before combining them. All comparisons use the same weekly forecast dates, sample window and evaluation rules, so that changes in the data can be separated from changes in how the data are modelled.
 
@@ -22,13 +18,13 @@ M0 needs no parameter estimation and contains no predictors. It is a reference f
 
 M0 无需参数估计，也不含预测变量。它是参照预测，不属于下文经过学习的设定。每个学习模型都在同一样本外评价期上与 M0 比较。在先预测对数收益再还原价格时，M0 与预测收益为零是同一回事。
 
-The predictors are organised into four information sets. S1 contains financial time series only, comprising financial, macroeconomic and oil-market variables. S2 adds remote sensing to S1, S3 adds shipping to S1, and S4 adds both modalities. S2 and S3 are parallel extensions of S1 rather than successive stages, while S4 combines the two. Table 3.1 lists the four sets together with the M0 benchmark, which carries no predictors.
+The predictors are organised into four information sets. S1 contains financial time series only, comprising financial, macroeconomic and oil-market variables. S2 adds remote sensing to S1, S3 adds shipping to S1, and S4 adds both modalities. S2 and S3 are parallel extensions of S1 rather than successive stages, while S4 combines the two. Table 3.1 lists the four sets together with the M0 benchmark.
 
 预测变量组织为四个信息集。S1 仅用金融时序（金融、宏观与油市序列）。S2 在 S1 上加遥感；S3 在 S1 上加航运；S4 两者都加。S2 与 S3 是对 S1 的平行扩展，不是一条梯子上的先后步骤；S4 合并两支扩展。表 3.1 将四个集合与 M0 基准一并列出，M0 不含预测变量。
 
-**Table 3.1 — Feature sets**
+**Table 3.1 — Information sets**
 
-**表 3.1 — 特征集**
+**表 3.1 — 信息集**
 
 
 | Set            | Variables                                                                   |
@@ -38,16 +34,6 @@ The predictors are organised into four information sets. S1 contains financial t
 | S2             | S1 + remote sensing                                                         |
 | S3             | S1 + shipping                                                               |
 | S4             | S1 + remote sensing + shipping                                              |
-
-
-
-| 集合       | 变量                |
-| -------- | ----------------- |
-| 基准（M0）   | 上周价格              |
-| S1       | 仅金融时序（金融、宏观与油市序列） |
-| S2       | S1 + 遥感           |
-| S3       | S1 + 航运           |
-| S4       | S1 + 遥感 + 航运      |
 
 
 Comparing S2 with S1 measures the contribution of remote sensing when added alone. Comparing S3 with S1 measures the contribution of shipping. Comparing S4 with S1 evaluates their joint contribution. Two further comparisons ask whether each source still helps once the other is already included. S4 versus S3 tests remote sensing given shipping, and S4 versus S2 tests shipping given remote sensing. All comparisons keep the same one-week horizon and Friday weekly calendar.
@@ -78,9 +64,11 @@ Figure 3.1 summarises the design and shows how the information sets, the two mod
 
 图 3.1 概括整体设计，说明信息集、两套模型族与共用评估程序如何连向三个研究问题。
 
-**Figure 3.1 — Research design: data blocks, the M0 benchmark and feature sets S1–S4, the Flat and Deep families, and the shared expanding-window evaluation.**
+![Figure 3.1](../../05_outputs/figures/fig_3_1_research_design.png)
 
-**图 3.1 — 研究设计：数据块、M0 基准与特征集 S1–S4、Flat 与 Deep 两族，以及共用的扩展窗评估。**
+**Figure 3.1 — Research design: data blocks, the M0 benchmark and information sets S1–S4, the Flat and Deep families, and the shared expanding-window evaluation.**
+
+**图 3.1 — 研究设计：数据块、M0 基准与信息集 S1–S4、Flat 与 Deep 两族，以及共用的扩展窗评估。**
 
 ## 3.2 Prediction target and timeline
 
@@ -112,9 +100,20 @@ All series are organised on a Friday-ending weekly calendar. The modelling windo
 
 全部序列按周五截止的周历组织。建模窗口覆盖 2019–2025 年，提供含 365 个观测的共同周索引（2019 年 1 月 4 日至 2025 年 12 月 26 日）。Flat 模型在该索引上使用合并后的周度特征表。Deep 模型使用相同日期，但把金融、遥感与航运输入各自保留为序列或图形式，而不是并成一张共享表。
 
-With a four-week input window and a one-week forecast horizon, the 365 weekly observations produce 361 eligible forecast origins: the first three weeks cannot yet form a complete input sequence, and the observation on 26 December 2025 serves as the target for the final forecast origin rather than as an origin itself. The first 104 eligible input–target sequences are used for initial estimation, which leaves 257 out-of-sample forecasts from 22 January 2021 to 19 December 2025. At each origin t, forecasts may use only information that was actually available at that forecast date. The split between estimation and evaluation is temporal rather than random, and the sample is never shuffled. Rather than a single fixed train–test partition, the design is walk-forward: at every origin the model is fitted on earlier weeks only and forecasts the following week, so the 257 evaluated origins all fall after the initial estimation period and no week is used both to fit and to score a model (Section 3.9).
+**With a four-week input window and a one-week forecast horizon, the 365 weekly observations yield 361 eligible input–target sequences. The first three observations cannot yet form a complete four-week input sequence, while the observation dated 26 December 2025 is used only as the target of the final forecast and cannot itself serve as a forecast origin. The first 104 eligible sequences are used for initial estimation. This leaves 257 out-of-sample forecast origins, dated from 22 January 2021 to 19 December 2025, with corresponding target dates from 29 January 2021 to 26 December 2025. At each origin t the model forecasts P_{t+1} using only information observable by that date. The estimation–evaluation split is temporal rather than random, and the sample is never shuffled. Evaluation follows a walk-forward design rather than a single fixed train–test split: model parameters are re-estimated every 13 forecast origins using only input–target pairs whose targets were observable by the corresponding re-estimation date, and the fitted parameters are retained between scheduled re-estimations. Consequently, no target observation enters the estimation sample used to generate its own forecast, although it may be included at a later re-estimation date once it has been realised (Section 3.9).**
+是不是太复杂了？
 
-在四周输入窗与提前一周预测期下，365 个周度观测可产生 361 个合法预测起点：最前面 3 周尚不足以构成完整的输入序列，而 2025 年 12 月 26 日的观测是最后一个起点的预测目标，其本身不能再作为起点。前 104 个"输入–目标"样本用于初始估计，由此剩余 257 个样本外预测，起止为 2021 年 1 月 22 日至 2025 年 12 月 19 日。在每个起点 t，预测只能使用该预测时点实际可获得的信息。估计与评估按时间划分，而非随机划分，样本不做打乱。设计也不是一次性的固定训练/测试划分，而是向前滚动：在每个起点上，模型仅用更早的周拟合并预测下一周，因此 257 个评估起点全部位于初始估计期之后，任何一周都不会既用于拟合又用于评分（详见第 3.9 节）。
+在四周输入窗与提前一周预测期下，365 个周度观测可产生 361 个合法的"输入–目标"样本：最前面 3 个观测尚不足以构成完整的四周输入序列，而 2025 年 12 月 26 日的观测只作为最后一次预测的目标，其本身不能再作为预测起点。前 104 个合法样本用于初始估计，由此剩余 257 个样本外预测起点，日期为 2021 年 1 月 22 日至 2025 年 12 月 19 日，对应的目标日期为 2021 年 1 月 29 日至 2025 年 12 月 26 日。在每个起点 t，模型仅使用该日期已可观测的信息来预测 P_{t+1}。估计与评估按时间划分，而非随机划分，样本不做打乱。评估采用向前滚动设计，而不是一次性的固定训练/测试划分：模型参数每 13 个预测起点重估一次，重估时仅使用目标在该重估日期之前已可观测的"输入–目标"样本，两次重估之间沿用已拟合的参数。因此，任何目标观测都不会进入产生其自身预测的估计样本；但在该观测实现之后，它可以在之后的重估中被纳入（详见第 3.9 节）。
+
+Figure 3.2 places this split on the weekly calendar: the training set expands with each re-estimation, and every test block lies ahead of the data used to fit it.
+
+图 3.2 把这一划分放到周历上：训练集随每次重估向前扩展，而每个测试块始终位于其拟合所用数据之后。
+
+![Figure 3.2](../../05_outputs/figures/fig_3_2_expanding_window.png)
+
+**Figure 3.2 — Estimation and evaluation on the weekly calendar: the initial estimation period, the 20 re-estimation blocks and the 257 evaluated forecast origins.**
+
+**图 3.2 — 周历上的估计与评估划分：初始估计期、20 个重估区块与 257 个纳入评估的预测起点。**
 
 ## 3.3 Geographic scope and monitoring sites
 
@@ -122,9 +121,9 @@ With a four-week input window and a one-week forecast horizon, the 365 weekly ob
 
 ## 3.3 地理范围与监测站点
 
-Because the prediction target is the global Brent benchmark rather than a local physical cargo price at a single terminal, the study does not use one contiguous study region. Spatial information instead comes from eleven oil-infrastructure monitoring sites and six maritime chokepoints. Together they cover major supply, transit and demand locations in the international oil system. Figure 3.2 places these sites and chokepoints on a world map. Full site names, coordinates, patch sizes and graph edge definitions are in Appendix A.
+Because the prediction target is the global Brent benchmark rather than a local physical cargo price at a single terminal, the study does not use one contiguous study region. Spatial information instead comes from eleven oil-infrastructure monitoring sites and six maritime chokepoints. Together they cover major supply, transit and demand locations in the international oil system. Figure 3.3 places these sites and chokepoints on a world map. Full site names, coordinates, patch sizes and graph edge definitions are in Appendix A.
 
-由于预测对象是全球 Brent 基准价格，而非单一码头的现货成交价格，本研究不采用一块连续的地理研究区。空间信息来自十一个油气基础设施监测站点与六个航运咽喉，共同覆盖国际石油体系中的主要供给、中转与需求区位。图 3.2 在世界地图上标出这些站点与咽喉。完整站名、坐标、裁剪范围与图边定义见附录 A。
+由于预测对象是全球 Brent 基准价格，而非单一码头的现货成交价格，本研究不采用一块连续的地理研究区。空间信息来自十一个油气基础设施监测站点与六个航运咽喉，共同覆盖国际石油体系中的主要供给、中转与需求区位。图 3.3 在世界地图上标出这些站点与咽喉。完整站名、坐标、裁剪范围与图边定义见附录 A。
 
 The eleven sites are ports, refineries and export terminals chosen for infrastructure capacity, geographic and supply-chain coverage, and observability in the available satellite products. In the Flat pathway, remote-sensing features are summarised inside a 5-km circular buffer around each site. In the Deep pathway, image patches are cut around each site. Patch size follows facility type and local spatial constraints. Ports use larger patches, refineries intermediate ones, and terminals smaller ones.
 
@@ -138,11 +137,11 @@ Flat and Deep use the same underlying port and chokepoint observations and the s
 
 Flat 与 Deep 使用相同的港口与咽喉底层观测，并共享同一周度预测日。Flat 将其整理为表格预测变量。Deep 则保留节点结构及节点之间的连接。
 
-Figure 3.2 — Study sites and chokepoints
+![Figure 3.3](../../05_outputs/figures/fig_3_3_study_sites_map.png)
 
-**Figure 3.2 — Study sites: 11 oil-infrastructure AOIs and 6 maritime chokepoints.**
+**Figure 3.3 — Study sites: 11 oil-infrastructure AOIs and 6 maritime chokepoints.**
 
-**图 3.2 — 研究站点：11 个油气基础设施 AOI 与 6 个航运咽喉。**
+**图 3.3 — 研究站点：11 个油气基础设施 AOI 与 6 个航运咽喉。**
 
 ## 3.4 Data sources
 
@@ -252,19 +251,19 @@ Hyperparameters are selected under a shared protocol so that Flat–Deep compari
 
 ## 3.9 验证协议
 
-Evaluation uses an expanding window. At each forecast origin the model is trained only on past weeks and then produces a one-week-ahead forecast. This design prevents the use of future information in training or preprocessing. The first 104 eligible input–target sequences form the initial estimation period and are not included in the evaluation metrics; the validation weeks used for tuning are taken from inside each training fold rather than from a separate held-out block. Thereafter models are refit every 13 forecast origins. The common evaluation span covers 257 weeks from 22 January 2021 to 19 December 2025. Any scaling or filtering is fit on the training period only. Flat and Deep share the same evaluation calendar, so architecture comparisons hold the evaluation design fixed.
+Evaluation uses an expanding window. Each fit uses only input–target pairs whose targets were already observable at the estimation date, and the fitted model then produces one-week-ahead forecasts. This design prevents the use of future information in training or preprocessing. The first 104 eligible input–target sequences form the initial estimation period and are not included in the evaluation metrics; the validation weeks used for tuning are taken from inside each training fold rather than from a separate held-out block. Thereafter models are refit every 13 forecast origins. The common evaluation span covers 257 weeks from 22 January 2021 to 19 December 2025. Any scaling or filtering is fit on the training period only. Flat and Deep share the same evaluation calendar, so architecture comparisons hold the evaluation design fixed.
 
-评估采用扩展窗。在每个预测起点，模型仅用过去周训练，再给出提前一周预测。该设计避免在训练或预处理中使用未来信息。前 104 个"输入–目标"样本为初始估计期，不纳入评估指标；调参所用的验证周取自各训练折内部，而非另行划出的留出区块。此后每 13 个预测起点重拟合一次。共同评估跨度为 2021 年 1 月 22 日至 2025 年 12 月 19 日的 257 周。任何缩放或过滤仅在训练期内拟合。Flat 与 Deep 共享同一评估日历，从而使架构比较在固定评估设计下进行。
+评估采用扩展窗。每次拟合仅使用目标在该估计日期之前已可观测的"输入–目标"样本，随后由拟合好的模型给出提前一周预测。该设计避免在训练或预处理中使用未来信息。前 104 个"输入–目标"样本为初始估计期，不纳入评估指标；调参所用的验证周取自各训练折内部，而非另行划出的留出区块。此后每 13 个预测起点重拟合一次。共同评估跨度为 2021 年 1 月 22 日至 2025 年 12 月 19 日的 257 周。任何缩放或过滤仅在训练期内拟合。Flat 与 Deep 共享同一评估日历，从而使架构比较在固定评估设计下进行。
 
-Figure 3.3 shows this expanding-window design.
+Figure 3.2 gives the calendar view of this design. Figure 3.4 shows one forecast origin in detail: the training fold, the inner validation weeks, the four-week input window and the one-week-ahead target.
 
-图 3.3 展示该扩展窗设计。
+图 3.2 给出该设计在日历上的整体视图。图 3.4 进一步展示单个预测起点的内部结构：训练折、内部验证周、四周输入窗与提前一周的目标。
 
-Figure 3.3 — Expanding-window evaluation
+![Figure 3.4](../../05_outputs/figures/fig_3_4_forecast_origin.png)
 
-**Figure 3.3 — Expanding-window evaluation: training weeks, refit points and the 257 evaluated forecast origins.**
+**Figure 3.4 — Anatomy of one forecast origin: the training fold with its inner validation weeks, the four-week input window and the one-week-ahead target. The same structure is repeated at each of the 13 origins in a test block.**
 
-**图 3.3 — 扩展窗评估：训练周、重拟合时点与 257 个纳入评估的预测起点。**
+**图 3.4 — 单个预测起点的结构：包含内部验证周的训练折、四周输入窗与提前一周的预测目标。测试块内的 13 个起点均重复这一结构。**
 
 ## 3.10 Evaluation, tests, interpretability
 
