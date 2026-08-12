@@ -279,14 +279,24 @@ def make_lagged(df: pd.DataFrame, feat_cols: list[str], lookback: int) -> pd.Dat
     return pd.concat(parts, axis=1)
 
 
-def fill_features(X: pd.DataFrame) -> pd.DataFrame:
-    """ffill (past-only, no look-ahead) + residual leading NaN -> 0 (neutral).
+FILL_MODES = ("zero", "fold_median")
 
-    RS anomaly columns have sparse early gaps; this keeps every config on the
-    EXACT same test weeks so RMSE differences reflect feature content, not
+
+def fill_features(X: pd.DataFrame, mode: str = "zero") -> pd.DataFrame:
+    """Past-only gap filling (ffill), then a choice of leading-gap treatment.
+
+    'zero'        ffill + residual leading NaN -> 0 on the raw scale.
+    'fold_median' ffill only; leading NaN survive and are imputed inside each
+                  training fold by the pipeline's median imputer, so the value
+                  is re-estimated at every refit from past data alone.
+
+    RS anomaly columns have sparse early gaps; either mode keeps every config on
+    the EXACT same test weeks so RMSE differences reflect feature content, not
     sample changes. Residual NaNs only fall in the warm-up, never the test set.
     """
-    return X.ffill().fillna(0.0)
+    assert mode in FILL_MODES, f"unknown fill mode {mode!r}"
+    Xf = X.ffill()
+    return Xf.fillna(0.0) if mode == "zero" else Xf
 
 
 # ----------------------------------------------------------------------------
@@ -295,7 +305,8 @@ def fill_features(X: pd.DataFrame) -> pd.DataFrame:
 def build_dataset(df: pd.DataFrame, feat_cols: list[str], lookback: int,
                   feature_mode: str = "all",
                   window_start: str = WINDOW_START,
-                  window_end: str = WINDOW_END) -> dict:
+                  window_end: str = WINDOW_END,
+                  fill_mode: str = "zero") -> dict:
     """Assemble the aligned arrays for the rolling-origin loop.
 
     Returns a dict with idx, X (n x p), P_t, P_next, r_next (=TARGET r_{t+1}),
@@ -307,9 +318,15 @@ def build_dataset(df: pd.DataFrame, feat_cols: list[str], lookback: int,
     df_feat = to_stationary(df, feature_mode)
     if GFW_ZMEAN_COL in feat_cols and GFW_ZMEAN_COL not in df_feat.columns:
         df_feat = add_gfw_activity_zmean(df_feat)   # derived, leak-free
-    Xfilled = fill_features(df_feat[feat_cols])
+    Xfilled = fill_features(df_feat[feat_cols], mode=fill_mode)
     X_all = make_lagged(Xfilled, feat_cols, lookback)
     feat_names = X_all.columns.tolist()
+
+    # Weeks that carry a complete `lookback`-week calendar window. Under
+    # fill_mode='zero' this is implied by notna(); under 'fold_median' the
+    # surviving leading NaN must not shrink the sample, so it is imposed here
+    # and both modes score the same test weeks.
+    depth_ok = pd.Series(np.arange(len(df_feat)) >= lookback - 1, index=df_feat.index)
 
     P = df[TARGET_PRICE].astype(float)
     r_next = np.log(P.shift(-1) / P)                 # r_{t+1}, indexed at t (TARGET)
@@ -324,8 +341,10 @@ def build_dataset(df: pd.DataFrame, feat_cols: list[str], lookback: int,
 
     in_win = (data.index >= window_start) & (data.index <= window_end)
     data = data[in_win]
+    feat_ok = (depth_ok.reindex(data.index).fillna(False) if fill_mode == "fold_median"
+               else data[feat_names].notna().all(axis=1))
     usable = (
-        data[feat_names].notna().all(axis=1)
+        feat_ok
         & data["__P_t"].notna() & data["__P_next"].notna() & data["__r_next"].notna()
     )
     data = data[usable]
