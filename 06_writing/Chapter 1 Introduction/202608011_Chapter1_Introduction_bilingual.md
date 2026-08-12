@@ -14,32 +14,39 @@ Brent 原油是国际贸易原油的主要定价基准之一，也是全球能�
 
 The models are evaluated against a no-change benchmark that sets next week’s price equal to this week’s price. The results show that no flat model outperforms this benchmark, although shipping data provide limited evidence of incremental predictive information. Deep models combining financial time series and shipping data achieve a small improvement over the benchmark. Remote-sensing data provide no clear additional benefit. The advantage of deep models over flat models is most evident when shipping data are included. This study further uses modality gates to show which data sources the best-performing deep model relies on most. Overall, predictive value depends more on how multimodal data are used—especially how modalities are encoded and fused—than on simply adding more data.
 
-
 模型以“下周价格等于本周价格”的不变预测作为基准。研究结果表明，没有扁平模型优于该基准，但航运数据表现出有限的增量预测信息。结合金融时序与航运数据的深度模型相对基准取得了小幅改善。遥感数据没有带来明确的额外收益。在加入航运数据时，深度模型相对扁平模型的优势最明显。本研究进一步使用了模态门控展示表现最佳的深度模型主要依赖哪些数据源。总体而言，预测价值更多取决于多模态数据如何被使用——尤其是各模态如何被编码与融合——而不是单纯增加更多数据。
 
 ---
 
+
+
 ## Chapter 1 — Introduction *(~600 words)*
+
+
 
 ## 第 1 章 — 绪论 *(约 600 词)*
 
+
+
 ### 1.1 Importance and background
+
+
 
 ### 1.1 重要性与背景
 
-Crude oil occupies a central place in the global economy and energy system. Oil-price movements affect inflation, trade balances, fiscal revenues in producer countries and the operating costs of energy-intensive industries. These effects spread through financial markets, economic activity and supply chains. They therefore shape the risk management, hedging, budgeting and planning decisions of governments, firms and investors. Recent years have shown the costs of unexpected oil-price movements. The COVID-19 period brought an abrupt collapse in demand and an uneven recovery. The 2022 energy crisis then produced major supply and price shocks, followed by only partial normalisation amid continued geopolitical and macroeconomic uncertainty.
+Crude oil occupies a central place in the global economy and energy system. Oil-price movements affect inflation, trade balances, fiscal revenues in producer countries and the operating costs of energy-intensive industries. These effects spread through financial markets, economic activity and supply chains. They therefore shape the risk management, hedging, budgeting and planning decisions of governments, firms and investors. 
 
-原油在全球经济和能源体系中占据核心位置。油价变动会影响通胀、贸易差额、产油国财政收入以及高耗能行业的运营成本。这些影响会通过金融市场、经济活动和供应链进一步传导。因此，油价变动会影响政府、企业和投资者的风险管理、对冲、预算与规划决策。近年来的市场变化进一步表明，油价意外波动可能造成较高代价。新冠疫情期间，原油需求骤降，随后出现不均衡复苏。2022 年能源危机又带来显著的供给与价格冲击。此后，市场在持续的地缘政治和宏观经济不确定性下仅实现部分正常化。
+原油在全球经济和能源体系中占据核心位置。油价变动会影响通胀、贸易差额、产油国财政收入以及高耗能行业的运营成本。这些影响会通过金融市场、经济活动和供应链进一步传导。因此，油价变动会影响政府、企业和投资者的风险管理、对冲、预算与规划决策。
 
-Among widely used crude-oil price benchmarks, Brent and West Texas Intermediate (WTI) are the most important. Brent is a light, sweet North Sea crude that serves as the main reference price for a large share of internationally traded, seaborne oil. WTI is the principal US benchmark and more closely reflects North American supply, demand and inventory conditions. Other regional markers, such as Dubai and Oman, price Middle Eastern grades, but Brent and WTI dominate academic forecasting studies and market commentary. The two prices usually move together, yet the Brent–WTI spread can widen when pipeline, shipping or regional inventory constraints diverge. This dissertation forecasts Brent rather than WTI because the alternative data examined here—satellite observations of oil-related sites and maritime shipping networks—are more directly linked to international seaborne trade than to the US inland market. Relative to WTI, Brent is therefore expected to respond more strongly to disruptions at major maritime chokepoints and to shifts in tanker and port activity, even though the two series remain highly correlated in quieter periods. WTI enters the financial feature set only as related market information; the forecast target remains Brent.
+Crude oil is not a homogeneous commodity: individual grades differ in density, sulphur content, production location and transport accessibility, and their prices are commonly expressed relative to a small number of benchmarks. Among the most widely used benchmarks are Brent, West Texas Intermediate (WTI) and Dubai/Oman (U.S. Energy Information Administration, 2014). Brent is a benchmark complex rooted in light, low-sulphur, waterborne crude oils from the North Sea. It is widely used as a reference for internationally traded crude. WTI is a US crude benchmark, with pricing centred on Cushing, Oklahoma, while Dubai/Oman is commonly used to price Middle Eastern crude exported to Asian markets (Wittner, 2020). Although Brent and WTI respond to many of the same global market conditions, differences in regional supply, inventory levels and transport constraints can cause their prices to diverge. This dissertation forecasts Brent because its role as an international waterborne benchmark aligns more closely with the ports, shipping routes and maritime chokepoints represented in the alternative data. WTI is nevertheless retained as a financial predictor and as a component of the Brent–WTI spread. No fixed volatility ranking between Brent and WTI is assumed. Whether shipping activity contains incremental predictive information for Brent is tested empirically in this dissertation.
 
-在常用原油定价基准中，Brent 与西得克萨斯中质原油（West Texas Intermediate, WTI）最为重要。Brent 是北海轻质低硫原油，作为大部分国际贸易、海运原油的主要参考价格。WTI 是美国主要基准，更直接反映北美供需与库存状况。迪拜、阿曼等区域标价用于中东原油，但学术预测研究与市场讨论仍以 Brent 和 WTI 为主。两者通常联动，但在管道、航运或区域库存约束出现分化时，Brent–WTI 价差可能扩大。本研究预测 Brent 而非 WTI，因为所考察的另类数据——石油相关地点的卫星观测与航运网络——与国际海运贸易的联系，比与美国内陆市场更为直接。因此，尽管平静时期两条序列仍高度相关，相对 WTI 而言，Brent 预期会对主要航运咽喉中断以及油轮与港口活动变化更为敏感。WTI 仅作为相关市场信息进入特征集，预测目标仍是 Brent。
+原油并非同质商品：不同油品在密度、硫含量、产地与运输可达性上存在差异，其价格通常相对少数基准油报价。使用最广的基准包括 Brent、西得克萨斯中质原油（West Texas Intermediate, WTI）以及迪拜/阿曼（Dubai/Oman）（U.S. Energy Information Administration, 2014）。Brent 是以北海轻质低硫、可海运原油为基础的基准体系，广泛用作国际贸易原油的参考价格。WTI 是美国轻质低硫原油的定价基准，定价中心在俄克拉荷马州库欣；迪拜/阿曼则常用于为输往亚洲市场的中东原油定价（Wittner, 2020）。Brent 与 WTI 会对许多相同的全球市场条件作出反应，但在区域供给、库存与运输约束出现差异时，两者价差可能变化。本研究预测 Brent，因为其国际性与海运导向，与另类数据所代表的全球港口、航运路线和航运咽喉更为契合。尽管如此，WTI 仍作为金融预测变量保留，并构成 Brent–WTI 价差的一部分。本文不预设 Brent 与 WTI 之间固定的波动高低排序。航运活动是否对 Brent 具有增量预测信息，将由本研究进行实证检验。
 
-That uncertainty is not only historical. Recent conflict has again shown how quickly oil prices and seaborne trade can move when key maritime choke points are disrupted or avoided. Governments watch such shocks for inflation control, fiscal planning, energy security and trade policy. A better short-term oil-price model would help them gauge risk and timing. It would not replace market judgment, but it could support planning when physical flows and prices shift together. In such an environment, claims that new data or more elaborate models improve forecasts need to be tested carefully against strong and transparent benchmarks.
+Recent years have shown the costs of unexpected oil-price movements. The COVID-19 period brought an abrupt collapse in demand and an uneven recovery. The 2022 energy crisis then produced major supply and price shocks, followed by only partial normalisation amid continued geopolitical and macroeconomic uncertainty. More recent geopolitical disruptions have further shown how quickly oil prices and seaborne trade can respond when key maritime chokepoints are disrupted or bypassed. Governments monitor such shocks for inflation control, fiscal planning, energy security and trade policy. A better short-term oil-price model would help them gauge risk and timing. Although they cannot replace market judgement, such forecasts could support decision-making when physical flows and prices move together. 
 
-这种不确定性并非只属于历史。近期冲突再次表明，当关键航运咽喉受阻或被绕行时，油价与海运贸易会迅速变动。政府出于通胀管理、财政规划、能源安全与贸易政策需要监测此类冲击。更可靠的短期油价模型有助于它们评估风险与时机。它不能替代市场判断，但可在实物流动与价格同步变动时支持规划。在这种环境下，任何“新数据”或“更复杂模型”改善预测的主张，都必须对照强且透明的基准加以检验。
+近年来的市场变化进一步表明，油价意外波动可能造成较高代价。新冠疫情期间，原油需求骤降，随后出现不均衡复苏。2022 年能源危机又带来显著的供给与价格冲击。此后，市场在持续的地缘政治和宏观经济不确定性下仅实现部分正常化。近期冲突再次表明，当关键航运咽喉受阻或被绕开时，油价与海运贸易会迅速作出反应。政府出于通胀管理、财政规划、能源安全与贸易政策需要监测此类冲击。更可靠的短期油价模型有助于它们评估风险与时机。尽管它们无法替代市场判断，但当实物流动与价格同步变动时，此类预测仍可支持决策。
 
-At the weekly horizon, the no-change forecast is difficult to outperform. This simple method predicts that next week’s price will be equal to this week’s price. It therefore provides a demanding benchmark for evaluating alternative data and forecasting methods. A model should not be considered useful merely because it outperforms a weaker or differently specified model. It must also be compared directly with the no-change benchmark.
+At the weekly horizon, the no-change forecast is difficult to outperform. This simple method predicts that next week’s price will be equal to this week’s price. It therefore provides a demanding benchmark for alternative data and methods. A model should not be considered useful merely because it outperforms a weaker or differently specified competitor. It must also be evaluated directly against the no-change benchmark.
 
 在周度预测中，不变预测通常很难被超越。这种简单方法假设下周价格等于本周价格，因此为评价另类数据和预测方法提供了一个较高的基准。一个模型不能仅因优于较弱或设定不同的模型而被认为具有预测价值。它还必须与不变预测基准进行直接比较。
 
@@ -57,11 +64,13 @@ This dissertation therefore addresses two empirical questions. First, do remote-
 
 ### 1.2 Aim and research questions
 
+
+
 ### 1.2 研究目标与研究问题
 
-The main aim of this dissertation is to develop a reproducible comparison framework for evaluating how different data sources and model designs perform in one-week-ahead Brent price forecasting. The framework combines financial time-series data, satellite remote-sensing data and shipping data. It uses a rolling-origin forecasting design that prevents the use of future information and applies formal statistical tests to compare predictive performance. Flat feature fusion places all inputs in a single feature table before modelling. Representation-level fusion encodes each modality separately and then combines the resulting representations. This framework enables consistent comparisons of the incremental value of different data sources and the effects of different fusion designs.
+The main aim of this dissertation is to develop a reproducible comparison framework for evaluating how different data sources and model designs perform in one-week-ahead Brent price forecasting. The framework combines financial time-series data, satellite remote-sensing data and shipping data. It uses a rolling-origin forecasting design that prevents the use of future information and applies formal statistical tests to compare predictive performance. Flat feature fusion places all inputs in a single feature table before modelling. Representation-level fusion encodes each modality separately and then combines the resulting representations. This framework enables consistent comparisons of the incremental value of different data sources and the effects of different fusion designs. The empirical setting is weekly, Friday-ending Brent spot prices from 2019 to 2025, with remote-sensing and shipping inputs covering eleven oil-related monitoring sites and six major maritime chokepoints.
 
-本研究的主要目标是构建一套可复现的对照框架，用于评估不同数据来源和模型设计在提前一周的 Brent 价格预测中的表现。该框架结合金融时序数据、卫星遥感数据和航运数据。框架采用滚动起点预测设计，以避免使用未来信息，并通过正式统计检验比较不同模型的预测表现。扁平特征融合在建模前将所有输入放入同一张特征表中。表示级融合则分别编码各类数据，再将所得表征进行融合。该框架能够一致地比较不同数据来源的增量价值，以及不同融合设计对预测表现的影响。
+本研究的主要目标是构建一套可复现的对照框架，用于评估不同数据来源和模型设计在提前一周的 Brent 价格预测中的表现。该框架结合金融时序数据、卫星遥感数据和航运数据。框架采用滚动起点预测设计，以避免使用未来信息，并通过正式统计检验比较不同模型的预测表现。扁平特征融合在建模前将所有输入放入同一张特征表中。表示级融合则分别编码各类数据，再将所得表征进行融合。该框架能够一致地比较不同数据来源的增量价值，以及不同融合设计对预测表现的影响。本研究的实证设定为 2019—2025 年周五截止的周度 Brent 现货价格，遥感与航运输入覆盖十一个石油相关监测站点与六个主要航运咽喉。
 
 The study is organised around three research questions.
 
