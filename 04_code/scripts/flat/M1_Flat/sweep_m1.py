@@ -18,13 +18,15 @@ Note: on the merged matrix (starts 2019-01-04) a larger lookback consumes a few
 more warm-up weeks, so the test-week count varies slightly with L; each config's
 skill is computed against its OWN M0 and test_weeks is reported per row.
 
-Outputs (-> 05_outputs/baselines/Flat/M1_Flat/):
+Outputs (-> 05_outputs/baselines/Flat/M1_Flat/, or --out-dir):
   sweep_summary.csv           config x model metrics (+ test_weeks, m0_rmse)
   sweep_overview.png          (a) lookback robustness  (b) tuning experiments
 
 Run:
   python3 04_code/scripts/flat/M1_Flat/sweep_m1.py
   python3 04_code/scripts/flat/M1_Flat/sweep_m1.py --quick   # coarser retrain, faster
+  python3 04_code/scripts/flat/M1_Flat/sweep_m1.py --fill-mode fold_median \
+      --out-dir 05_outputs/_experiments/leading_impute/M1_Flat
 """
 
 from __future__ import annotations
@@ -70,21 +72,22 @@ QUICK_GRID = [
 ]
 
 
-def run_one(df, dico, cfg, min_train, val_weeks, seed):
+def run_one(df, dico, cfg, min_train, val_weeks, seed, fill_mode="zero"):
     cols = data.select_features(dico, "M1")
-    ds = data.build_dataset(df, cols, cfg["lookback"], cfg["feature_mode"])
+    ds = data.build_dataset(df, cols, cfg["lookback"], cfg["feature_mode"],
+                            fill_mode=fill_mode)
     res = rolling.rolling_origin(ds, "M1_Flat", min_train, cfg["retrain_every"],
                                  seed, cfg["tune"], val_weeks)
     met = metrics.evaluate(res, MODEL_NAMES)
     return res, met
 
 
-def run_grid(grid, min_train, val_weeks, seed):
+def run_grid(grid, min_train, val_weeks, seed, fill_mode="zero"):
     rows = []
     m0_done = False
     for cfg in grid:
         t0 = time.time()
-        res, met = run_one(df_g, dico_g, cfg, min_train, val_weeks, seed)
+        res, met = run_one(df_g, dico_g, cfg, min_train, val_weeks, seed, fill_mode)
         m0_rmse = float(met.loc["M0_RW", "RMSE"])
         dt = time.time() - t0
         print(f"  {cfg['name']:18s} feats={res.attrs['n_features']:4d} "
@@ -157,19 +160,24 @@ def main():
     ap.add_argument("--min-train", type=int, default=104)
     ap.add_argument("--val-weeks", type=int, default=52)
     ap.add_argument("--seed", type=int, default=42)
+    ap.add_argument("--fill-mode", default="zero", choices=list(data.FILL_MODES),
+                    help="leading-gap treatment: zero (default) or fold_median")
+    ap.add_argument("--out-dir", default=None,
+                    help="override the output directory (keeps main results intact)")
     args = ap.parse_args()
 
     grid = QUICK_GRID if args.quick else FULL_GRID
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    out_dir = Path(args.out_dir).expanduser() if args.out_dir else OUT_DIR
+    out_dir.mkdir(parents=True, exist_ok=True)
     df_g = data.load_matrix()
     dico_g = data.load_dict()
     print(f"Sweep ({'quick' if args.quick else 'full'}) | {len(grid)} configs "
           f"| merged matrix {df_g.shape} | window {data.WINDOW_START}..{data.WINDOW_END} "
-          f"| min_train={args.min_train}\n")
+          f"| min_train={args.min_train} | fill={args.fill_mode}\n")
 
-    summary = run_grid(grid, args.min_train, args.val_weeks, args.seed)
-    out_csv = OUT_DIR / "sweep_summary.csv"
-    out_png = OUT_DIR / "sweep_overview.png"
+    summary = run_grid(grid, args.min_train, args.val_weeks, args.seed, args.fill_mode)
+    out_csv = out_dir / "sweep_summary.csv"
+    out_png = out_dir / "sweep_overview.png"
     summary.to_csv(out_csv, index=False)
     make_overview(summary, out_png)
 

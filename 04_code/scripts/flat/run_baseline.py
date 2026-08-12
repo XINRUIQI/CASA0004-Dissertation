@@ -14,7 +14,7 @@ What it does for a chosen --modality:
   4. optional --leave-one-aoi-out (gap B3): for an M2-bearing config, drop each
      AOI's RS columns in turn and report the RMSE change.
 
-Outputs (-> 05_outputs/baselines/Flat/<M*_Flat>/):
+Outputs (-> 05_outputs/baselines/Flat/<M*_Flat>/, or --out-dir):
   baseline_metrics[_<suffix>].csv
   baseline_predictions[_<suffix>].csv
   backtest[_<suffix>].png
@@ -26,6 +26,8 @@ Run:
   python3 04_code/scripts/flat/run_baseline.py --modality M1
   python3 04_code/scripts/flat/run_baseline.py --modality M2 --m2-features anom
   python3 04_code/scripts/flat/run_baseline.py --modality M4
+  python3 04_code/scripts/flat/run_baseline.py --modality M4 --fill-mode fold_median \
+      --out-dir 05_outputs/_experiments/leading_impute/M4_Flat
 """
 
 from __future__ import annotations
