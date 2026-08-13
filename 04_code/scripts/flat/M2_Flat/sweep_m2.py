@@ -88,8 +88,8 @@ def run_grid(df, dico, min_train, retrain_every, val_weeks, seed):
                     "test_weeks":    len(res_m2),
                     "M0_RMSE":       m0_rmse,
                     "M1_RMSE":       m1r_rmse if mdl == "Ridge" else m1x_rmse,
-                    "M2_RMSE":       float(met_m2.loc[f"M2_{mdl}", "RMSE"]),
-                    "M2_skill_vs_M0":float(met_m2.loc[f"M2_{mdl}", "RMSE_skill_vs_M0"]),
+                    "M2_RMSE":       float(met_m2.loc[f"M2_Flat_{mdl}", "RMSE"]),
+                    "M2_skill_vs_M0":float(met_m2.loc[f"M2_Flat_{mdl}", "RMSE_skill_vs_M0"]),
                     "CW_p_vs_M1":    inc["CW_p_vs_base"],
                     "DM_p_vs_M1":    inc["DM_p_vs_base"],
                 }

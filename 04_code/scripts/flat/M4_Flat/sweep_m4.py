@@ -73,9 +73,9 @@ def run_grid(df, dico, min_train, retrain_every, val_weeks, seed):
                 "model":        mdl,
                 "test_weeks":   len(res_m4),
                 "M0_RMSE":      m0_rmse,
-                "M1_RMSE":      float(met_m1.loc[f"M1_{mdl}", "RMSE"]),
-                "M4_RMSE":      float(met_m4.loc[f"M4_{mdl}", "RMSE"]),
-                "skill_vs_M0":  float(met_m4.loc[f"M4_{mdl}", "RMSE_skill_vs_M0"]),
+                "M1_RMSE":      float(met_m1.loc[f"M1_Flat_{mdl}", "RMSE"]),
+                "M4_RMSE":      float(met_m4.loc[f"M4_Flat_{mdl}", "RMSE"]),
+                "skill_vs_M0":  float(met_m4.loc[f"M4_Flat_{mdl}", "RMSE_skill_vs_M0"]),
                 "CW_p_vs_M1":   inc["CW_p_vs_base"],
                 "DM_p_vs_M1":   inc["DM_p_vs_base"],
             })

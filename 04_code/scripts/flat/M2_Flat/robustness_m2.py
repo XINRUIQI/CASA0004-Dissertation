@@ -205,7 +205,7 @@ def arm_metrics(res_m2, res_m1, arm_label):
 
     for mdl in ("Ridge", "XGB"):
         col_m2 = f"P_hat_{arm_label}_{mdl}"
-        col_m1 = f"P_hat_M1_{mdl}"
+        col_m1 = f"P_hat_M1_Flat_{mdl}"
         if col_m2 not in res_m2.columns or col_m1 not in res_m1.columns:
             continue
         P_m2 = res_m2[col_m2].to_numpy()

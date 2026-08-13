@@ -143,9 +143,9 @@ def main():
                 "arm":         arm,
                 "model":       mdl,
                 "test_weeks":  len(res_m3),
-                "M1_RMSE":     float(met_m1.loc[f"M1_{mdl}", "RMSE"]),
-                "M3_RMSE":     float(met_m3.loc[f"M3_{mdl}", "RMSE"]),
-                "skill_vs_M0": float(met_m3.loc[f"M3_{mdl}", "RMSE_skill_vs_M0"]),
+                "M1_RMSE":     float(met_m1.loc[f"M1_Flat_{mdl}", "RMSE"]),
+                "M3_RMSE":     float(met_m3.loc[f"M3_Flat_{mdl}", "RMSE"]),
+                "skill_vs_M0": float(met_m3.loc[f"M3_Flat_{mdl}", "RMSE_skill_vs_M0"]),
                 "CW_p_vs_M1":  inc["CW_p_vs_base"],
                 "DM_p_vs_M1":  inc["DM_p_vs_base"],
             })
