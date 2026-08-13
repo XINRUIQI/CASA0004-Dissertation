@@ -91,8 +91,8 @@ def run_grid(df, dico, min_train, retrain_every, val_weeks, seed, fill_mode=data
 def make_overview(summary, path):
     piv_rmse = summary.pivot(index="lookback", columns="model",
                              values="M4_RMSE").sort_index()
-    piv_cw   = summary.pivot(index="lookback", columns="model",
-                             values="CW_p_vs_M1").sort_index()
+    piv_dm   = summary.pivot(index="lookback", columns="model",
+                             values="DM_p_vs_M1").sort_index()
     m0 = summary.groupby("lookback")["M0_RMSE"].first().sort_index()
 
     fig, axes = plt.subplots(1, 2, figsize=(12, 5))
@@ -109,14 +109,14 @@ def make_overview(summary, path):
     ax.grid(alpha=0.3)
     ax.legend(fontsize=8)
 
-    # -- right: Clark-West p for both models + 0.05 line --
+    # -- right: DM p vs M1, the primary test for both learners --
     ax = axes[1]
-    ax.plot(piv_cw.index, piv_cw["Ridge"], "o-", color="tab:blue", label="Ridge")
-    ax.plot(piv_cw.index, piv_cw["XGB"],   "s-", color="tab:red",  label="XGB")
+    ax.plot(piv_dm.index, piv_dm["Ridge"], "o-", color="tab:blue", label="Ridge")
+    ax.plot(piv_dm.index, piv_dm["XGB"],   "s-", color="tab:red",  label="XGB")
     ax.axhline(0.05, color="black", ls="--", lw=0.8, label="p=0.05")
     ax.set_xlabel("lookback (weeks)")
-    ax.set_ylabel("Clark-West p vs M1")
-    ax.set_title("M4 sweep: Clark-West p vs M1 (nested)")
+    ax.set_ylabel("DM-HLN p vs M1 (one-sided)")
+    ax.set_title("M4 sweep: DM-HLN p vs M1 (raw, not Holm-adjusted)")
     ax.set_xticks(LOOKBACKS)
     ax.grid(alpha=0.3)
     ax.legend(fontsize=8)

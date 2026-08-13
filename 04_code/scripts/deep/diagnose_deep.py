@@ -175,7 +175,9 @@ def pred_report(pred_csv: Path) -> None:
         cw1_p = np.nan
         if base_m1 and c != base_m1:
             _, cw1_p = metrics.clark_west(y, pred[f"P_hat_{base_m1}"].to_numpy(), yhat)
-        _, dm0_p = metrics.dm_test(e, e_m0)
+        # Diagnostic script: CW columns above are kept for debugging only. The
+        # reported study tests are DM-HLN (candidate second) plus Holm.
+        _, dm0_p = metrics.dm_test(e_m0, e)
 
         early = pred.index < SPLIT
         late = ~early

@@ -1,0 +1,29 @@
+deep dataset N=361 lookback=4
+6 runs = 2 configs x 3 seeds (epochs=80, matrix protocol)
+
+  [1/6] m3_deep_xattn   seed=42  skill=+1.00% DirAcc=0.553 RMSE=4.110184 [matrix 4.110184 d=+0.00e+00] (101s)
+  [2/6] m3_deep_xattn   seed=1   skill=-2.87% DirAcc=0.447 RMSE=4.271144 (208s)
+  [3/6] m3_deep_xattn   seed=2   skill=-7.14% DirAcc=0.455 RMSE=4.448419 (344s)
+  [4/6] m3_deep_concat  seed=42  skill=-0.22% DirAcc=0.514 RMSE=4.161109 [matrix 4.161109 d=+0.00e+00] (491s)
+  [5/6] m3_deep_concat  seed=1   skill=-0.64% DirAcc=0.502 RMSE=4.178307 (624s)
+  [6/6] m3_deep_concat  seed=2   skill=+0.07% DirAcc=0.514 RMSE=4.148976 (765s)
+
+==============================================================================
+Protocol check vs deep_fusion_matrix.csv over 2 seed=42 cells: max |delta RMSE| = 0.00e+00 (within tolerance 1e-03)
+
+Multi-seed stability over seeds [42, 1, 2] (epochs=80):
+  m3_deep_xattn  : skill -3.01% ± 4.07  (min -7.14, max +1.00)  | positive in 1/3 seeds
+  m3_deep_concat : skill -0.27% ± 0.35  (min -0.64, max +0.07)  | positive in 1/3 seeds
+
+Per-run detail:
+        config  seed   RMSE  skill_vs_M0  DirAcc  DM_p_vs_M0  DM_p_vs_Flat_S1
+ m3_deep_xattn    42 4.1102       0.0100  0.5525      0.2572           0.0349
+ m3_deep_xattn     1 4.2711      -0.0287  0.4475      0.9824           0.5702
+ m3_deep_xattn     2 4.4484      -0.0714  0.4553      0.9985           0.9453
+m3_deep_concat    42 4.1611      -0.0022  0.5136      0.6461           0.0642
+m3_deep_concat     1 4.1783      -0.0064  0.5019      0.7859           0.1318
+m3_deep_concat     2 4.1490       0.0007  0.5136      0.4608           0.0519
+==============================================================================
+
+Elapsed 765s
+Saved: /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/Deep/_cross/deep_seed_m3fusion.csv

@@ -1,37 +1,37 @@
 deep dataset N=361 lookback=4  (seed=42, epochs=80)
 
-  M3_Deep   concat  skill=-0.22% DirAcc=0.510 CWvsM0=0.3736 DMvsM1=0.0641 RMSE=4.161 (102s)
-  M3_Deep   gated   skill=+0.16% DirAcc=0.537 CWvsM0=0.1469 DMvsM1=0.0577 RMSE=4.145 (204s)
-  M3_Deep   xattn   skill=+1.01% DirAcc=0.553 CWvsM0=0.0289 DMvsM1=0.0346 RMSE=4.110 (297s)
-  M2_Deep   concat  skill=-1.93% DirAcc=0.533 CWvsM0=0.9710 DMvsM1=0.3726 RMSE=4.232 (311s)
-  M2_Deep   gated   skill=-2.43% DirAcc=0.475 CWvsM0=0.7690 DMvsM1=0.4851 RMSE=4.253 (325s)
-  M2_Deep   xattn   skill=-5.89% DirAcc=0.455 CWvsM0=0.8984 DMvsM1=0.9132 RMSE=4.396 (339s)
-  M4_Deep   concat  skill=-8.30% DirAcc=0.451 CWvsM0=0.6085 DMvsM1=0.8302 RMSE=4.496 (446s)
-  M4_Deep   gated   skill=-0.67% DirAcc=0.494 CWvsM0=0.7781 DMvsM1=0.1326 RMSE=4.180 (550s)
-  M4_Deep   xattn   skill=+0.33% DirAcc=0.560 CWvsM0=0.0257 DMvsM1=0.0561 RMSE=4.138 (652s)
+  M3_Deep   concat  skill=-0.22% DirAcc=0.514 RMSE=4.161109 (134s)
+  M3_Deep   gated   skill=+0.15% DirAcc=0.537 RMSE=4.145611 (273s)
+  M3_Deep   xattn   skill=+1.00% DirAcc=0.553 RMSE=4.110184 (404s)
+  M2_Deep   concat  skill=-2.01% DirAcc=0.529 RMSE=4.235220 (425s)
+  M2_Deep   gated   skill=-2.43% DirAcc=0.475 RMSE=4.252788 (446s)
+  M2_Deep   xattn   skill=-5.87% DirAcc=0.455 RMSE=4.395647 (466s)
+  M4_Deep   concat  skill=-8.30% DirAcc=0.451 RMSE=4.496440 [repro 4.496450 d=-1.02e-05] (609s)
+  M4_Deep   gated   skill=-0.68% DirAcc=0.490 RMSE=4.180079 [repro 4.179646 d=+4.33e-04] (758s)
+  M4_Deep   xattn   skill=+0.19% DirAcc=0.560 RMSE=4.143723 (906s)
+
+forecast paths: 9 cells x 257 origins on one shared calendar -> deep_fusion_predictions.csv
+  reproducibility M4_Deep gated: 4.180079 vs 4.179646  *** DRIFT ***
+  reproducibility M4_Deep concat: 4.496440 vs 4.496450  *** DRIFT ***
 
 ============================================================
-Skill vs M0 (%)  [>0 beats the random walk]:
+Skill vs M0 (%)  [>0 beats the random walk, descriptive]:
 fusion   concat  gated  xattn
 combo                        
-M3_Deep   -0.22  +0.16  +1.01
-M2_Deep   -1.93  -2.43  -5.89
-M4_Deep   -8.30  -0.67  +0.33
+M3_Deep   -0.22  +0.15  +1.00
+M2_Deep   -2.01  -2.43  -5.87
+M4_Deep   -8.30  -0.68  +0.19
 
-CW p vs M0  [<0.05 significantly beats RW]:
+RMSE (USD/barrel):
 fusion   concat  gated  xattn
 combo                        
-M3_Deep  0.3736 0.1469 0.0289
-M2_Deep  0.9710 0.7690 0.8984
-M4_Deep  0.6085 0.7781 0.0257
+M3_Deep   4.161  4.146  4.110
+M2_Deep   4.235  4.253  4.396
+M4_Deep   4.496  4.180  4.144
 
-DM p vs M1_Flat_Ridge  [<0.05 significantly beats flat M1_Flat]:
-fusion   concat  gated  xattn
-combo                        
-M3_Deep  0.0641 0.0577 0.0346
-M2_Deep  0.3726 0.4851 0.9132
-M4_Deep  0.8302 0.1326 0.0561
+Forecast-comparison tests are NOT reported here. Run:
+  python3 04_code/scripts/tools/build_test_tables.py
 ============================================================
 Saved: /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/Deep/_cross/deep_fusion_matrix.csv
        /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/Deep/_cross/deep_fusion_matrix.png
-Elapsed 652s
+Elapsed 907s

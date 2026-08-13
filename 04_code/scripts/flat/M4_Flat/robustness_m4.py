@@ -104,7 +104,7 @@ def make_overview(summary, path):
     x = np.arange(len(arms))
     for ax, mdl, col, title in [
         (axes[0], "Ridge", "M4_RMSE",    "RMSE — Ridge"),
-        (axes[1], "XGB",   "CW_p_vs_M1", "CW p vs M1 — XGB"),
+        (axes[1], "XGB",   "DM_p_vs_M1", "DM-HLN p vs M1 (one-sided) — XGB"),
     ]:
         sub = summary[summary.model == mdl]
         vals = [sub[sub.arm == a][col].values[0] if len(sub[sub.arm == a]) else np.nan
@@ -119,7 +119,7 @@ def make_overview(summary, path):
         ax.set_ylabel(col)
         ax.set_title(f"M4 LOMO: {title}")
         ax.grid(alpha=0.3, axis="y")
-        if col == "CW_p_vs_M1":
+        if col == "DM_p_vs_M1":
             ax.axhline(0.05, color="black", ls="--", lw=0.8, label="p=0.05")
             ax.legend(fontsize=8)
     fig.suptitle("M4 leave-one-modality-out: does each modality add value in full fusion?",

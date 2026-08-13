@@ -1,0 +1,34 @@
+M3_Deep_XAttn: 17 kv tokens (0 RS AOI + 17 shipping nodes)
+  fit @ 2021-01-22
+  fit @ 2021-04-23
+  fit @ 2021-07-23
+  fit @ 2021-10-22
+  fit @ 2022-01-21
+  fit @ 2022-04-22
+  fit @ 2022-07-22
+  fit @ 2022-10-21
+  fit @ 2023-01-20
+  fit @ 2023-04-21
+  fit @ 2023-07-21
+  fit @ 2023-10-20
+  fit @ 2024-01-19
+  fit @ 2024-04-19
+  fit @ 2024-07-19
+  fit @ 2024-10-18
+  fit @ 2025-01-17
+  fit @ 2025-04-18
+  fit @ 2025-07-18
+  fit @ 2025-10-17
+
+Mean finance->token attention (share of 17 tokens):
+Top-8 attended tokens:
+    sh:P002        0.060
+    sh:mandeb      0.059
+    sh:malacca     0.059
+    sh:P009        0.059
+    sh:P006        0.059
+    sh:P005        0.059
+    sh:P003        0.059
+    sh:P001        0.059
+Saved: /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/Deep/M3_Deep/deep_m3_xattn_weekly.csv
+       /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/Deep/M3_Deep/deep_m3_xattn_viz.png

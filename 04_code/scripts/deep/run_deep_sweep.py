@@ -58,10 +58,14 @@ _DEF = dict(gat=2, tcn=2, rs_kind="meanpool", lr=1e-3, wd=1e-4, dropout=0.1)
 
 def experiments() -> list[dict]:
     """Return the sweep runs. Every dict carries the full config so a row in
-    deep_sweep_summary.csv is self-describing."""
-    seed = [dict(group="seed", config=c, seed=s, lookback=4, d=32, **_DEF)
-            for c in ["m3_deep_gated", "m4_deep_gated", "m4_deep_xattn"]
-            for s in [42, 1, 2]]
+    deep_sweep_summary.csv is self-describing.
+
+    Reseeding is deliberately absent. It used to live here as a "seed" group, but
+    those runs were fixed at this script's epoch budget while the headline results
+    use the matrix budget, so every one of them was superseded and discarded during
+    pooling. Multi-seed evidence now comes from run_deep_multiseed.py, aggregated by
+    scripts/tools/pool_deep_seeds.py; keeping a second producer here would only
+    re-introduce duplicate (config, seed) rows at a lower budget."""
     hyper = [dict(group="hyper", config="m3_deep_gated", seed=42, lookback=lb, d=d, **_DEF)
              for lb in [4, 8, 12] for d in [32, 64]]
     hyper += [dict(group="hyper", config="m3_deep_gated", seed=42, lookback=4, d=32,
@@ -83,7 +87,7 @@ def experiments() -> list[dict]:
                     continue
                 reg.append(dict(group="reg", config="m3_deep_gated", seed=42, lookback=4,
                                 d=32, **{**_DEF, "lr": lr, "wd": wd, "dropout": dp}))
-    return seed + hyper + rs + reg
+    return hyper + rs + reg
 
 
 def main() -> None:
@@ -131,21 +135,27 @@ def main() -> None:
         rhat = res.loc[common, f"r_hat_{col}"].to_numpy()
         ract = res_m1.loc[common, "r_actual"].to_numpy()
         diracc = metrics.directional_acc(rhat, ract)
-        # VALID tests: CW vs M0 (nested -> beats the random walk?), and DM vs the
-        # flat M1_Flat_Ridge (different model class -> Clark-West would be invalid).
-        _, cw_p_m0 = metrics.clark_west(
-            y, res_m1.loc[common, "P_hat_M0"].to_numpy(), yhat)
-        _, dm_p_m1 = metrics.dm_test(
-            yhat - y, res_m1.loc[common, "P_hat_M1_Flat_Ridge"].to_numpy() - y)
-        row = {**e, "RMSE": rmse, "skill_vs_M0": 1 - rmse / rmse_m0,
-               "DirAcc": diracc, "CW_p_vs_M0": cw_p_m0, "DM_p_vs_M1": dm_p_m1,
-               "n_test": len(common)}
+        # Sensitivity sweep: DM-HLN one-sided against M0, plus the same test
+        # against flat S1. The second contrast changes BOTH the pathway and the
+        # information set, so it is descriptive only and is not the RQ2 contrast
+        # (that one holds the information set fixed; see build_test_tables.py).
+        _, dm_p_m0 = metrics.dm_test(e_m0, yhat - y)
+        _, dm_p_flat_s1 = metrics.dm_test(
+            res_m1.loc[common, "P_hat_M1_Flat_Ridge"].to_numpy() - y, yhat - y)
+        # epochs is recorded per row, not left to the argparse default: the pooling
+        # step in scripts/tools/pool_deep_seeds.py keys on it to decide which run of
+        # a repeated (config, seed) pair to keep, and a CSV that omits it forces that
+        # script to guess the protocol from this file's defaults.
+        row = {**e, "epochs": args.epochs,
+               "RMSE": rmse, "skill_vs_M0": 1 - rmse / rmse_m0,
+               "DirAcc": diracc, "DM_p_vs_M0": dm_p_m0,
+               "DM_p_vs_Flat_S1": dm_p_flat_s1, "n_test": len(common)}
         rows.append(row)
         print(f"  [{k+1}/{len(exps)}] {e['group']:5s} {e['config']:8s} "
               f"seed={e['seed']} lb={lb} d={e['d']} rs={rk:8s} "
               f"lr={e['lr']:.0e} wd={e['wd']:.0e} dp={e['dropout']} "
-              f"skill={row['skill_vs_M0']*100:+.2f}% CWvsM0={cw_p_m0:.4f} "
-              f"DMvsM1={dm_p_m1:.4f} ({time.time()-t0:.0f}s)", flush=True)
+              f"skill={row['skill_vs_M0']*100:+.2f}% DMvsM0={dm_p_m0:.4f} "
+              f"DMvsFlatS1={dm_p_flat_s1:.4f} ({time.time()-t0:.0f}s)", flush=True)
 
     summ = pd.DataFrame(rows)
     OUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -155,19 +165,19 @@ def main() -> None:
     # --- summary stats ---
     print("\n" + "=" * 78)
     seed_g = summ[summ["group"] == "seed"]
-    print("Multi-seed stability (skill vs M0; CWvsM0 = beats RW?; DMvsM1 vs M1_Flat):")
+    print("Multi-seed stability (skill vs M0; DM-HLN one-sided, raw p, exploratory):")
     for c in seed_g["config"].unique():
         s = seed_g[seed_g["config"] == c]
         print(f"  {c:8s}: skill {s['skill_vs_M0'].mean()*100:+.2f}% "
               f"± {s['skill_vs_M0'].std()*100:.2f}  | "
-              f"CWvsM0_p {s['CW_p_vs_M0'].mean():.4f} "
-              f"(min {s['CW_p_vs_M0'].min():.4f}, max {s['CW_p_vs_M0'].max():.4f}) "
-              f"| <0.05 in {(s['CW_p_vs_M0']<0.05).sum()}/{len(s)} "
-              f"| DMvsM1<0.05 in {(s['DM_p_vs_M1']<0.05).sum()}/{len(s)}")
+              f"DMvsM0_p {s['DM_p_vs_M0'].mean():.4f} "
+              f"(min {s['DM_p_vs_M0'].min():.4f}, max {s['DM_p_vs_M0'].max():.4f}) "
+              f"| <0.05 in {(s['DM_p_vs_M0']<0.05).sum()}/{len(s)} "
+              f"| DMvsFlatS1<0.05 in {(s['DM_p_vs_Flat_S1']<0.05).sum()}/{len(s)}")
     print("\nHyperparam sweep (fusion, seed=42):")
     hyp = summ[summ["group"] == "hyper"].sort_values(["lookback", "d", "gat"])
     print(hyp[["lookback", "d", "gat", "skill_vs_M0", "DirAcc",
-               "CW_p_vs_M0", "DM_p_vs_M1"]].to_string(index=False,
+               "DM_p_vs_M0", "DM_p_vs_Flat_S1"]].to_string(index=False,
               float_format=lambda x: f"{x:.4f}"))
 
     rs_g = summ[summ["group"] == "rs"]
@@ -177,12 +187,12 @@ def main() -> None:
                    & (rs_g["dropout"] == 0.1)]
         for _, r in emb.sort_values("rs_kind").iterrows():
             print(f"  {r['rs_kind']:8s}: skill {r['skill_vs_M0']*100:+.2f}%  "
-                  f"DirAcc {r['DirAcc']:.3f}  CWvsM0_p {r['CW_p_vs_M0']:.4f}")
+                  f"DirAcc {r['DirAcc']:.3f}  DMvsM0_p {r['DM_p_vs_M0']:.4f}")
         mp = rs_g[rs_g["rs_kind"] == "meanpool"].sort_values(
             "skill_vs_M0", ascending=False)
         print("  meanpool regularisation grid (best skill first):")
         print(mp[["lr", "wd", "dropout", "skill_vs_M0", "DirAcc",
-                  "CW_p_vs_M0", "DM_p_vs_M1"]].to_string(index=False,
+                  "DM_p_vs_M0", "DM_p_vs_Flat_S1"]].to_string(index=False,
                  float_format=lambda x: f"{x:.4f}"))
         mp_def = emb[emb["rs_kind"] == "meanpool"]["skill_vs_M0"].values[0] * 100
         b = mp.iloc[0]
@@ -195,7 +205,7 @@ def main() -> None:
         print("\nMain fusion regularisation grid (P1-6, seed=42 lb=4; best skill first):")
         rr = reg_g.sort_values("skill_vs_M0", ascending=False)
         print(rr[["lr", "wd", "dropout", "skill_vs_M0", "DirAcc",
-                  "CW_p_vs_M0", "DM_p_vs_M1"]].to_string(index=False,
+                  "DM_p_vs_M0", "DM_p_vs_Flat_S1"]].to_string(index=False,
                  float_format=lambda x: f"{x:.4f}"))
     print("=" * 78)
 

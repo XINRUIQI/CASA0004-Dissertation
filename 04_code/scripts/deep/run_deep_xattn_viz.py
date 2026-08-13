@@ -1,24 +1,33 @@
 """
-RQ3 visualisation for the M4 Cross-Attention model: extract the per-week
-cross-attention weights of the finance query over the 28 node/site tokens
-(11 RS AOI + 17 shipping graph nodes) from the walk-forward m4xattn run, and
-plot which nodes/lanes the financial state attends to over time and on average.
+RQ3 cross-attention diagnostics: extract the per-week attention weights of the
+finance query over the node/site tokens from a walk-forward cross-attention run,
+and plot which nodes/lanes the financial state attends to over time and on
+average.
+
+RQ3 is entered by any Deep specification with positive out-of-sample RMSE skill
+against M0, so this is run for the S4 arm (finance + RS + shipping) and the S3
+arm (finance + shipping). Remote-sensing site attention is only defined where the
+RS modality is active, so the RS panel comes from the S4 arm.
 
 Mirrors deep_rolling's walk-forward (each test week uses its own fold model, no
-look-ahead) and additionally records info["xattn_weights"].
+look-ahead), with the same architecture defaults as the reported forecasts, and
+additionally records info["xattn_weights"].
 
-Token order (from DeepForecastModel xattn kv concat, modalities [fin,rs,ship]):
-  tokens[0:11]  = RS AOI    P001..P011
-  tokens[11:28] = shipping  P001..P011 + hormuz/suez/malacca/mandeb/panama/cape
+Token order follows the kv concat in DeepForecastModel, which keeps the CONFIGS
+modality order and includes only RS/shipping:
+  modalities [fin, rs, ship] -> tokens[0:11] RS AOI, tokens[11:28] shipping nodes
+  modalities [fin, ship]     -> tokens[0:17] shipping nodes
+  modalities [fin, rs]       -> tokens[0:11] RS AOI
 
-Outputs (-> 05_outputs/baselines/Deep/M4_Deep/):
-  deep_xattn_weekly.csv    week x 28 token attention weights
-  deep_xattn_viz.png       (a) finance->RS vs ->shipping attention over time
-                           (b) mean token attention bar (RS vs shipping colored)
+Outputs (-> 05_outputs/baselines/Deep/<tier>/):
+  deep_xattn_weekly.csv    week x token attention weights  (S4; S3 -> deep_m3_*)
+  deep_xattn_viz.png       (a) attention share over time
+                           (b) mean token attention bar
                            (c) week x token heatmap
 
 Run:
-  python3 04_code/scripts/deep/run_deep_xattn_viz.py --lookback 4 --epochs 80
+  python3 04_code/scripts/deep/run_deep_xattn_viz.py                     # S4
+  python3 04_code/scripts/deep/run_deep_xattn_viz.py --config m3_deep_xattn
 """
 
 from __future__ import annotations
@@ -36,21 +45,39 @@ SRC_DIR = SCRIPTS_DIR.parent.parent / "src"
 sys.path.insert(0, str(SRC_DIR))
 
 from backtest import data                                # noqa: E402
-from model_naming import deep_out_dir                    # noqa: E402
+from model_naming import (DEEP_CONFIG_TIER, deep_out_dir,  # noqa: E402
+                         resolve_deep_config)
 from models.deep_dataset import (apply_scalers, build_deep_dataset,  # noqa: E402
                                  fit_scalers)
 from models.deep_rolling import CONFIGS, _to_tensors, _train_fold  # noqa: E402
 
-OUT_DIR = deep_out_dir(data.ROOT, "M4")
 EVENTS = [
     ("2022-02-24", "Russia–Ukraine"),
     ("2023-04-02", "OPEC+ cut"),
     ("2023-11-19", "Houthi Red Sea"),
 ]
+# M4 keeps the historical unprefixed names; other tiers mirror the gate files.
+FILE_PREFIX = {"M4_Deep": "deep_xattn", "M3_Deep": "deep_m3_xattn",
+               "M2_Deep": "deep_m2_xattn"}
+
+
+def token_labels(ds: dict, modalities: list[str]) -> tuple[list[str], int]:
+    """kv token labels in model order, plus the number of RS tokens."""
+    labels: list[str] = []
+    n_rs = 0
+    for m in modalities:
+        if m == "rs":
+            labels += [f"rs:{s}" for s in ds["sites"]]
+            n_rs = len(ds["sites"])
+        elif m == "ship":
+            labels += [f"sh:{n}" for n in ds["node_ids"]]
+    return labels, n_rs
 
 
 def main() -> None:
     ap = argparse.ArgumentParser()
+    ap.add_argument("--config", default="m4_deep_xattn",
+                    help="cross-attention config, e.g. m3_deep_xattn")
     ap.add_argument("--lookback", type=int, default=4)
     ap.add_argument("--epochs", type=int, default=80)
     ap.add_argument("--min-train", type=int, default=104)
@@ -58,13 +85,20 @@ def main() -> None:
     ap.add_argument("--seed", type=int, default=42)
     args = ap.parse_args()
 
+    cfg = resolve_deep_config(args.config)
+    modalities, model_name, ftype = CONFIGS[cfg]
+    if ftype != "xattn":
+        raise SystemExit(f"{cfg} uses {ftype} fusion; this script needs xattn.")
+    tier = DEEP_CONFIG_TIER[cfg]
+    out_dir = deep_out_dir(data.ROOT, tier.split("_")[0])
+    out_dir.mkdir(parents=True, exist_ok=True)
+    prefix = FILE_PREFIX[tier]
+
     df = data.load_matrix(); dico = data.load_dict()
     ds = build_deep_dataset(df, dico, lookback=args.lookback)
-    modalities, _, ftype = CONFIGS["m4_deep_xattn"]
-    sites = ds["sites"]                 # 11 RS AOI
-    node_ids = ds["node_ids"]           # 17 shipping nodes
-    labels = [f"rs:{s}" for s in sites] + [f"sh:{n}" for n in node_ids]
-    n_rs = len(sites)
+    labels, n_rs = token_labels(ds, modalities)
+    print(f"{model_name}: {len(labels)} kv tokens "
+          f"({n_rs} RS AOI + {len(labels)-n_rs} shipping nodes)")
 
     idx = ds["idx"]
     n = len(idx)
@@ -80,53 +114,68 @@ def main() -> None:
                 52, "cpu", {"d": 32, "gat_layers": 2, "tcn_layers": 2}, ftype)
             print(f"  fit @ {idx[i].date()}", flush=True)
         Xte = _to_tensors(apply_scalers(ds, sc, slice(i, i + 1)), "cpu")
+        kw = dict(aoi=Xte["aoi"], choke=Xte["choke"], adj=Xte["adj"],
+                  fin=Xte["fin"])
+        if "rs" in Xte:
+            kw.update(rs=Xte["rs"], rs_mask=Xte["rs_mask"])
         model.eval()
         with torch.no_grad():
-            _, info = model(aoi=Xte["aoi"], choke=Xte["choke"], adj=Xte["adj"],
-                            fin=Xte["fin"], rs=Xte["rs"], rs_mask=Xte["rs_mask"])
-        w = info["xattn_weights"][0].numpy()          # (28,)
+            _, info = model(**kw)
+        w = info["xattn_weights"][0].numpy()
         rows.append({"date": idx[i], **{labels[j]: w[j] for j in range(len(labels))}})
 
     xw = pd.DataFrame(rows).set_index("date")
-    xw.to_csv(OUT_DIR / "deep_xattn_weekly.csv")
+    csv_path = out_dir / f"{prefix}_weekly.csv"
+    png_path = out_dir / f"{prefix}_viz.png"
+    xw.to_csv(csv_path)
 
     rs_cols = labels[:n_rs]
     sh_cols = labels[n_rs:]
-    rs_total = xw[rs_cols].sum(axis=1)
-    sh_total = xw[sh_cols].sum(axis=1)
     mean_att = xw.mean(axis=0)
 
-    print("\nMean finance->token attention (share of 28 tokens):")
-    print(f"  -> RS total {rs_total.mean():.3f} | -> shipping total {sh_total.mean():.3f}")
+    print(f"\nMean finance->token attention (share of {len(labels)} tokens):")
+    if rs_cols and sh_cols:
+        print(f"  -> RS total {xw[rs_cols].sum(axis=1).mean():.3f} | "
+              f"-> shipping total {xw[sh_cols].sum(axis=1).mean():.3f}")
     print("Top-8 attended tokens:")
     for name, v in mean_att.sort_values(ascending=False).head(8).items():
         print(f"    {name:14s} {v:.3f}")
 
-    _plot(xw, rs_total, sh_total, mean_att, rs_cols, sh_cols,
-          OUT_DIR / "deep_xattn_viz.png")
-    print(f"Saved: {OUT_DIR/'deep_xattn_weekly.csv'}\n       {OUT_DIR/'deep_xattn_viz.png'}")
+    _plot(xw, mean_att, rs_cols, sh_cols, model_name, png_path)
+    print(f"Saved: {csv_path}\n       {png_path}")
 
 
-def _plot(xw, rs_total, sh_total, mean_att, rs_cols, sh_cols, path):
+def _plot(xw, mean_att, rs_cols, sh_cols, model_name, path):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     fig = plt.figure(figsize=(16, 9))
     gs = fig.add_gridspec(3, 1, height_ratios=[1.1, 1.1, 1.2])
 
-    # (a) modality-level cross-attention over time.
+    # (a) attention share over time. With both modalities present the split is
+    # the informative quantity; with one, the top tokens are.
     ax0 = fig.add_subplot(gs[0])
-    ax0.stackplot(xw.index, rs_total, sh_total,
-                  labels=["→ RS (11 AOI)", "→ shipping (17 nodes)"],
-                  colors=["tab:green", "tab:blue"], alpha=0.85)
+    if rs_cols and sh_cols:
+        ax0.stackplot(xw.index, xw[rs_cols].sum(axis=1), xw[sh_cols].sum(axis=1),
+                      labels=[f"→ RS ({len(rs_cols)} AOI)",
+                              f"→ shipping ({len(sh_cols)} nodes)"],
+                      colors=["tab:green", "tab:blue"], alpha=0.85)
+        ax0.set_title(f"{model_name}: finance-query cross-attention, "
+                      f"RS vs shipping over time (RQ3)")
+    else:
+        top = mean_att.sort_values(ascending=False).head(6).index.tolist()
+        rest = [c for c in xw.columns if c not in top]
+        ax0.stackplot(xw.index, *[xw[c] for c in top], xw[rest].sum(axis=1),
+                      labels=top + [f"other ({len(rest)})"], alpha=0.85)
+        ax0.set_title(f"{model_name}: finance-query cross-attention, "
+                      f"top-6 tokens over time (RQ3)")
     for d, lab in EVENTS:
         dt = pd.Timestamp(d)
         if xw.index.min() <= dt <= xw.index.max():
             ax0.axvline(dt, color="k", ls="--", lw=0.9)
             ax0.text(dt, 1.01, lab, rotation=25, fontsize=7, ha="left")
     ax0.set_ylim(0, 1); ax0.set_ylabel("attention share")
-    ax0.set_title("Finance-query cross-attention: RS vs shipping over time (RQ3)")
-    ax0.legend(loc="lower left", ncol=2, fontsize=8)
+    ax0.legend(loc="lower left", ncol=4, fontsize=7)
 
     # (b) mean attention per token (grouped colors).
     ax1 = fig.add_subplot(gs[1])
@@ -135,7 +184,8 @@ def _plot(xw, rs_total, sh_total, mean_att, rs_cols, sh_cols, path):
     ax1.bar(range(len(order)), order.values, color=colors)
     ax1.set_xticks(range(len(order)))
     ax1.set_xticklabels(order.index, rotation=75, fontsize=6)
-    ax1.set_title("Mean finance→token attention (green=RS AOI, blue=shipping node)")
+    ax1.set_title(f"Mean finance→token attention, {len(mean_att)} tokens "
+                  f"(green=RS AOI, blue=shipping node)")
     ax1.set_ylabel("mean weight")
 
     # (c) heatmap week x token (keep column order rs then shipping).
@@ -145,7 +195,8 @@ def _plot(xw, rs_total, sh_total, mean_att, rs_cols, sh_cols, path):
                     extent=[0, len(xw), len(cols), 0])
     ax2.set_yticks(np.arange(len(cols)) + 0.5)
     ax2.set_yticklabels(cols, fontsize=5)
-    ax2.axhline(len(rs_cols), color="w", lw=1.0)   # RS | shipping divider
+    if rs_cols and sh_cols:
+        ax2.axhline(len(rs_cols), color="w", lw=1.0)   # RS | shipping divider
     n_ticks = 6
     tick_pos = np.linspace(0, len(xw) - 1, n_ticks).astype(int)
     ax2.set_xticks(tick_pos)

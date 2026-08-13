@@ -135,18 +135,19 @@ def make_overview(summary, path):
     _draw_cells(ax, piv, "{:.3f}")
     ax.set_title("Ridge RMSE  (red = higher = worse)")
 
-    # -- right: XGB Clark-West p; colour breaks at 0.05 so green = significant --
+    # -- right: XGB DM-HLN p vs M1; colour breaks at 0.05. Clark-West is not
+    # shown because it is only valid for the Ridge predictor-set nesting. --
     ax = axes[1]
     piv = (summary[summary.model == "XGB"]
-           .pivot(index="contract", columns="lookback", values="CW_p_vs_M1")
+           .pivot(index="contract", columns="lookback", values="DM_p_vs_M1")
            .reindex(row_order))
     finite = piv.values[np.isfinite(piv.values)]
     vmax = float(finite.max()) if finite.size else 0.1
     norm = TwoSlopeNorm(vmin=0.0, vcenter=0.05, vmax=max(vmax, 0.0501))
     im = ax.imshow(piv.values, aspect="auto", cmap="RdYlGn_r", norm=norm)
-    plt.colorbar(im, ax=ax, label="Clark-West p (colour breaks at 0.05)")
+    plt.colorbar(im, ax=ax, label="DM-HLN p, one-sided (colour breaks at 0.05)")
     _draw_cells(ax, piv, "{:.4f}")
-    ax.set_title("XGB Clark-West p vs M1  (green = p<0.05 significant)")
+    ax.set_title("XGB DM-HLN p vs M1  (raw p, not Holm-adjusted)")
 
     fig.suptitle("M2 sweep: feature contract × lookback", fontsize=11)
     fig.tight_layout()

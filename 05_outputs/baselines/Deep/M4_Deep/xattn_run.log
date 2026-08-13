@@ -1,3 +1,4 @@
+M4_Deep_XAttn: 28 kv tokens (11 RS AOI + 17 shipping nodes)
   fit @ 2021-01-22
   fit @ 2021-04-23
   fit @ 2021-07-23
@@ -20,15 +21,15 @@
   fit @ 2025-10-17
 
 Mean finance->token attention (share of 28 tokens):
-  -> RS total 0.412 | -> shipping total 0.588
+  -> RS total 0.414 | -> shipping total 0.586
 Top-8 attended tokens:
     rs:P011        0.039
-    rs:P008        0.038
-    rs:P007        0.038
+    rs:P008        0.039
     rs:P002        0.038
+    rs:P007        0.038
+    rs:P003        0.038
     rs:P004        0.038
     rs:P006        0.037
-    rs:P003        0.037
     rs:P009        0.037
 Saved: /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/Deep/M4_Deep/deep_xattn_weekly.csv
        /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/Deep/M4_Deep/deep_xattn_viz.png

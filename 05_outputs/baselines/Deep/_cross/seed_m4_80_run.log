@@ -1,0 +1,24 @@
+deep dataset N=361 lookback=4
+4 runs = 2 configs x 2 seeds (epochs=80, matrix protocol)
+
+  [1/4] m4_deep_gated   seed=1   skill=-0.86% DirAcc=0.490 RMSE=4.187621 (121s)
+  [2/4] m4_deep_gated   seed=2   skill=-1.19% DirAcc=0.490 RMSE=4.201142 (258s)
+  [3/4] m4_deep_xattn   seed=1   skill=-0.87% DirAcc=0.529 RMSE=4.187867 (372s)
+  [4/4] m4_deep_xattn   seed=2   skill=-5.01% DirAcc=0.432 RMSE=4.359909 (479s)
+
+==============================================================================
+
+Multi-seed stability over seeds [1, 2] (epochs=80):
+  m4_deep_gated  : skill -1.03% ± 0.23  (min -1.19, max -0.86)  | positive in 0/2 seeds
+  m4_deep_xattn  : skill -2.94% ± 2.93  (min -5.01, max -0.87)  | positive in 0/2 seeds
+
+Per-run detail:
+       config  seed   RMSE  skill_vs_M0  DirAcc  DM_p_vs_M0  DM_p_vs_Flat_S1
+m4_deep_gated     1 4.1876      -0.0086  0.4903      0.8526           0.1688
+m4_deep_gated     2 4.2011      -0.0119  0.4903      0.7833           0.2654
+m4_deep_xattn     1 4.1879      -0.0087  0.5292      0.8117           0.1984
+m4_deep_xattn     2 4.3599      -0.0501  0.4319      1.0000           0.9470
+==============================================================================
+
+Elapsed 479s
+Saved: /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/Deep/_cross/deep_seed_m4_80.csv

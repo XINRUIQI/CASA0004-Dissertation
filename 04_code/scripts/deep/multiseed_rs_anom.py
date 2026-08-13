@@ -44,7 +44,7 @@ def _metrics(merged, col, y, ym0, ym1, ract) -> dict:
     rhat = merged[f"r_hat_{col}"].to_numpy()
     return {"RMSE": rmse, "skill_vs_M0": 1 - rmse / rmse0,
             "DirAcc": metrics.directional_acc(rhat, ract),
-            "CW_p_vs_M0": metrics.clark_west(y, ym0, yhat)[1]}
+            "DM_p_vs_M0": metrics.dm_test(ym0 - y, yhat - y)[1]}
 
 
 def main() -> None:

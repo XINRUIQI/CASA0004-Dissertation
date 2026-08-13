@@ -45,10 +45,12 @@ def _metrics(merged, col, y, ym0, ym1, ract) -> dict:
     rmse = float(np.sqrt(np.mean((yhat - y) ** 2)))
     rmse0 = float(np.sqrt(np.mean((ym0 - y) ** 2)))
     rhat = merged[f"r_hat_{col}"].to_numpy()
+    # DM-HLN one-sided with the candidate second. The flat-S1 contrast changes
+    # both pathway and information set, so it is descriptive only.
     return {"RMSE": rmse, "skill_vs_M0": 1 - rmse / rmse0,
             "DirAcc": metrics.directional_acc(rhat, ract),
-            "CW_p_vs_M0": metrics.clark_west(y, ym0, yhat)[1],
-            "DM_p_vs_M1": metrics.dm_test(yhat - y, ym1 - y)[1]}
+            "DM_p_vs_M0": metrics.dm_test(ym0 - y, yhat - y)[1],
+            "DM_p_vs_Flat_S1": metrics.dm_test(ym1 - y, yhat - y)[1]}
 
 
 def _gate_alpha(ds, epochs, seed) -> dict:
@@ -138,8 +140,9 @@ def main() -> None:
               f"{d_dir:+10.1f}")
         print(f"  {'RMSE':14s} {r.RMSE:10.3f} {a.RMSE:10.3f} "
               f"{a.RMSE - r.RMSE:+10.3f}")
-        print(f"  {'CW_p_vs_M0':14s} {r.CW_p_vs_M0:10.3f} {a.CW_p_vs_M0:10.3f}")
-        print(f"  {'DM_p_vs_M1':14s} {r.DM_p_vs_M1:10.3f} {a.DM_p_vs_M1:10.3f}")
+        print(f"  {'DM_p_vs_M0':15s} {r.DM_p_vs_M0:10.3f} {a.DM_p_vs_M0:10.3f}")
+        print(f"  {'DM_p_vs_Flat_S1':15s} {r.DM_p_vs_Flat_S1:10.3f} "
+              f"{a.DM_p_vs_Flat_S1:10.3f}")
         print(f"  verdict: anom is {'BETTER' if better else 'WORSE/EQUAL'} "
               f"(skill delta {d_skill:+.2f}%)")
 

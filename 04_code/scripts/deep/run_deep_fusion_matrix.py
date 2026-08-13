@@ -8,15 +8,18 @@ retrain_every=13, seed=42, epochs=80). Fills every cell of
    Mfinrs     finrs_concat   | finrs   | finrs_xattn
    Mfull      m4concat       | m4rep   | m4xattn
 
-For each cell it reports RMSE, skill vs M0, DirAcc, the VALID Clark-West p vs M0
-(nested -> does it beat the random walk?) and the VALID Diebold-Mariano p vs the
-flat M1_Flat_Ridge (non-nested model class, where Clark-West would be invalid). The
-flat M1_Flat predictions are READ from baseline_predictions.csv (no xgboost import;
-avoids the macOS torch+OpenMP segfault, mirroring run_deep_baseline).
+Each cell reports DESCRIPTIVE accuracy only (RMSE, skill vs M0, DirAcc) and dumps
+its full per-origin forecast path. No p-values are computed here: every forecast-
+comparison test comes from the single frozen test table built by
+scripts/tools/build_test_tables.py, so that one script owns the choice of test,
+the alternative and the multiple-comparison family. The flat M1_Flat predictions
+are READ from baseline_predictions.csv (no xgboost import; avoids the macOS
+torch+OpenMP segfault, mirroring run_deep_baseline).
 
 Outputs (-> 05_outputs/baselines/Deep/_cross/):
-  deep_fusion_matrix.csv     one row per (combo, fusion) with all metrics
-  deep_fusion_matrix.png     skill-vs-M0 grouped bars (combo x fusion)
+  deep_fusion_matrix.csv       one row per (combo, fusion): RMSE / skill / DirAcc
+  deep_fusion_predictions.csv  long format, one row per (combo, fusion, origin)
+  deep_fusion_matrix.png       skill-vs-M0 grouped bars (combo x fusion)
 
 Run:
   python3 04_code/scripts/deep/run_deep_fusion_matrix.py            # ~15-30 min CPU
@@ -59,6 +62,12 @@ CELLS = [
 COMBOS = ["M3_Deep", "M2_Deep", "M4_Deep"]
 FUSIONS = ["concat", "gated", "xattn"]
 
+# Run-to-run agreement is checked against the previous deep_fusion_matrix.csv.
+# Seeds are fixed per fold, but CPU reduction order is not pinned, so repeated
+# runs agree closely rather than bit-exactly; the observed spread is reported so
+# it can be quoted instead of claiming exact reproducibility.
+REPRO_TOL = 1e-3      # RMSE (USD/barrel) treated as run-to-run agreement
+
 
 def main() -> None:
     ap = argparse.ArgumentParser(description="RQ2 fusion-ladder matrix (combo x fusion).")
@@ -71,6 +80,9 @@ def main() -> None:
     args = ap.parse_args()
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
+    prev_csv = OUT_DIR / "deep_fusion_matrix.csv"
+    prev = (pd.read_csv(prev_csv).set_index(["combo", "fusion"])["RMSE"]
+            if prev_csv.exists() else None)
     df = data.load_matrix()
     dico = data.load_dict()
     m1_pred = m1_flat_predictions(data.ROOT)
@@ -85,7 +97,7 @@ def main() -> None:
           f"(seed={args.seed}, epochs={args.epochs})\n")
 
     t0 = time.time()
-    rows = []
+    rows, preds = [], []
     for combo, fus, cfg in CELLS:
         res = rolling_origin_deep(
             dds, CONFIGS[cfg][1], cfg, min_train=args.min_train,
@@ -100,37 +112,64 @@ def main() -> None:
         rmse = float(np.sqrt(np.mean((yhat - y) ** 2)))
         rhat = res.loc[common, f"r_hat_{col}"].to_numpy()
         ract = res_m1.loc[common, "r_actual"].to_numpy()
-        # VALID tests: CW vs M0 (nested), DM vs M1_Flat_Ridge (non-nested).
-        _, cw_p_m0 = metrics.clark_west(
-            y, res_m1.loc[common, "P_hat_M0"].to_numpy(), yhat)
-        _, dm_p_m1 = metrics.dm_test(
-            yhat - y, res_m1.loc[common, "P_hat_M1_Flat_Ridge"].to_numpy() - y)
-        row = {"combo": combo, "fusion": fus, "config": cfg,
-               "RMSE": rmse, "skill_vs_M0": 1 - rmse / rmse_m0,
+        row = {"combo": combo, "fusion": fus, "config": cfg, "model": col,
+               "RMSE": rmse, "MAE": float(np.mean(np.abs(yhat - y))),
+               "skill_vs_M0": 1 - rmse / rmse_m0,
                "DirAcc": metrics.directional_acc(rhat, ract),
-               "CW_p_vs_M0": cw_p_m0, "DM_p_vs_M1": dm_p_m1,
                "n_test": len(common)}
         rows.append(row)
+        preds.append(pd.DataFrame({
+            "forecast_origin": common,
+            "target_date": common + pd.Timedelta(days=7),
+            "information_set": combo,
+            "fusion": fus,
+            "config": cfg,
+            "model": col,
+            "seed": args.seed,
+            "P_t": res_m1.loc[common, "P_t"].to_numpy(),
+            "P_next_actual": y,
+            "P_hat": yhat,
+            "r_actual": ract,
+            "r_hat": rhat,
+        }))
+        ref = None if prev is None else prev.get((combo, fus))
+        chk = "" if ref is None else f" [prev {ref:.6f} d={rmse-ref:+.2e}]"
         print(f"  {combo:9s} {fus:7s} skill={row['skill_vs_M0']*100:+.2f}% "
-              f"DirAcc={row['DirAcc']:.3f} CWvsM0={cw_p_m0:.4f} "
-              f"DMvsM1={dm_p_m1:.4f} RMSE={rmse:.3f} ({time.time()-t0:.0f}s)",
-              flush=True)
+              f"DirAcc={row['DirAcc']:.3f} RMSE={rmse:.6f}{chk} "
+              f"({time.time()-t0:.0f}s)", flush=True)
 
     summ = pd.DataFrame(rows)
     out_csv = OUT_DIR / "deep_fusion_matrix.csv"
     summ.to_csv(out_csv, index=False)
 
-    # pretty matrices (skill % / CW vs M0 / DM vs M1)
+    pred_all = pd.concat(preds, ignore_index=True)
+    pred_csv = OUT_DIR / "deep_fusion_predictions.csv"
+    pred_all.to_csv(pred_csv, index=False)
+
+    n_dates = pred_all.groupby(["information_set", "fusion"])["forecast_origin"].nunique()
+    if n_dates.nunique() != 1:
+        raise SystemExit(f"cells do not share one forecast calendar:\n{n_dates}")
+    print(f"\nforecast paths: {len(CELLS)} cells x {n_dates.iloc[0]} origins "
+          f"on one shared calendar -> {pred_csv.name}")
+    if prev is not None:
+        got = summ.set_index(["combo", "fusion"])["RMSE"]
+        delta = (got - prev.reindex(got.index)).dropna()
+        worst = delta.abs().idxmax()
+        print(f"  run-to-run RMSE agreement over {len(delta)} cells: "
+              f"max |delta| = {delta.abs().max():.2e} at {worst[0]} {worst[1]} "
+              f"({'within' if delta.abs().max() < REPRO_TOL else 'ABOVE'} "
+              f"tolerance {REPRO_TOL:.0e})")
+
     def _mat(val):
         return (summ.pivot(index="combo", columns="fusion", values=val)
                 .reindex(index=COMBOS, columns=FUSIONS))
     print("\n" + "=" * 60)
-    print("Skill vs M0 (%)  [>0 beats the random walk]:")
+    print("Skill vs M0 (%)  [>0 beats the random walk, descriptive]:")
     print((_mat("skill_vs_M0") * 100).to_string(float_format=lambda x: f"{x:+.2f}"))
-    print("\nCW p vs M0  [<0.05 significantly beats RW]:")
-    print(_mat("CW_p_vs_M0").to_string(float_format=lambda x: f"{x:.4f}"))
-    print("\nDM p vs M1_Flat_Ridge  [<0.05 significantly beats flat M1_Flat]:")
-    print(_mat("DM_p_vs_M1").to_string(float_format=lambda x: f"{x:.4f}"))
+    print("\nRMSE (USD/barrel):")
+    print(_mat("RMSE").to_string(float_format=lambda x: f"{x:.3f}"))
+    print("\nForecast-comparison tests are NOT reported here. Run:")
+    print("  python3 04_code/scripts/tools/build_test_tables.py")
     print("=" * 60)
 
     if not args.no_plot:

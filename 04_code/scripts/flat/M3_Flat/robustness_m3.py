@@ -97,7 +97,7 @@ def make_overview(summary, path):
     x = np.arange(len(arms))
     for ax, mdl, col, title in [
         (axes[0], "Ridge", "M3_RMSE",    "RMSE — Ridge"),
-        (axes[1], "XGB",   "CW_p_vs_M1", "CW p vs M1 — XGB"),
+        (axes[1], "XGB",   "DM_p_vs_M1", "DM-HLN p vs M1 (one-sided) — XGB"),
     ]:
         sub = summary[summary.model == mdl]
         vals = [sub[sub.arm == a][col].values[0] if len(sub[sub.arm == a]) else np.nan
@@ -108,7 +108,7 @@ def make_overview(summary, path):
         ax.set_ylabel(col)
         ax.set_title(f"M3 LOCHO: {title}")
         ax.grid(alpha=0.3, axis="y")
-        if col == "CW_p_vs_M1":
+        if col == "DM_p_vs_M1":
             ax.axhline(0.05, color="black", ls="--", lw=0.8)
     fig.suptitle("M3 leave-one-channel-out (PortWatch vs GFW vs full)", fontsize=11)
     fig.tight_layout()

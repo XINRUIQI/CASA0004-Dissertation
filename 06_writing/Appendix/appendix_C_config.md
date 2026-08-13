@@ -61,9 +61,32 @@ differences are not confounded with protocol differences.
 | Common scored test span / 计分测试区间 | **257 weeks** (2021-01 → 2025-12) |
 | Target / 目标 | one-week log return \(r_{t+1}\), reconstructed to price |
 | Primary metric / 主指标 | RMSE + MAE on reconstructed price; skill vs M0 |
-| Nested test / 嵌套检验 | Clark–West (vs M1, and vs M0 for "beats random walk") |
-| Non-nested test / 非嵌套检验 | Diebold–Mariano, HLN small-sample corrected |
+| Primary test / 主检验 | Diebold–Mariano with HLN small-sample correction, on reconstructed-price squared error, for **every** formal comparison (vs M0, vs S1, and Flat vs Deep) / 全部正式比较统一使用带 HLN 修正的 DM，作用于重构价格平方误差 |
+| Test direction / 检验方向 | one-sided where the research question is directional (vs M0, vs S1, Deep vs Flat); two-sided for Deep fusion-mechanism comparisons / 研究问题方向性者单侧，Deep 融合机制比较双侧 |
+| Multiplicity / 多重比较 | Holm within three frozen families: benchmark (18), RQ1 (15), RQ2 (14); raw and adjusted p both reported, formal claims on adjusted / 族内 Holm，三族分别 18、15、14 项，原始与调整后 p 并报，正式结论用调整后 |
+| Supplementary test / 补充检验 | Clark–West, **Ridge only** (5 comparisons), never for XGBoost or Deep / 仅用于 Ridge 的 5 项，不用于 XGBoost 与 Deep |
+| Unified test table / 统一检验表 | `05_outputs/tests/test_table_main.csv` via `04_code/scripts/tools/build_test_tables.py` |
 | Seed / 种子 | **42** (main); 1, 2 for robustness |
+
+**Variance estimation in the DM statistic / DM 统计量的方差估计.** The loss
+differential is \(d_t = L_{\text{reference},t} - L_{\text{candidate},t}\), so a
+positive statistic means the candidate is the more accurate forecast. Its long-run
+variance is estimated with the usual truncation at \(h-1\) autocovariances, where
+\(h\) is the forecast horizon. Every comparison in this study is a one-week-ahead
+forecast, so \(h = 1\) and no autocovariance term enters: the variance reduces to
+\(\hat{\gamma}_0 / T\), where \(\hat{\gamma}_0 = T^{-1}\sum_t (d_t - \bar{d})^2\).
+The Harvey–Leybourne–Newbold
+finite-sample factor \(\sqrt{[T + 1 - 2h + h(h-1)/T]\,/\,T}\) is then applied,
+which at \(h = 1\) equals \(\sqrt{(T-1)/T}\), and the statistic is referred to a
+\(t\) distribution with \(T-1\) degrees of freedom. Implementation:
+`04_code/src/backtest/metrics.py::dm_test`. / 损失差定义为
+\(d_t = L_{\text{参照},t} - L_{\text{候选},t}\)，故统计量为正表示候选更准。其长期
+方差按惯例截断至 \(h-1\) 阶自协方差，\(h\) 为预测期。本研究所有比较均为提前一周
+预测，故 \(h = 1\)，不引入任何自协方差项：方差退化为 \(\hat{\gamma}_0 / T\)，
+其中 \(\hat{\gamma}_0 = T^{-1}\sum_t (d_t - \bar{d})^2\)。
+随后施加 Harvey–Leybourne–Newbold 有限样本因子
+\(\sqrt{[T + 1 - 2h + h(h-1)/T]\,/\,T}\)，在 \(h = 1\) 时即 \(\sqrt{(T-1)/T}\)，
+并以自由度 \(T-1\) 的 \(t\) 分布判读。
 
 ---
 
@@ -131,6 +154,11 @@ the flat baselines. Sensitivity is reported in Appendix B. Sources:
 | Device / 设备 | CPU |
 | Seed / 种子 | `42`（robustness: 1, 2） |
 
+After early stopping, the weights from the epoch with the lowest inner-validation
+loss are restored and used for the subsequent forecast block. The model is not
+refit on the inner-validation weeks. / 早停后恢复内部验证损失最低那一轮的权重，
+用于随后的预测块；不在内部验证周上重新拟合。
+
 ---
 
 ## C.5 Entry points & outputs / 入口脚本与输出
@@ -143,6 +171,7 @@ the flat baselines. Sensitivity is reported in Appendix B. Sources:
 | Fusion matrix (3×3) / 融合矩阵 | `run_deep_fusion_matrix.py` | `deep_fusion_matrix.{csv,png}` |
 | Advanced ablations (fusion/dropout/sub-period) / 进阶消融 | `run_deep_advanced.py` | `deep_advanced_summary.csv` |
 | Sub-period early/late (Flat + Deep, offline) / 早晚子期（离线） | `subperiod_eval.py` | `05_outputs/baselines/subperiod/subperiod_summary.csv` |
+| **Frozen comparison families + Holm** / 冻结检验族与 Holm | `04_code/scripts/tools/build_test_tables.py` | `05_outputs/tests/test_table_{main,cw_supplementary,robustness}.csv` |
 | Interpretability (gates, attention) / 可解释性 | `run_deep_interpret.py`, `run_deep_interpret_m3.py`, `run_deep_xattn_viz.py` | `deep_interpret*.png`, `deep_*gate*.csv` |
 | Feature matrix build / 特征矩阵构建 | `03_data/processed/**/build_*.py`, `merge/py/build_feature_matrix.py` | `03_data/processed/merge/outputs/` |
 
@@ -153,4 +182,5 @@ python3 -m pip install -r 04_code/requirements.txt
 python3 04_code/scripts/flat/run_baseline.py --modality M3      # flat example
 python3 04_code/scripts/deep/run_deep_baseline.py               # deep main
 python3 04_code/scripts/tools/subperiod_eval.py                  # early/late table
+python3 04_code/scripts/tools/build_test_tables.py               # all reported p-values
 ```

@@ -229,7 +229,10 @@ def arm_metrics(res_m2, res_m1, arm_label):
         rmse_m2 = float(np.sqrt(np.mean((P_m2 - Pn) ** 2)))
         rmse_m1 = float(np.sqrt(np.mean((P_m1 - Pn) ** 2)))
         r_hat   = res_m2[f"r_hat_{arm_label}_{mdl}"].to_numpy()
-        cw_stat, cw_p = metrics.clark_west(Pn, P_m1, P_m2)
+        dm_stat, dm_p = metrics.dm_test(P_m1 - Pn, P_m2 - Pn)
+        # Clark-West only for Ridge: see metrics.incremental_tests.
+        cw_stat, cw_p = (metrics.clark_west(Pn, P_m1, P_m2) if mdl == "Ridge"
+                         else (np.nan, np.nan))
         rows.append({
             "arm":         arm_label,
             "model":       mdl,
@@ -238,6 +241,8 @@ def arm_metrics(res_m2, res_m1, arm_label):
             "M1_RMSE":     rmse_m1,
             "M2_RMSE":     rmse_m2,
             "skill_vs_M0": float(1 - rmse_m2 / rmse_m0),
+            "DM_stat":     dm_stat,
+            "DM_p_vs_M1":  dm_p,
             "CW_stat":     cw_stat,
             "CW_p_vs_M1":  cw_p,
         })
@@ -258,7 +263,8 @@ def make_plot(summary: pd.DataFrame, m1_rmse_r: float, m1_rmse_x: float,
 
     for ax, col, ylabel, title, m1_line in [
         (ax1, "M2_RMSE",    "RMSE (USD/barrel)",  "RMSE by arm",        None),
-        (ax2, "CW_p_vs_M1", "Clark-West p (vs M1)", "CW p vs M1 by arm", None),
+        (ax2, "DM_p_vs_M1", "DM-HLN p vs M1 (one-sided)",
+         "DM-HLN p vs M1 by arm (raw p)", None),
     ]:
         r_vals = [summary[(summary.arm == a) & (summary.model == "Ridge")][col].values
                   for a in arms]
@@ -281,7 +287,7 @@ def make_plot(summary: pd.DataFrame, m1_rmse_r: float, m1_rmse_x: float,
             ax.axhline(m1_rmse_r, color="tab:blue", ls=":", lw=0.9, label="M1 Ridge")
             ax.axhline(m1_rmse_x, color="tab:red",  ls=":", lw=0.9, label="M1 XGB")
             ax.legend(fontsize=7)
-        if col == "CW_p_vs_M1":
+        if col == "DM_p_vs_M1":
             ax.axhline(0.05, color="black", ls="--", lw=0.9, label="p=0.05")
             ax.legend(fontsize=8)
 
@@ -375,7 +381,7 @@ def main():
 
         for r in rows:
             print(f"   {r['model']:5s}  RMSE={r['M2_RMSE']:.3f}  "
-                  f"skill={r['skill_vs_M0']:+.1%}  CW_p={r['CW_p_vs_M1']:.3f}")
+                  f"skill={r['skill_vs_M0']:+.1%}  DM_p={r['DM_p_vs_M1']:.3f}")
         print(f"   ({time.time() - t0:.0f}s)\n")
 
     summary = pd.DataFrame(all_rows)
@@ -388,7 +394,9 @@ def main():
     print(summary.to_string(index=False, float_format=lambda x: f"{x:8.4f}"))
     print("=" * 80)
     print(f"\nM0 RMSE: {m0_rmse:.3f}  M1 Ridge: {m1_rmse_r:.3f}  M1 XGB: {m1_rmse_x:.3f}")
-    print("CW_p < 0.05 → arm significantly improves over M1 (Clark-West nested test)")
+    print("DM_p_vs_M1 is the primary one-sided test (DM-HLN); raw p, exploratory "
+          "only — these ablation arms are not part of the frozen comparison "
+          "families. CW is reported for Ridge only.")
     print(f"\nSaved: {csv_path}\n       {png_path}")
 
 

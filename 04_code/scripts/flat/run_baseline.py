@@ -293,10 +293,15 @@ def main() -> None:
     print("\n" + "=" * 108)
     print(summ.to_string(float_format=lambda x: f"{x:8.4f}"))
     print("=" * 108)
-    print("skill>0 beats M0.  DM_p_better_than_M0<0.05: sig. better than M0.")
+    print("skill>0 beats M0.  DM_p_better_than_M0 is the primary one-sided test "
+          "(DM-HLN); raw p, not yet Holm-adjusted.")
     if res_base is not None:
-        print("CW_p_vs_M1<0.05: added modality gives SIGNIFICANT nested increment over M1_Flat "
-              "(Clark-West). DM_p_vs_M1 shown for reference.")
+        print("DM_p_vs_M1 is the primary one-sided test of the added modality "
+              "(same learner, S1 as reference). CW_p_vs_M1 is SUPPLEMENTARY and "
+              "is only interpretable for Ridge; on this sample it can flag a "
+              "'significant' increment for a specification whose RMSE is worse.")
+    print("Frozen families + Holm-adjusted p: "
+          "python3 04_code/scripts/tools/build_test_tables.py")
 
     loao_path = None
     if args.leave_one_aoi_out and has_m2:

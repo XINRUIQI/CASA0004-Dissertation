@@ -1,0 +1,52 @@
+Collecting multi-seed sources:
+  fusion_matrix     : 9 rows (seed 42, epochs 80)
+  m3fusion          : 6 rows (epochs [np.int64(80)], configs ['m3_deep_concat', 'm3_deep_xattn'])
+  m3gated80         : 2 rows (epochs [np.int64(80)], configs ['m3_deep_gated'])
+  m4_80             : 4 rows (epochs [np.int64(80)], configs ['m4_deep_gated', 'm4_deep_xattn'])
+  sweep             : 9 rows of group=='seed' (of 32 total, epochs 60 assumed from default)
+
+Replicate check on (config, seed) duplicates:
+
+De-duplicated 11 row(s) (kept the higher epoch budget):
+        config  seed  epochs        source  skill_vs_M0
+m3_deep_concat    42      80 fusion_matrix    -0.002246
+ m3_deep_gated     1      60         sweep    -0.013926
+ m3_deep_gated     2      60         sweep    -0.002655
+ m3_deep_gated    42      60         sweep    +0.001568
+ m3_deep_xattn    42      80 fusion_matrix    +0.010020
+ m4_deep_gated     1      60         sweep    -0.008618
+ m4_deep_gated     2      60         sweep    -0.012430
+ m4_deep_gated    42      60         sweep    -0.006711
+ m4_deep_xattn     1      60         sweep    -0.008691
+ m4_deep_xattn     2      60         sweep    -0.050131
+ m4_deep_xattn    42      60         sweep    +0.003335
+
+============================================================================================
+Pooled per-configuration multi-seed skill vs M0 (%), best mean first:
+        config  n_seeds  seeds epochs  skill_mean_pct skill_sd_pct  skill_min_pct  skill_max_pct  n_positive
+m3_deep_concat        3 1,2,42     80           -0.27        +0.35          -0.64          +0.07           1
+ m3_deep_gated        3 1,2,42     80           -0.51        +0.80          -1.39          +0.15           1
+ m4_deep_gated        3 1,2,42     80           -0.91        +0.26          -1.19          -0.68           0
+ m4_deep_xattn        3 1,2,42     80           -1.90        +2.75          -5.01          +0.19           1
+m2_deep_concat        1     42     80           -2.01         <NA>          -2.01          -2.01           0
+ m2_deep_gated        1     42     80           -2.43         <NA>          -2.43          -2.43           0
+ m3_deep_xattn        3 1,2,42     80           -3.01        +4.07          -7.14          +1.00           1
+ m2_deep_xattn        1     42     80           -5.87         <NA>          -5.87          -5.87           0
+m4_deep_concat        1     42     80           -8.30         <NA>          -8.30          -8.30           0
+
+Configurations with a full three-seed set (quotable in B.4):
+  m3_deep_concat   -0.27% ± 0.35   (min -0.64, max +0.07, positive 1/3, epochs 80)
+  m3_deep_gated    -0.51% ± 0.80   (min -1.39, max +0.15, positive 1/3, epochs 80)
+  m4_deep_gated    -0.91% ± 0.26   (min -1.19, max -0.68, positive 0/3, epochs 80)
+  m4_deep_xattn    -1.90% ± 2.75   (min -5.01, max +0.19, positive 1/3, epochs 80)
+  m3_deep_xattn    -3.01% ± 4.07   (min -7.14, max +1.00, positive 1/3, epochs 80)
+
+Single-seed / incomplete — NOT a multi-seed mean, do not quote as one:
+  m2_deep_concat   n_seeds=1 (seeds 42) skill -2.01%
+  m2_deep_gated    n_seeds=1 (seeds 42) skill -2.43%
+  m2_deep_xattn    n_seeds=1 (seeds 42) skill -5.87%
+  m4_deep_concat   n_seeds=1 (seeds 42) skill -8.30%
+============================================================================================
+
+Saved: /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/Deep/_cross/deep_seed_pooled.csv
+       /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/Deep/_cross/deep_seed_summary.csv

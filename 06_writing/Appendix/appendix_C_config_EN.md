@@ -52,9 +52,25 @@ differences are not confounded with protocol differences.
 | Common scored test span | **257 weeks** (2021-01 → 2025-12) |
 | Target | one-week log return \(r_{t+1}\), reconstructed to price |
 | Primary metric | RMSE + MAE on reconstructed price; skill vs M0 |
-| Nested test | Clark–West (vs M1, and vs M0 for "beats random walk") |
-| Non-nested test | Diebold–Mariano, HLN small-sample corrected |
+| Primary test | Diebold–Mariano with HLN small-sample correction, on reconstructed-price squared error, for **every** formal comparison (vs M0, vs S1, and Flat vs Deep) |
+| Test direction | one-sided where the research question is directional (vs M0, vs S1, Deep vs Flat); two-sided for Deep fusion-mechanism comparisons |
+| Multiplicity | Holm within three frozen families: benchmark (18), RQ1 (15), RQ2 (14); raw and adjusted p both reported, formal claims on adjusted |
+| Supplementary test | Clark–West, **Ridge only** (5 comparisons), never for XGBoost or Deep |
+| Unified test table | `05_outputs/tests/test_table_main.csv` via `04_code/scripts/tools/build_test_tables.py` |
 | Seed | **42** (main); 1, 2 for robustness |
+
+**Variance estimation in the DM statistic.** The loss differential is
+\(d_t = L_{\text{reference},t} - L_{\text{candidate},t}\), so a positive statistic
+means the candidate is the more accurate forecast. Its long-run variance is
+estimated with the usual truncation at \(h-1\) autocovariances, where \(h\) is the
+forecast horizon. Every comparison in this study is a one-week-ahead forecast, so
+\(h = 1\) and no autocovariance term enters: the variance reduces to
+\(\hat{\gamma}_0 / T\), where \(\hat{\gamma}_0 = T^{-1}\sum_t (d_t - \bar{d})^2\).
+The Harvey–Leybourne–Newbold finite-sample factor
+\(\sqrt{[T + 1 - 2h + h(h-1)/T]\,/\,T}\) is then applied, which at \(h = 1\)
+equals \(\sqrt{(T-1)/T}\), and the statistic is referred to a \(t\) distribution
+with \(T-1\) degrees of freedom. Implementation:
+`04_code/src/backtest/metrics.py::dm_test`.
 
 ---
 
@@ -116,6 +132,10 @@ the flat baselines. Sensitivity is reported in Appendix B. Sources:
 | Device | CPU |
 | Seed | `42` (robustness: 1, 2) |
 
+After early stopping, the weights from the epoch with the lowest inner-validation
+loss are restored and used for the subsequent forecast block. The model is not
+refit on the inner-validation weeks.
+
 ---
 
 ## C.5 Entry points & outputs
@@ -128,6 +148,7 @@ the flat baselines. Sensitivity is reported in Appendix B. Sources:
 | Fusion matrix (3×3) | `run_deep_fusion_matrix.py` | `deep_fusion_matrix.{csv,png}` |
 | Advanced ablations (fusion/dropout/sub-period) | `run_deep_advanced.py` | `deep_advanced_summary.csv` |
 | Sub-period early/late (Flat + Deep, offline) | `subperiod_eval.py` | `05_outputs/baselines/subperiod/subperiod_summary.csv` |
+| **Frozen comparison families + Holm** | `04_code/scripts/tools/build_test_tables.py` | `05_outputs/tests/test_table_{main,cw_supplementary,robustness}.csv` |
 | Interpretability (gates, attention) | `run_deep_interpret.py`, `run_deep_interpret_m3.py`, `run_deep_xattn_viz.py` | `deep_interpret*.png`, `deep_*gate*.csv` |
 | Feature matrix build | `03_data/processed/**/build_*.py`, `merge/py/build_feature_matrix.py` | `03_data/processed/merge/outputs/` |
 
@@ -138,4 +159,5 @@ python3 -m pip install -r 04_code/requirements.txt
 python3 04_code/scripts/flat/run_baseline.py --modality M3      # flat example
 python3 04_code/scripts/deep/run_deep_baseline.py               # deep main
 python3 04_code/scripts/tools/subperiod_eval.py                  # early/late table
+python3 04_code/scripts/tools/build_test_tables.py               # all reported p-values
 ```

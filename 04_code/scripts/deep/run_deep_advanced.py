@@ -43,9 +43,13 @@ SPLIT = pd.Timestamp("2023-01-01")
 
 def _skill_cw(res: pd.DataFrame, res_m1: pd.DataFrame, col: str,
               idx: pd.Index) -> dict:
-    """skill vs M0 + DirAcc + the VALID tests on weeks `idx`: Clark-West vs M0
-    (nested -> beats the random walk?) and Diebold-Mariano vs M1_Flat_Ridge
-    (non-nested model class, where Clark-West would be invalid)."""
+    """skill vs M0 + DirAcc + DM-HLN one-sided p on weeks `idx`.
+
+    Both contrasts put the candidate second, so a small p favours the candidate.
+    DM_p_vs_Flat_S1 changes both the pathway and the information set, so it is
+    descriptive; the RQ2 contrast holds the information set fixed and lives in
+    scripts/tools/build_test_tables.py. These arms are sensitivity analyses and
+    are not members of the frozen comparison families."""
     common = res.index.intersection(idx)
     y = res.loc[common, "P_next_actual"].to_numpy()
     ym0 = res.loc[common, "P_hat_M0"].to_numpy()
@@ -55,20 +59,20 @@ def _skill_cw(res: pd.DataFrame, res_m1: pd.DataFrame, col: str,
     rmse = float(np.sqrt(np.mean((yhat - y) ** 2)))
     rhat = res.loc[common, f"r_hat_{col}"].to_numpy()
     ract = res.loc[common, "r_actual"].to_numpy()
-    _, cw0 = metrics.clark_west(y, ym0, yhat)          # valid nested: vs M0 (RW)
+    _, dm0 = metrics.dm_test(e_m0, yhat - y)
     out = {"n_test": len(common), "RMSE": rmse,
            "skill_vs_M0": 1 - rmse / rmse_m0,
            "DirAcc": metrics.directional_acc(rhat, ract),
-           "CW_p_vs_M0": cw0}
+           "DM_p_vs_M0": dm0}
     m1c = res_m1.index.intersection(common)
     if len(m1c) > 30:
         yv = res_m1.loc[m1c, "P_next_actual"].to_numpy()
-        _, dmp = metrics.dm_test(                       # valid non-nested: vs M1
-            res.loc[m1c, f"P_hat_{col}"].to_numpy() - yv,
-            res_m1.loc[m1c, "P_hat_M1_Flat_Ridge"].to_numpy() - yv)
-        out["DM_p_vs_M1"] = dmp
+        _, dmp = metrics.dm_test(
+            res_m1.loc[m1c, "P_hat_M1_Flat_Ridge"].to_numpy() - yv,
+            res.loc[m1c, f"P_hat_{col}"].to_numpy() - yv)
+        out["DM_p_vs_Flat_S1"] = dmp
     else:
-        out["DM_p_vs_M1"] = np.nan
+        out["DM_p_vs_Flat_S1"] = np.nan
     return out
 
 
@@ -105,8 +109,8 @@ def main() -> None:
                      "modality_dropout": mk.get("modality_dropout", 0.0),
                      "min_train": mt, "period": "full", **full})
         print(f"  {name:28s} skill={full['skill_vs_M0']*100:+.2f}% "
-              f"DirAcc={full['DirAcc']:.3f} CWvsM0={full['CW_p_vs_M0']:.4f} "
-              f"DMvsM1={full['DM_p_vs_M1']:.4f} n={full['n_test']} "
+              f"DirAcc={full['DirAcc']:.3f} DMvsM0={full['DM_p_vs_M0']:.4f} "
+              f"DMvsFlatS1={full['DM_p_vs_Flat_S1']:.4f} n={full['n_test']} "
               f"({time.time()-t0:.0f}s)", flush=True)
 
     # sub-period stability for the two standard-window fusion arms
@@ -119,21 +123,23 @@ def main() -> None:
                          "modality_dropout": 0.0, "min_train": 104,
                          "period": lab, **s})
             print(f"  {name:14s} {lab:14s} skill={s['skill_vs_M0']*100:+.2f}% "
-                  f"CWvsM0={s['CW_p_vs_M0']:.4f} n={s['n_test']}")
+                  f"DMvsM0={s['DM_p_vs_M0']:.4f} n={s['n_test']}")
 
     summ = pd.DataFrame(rows)
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     summ.to_csv(OUT_DIR / "deep_advanced_summary.csv", index=False)
 
-    # DM: cross-attn vs gated (same weeks, non-nested).
+    # Fusion-mechanism contrast: gated is the pre-specified main design, so the
+    # alternative is two-sided (a difference either way is informative).
     rg, cg = res_store["m4_deep_gated"]
     rx, cx = res_store["m4_deep_xattn"]
     cm = rg.index.intersection(rx.index)
     y = rg.loc[cm, "P_next_actual"].to_numpy()
-    dm, dmp = metrics.dm_test(rx.loc[cm, f"P_hat_{cx}"].to_numpy() - y,
-                              rg.loc[cm, f"P_hat_{cg}"].to_numpy() - y)
-    print(f"\nDM cross-attn vs gated: stat={dm:.3f} p={dmp:.3f} "
-          f"(<0.5 => xattn more accurate)")
+    dm, dmp = metrics.dm_test(rg.loc[cm, f"P_hat_{cg}"].to_numpy() - y,
+                              rx.loc[cm, f"P_hat_{cx}"].to_numpy() - y,
+                              alternative="two-sided")
+    print(f"\nDM gated vs cross-attn (two-sided): stat={dm:+.3f} p={dmp:.3f} "
+          f"(stat > 0 => xattn more accurate)")
 
     _plot(summ, OUT_DIR / "deep_advanced.png")
     print(f"\nElapsed {time.time()-t0:.0f}s\n"

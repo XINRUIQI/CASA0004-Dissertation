@@ -8,13 +8,13 @@
 | 图号 | 文件 | 内容 | 建议位置 |
 | --- | --- | --- | --- |
 | 3.1 | `fig_3_1_research_design` | 研究设计流程图：M0 基准、S1→S2/S3/S4、Flat 与 Deep 配对、共享评估、RQ1–RQ3 | 3.1 节 |
-| 3.2 | `fig_3_2_expanding_window` | 周历上的估计/评估划分：104 周初始估计、20 次重估、257 个评估起点 | 3.2 节，紧随样本计数段 |
+| 3.2 | `fig_3_2_expanding_window` | 周历上的估计/评估划分：104 周初始估计、20 次重估、257 个评估起点 | 3.6.1 节 |
 | 3.3 | `fig_3_3_study_sites_map` | 11 个 AOI + 6 个咽喉世界分布图，含 13 条静态 AOI–咽喉边与波斯湾放大图 | 3.3 节 |
-| 3.4 | `fig_3_4_forecast_origin` | 单个预测起点的结构：训练折 + 内部验证周、四周输入窗、提前一周目标 | 3.9 节 |
+| 3.4 | `fig_3_4_forecast_origin` | 一次重估起点：训练折 + 嵌套内部验证周、四周输入窗、提前一周目标；区块内沿用参数 | 3.6.1 节 |
 
 行号对应 `06_writing/Chapter 3 Methodology/20260811_chapter_3_methodology_bilingual.md`。
-图 3.2 与图 3.4 原为旧图 3.3 的上下两个面板，现拆为两图：日历视图放 3.2 节，
-单起点结构留在 3.9 节。整合稿 `06_writing/Whole/20260811_dissertation_draft.md` 尚未同步。
+图 3.2 与图 3.4 原为旧图 3.3 的上下两个面板，现拆为两图：日历视图放 3.6.1 节，
+单次重估结构同节。整合稿 `06_writing/Whole/20260811_dissertation_draft.md` 尚未同步。
 
 图 3.1 另有 Mermaid 版本 `fig_3_1_research_design.mmd`（可在 Typora / Obsidian / GitHub 直接渲染，
 便于改字），`fig_3_1_research_design_mermaid_preview.png` 为其渲染预览。两版内容一致。
@@ -25,10 +25,10 @@
 | --- | --- | --- | --- |
 | 4.1 | `fig_4_1_skill_bars` | M1–M4 × Ridge / XGBoost / gated / cross-attn 的 RMSE skill 分组条形，0 线即 M0 | 4.1 节末（第 15 行后），作全章总览 |
 | 4.2 | `fig_4_2_flat_vs_deep_slope` | Flat XGBoost → Deep gated 配对斜率，M3 高亮 | 4.4 节表 4.3 之后（第 100 行） |
-| 4.3 | `fig_4_3_incremental_tests` | Clark–West（嵌套）与 Diebold–Mariano（非嵌套）p 值 | 4.5 节第 118 行后 |
+| 4.3 | `fig_4_3_incremental_tests` | RQ1（15 项）与 RQ2（14 项）两族的 DM–HLN 原始 p 与 Holm 调整后 p 配对哑铃图 | 4.5 节第 118 行后 |
 | 4.4 | `fig_4_4_subperiod_skill` | full / early(<2023) / late(≥2023) 三期 skill，Flat 与 Deep 双面板 | 4.5 节末（第 126 行后） |
 | 4.5 | `fig_4_5_event_gate_shifts` | 4 个事件窗 × 3 种子的航运门控变化 dot plot | 4.6 节，替换第 142–146 行占位符 |
-| 4.6 | `fig_4_6_node_attention_stability` | 节点注意力均值 ±1 SD，标注 top-5 跨种子命中次数 | 4.6 节，紧随图 4.5 |
+| 4.6 | `fig_4_6_node_attention_stability` | 左：gated S3 航运节点注意力均值 ±1 SD，标注 top-5 跨种子命中次数；右：三个机制的注意力份额除以均匀份额，显示 gated 有选择性而交叉注意力接近均匀 | 4.6 节，紧随图 4.5 |
 
 行号对应 `06_writing/Chapter 4 Result/20260811_chapter_4_results_bilingual.md`。
 
@@ -37,6 +37,14 @@
 | 图号 | 文件 | 内容 |
 | --- | --- | --- |
 | B.1 | `fig_B_1_gate_paths_seeds` | 三模态门控周度轨迹与跨种子带，说明周度路径不稳 |
+| B.2 | `fig_B_2_rs_site_attention` | gated S4 的 11 个遥感站点注意力均值 ±1 SD。S4 未跑过 M0，按 RQ3 准入规则不入正文，仅作稳定性诊断 |
+
+## RQ3 准入规则对图的影响
+
+RQ3 只解释相对 M0 有正 RMSE skill 的 Deep 单元，符合条件的是三个：
+xattn S3（+1.002%）、xattn S4（+0.194%）、gated S3（+0.149%）。
+gated S4 为 −0.681%，因此其模态权重与遥感站点注意力只能进附录（图 B.2），
+不能作为 RQ3 正文结论。图 4.5、4.6 与 B.1 的门控内容均取自 S3。
 
 ## 动图（演示用，不入论文）
 
@@ -63,6 +71,14 @@
 gated / cross-attn 取 `deep_fusion_matrix.csv`，M0 取 `deep_metrics.csv`。已逐个核对，
 与表 4.1–4.3 一致。
 
+图 4.3 的全部 p 值改由统一检验表 `05_outputs/tests/test_table_main.csv` 提供
+（生成脚本 `04_code/scripts/tools/build_test_tables.py`），不再从各 CSV 分别取值，
+以免正文、表、图三处标准不一致。图中每项均为重构价格平方误差上的 DM–HLN 检验，
+Holm 在族内调整（RQ1 为 15 项，RQ2 为 14 项）。
+图 4.6 右panel 与图 B.2 的注意力份额取自 `deep_m3_gate_stability.csv`、
+`deep_gate_stability.csv`（3 个种子均值）与 `deep_m3_xattn_weekly.csv`、
+`deep_xattn_weekly.csv`（种子 42 单次运行的 257 周均值）。
+
 ## 两处待办
 
 **一、图 4.1 比表 4.2 多一个数。** 表 4.2 中 M2 的 cross-attention 记为“—”，但
@@ -77,17 +93,18 @@ python3 04_code/scripts/deep/run_deep_interpret_m3.py --seeds 42,1,2
 
 在 `M3_Deep/` 下生成 `deep_m3_gate_events.csv`、`deep_m3_gate_stability.csv`、
 `deep_m3_gate_band_weekly.csv` 与三个 seed 的 `deep_m3_gate_weekly_seed*.csv`。
-`make_result_figures.py` 已相应改为：图 4.5 与图 B.1 全部读 M3；图 4.6 左panel（航运节点）
-读 M3，右panel（遥感站点）因 S3 无遥感分支仍读 M4，并在 panel 标题标注所属臂
-（Deep S3 / Deep S4）。图 B.1 按 band 文件中实际存在的模态自动决定面板数（S3 为 2 个）。
-图 4.5、4.6 的标题不再硬编码结论，改为由数据推导，避免结果变化后标题与数字不符。
+`make_result_figures.py` 已相应改为：图 4.5、4.6 与 B.1 的门控内容全部读 M3。
+遥感站点注意力原为图 4.6 右panel，2026-08-13 按 RQ3 准入规则移入附录图 B.2，
+腾出的右panel 改画三个机制的注意力选择性对比。
+图 B.1 按 band 文件中实际存在的模态自动决定面板数（S3 为 2 个）。
+图 4.3、4.5、4.6 的标题不再硬编码结论，改为由数据推导，避免结果变化后标题与数字不符。
 
 ## 重新生成
 
 ```bash
 python3 04_code/scripts/figures/make_design_figure.py    # 图 3.1
 python3 04_code/scripts/figures/make_method_figures.py   # 图 3.2、3.3、3.4
-python3 04_code/scripts/figures/make_result_figures.py   # 图 4.1–4.6、B.1
+python3 04_code/scripts/figures/make_result_figures.py   # 图 4.1–4.6、B.1、B.2
 ```
 
 `make_result_figures.py` 与 `make_method_figures.py` 支持 `--only` 单独重画，

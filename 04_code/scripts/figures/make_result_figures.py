@@ -25,6 +25,7 @@ ROOT = Path(__file__).resolve().parents[3]
 BASE = ROOT / "05_outputs" / "baselines"
 FLAT = BASE / "Flat"
 DEEP = BASE / "Deep"
+TESTS = ROOT / "05_outputs" / "tests"
 OUT_DIR = ROOT / "05_outputs" / "figures"
 
 MODELS = ["M1", "M2", "M3", "M4"]
@@ -338,53 +339,119 @@ def fig4_events() -> None:
 # --------------------------------------------------------------------------
 # F5 - node-attention rank stability
 # --------------------------------------------------------------------------
+def _mean_token_share(path: Path) -> np.ndarray:
+    """Mean attention share per token from a weekly cross-attention CSV."""
+    d = pd.read_csv(path)
+    cols = [c for c in d.columns
+            if c not in ("forecast_origin", "target_date", "week", "date")]
+    w = d[cols].to_numpy(float)
+    w = w / w.sum(axis=1, keepdims=True)
+    return w.mean(axis=0)
+
+
 def fig5_node_attention() -> None:
-    # Shipping panel from the M0-clearing S3 arm (§3.10); the RS panel only
-    # exists in the S4 arm, so each panel is labelled with its source.
-    ship_st = pd.read_csv(DEEP / "M3_Deep" / "deep_m3_gate_stability.csv")
-    ship_st = ship_st.assign(kind="ship")
-    rs_st = pd.read_csv(DEEP / "M4_Deep" / "deep_gate_stability.csv")
-    st = pd.concat([ship_st, rs_st[rs_st["kind"] == "rs"]], ignore_index=True)
+    """Spatial selectivity of the two RQ3-eligible interpretable mechanisms.
+
+    Only Deep units with positive RMSE skill against M0 qualify for RQ3
+    (Deep gated S3, Deep xattn S3, Deep xattn S4). The gated S4 arm does not
+    clear M0, so its remote-sensing site attention is an appendix diagnostic.
+    """
+    st = pd.read_csv(DEEP / "M3_Deep" / "deep_m3_gate_stability.csv")
     chokepoints = {"hormuz", "suez", "mandeb", "malacca", "panama", "cape"}
 
-    fig, axes = plt.subplots(1, 2, figsize=(9.2, 4.6))
-    for ax, kind, title in [(axes[0], "ship", "Shipping-graph nodes (Deep S3)"),
-                            (axes[1], "rs", "Remote-sensing sites (Deep S4)")]:
-        d = st[st["kind"] == kind].sort_values("att_mean").reset_index(drop=True)
-        y = np.arange(len(d))
-        is_choke = d["name"].isin(chokepoints)
-        colors = [C["gated"] if c else C["ridge"] for c in is_choke]
+    fig, axes = plt.subplots(1, 2, figsize=(10.4, 4.8))
 
-        ax.barh(y, d["att_mean"], xerr=d["att_std"], color=colors, height=0.68,
-                error_kw={"elinewidth": 0.9, "ecolor": "#555555", "capsize": 2.5})
-        for yi, (name, f5) in enumerate(zip(d["name"], d["freq_top5"])):
-            ax.text(0.002, yi, f"{f5}/3", va="center", ha="left", fontsize=6.5,
-                    color="white" if f5 >= 2 else "#333333")
-        ax.set_yticks(y)
-        ax.set_yticklabels([n.capitalize() if n in chokepoints
-                            else f"{SITE_NAMES.get(n, n)} ({n})"
-                            for n in d["name"]], fontsize=8)
-        ax.set_xlim(0, float((d["att_mean"] + d["att_std"]).max()) * 1.35)
-        ax.set_xlabel("Mean attention weight across 3 seeds (\u00b11 SD)")
-        ax.set_title(title, loc="left")
-        ax.grid(axis="y", visible=False)
-
-    axes[0].legend(handles=[
+    # -- left: gated S3 shipping-node attention, mean +-1 SD over 3 seeds --
+    ax = axes[0]
+    d = st.sort_values("att_mean").reset_index(drop=True)
+    y = np.arange(len(d))
+    colors = [C["gated"] if c else C["ridge"] for c in d["name"].isin(chokepoints)]
+    ax.barh(y, d["att_mean"], xerr=d["att_std"], color=colors, height=0.68,
+            error_kw={"elinewidth": 0.9, "ecolor": "#555555", "capsize": 2.5})
+    for yi, f5 in enumerate(d["freq_top5"]):
+        ax.text(0.002, yi, f"{f5}/3", va="center", ha="left", fontsize=6.5,
+                color="white" if f5 >= 2 else "#333333")
+    ax.axvline(1 / len(d), color=C["full"], linewidth=1.0, linestyle=":")
+    ax.text(1 / len(d) + 0.002, len(d) - 0.6, "uniform", fontsize=7,
+            color=C["full"])
+    ax.set_yticks(y)
+    ax.set_yticklabels([n.capitalize() if n in chokepoints
+                        else f"{SITE_NAMES.get(n, n)} ({n})"
+                        for n in d["name"]], fontsize=8)
+    ax.set_xlim(0, float((d["att_mean"] + d["att_std"]).max()) * 1.35)
+    ax.set_xlabel("Mean attention weight across 3 seeds (\u00b11 SD)")
+    ax.set_title("Gated S3: shipping-graph nodes", loc="left")
+    ax.grid(axis="y", visible=False)
+    ax.legend(handles=[
         mpl.patches.Patch(color=C["gated"], label="maritime chokepoint"),
         mpl.patches.Patch(color=C["ridge"], label="port / infrastructure site"),
     ], loc="lower right")
-    ship = st[st["kind"] == "ship"]
-    top = ship.loc[ship["att_mean"].idxmax()]
-    n_all = int((ship[ship["name"].isin(chokepoints)]["freq_top5"] == 3).sum())
+
+    # -- right: same shares divided by the uniform share, gated against xattn --
+    ax = axes[1]
+    curves = [
+        ("Gated S3, shipping nodes", C["gated"], "o-",
+         d["att_mean"].to_numpy()),
+        ("Cross-attention S3, 17 tokens", C["xgb"], "s-",
+         _mean_token_share(DEEP / "M3_Deep" / "deep_m3_xattn_weekly.csv")),
+        ("Cross-attention S4, 28 tokens", C["xattn"], "D-",
+         _mean_token_share(DEEP / "M4_Deep" / "deep_xattn_weekly.csv")),
+    ]
+    for label, color, style, share in curves:
+        rel = np.sort(share / (1 / len(share)))[::-1]
+        ax.plot(np.linspace(0, 1, len(rel)), rel, style, color=color,
+                markersize=3.4, linewidth=1.1,
+                label=f"{label}  (spread {rel.max() / rel.min():.2f}\u00d7)")
+    ax.axhline(1.0, color=C["full"], linewidth=1.0, linestyle=":")
+    ax.text(0.985, 1.0, "uniform", fontsize=7, color=C["full"], ha="right",
+            va="bottom")
+    ax.set_xlabel("Token rank (normalised, most attended on the left)")
+    ax.set_ylabel("Attention share \u00f7 uniform share")
+    ax.set_title("Selectivity relative to a uniform allocation", loc="left")
+    ax.legend(loc="upper right")
+
+    top = d.loc[d["att_mean"].idxmax()]
+    n_all = int((d[d["name"].isin(chokepoints)]["freq_top5"] == 3).sum())
     lead = (f"{str(top['name']).capitalize()} has the highest mean shipping-node "
-            f"attention, but no chokepoint is top-5 in all three seeds"
+            "attention, but no chokepoint is top-5 in all three seeds"
             if n_all == 0 else
             f"{str(top['name']).capitalize()} leads shipping-node attention; "
             f"{n_all} chokepoint(s) are top-5 in all three seeds")
-    fig.suptitle(f"{lead}\n(in-bar label = number of seeds ranking the node top-5)",
+    fig.suptitle(f"{lead}; cross-attention is close to uniform\n"
+                 "(in-bar label = number of seeds ranking the node top-5)",
                  x=0.005, ha="left", fontsize=10)
     fig.tight_layout()
     save(fig, "fig_4_6_node_attention_stability")
+
+
+def figB2_rs_site_attention() -> None:
+    """Appendix: RS-site attention in gated S4, a unit that does not clear M0."""
+    st = pd.read_csv(DEEP / "M4_Deep" / "deep_gate_stability.csv")
+    d = (st[st["kind"] == "rs"].sort_values("att_mean").reset_index(drop=True))
+
+    fig, ax = plt.subplots(figsize=(6.0, 4.0))
+    y = np.arange(len(d))
+    ax.barh(y, d["att_mean"], xerr=d["att_std"], color=C["ridge"], height=0.68,
+            error_kw={"elinewidth": 0.9, "ecolor": "#555555", "capsize": 2.5})
+    for yi, f5 in enumerate(d["freq_top5"]):
+        ax.text(0.002, yi, f"{f5}/3", va="center", ha="left", fontsize=6.5,
+                color="white" if f5 >= 2 else "#333333")
+    ax.axvline(1 / len(d), color=C["full"], linewidth=1.0, linestyle=":")
+    ax.text(1 / len(d) + 0.002, len(d) - 0.6, "uniform", fontsize=7,
+            color=C["full"])
+    ax.set_yticks(y)
+    ax.set_yticklabels([f"{SITE_NAMES.get(n, n)} ({n})" for n in d["name"]],
+                       fontsize=8)
+    ax.set_xlim(0, float((d["att_mean"] + d["att_std"]).max()) * 1.35)
+    ax.set_xlabel("Mean attention weight across 3 seeds (\u00b11 SD)")
+    stable = [n for n, f in zip(d["name"], d["freq_top5"]) if f == 3]
+    ax.set_title("Remote-sensing site attention, gated S4\n"
+                 f"(S4 does not clear M0, so this is a stability diagnostic; "
+                 f"top-5 in all seeds: {', '.join(stable) or 'none'})",
+                 loc="left", fontsize=9)
+    ax.grid(axis="y", visible=False)
+    fig.tight_layout()
+    save(fig, "fig_B_2_rs_site_attention")
 
 
 # --------------------------------------------------------------------------
@@ -445,41 +512,57 @@ def fig6_gate_band() -> None:
 # F7 - Clark-West / Diebold-Mariano p-values
 # --------------------------------------------------------------------------
 def fig7_cw() -> None:
-    cw = pd.read_csv(DEEP / "_cross" / "deep_cw.csv")
-    cw["nested"] = cw["valid_test"].str.startswith("CW")
-    cw["label"] = (cw["small"].map(lambda s: MODEL_NAMES.get(s, s)) + "  \u2192  "
-                   + cw["large"].map(lambda s: MODEL_NAMES.get(s, s)))
-    cw = cw.sort_values(["nested", "p_value"], ascending=[False, False])
-    cw = cw.reset_index(drop=True)
+    """RQ1 and RQ2 families: raw DM-HLN p against its Holm-adjusted value.
 
-    fig, ax = plt.subplots(figsize=(7.8, 4.4))
-    y = np.arange(len(cw))
-    sig = cw["p_value"] < 0.05
-    ax.barh(y, cw["p_value"], height=0.66,
-            color=[C["pos"] if s else C["ridge"] for s in sig])
-    for yi, p, s in zip(y, cw["p_value"], sig):
-        ax.text(p + 0.012, yi, f"{p:.3f}", va="center", fontsize=7.5,
-                color=C["pos"] if s else "black",
-                fontweight="bold" if s else "normal")
+    Every test is DM-HLN on reconstructed-price squared error. Holm runs within
+    each frozen family, so the adjustment differs by panel (15 vs 14 tests).
+    """
+    tab = pd.read_csv(TESTS / "test_table_main.csv")
+    panels = [
+        ("RQ1", "RQ1: added modality within a learner\n"
+                "(reference = same learner at S1)"),
+        ("RQ2", "RQ2: Deep against Flat, and fusion mechanisms\n"
+                "(reference = Flat at the same information set)"),
+    ]
 
-    ax.axvline(0.05, color=C["neg"], linewidth=1.1, linestyle="--")
-    ax.text(0.062, -0.85, "p = 0.05", color=C["neg"], fontsize=7.5, va="center")
-    ax.set_yticks(y)
-    ax.set_yticklabels(cw["label"], fontsize=7.5)
-    ax.set_xlim(0, 1.05)
-    ax.set_ylim(-1.2, len(cw) - 0.4)
-    ax.set_xlabel("p-value (one-sided): does the larger model add predictive information?")
+    fig, axes = plt.subplots(1, 2, figsize=(11.6, 5.4))
+    for ax, (fam, title) in zip(axes, panels):
+        d = (tab[tab["family"] == fam]
+             .sort_values("p_raw", ascending=False).reset_index(drop=True))
+        y = np.arange(len(d))
+        ax.hlines(y, d["p_raw"], d["p_holm"], color=C["grey"], linewidth=0.9,
+                  zorder=1)
+        ax.scatter(d["p_raw"], y, s=26, color=C["gated"], zorder=3,
+                   label="raw p")
+        ax.scatter(d["p_holm"], y, s=26, color=C["xgb"], zorder=3,
+                   marker="D", label="Holm-adjusted p")
+        for yi, p in zip(y, d["p_raw"]):
+            if p < 0.05:
+                ax.text(p + 0.008, yi + 0.28, f"{p:.4f}", ha="left",
+                        fontsize=6.8, color=C["gated"])
 
-    # Nested comparisons occupy the low y positions, non-nested the high ones.
-    n_nested = int(cw["nested"].sum())
-    ax.axhline(n_nested - 0.5, color="#BBBBBB", linewidth=0.9)
-    ax.text(1.02, n_nested - 0.9, "Clark\u2013West (nested)", ha="right",
-            va="center", fontsize=7.5, style="italic", color="#555555")
-    ax.text(1.02, n_nested - 0.1, "Diebold\u2013Mariano (non-nested)", ha="right",
-            va="center", fontsize=7.5, style="italic", color="#555555")
-    ax.set_title("Incremental-information tests: shipping adds information over the "
-                 "finance-only Deep baseline", loc="left")
-    ax.grid(axis="y", visible=False)
+        ax.axvline(0.05, color=C["neg"], linewidth=1.1, linestyle="--")
+        ax.text(0.055, -1.15, "p = 0.05", color=C["neg"], fontsize=7.5,
+                va="center")
+        ax.set_yticks(y)
+        ax.set_yticklabels(d["reference"] + "  \u2192  " + d["candidate"],
+                           fontsize=7.2)
+        ax.set_xlim(-0.02, 1.06)
+        ax.set_ylim(-1.5, len(d) - 0.4)
+        ax.set_xlabel(f"DM-HLN p-value  (Holm within {len(d)} tests)")
+        ax.set_title(title, loc="left", fontsize=9)
+        ax.grid(axis="y", visible=False)
+    axes[0].legend(loc="lower right")
+
+    shown = tab[tab["family"].isin([f for f, _ in panels])]
+    n_raw = int((shown["p_raw"] < 0.05).sum())
+    n_holm = int((shown["p_holm"] < 0.05).sum())
+    tail = ("none survives Holm adjustment" if n_holm == 0
+            else f"{n_holm} survives Holm adjustment")
+    fig.suptitle(f"Incremental-information tests: {n_raw} of {len(shown)} raw "
+                 f"p-values fall below 5%, {tail}",
+                 x=0.008, ha="left", fontsize=10)
+    fig.tight_layout(rect=(0, 0, 1, 0.94))
     save(fig, "fig_4_3_incremental_tests")
 
 
@@ -492,6 +575,7 @@ FIGURES = {
     "4.5": fig4_events,
     "4.6": fig5_node_attention,
     "B.1": fig6_gate_band,
+    "B.2": figB2_rs_site_attention,
 }
 
 

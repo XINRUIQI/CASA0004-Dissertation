@@ -238,12 +238,14 @@ is attached to Hormuz on the import side. / 每个 AOI 至少有一条走廊边�
 - **Symmetrise + self-loop**: for message passing the adjacency is symmetrised
   and self-looped (dense 17×17 boolean mask; dense is simpler than sparse for
   this tiny dynamic graph). / 消息传递前对称化 + 自环。
-- **Edge-weight transform (attention prior)**: the O-D flow enters the GAT as
-  `log1p(flow)` scaled by a **learned gain `edge_scale`**, i.e. busy lanes get a
-  higher attention prior instead of the flow being discarded by the boolean
-  adjacency; the model can down-weight the prior if unhelpful. / 边权变换：O-D
-  流量以 `log1p(flow)` × 可学习增益 `edge_scale` 作为注意力先验，繁忙航道获更高
-  先验，模型可自适应弱化。
+- **Edge-weight transform (attention prior)**: `log1p` of the symmetrised O-D
+  flow is **added to the GAT attention logits**, scaled by a **learned gain
+  `edge_scale`**, then softmax; it is not a multiplier on the attention weights
+  and is not used as an edge feature in message passing. Busy lanes therefore
+  receive a higher prior, and the model can down-weight it if unhelpful. /
+  边权变换：对称化后的 O-D 流量取 `log1p`，乘以可学习增益 `edge_scale` 后
+  **加到 GAT 注意力 logits 上**再 softmax；不是乘在注意力权重上，也不作为
+  边特征进入消息传递。
 - **Encoder**: type-specific projection (`F_aoi=11`, `F_choke=20` → `d_model=64`)
   + node-type embedding → 2-layer dense multi-head GAT (heads = 4) → causal TCN
   (lookback L) → node-attention pooling → 32-d `z_ship` (~42k params). Node-

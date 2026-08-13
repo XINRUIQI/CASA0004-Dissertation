@@ -236,3 +236,37 @@ is attached to Hormuz on the import side.
   (lookback L) → node-attention pooling → 32-d `z_ship` (~42k params). Node-
   attention weights feed RQ3 (which port/chokepoint the branch weights).
   Encoder details in Appendix C.
+
+---
+
+## A.5 Flat remote-sensing coverage
+
+Section 3.4.3 reports coverage after as-of alignment onto the 365-week calendar
+(4 January 2019 to 26 December 2025). That weekly-calendar rate counts a month
+once for every subsequent Friday that still uses it, so it is not a count of
+independent site–month composites. The table below separates the two.
+
+Over 2019–2025, monthly Sentinel-2 composites (the `level` series, before
+anomaly construction) are complete at ten of the eleven sites. Jurong Island
+has 98.4 per cent monthly completeness at that stage. After within-site anomaly
+construction (`MIN_HIST=12`) and as-of alignment, weekly-calendar coverage of
+the four optical-index anomalies is 100 per cent at eight sites, 93.4 per cent
+at Ulsan, 89.9 per cent at Ningbo-Zhoushan and 83.8 per cent at Jurong Island.
+The cross-site mean is about 97 per cent. VIIRS night-time-light anomalies are
+fully observed at all eleven sites.
+
+| Site | Weekly-calendar S2 anomaly coverage | First Friday with S2 anomaly | Monthly S2 composite completeness (`level`) | Weekly NTL anomaly |
+| --- | ---: | --- | ---: | ---: |
+| Houston | 100.0% | 2019-01-04 | 100% | 100% |
+| Rotterdam | 100.0% | 2019-01-04 | 100% | 100% |
+| Jamnagar | 100.0% | 2019-01-04 | 100% | 100% |
+| Basra, Fujairah, Kharg, Ras Tanura, Yanbu | 100.0% | 2019-01-04 | 100% | 100% |
+| Ulsan | 93.4% | 2019-06-21 | 100% | 100% |
+| Ningbo-Zhoushan | 89.9% | 2019-09-20 | 100% | 100% |
+| Jurong Island | 83.8% | 2020-02-21 | 98.4% | 100% |
+
+The shortfall at Ulsan and Ningbo-Zhoushan is the expanding 12-month history
+required to define an anomaly, not missing monthly composites. Jurong Island
+combines that warm-up with residual cloud gaps. Deep Prithvi embeddings use a
+separate monthly patch audit (963 usable site–months) documented in the Channel A
+data dictionary.

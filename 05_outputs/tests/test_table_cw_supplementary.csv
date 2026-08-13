@@ -1,0 +1,6 @@
+family,reference,candidate,information_set,alternative,note,test,loss,n_test,RMSE_reference,RMSE_candidate,RMSE_reduction_pct,statistic,p_raw,p_holm
+supplementary_CW,Ridge S1,Ridge S2,S1->S2,greater,nested at the predictor-set level; supplementary only,Clark-West,squared_error,257,4.256348943170461,4.41358877234218,-3.6942419729007137,0.06567186138904138,0.4738195376978017,1.0
+supplementary_CW,Ridge S1,Ridge S3,S1->S3,greater,nested at the predictor-set level; supplementary only,Clark-West,squared_error,257,4.256348943170461,4.447107712921946,-4.481746499134376,0.5317333222912869,0.2974553547276131,1.0
+supplementary_CW,Ridge S1,Ridge S4,S1->S4,greater,nested at the predictor-set level; supplementary only,Clark-West,squared_error,257,4.256348943170461,4.536062411735474,-6.571676154837558,0.3857139803872271,0.3498542538674273,1.0
+supplementary_CW,Ridge S2,Ridge S4,S2->S4,greater,nested at the predictor-set level; supplementary only,Clark-West,squared_error,257,4.41358877234218,4.536062411735474,-2.7749218540879195,0.5938875158642434,0.2762936747282768,1.0
+supplementary_CW,Ridge S3,Ridge S4,S3->S4,greater,nested at the predictor-set level; supplementary only,Clark-West,squared_error,257,4.447107712921946,4.536062411735474,-2.000282083455107,0.3504702221379545,0.36299291703148073,1.0

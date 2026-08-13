@@ -96,9 +96,10 @@ def score_period(res: pd.DataFrame, model: str, idx: pd.Index,
                  ref_col: str = DEFAULT_REF_COL) -> dict:
     """Price-space metrics for one model on the weeks in `idx`.
 
-    CW vs M0 treats M0 as the nested (restricted) forecast, so a small p means
-    the model significantly beats the random walk. DM vs the reference is the
-    non-nested equal-accuracy test (skipped if < 30 shared weeks)."""
+    Both tests are DM-HLN, one-sided, with the candidate model second, so a
+    small p means the model is significantly more accurate than M0 (or than the
+    reference column; skipped if < 30 shared weeks). Sub-period rows are
+    exploratory and are not part of the frozen comparison families."""
     common = res.index.intersection(idx)
     y = res.loc[common, "P_next_actual"].to_numpy()
     ym0 = res.loc[common, "P_hat_M0"].to_numpy()
@@ -109,7 +110,7 @@ def score_period(res: pd.DataFrame, model: str, idx: pd.Index,
     rmse_m0 = float(np.sqrt(np.mean((ym0 - y) ** 2)))
     rmse = float(np.sqrt(np.mean((yhat - y) ** 2)))
     mae = float(np.mean(np.abs(yhat - y)))
-    _, cw0 = metrics.clark_west(y, ym0, yhat)
+    _, dm0 = metrics.dm_test(ym0 - y, yhat - y)
 
     out = {
         "n_test": int(len(common)),
@@ -117,7 +118,7 @@ def score_period(res: pd.DataFrame, model: str, idx: pd.Index,
         "MAE": mae,
         "skill_vs_M0": float(1 - rmse / rmse_m0) if rmse_m0 > 0 else np.nan,
         "DirAcc": metrics.directional_acc(rhat, ract),
-        "CW_p_vs_M0": cw0,
+        "DM_p_vs_M0": dm0,
         "DM_p_vs_ref": np.nan,
     }
 
@@ -127,8 +128,8 @@ def score_period(res: pd.DataFrame, model: str, idx: pd.Index,
         if len(rc) > 30:
             yv = res.loc[rc, "P_next_actual"].to_numpy()
             _, dmp = metrics.dm_test(
-                res.loc[rc, f"P_hat_{model}"].to_numpy() - yv,
-                ref.loc[rc, ref_col].to_numpy() - yv)
+                ref.loc[rc, ref_col].to_numpy() - yv,
+                res.loc[rc, f"P_hat_{model}"].to_numpy() - yv)
             out["DM_p_vs_ref"] = dmp
     return out
 

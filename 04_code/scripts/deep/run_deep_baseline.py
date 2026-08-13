@@ -67,24 +67,48 @@ def _write_tier_exports(merged: pd.DataFrame, summ: pd.DataFrame,
 
 
 def compare_row(merged: pd.DataFrame, small_col: str, large_col: str, name: str,
-                nested: bool) -> dict:
+                predictor_set_nested: bool) -> dict:
+    """One pairwise Deep comparison, DM-HLN primary.
+
+    d_t = L(small) - L(large), so a positive statistic means the larger
+    specification is the more accurate forecast. Clark-West is deliberately not
+    reported for these pairs: they change encoders, fusion structure or model
+    class, so the MSPE adjustment is not valid for them (see backtest.metrics).
+    `predictor_set_nested` only records that the pair adds predictors.
+
+    These rows are descriptive. The frozen comparison families and their
+    Holm-adjusted p-values come from scripts/tools/build_test_tables.py.
+    """
     y = merged["P_next_actual"].to_numpy()
     ys = merged[f"P_hat_{small_col}"].to_numpy()
     yl = merged[f"P_hat_{large_col}"].to_numpy()
-    cw, cwp = metrics.clark_west(y, ys, yl)
-    dm, dmp = metrics.dm_test(yl - y, ys - y)
-    return {"comparison": name, "small": small_col, "large": large_col,
-            "valid_test": "CW(nested)" if nested else "DM(non-nested)",
-            "p_value": cwp if nested else dmp,
-            "CW_stat": cw, "CW_p": cwp, "DM_stat": dm, "DM_p": dmp}
+    dm, dmp = metrics.dm_test(ys - y, yl - y)
+    return {"comparison": name, "reference": small_col, "candidate": large_col,
+            "predictor_set_nested": predictor_set_nested,
+            "primary_test": "DM-HLN one-sided", "DM_stat": dm, "DM_p": dmp}
 
 
-def cw_vs_m0(merged: pd.DataFrame, model_cols: list[str]) -> pd.Series:
-    y = merged["P_next_actual"].to_numpy()
-    ym0 = merged["P_hat_M0"].to_numpy()
-    out = {c: metrics.clark_west(y, ym0, merged[f"P_hat_{c}"].to_numpy())[1]
-           for c in model_cols}
-    return pd.Series(out)
+# Descriptive pairwise comparisons written to deep_cw.csv. The frozen families
+# live in scripts/tools/build_test_tables.py; these rows are not a substitute.
+COMPARISONS = [
+    ("M4_Deep_gated", "M3_Deep_gated", "RS incr. (M4 vs M3 gated)", True),
+    ("M3_Deep_gated", "M1_Deep", "shipping incr. (M3 vs M1 deep)", True),
+    ("M2_Deep_gated", "M1_Deep", "rs incr. (M2 vs M1 deep)", True),
+    ("M4_Deep_gated", "M1_Flat_Ridge", "full rep vs M1_Flat", False),
+    ("M2_Deep_gated", "M1_Flat_Ridge", "fin+rs rep vs M1_Flat", False),
+    ("M_rs_deep", "M1_Flat_Ridge", "rs-rep vs M1_Flat", False),
+    ("M_ship_GNN", "M1_Flat_Ridge", "shipping-rep vs M1_Flat", False),
+    ("M4_Deep_Concat", "M1_Flat_Ridge", "concat rep vs M1_Flat", False),
+    ("M4_Deep_gated", "M4_Deep_Concat", "gating vs concat", False),
+]
+
+
+def comparison_table(merged: pd.DataFrame, deep_cols: list[str]) -> pd.DataFrame:
+    have = set(deep_cols)
+    rows = [compare_row(merged, small, large, name, nested)
+            for large, small, name, nested in COMPARISONS
+            if large in have and (small in have or small.startswith("M1_Flat"))]
+    return pd.DataFrame(rows)
 
 
 def make_plot(merged, summ, model_cols, path):
@@ -131,6 +155,9 @@ def main() -> None:
     ap.add_argument("--no-plot", action="store_true")
     ap.add_argument("--replot-only", action="store_true",
                     help="Rebuild deep_backtest.png from existing CSVs (no retrain)")
+    ap.add_argument("--recompare-only", action="store_true",
+                    help="Rebuild deep_cw.csv from the saved weekly predictions "
+                         "(no retrain), e.g. after the test definitions change")
     args = ap.parse_args()
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -139,15 +166,24 @@ def main() -> None:
     pred_path = OUT_DIR / "deep_predictions.csv"
     plot_path = OUT_DIR / "deep_backtest.png"
 
-    if args.replot_only:
+    if args.replot_only or args.recompare_only:
         if not met_path.exists() or not pred_path.exists():
             raise SystemExit(f"Missing {met_path} or {pred_path}")
         summ = pd.read_csv(met_path, index_col=0)
         merged = pd.read_csv(pred_path, index_col=0, parse_dates=True)
         model_cols = [c[len("P_hat_"):] for c in merged.columns
                       if c.startswith("P_hat_") and c != "P_hat_M0"]
-        make_plot(merged, summ, model_cols, plot_path)
-        print(f"Replotted: {plot_path}")
+        if args.recompare_only:
+            cw = comparison_table(merged, [c for c in model_cols
+                                           if not c.startswith("M1_Flat")])
+            cw.to_csv(cw_path, index=False)
+            print(cw.to_string(index=False, float_format=lambda x: f"{x:.4f}"))
+            print(f"\nRebuilt from {len(merged)} saved weeks: {cw_path}")
+            print("Holm-adjusted p-values: "
+                  "04_code/scripts/tools/build_test_tables.py")
+        if args.replot_only:
+            make_plot(merged, summ, model_cols, plot_path)
+            print(f"Replotted: {plot_path}")
         return
 
     modes = [resolve_deep_config(m.strip())
@@ -196,25 +232,8 @@ def main() -> None:
     flat_cols = ["M1_Flat_Ridge", "M1_Flat_XGB"]
     all_cols = flat_cols + deep_cols
     summ = metrics.evaluate(merged, all_cols)
-    summ["CW_p_vs_M0"] = cw_vs_m0(merged, all_cols).reindex(summ.index)
 
-    have = set(deep_cols)
-    cand = [
-        ("M4_Deep_gated", "M3_Deep_gated", "RS incr. (M4 vs M3 gated)", True),
-        ("M3_Deep_gated", "M1_Deep", "shipping incr. (M3 vs M1 deep)", True),
-        ("M2_Deep_gated", "M1_Deep", "rs incr. (M2 vs M1 deep)", True),
-        ("M4_Deep_gated", "M1_Flat_Ridge", "full rep vs M1_Flat", False),
-        ("M2_Deep_gated", "M1_Flat_Ridge", "fin+rs rep vs M1_Flat", False),
-        ("M_rs_deep", "M1_Flat_Ridge", "rs-rep vs M1_Flat", False),
-        ("M_ship_GNN", "M1_Flat_Ridge", "shipping-rep vs M1_Flat", False),
-        ("M4_Deep_Concat", "M1_Flat_Ridge", "concat rep vs M1_Flat", False),
-        ("M4_Deep_gated", "M4_Deep_Concat", "gating vs concat", False),
-    ]
-    cw_rows = []
-    for large, small, name, nested in cand:
-        if large in have and (small in have or small.startswith("M1_Flat")):
-            cw_rows.append(compare_row(merged, small, large, name, nested))
-    cw = pd.DataFrame(cw_rows)
+    cw = comparison_table(merged, deep_cols)
 
     summ.to_csv(met_path)
     cw.to_csv(cw_path, index=False)
@@ -227,10 +246,10 @@ def main() -> None:
     print(summ.to_string(float_format=lambda x: f"{x:8.4f}"))
     print("=" * 100)
     if len(cw):
-        print("\nModel comparisons (CW nested / DM non-nested):")
-        print(cw[["comparison", "small", "large", "valid_test", "p_value",
-                  "CW_p", "DM_p"]].to_string(
-              index=False, float_format=lambda x: f"{x:.4f}"))
+        print("\nModel comparisons (DM-HLN, one-sided: candidate more accurate):")
+        print(cw[["comparison", "reference", "candidate", "DM_stat", "DM_p"]]
+              .to_string(index=False, float_format=lambda x: f"{x:.4f}"))
+        print("Holm-adjusted p-values: 04_code/scripts/tools/build_test_tables.py")
 
     if not args.no_plot:
         make_plot(merged, summ, all_cols, plot_path)
