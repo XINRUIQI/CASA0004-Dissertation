@@ -60,7 +60,8 @@ def get_out_dir(modality: str) -> Path:
 def run_config(df, dico, modality: str, m2_features: str, lookback: int,
                min_train: int, retrain_every: int, seed: int, feature_mode: str,
                tune: bool, val_weeks: int, drop_aoi: str | None = None,
-               m3_tier: str = "full", fill_mode: str = "zero") -> pd.DataFrame:
+               m3_tier: str = "full",
+               fill_mode: str = data.DEFAULT_FILL_MODE) -> pd.DataFrame:
     feat = flat_feat_key(modality)
     label = flat_label(feat)
     cols = data.select_features(dico, feat, m2_features, drop_aoi=drop_aoi,
@@ -119,7 +120,8 @@ def merge_predictions(res_main: pd.DataFrame, modality: str,
 
 def leave_one_aoi_out(df, dico, modality, m2_features, res_main, lookback,
                       min_train, retrain_every, seed, feature_mode, tune,
-                      val_weeks, fill_mode: str = "zero") -> pd.DataFrame:
+                      val_weeks,
+                      fill_mode: str = data.DEFAULT_FILL_MODE) -> pd.DataFrame:
     label = flat_label(modality)
     full = metrics.evaluate(res_main, [f"{label}_Ridge", f"{label}_XGB"])
     full_r = float(full.loc[f"{label}_Ridge", "RMSE"])
@@ -198,9 +200,10 @@ def main() -> None:
     ap.add_argument("--min-train", type=int, default=104)
     ap.add_argument("--retrain-every", type=int, default=13)
     ap.add_argument("--feature-mode", choices=["all", "returns"], default="all")
-    ap.add_argument("--fill-mode", default="zero", choices=list(data.FILL_MODES),
-                    help="leading-gap treatment: zero (default), fold_median "
-                         "or by_family (zero for RS anomalies, median elsewhere)")
+    ap.add_argument("--fill-mode", default=data.DEFAULT_FILL_MODE,
+                    choices=list(data.FILL_MODES),
+                    help="leading-gap treatment: by_family (default; zero for RS "
+                         "anomalies, fold median elsewhere), zero or fold_median")
     ap.add_argument("--out-dir", default=None,
                     help="override the output directory (keeps main results intact)")
     ap.add_argument("--no-tune", action="store_true")

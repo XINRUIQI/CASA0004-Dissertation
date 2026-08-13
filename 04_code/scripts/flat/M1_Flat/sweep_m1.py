@@ -72,7 +72,7 @@ QUICK_GRID = [
 ]
 
 
-def run_one(df, dico, cfg, min_train, val_weeks, seed, fill_mode="zero"):
+def run_one(df, dico, cfg, min_train, val_weeks, seed, fill_mode=data.DEFAULT_FILL_MODE):
     cols = data.select_features(dico, "M1")
     ds = data.build_dataset(df, cols, cfg["lookback"], cfg["feature_mode"],
                             fill_mode=fill_mode)
@@ -82,7 +82,7 @@ def run_one(df, dico, cfg, min_train, val_weeks, seed, fill_mode="zero"):
     return res, met
 
 
-def run_grid(grid, min_train, val_weeks, seed, fill_mode="zero"):
+def run_grid(grid, min_train, val_weeks, seed, fill_mode=data.DEFAULT_FILL_MODE):
     rows = []
     m0_done = False
     for cfg in grid:
@@ -160,9 +160,10 @@ def main():
     ap.add_argument("--min-train", type=int, default=104)
     ap.add_argument("--val-weeks", type=int, default=52)
     ap.add_argument("--seed", type=int, default=42)
-    ap.add_argument("--fill-mode", default="zero", choices=list(data.FILL_MODES),
-                    help="leading-gap treatment: zero (default), fold_median "
-                         "or by_family (zero for RS anomalies, median elsewhere)")
+    ap.add_argument("--fill-mode", default=data.DEFAULT_FILL_MODE,
+                    choices=list(data.FILL_MODES),
+                    help="leading-gap treatment: by_family (default; zero for RS "
+                         "anomalies, fold median elsewhere), zero or fold_median")
     ap.add_argument("--out-dir", default=None,
                     help="override the output directory (keeps main results intact)")
     args = ap.parse_args()

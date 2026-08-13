@@ -68,7 +68,7 @@ def select_m3_arm(dico: pd.DataFrame, arm: str) -> list[str]:
 
 
 def run_arm(df, dico, arm, min_train, retrain_every, val_weeks, seed,
-            fill_mode="zero"):
+            fill_mode=data.DEFAULT_FILL_MODE):
     m3_cols = select_m3_arm(dico, arm)
     if not m3_cols:
         print(f"  WARNING: no columns found for arm '{arm}', skipping.")
@@ -125,9 +125,10 @@ def main():
     ap.add_argument("--retrain-every",  type=int, default=13)
     ap.add_argument("--val-weeks",      type=int, default=52)
     ap.add_argument("--seed",           type=int, default=42)
-    ap.add_argument("--fill-mode", default="zero", choices=list(data.FILL_MODES),
-                    help="leading-gap treatment: zero (default), fold_median "
-                         "or by_family (zero for RS anomalies, median elsewhere)")
+    ap.add_argument("--fill-mode", default=data.DEFAULT_FILL_MODE,
+                    choices=list(data.FILL_MODES),
+                    help="leading-gap treatment: by_family (default; zero for RS "
+                         "anomalies, fold median elsewhere), zero or fold_median")
     ap.add_argument("--out-dir", default=None,
                     help="override the output directory (keeps main results intact)")
     args = ap.parse_args()

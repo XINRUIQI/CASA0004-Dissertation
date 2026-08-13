@@ -44,7 +44,7 @@ LOOKBACKS = [1, 4, 8]
 
 
 def run_one(df, dico, lookback, min_train, retrain_every, val_weeks, seed,
-            fill_mode="zero"):
+            fill_mode=data.DEFAULT_FILL_MODE):
     cols_m1 = data.select_features(dico, "M1")
     ds_m1   = data.build_dataset(df, cols_m1, lookback, "all", fill_mode=fill_mode)
     res_m1  = rolling.rolling_origin(ds_m1, M1_LABEL, min_train, retrain_every,
@@ -62,7 +62,7 @@ def run_one(df, dico, lookback, min_train, retrain_every, val_weeks, seed,
     return res_m1, res_m4, met_m1, met_m4
 
 
-def run_grid(df, dico, min_train, retrain_every, val_weeks, seed, fill_mode="zero"):
+def run_grid(df, dico, min_train, retrain_every, val_weeks, seed, fill_mode=data.DEFAULT_FILL_MODE):
     rows = []
     for lb in LOOKBACKS:
         t0 = time.time()
@@ -136,9 +136,10 @@ def main():
     ap.add_argument("--min-train",  type=int, default=104)
     ap.add_argument("--val-weeks",  type=int, default=52)
     ap.add_argument("--seed",       type=int, default=42)
-    ap.add_argument("--fill-mode", default="zero", choices=list(data.FILL_MODES),
-                    help="leading-gap treatment: zero (default), fold_median "
-                         "or by_family (zero for RS anomalies, median elsewhere)")
+    ap.add_argument("--fill-mode", default=data.DEFAULT_FILL_MODE,
+                    choices=list(data.FILL_MODES),
+                    help="leading-gap treatment: by_family (default; zero for RS "
+                         "anomalies, fold median elsewhere), zero or fold_median")
     ap.add_argument("--out-dir", default=None,
                     help="override the output directory (keeps main results intact)")
     args = ap.parse_args()

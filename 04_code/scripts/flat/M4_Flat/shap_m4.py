@@ -72,13 +72,15 @@ def m3_source_of(base: str) -> str | None:
     return None
 
 
-def build_holdout(train_end, test_start, lookback=4):
+def build_holdout(train_end, test_start, lookback=4,
+                  fill_mode=data.DEFAULT_FILL_MODE):
     df   = data.load_matrix()
     dico = data.load_dict()
     cols = data.select_features(dico, "M4", "anom")
     ds   = data.build_dataset(df, cols, lookback, "all",
                               window_start=data.WINDOW_START,
-                              window_end=data.WINDOW_END)
+                              window_end=data.WINDOW_END,
+                              fill_mode=fill_mode)
     idx = ds["idx"]
     X   = ds["X"]
     r   = ds["r_next"]
@@ -173,12 +175,17 @@ def main():
     ap.add_argument("--lookback",   type=int, default=4)
     ap.add_argument("--val-weeks",  type=int, default=52)
     ap.add_argument("--seed",       type=int, default=42)
+    ap.add_argument("--fill-mode",  default=data.DEFAULT_FILL_MODE,
+                    choices=list(data.FILL_MODES),
+                    help="leading-gap treatment: by_family (default; zero for RS "
+                         "anomalies, fold median elsewhere), zero or fold_median")
     args = ap.parse_args()
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    print(f"Building M4 holdout (train≤{args.train_end}, test≥{args.test_start}) …")
+    print(f"Building M4 holdout (train≤{args.train_end}, test≥{args.test_start}) "
+          f"| fill={args.fill_mode} …")
     X_tr, r_tr, X_te, r_te, feat_names = build_holdout(
-        args.train_end, args.test_start, args.lookback)
+        args.train_end, args.test_start, args.lookback, args.fill_mode)
     print(f"  Train={len(X_tr)}  Test={len(X_te)}  Features={len(feat_names)}")
 
     print("Fitting …")

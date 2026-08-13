@@ -183,7 +183,7 @@ def rolling_fixed(ds: dict, pipe_factory, label: str,
 
 def run_arm(df, dico, arm_label: str, m2_cols: list[str],
             min_train: int, retrain_every: int, seed: int,
-            fill_mode: str = "zero") -> tuple[pd.DataFrame, pd.DataFrame]:
+            fill_mode: str = data.DEFAULT_FILL_MODE) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Return (res_m2, res_m1) on common test weeks."""
     m1_cols = data.select_features(dico, "M1")
     m2_all  = m1_cols + m2_cols
@@ -320,9 +320,10 @@ def main():
     ap.add_argument("--min-train",    type=int, default=104)
     ap.add_argument("--retrain-every",type=int, default=13)
     ap.add_argument("--seed",         type=int, default=42)
-    ap.add_argument("--fill-mode", default="zero", choices=list(data.FILL_MODES),
-                    help="leading-gap treatment: zero (default), fold_median "
-                         "or by_family (zero for RS anomalies, median elsewhere)")
+    ap.add_argument("--fill-mode", default=data.DEFAULT_FILL_MODE,
+                    choices=list(data.FILL_MODES),
+                    help="leading-gap treatment: by_family (default; zero for RS "
+                         "anomalies, fold median elsewhere), zero or fold_median")
     ap.add_argument("--out-dir", default=None,
                     help="override the output directory (keeps main results intact)")
     args = ap.parse_args()

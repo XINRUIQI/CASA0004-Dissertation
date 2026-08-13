@@ -280,6 +280,7 @@ def make_lagged(df: pd.DataFrame, feat_cols: list[str], lookback: int) -> pd.Dat
 
 
 FILL_MODES = ("zero", "fold_median", "by_family")
+DEFAULT_FILL_MODE = "by_family"
 
 RS_ANOM_TAG = "_anom_"
 
@@ -290,17 +291,19 @@ def is_rs_anomaly(col: str) -> bool:
     return RS_ANOM_TAG in col
 
 
-def fill_features(X: pd.DataFrame, mode: str = "zero") -> pd.DataFrame:
+def fill_features(X: pd.DataFrame, mode: str = DEFAULT_FILL_MODE) -> pd.DataFrame:
     """Past-only gap filling (ffill), then a choice of leading-gap treatment.
 
+    'by_family'   DEFAULT. ffill, then zero for RS anomalies only. Zero is the
+                  neutral value for an anomaly but not for a shipping level
+                  such as a tanker count, so those gaps go to the fold median.
     'zero'        ffill + residual leading NaN -> 0 on the raw scale.
     'fold_median' ffill only; leading NaN survive and are imputed inside each
                   training fold by the pipeline's median imputer, so the value
                   is re-estimated at every refit from past data alone.
-    'by_family'   ffill, then zero for RS anomalies only. Zero is the neutral
-                  value for an anomaly but not for a shipping level such as a
-                  tanker share, so those gaps go to the fold median instead.
 
+    Only RS anomalies and PortWatch carry leading gaps, so 'by_family'
+    reproduces 'zero' exactly for M1/M2 and 'fold_median' exactly for M3.
     Leading gaps are sparse and confined to the warm-up, and every mode keeps
     the EXACT same test weeks, so RMSE differences reflect feature content and
     the imputation rule, not sample changes.
@@ -323,7 +326,7 @@ def build_dataset(df: pd.DataFrame, feat_cols: list[str], lookback: int,
                   feature_mode: str = "all",
                   window_start: str = WINDOW_START,
                   window_end: str = WINDOW_END,
-                  fill_mode: str = "zero") -> dict:
+                  fill_mode: str = DEFAULT_FILL_MODE) -> dict:
     """Assemble the aligned arrays for the rolling-origin loop.
 
     Returns a dict with idx, X (n x p), P_t, P_next, r_next (=TARGET r_{t+1}),

@@ -75,16 +75,18 @@ def parse_m2_meta(base: str) -> tuple[str | None, str | None]:
 # Build lagged dataset for a fixed holdout split
 # ---------------------------------------------------------------------------
 
-def build_holdout(train_end: str, test_start: str,
-                  lookback: int = 4) -> tuple[np.ndarray, np.ndarray,
-                                              np.ndarray, np.ndarray,
-                                              list[str]]:
+def build_holdout(train_end: str, test_start: str, lookback: int = 4,
+                  fill_mode: str = data.DEFAULT_FILL_MODE
+                  ) -> tuple[np.ndarray, np.ndarray,
+                             np.ndarray, np.ndarray,
+                             list[str]]:
     df   = data.load_matrix()
     dico = data.load_dict()
     cols = data.select_features(dico, "M2", "anom")    # 34 M1 + 55 M2 = 89 base cols
     ds   = data.build_dataset(df, cols, lookback, "all",
                               window_start=data.WINDOW_START,
-                              window_end=data.WINDOW_END)
+                              window_end=data.WINDOW_END,
+                              fill_mode=fill_mode)
 
     idx        = ds["idx"]
     X          = ds["X"]
@@ -232,14 +234,19 @@ def main():
     ap.add_argument("--top-n",      type=int, default=20,
                     help="top-N M2 features to write to shap_topN_anom.csv")
     ap.add_argument("--seed",       type=int, default=42)
+    ap.add_argument("--fill-mode",  default=data.DEFAULT_FILL_MODE,
+                    choices=list(data.FILL_MODES),
+                    help="leading-gap treatment: by_family (default; zero for RS "
+                         "anomalies, fold median elsewhere), zero or fold_median")
     args = ap.parse_args()
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
     print(f"Building holdout dataset (lookback={args.lookback}, "
-          f"train≤{args.train_end}, test≥{args.test_start}) …")
+          f"train≤{args.train_end}, test≥{args.test_start}, "
+          f"fill={args.fill_mode}) …")
     X_tr, r_tr, X_te, r_te, feat_names = build_holdout(
-        args.train_end, args.test_start, args.lookback)
+        args.train_end, args.test_start, args.lookback, args.fill_mode)
     n_base = len({strip_lag(f) for f in feat_names})
     print(f"  Train={len(X_tr)} weeks  Test={len(X_te)} weeks  "
           f"Lagged features={len(feat_names)} (≈{n_base} base)")

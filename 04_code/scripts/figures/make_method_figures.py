@@ -301,7 +301,7 @@ def fig32_expanding_window() -> None:
 
 
 def fig34_forecast_origin() -> None:
-    """Section 3.9: what one forecast origin looks like inside a test block."""
+    """Section 3.6.1: what one re-estimation origin looks like."""
     fig, axb = plt.subplots(figsize=(9.6, 2.4))
 
     total = 130
@@ -331,15 +331,16 @@ def fig34_forecast_origin() -> None:
 
     axb.annotate("", xy=(val0 + VAL_WEEKS, 0.42), xytext=(0, 0.42),
                  arrowprops=dict(arrowstyle="<->", color="#666666", linewidth=0.9))
-    axb.text(total / 2, 0.34, "grows by one week at every test point; "
-             "no observation dated after $t$ enters training",
+    axb.text(total / 2, 0.34, "training fold at a scheduled re-estimation; "
+             "parameters held fixed until the next re-estimation",
              ha="center", va="top", fontsize=7.5, color="#555555")
 
     axb.set_xlim(-6, tgt + 34)
     axb.set_ylim(0.15, 1.22)
     axb.axis("off")
-    axb.set_title(f"Anatomy of one forecast origin (repeated at each of the "
-                  f"{RETRAIN_EVERY} weeks in a test block)", loc="left")
+    axb.set_title("Anatomy of one re-estimation origin: nested inner "
+                  "validation, four-week input and one-week-ahead target",
+                  loc="left")
 
     save(fig, "fig_3_4_forecast_origin")
 
