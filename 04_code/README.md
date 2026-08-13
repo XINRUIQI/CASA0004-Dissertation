@@ -142,7 +142,7 @@ Default modes: `m1_deep, m_ship_gnn, m_rs_deep, m3_deep_gated, m2_deep_gated, m4
 | `--seed` | 42 | main seed |
 | `--replot-only` | off | redraw `deep_backtest.png` from existing CSVs |
 
-**Outputs** → `05_outputs/baselines/Deep/` (on macOS this may be the same path as `deep/`)
+**Outputs** → `05_outputs/baselines/Deep/`
 
 | Path | Content |
 | --- | --- |

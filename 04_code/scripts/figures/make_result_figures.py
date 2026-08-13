@@ -24,7 +24,7 @@ from matplotlib.lines import Line2D
 ROOT = Path(__file__).resolve().parents[3]
 BASE = ROOT / "05_outputs" / "baselines"
 FLAT = BASE / "Flat"
-DEEP = BASE / "deep"
+DEEP = BASE / "Deep"
 OUT_DIR = ROOT / "05_outputs" / "figures"
 
 MODELS = ["M1", "M2", "M3", "M4"]
