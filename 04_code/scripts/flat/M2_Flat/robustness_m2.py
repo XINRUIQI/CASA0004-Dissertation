@@ -321,7 +321,8 @@ def main():
     ap.add_argument("--retrain-every",type=int, default=13)
     ap.add_argument("--seed",         type=int, default=42)
     ap.add_argument("--fill-mode", default="zero", choices=list(data.FILL_MODES),
-                    help="leading-gap treatment: zero (default) or fold_median")
+                    help="leading-gap treatment: zero (default), fold_median "
+                         "or by_family (zero for RS anomalies, median elsewhere)")
     ap.add_argument("--out-dir", default=None,
                     help="override the output directory (keeps main results intact)")
     args = ap.parse_args()
