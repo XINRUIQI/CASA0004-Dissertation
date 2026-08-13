@@ -279,7 +279,15 @@ def make_lagged(df: pd.DataFrame, feat_cols: list[str], lookback: int) -> pd.Dat
     return pd.concat(parts, axis=1)
 
 
-FILL_MODES = ("zero", "fold_median")
+FILL_MODES = ("zero", "fold_median", "by_family")
+
+RS_ANOM_TAG = "_anom_"
+
+
+def is_rs_anomaly(col: str) -> bool:
+    """RS anomaly columns are observation minus own baseline, so they are
+    centred on zero by construction and zero reads as 'no anomaly'."""
+    return RS_ANOM_TAG in col
 
 
 def fill_features(X: pd.DataFrame, mode: str = "zero") -> pd.DataFrame:
@@ -289,14 +297,23 @@ def fill_features(X: pd.DataFrame, mode: str = "zero") -> pd.DataFrame:
     'fold_median' ffill only; leading NaN survive and are imputed inside each
                   training fold by the pipeline's median imputer, so the value
                   is re-estimated at every refit from past data alone.
+    'by_family'   ffill, then zero for RS anomalies only. Zero is the neutral
+                  value for an anomaly but not for a shipping level such as a
+                  tanker share, so those gaps go to the fold median instead.
 
-    RS anomaly columns have sparse early gaps; either mode keeps every config on
-    the EXACT same test weeks so RMSE differences reflect feature content, not
-    sample changes. Residual NaNs only fall in the warm-up, never the test set.
+    Leading gaps are sparse and confined to the warm-up, and every mode keeps
+    the EXACT same test weeks, so RMSE differences reflect feature content and
+    the imputation rule, not sample changes.
     """
     assert mode in FILL_MODES, f"unknown fill mode {mode!r}"
     Xf = X.ffill()
-    return Xf.fillna(0.0) if mode == "zero" else Xf
+    if mode == "zero":
+        return Xf.fillna(0.0)
+    if mode == "by_family":
+        anom = [c for c in Xf.columns if is_rs_anomaly(c)]
+        if anom:
+            Xf[anom] = Xf[anom].fillna(0.0)
+    return Xf
 
 
 # ----------------------------------------------------------------------------
@@ -323,9 +340,9 @@ def build_dataset(df: pd.DataFrame, feat_cols: list[str], lookback: int,
     feat_names = X_all.columns.tolist()
 
     # Weeks that carry a complete `lookback`-week calendar window. Under
-    # fill_mode='zero' this is implied by notna(); under 'fold_median' the
-    # surviving leading NaN must not shrink the sample, so it is imposed here
-    # and both modes score the same test weeks.
+    # fill_mode='zero' this is implied by notna(); when leading NaN survive
+    # they must not shrink the sample, so it is imposed here and every mode
+    # scores the same test weeks.
     depth_ok = pd.Series(np.arange(len(df_feat)) >= lookback - 1, index=df_feat.index)
 
     P = df[TARGET_PRICE].astype(float)
@@ -341,8 +358,8 @@ def build_dataset(df: pd.DataFrame, feat_cols: list[str], lookback: int,
 
     in_win = (data.index >= window_start) & (data.index <= window_end)
     data = data[in_win]
-    feat_ok = (depth_ok.reindex(data.index).fillna(False) if fill_mode == "fold_median"
-               else data[feat_names].notna().all(axis=1))
+    feat_ok = (data[feat_names].notna().all(axis=1) if fill_mode == "zero"
+               else depth_ok.reindex(data.index).fillna(False))
     usable = (
         feat_ok
         & data["__P_t"].notna() & data["__P_next"].notna() & data["__r_next"].notna()
