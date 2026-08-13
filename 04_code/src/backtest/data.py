@@ -279,14 +279,44 @@ def make_lagged(df: pd.DataFrame, feat_cols: list[str], lookback: int) -> pd.Dat
     return pd.concat(parts, axis=1)
 
 
-def fill_features(X: pd.DataFrame) -> pd.DataFrame:
-    """ffill (past-only, no look-ahead) + residual leading NaN -> 0 (neutral).
+FILL_MODES = ("zero", "fold_median", "by_family")
+DEFAULT_FILL_MODE = "by_family"
 
-    RS anomaly columns have sparse early gaps; this keeps every config on the
-    EXACT same test weeks so RMSE differences reflect feature content, not
-    sample changes. Residual NaNs only fall in the warm-up, never the test set.
+RS_ANOM_TAG = "_anom_"
+
+
+def is_rs_anomaly(col: str) -> bool:
+    """RS anomaly columns are observation minus own baseline, so they are
+    centred on zero by construction and zero reads as 'no anomaly'."""
+    return RS_ANOM_TAG in col
+
+
+def fill_features(X: pd.DataFrame, mode: str = DEFAULT_FILL_MODE) -> pd.DataFrame:
+    """Past-only gap filling (ffill), then a choice of leading-gap treatment.
+
+    'by_family'   DEFAULT. ffill, then zero for RS anomalies only. Zero is the
+                  neutral value for an anomaly but not for a shipping level
+                  such as a tanker count, so those gaps go to the fold median.
+    'zero'        ffill + residual leading NaN -> 0 on the raw scale.
+    'fold_median' ffill only; leading NaN survive and are imputed inside each
+                  training fold by the pipeline's median imputer, so the value
+                  is re-estimated at every refit from past data alone.
+
+    Only RS anomalies and PortWatch carry leading gaps, so 'by_family'
+    reproduces 'zero' exactly for M1/M2 and 'fold_median' exactly for M3.
+    Leading gaps are sparse and confined to the warm-up, and every mode keeps
+    the EXACT same test weeks, so RMSE differences reflect feature content and
+    the imputation rule, not sample changes.
     """
-    return X.ffill().fillna(0.0)
+    assert mode in FILL_MODES, f"unknown fill mode {mode!r}"
+    Xf = X.ffill()
+    if mode == "zero":
+        return Xf.fillna(0.0)
+    if mode == "by_family":
+        anom = [c for c in Xf.columns if is_rs_anomaly(c)]
+        if anom:
+            Xf[anom] = Xf[anom].fillna(0.0)
+    return Xf
 
 
 # ----------------------------------------------------------------------------
@@ -295,7 +325,8 @@ def fill_features(X: pd.DataFrame) -> pd.DataFrame:
 def build_dataset(df: pd.DataFrame, feat_cols: list[str], lookback: int,
                   feature_mode: str = "all",
                   window_start: str = WINDOW_START,
-                  window_end: str = WINDOW_END) -> dict:
+                  window_end: str = WINDOW_END,
+                  fill_mode: str = DEFAULT_FILL_MODE) -> dict:
     """Assemble the aligned arrays for the rolling-origin loop.
 
     Returns a dict with idx, X (n x p), P_t, P_next, r_next (=TARGET r_{t+1}),
@@ -307,9 +338,15 @@ def build_dataset(df: pd.DataFrame, feat_cols: list[str], lookback: int,
     df_feat = to_stationary(df, feature_mode)
     if GFW_ZMEAN_COL in feat_cols and GFW_ZMEAN_COL not in df_feat.columns:
         df_feat = add_gfw_activity_zmean(df_feat)   # derived, leak-free
-    Xfilled = fill_features(df_feat[feat_cols])
+    Xfilled = fill_features(df_feat[feat_cols], mode=fill_mode)
     X_all = make_lagged(Xfilled, feat_cols, lookback)
     feat_names = X_all.columns.tolist()
+
+    # Weeks that carry a complete `lookback`-week calendar window. Under
+    # fill_mode='zero' this is implied by notna(); when leading NaN survive
+    # they must not shrink the sample, so it is imposed here and every mode
+    # scores the same test weeks.
+    depth_ok = pd.Series(np.arange(len(df_feat)) >= lookback - 1, index=df_feat.index)
 
     P = df[TARGET_PRICE].astype(float)
     r_next = np.log(P.shift(-1) / P)                 # r_{t+1}, indexed at t (TARGET)
@@ -324,8 +361,10 @@ def build_dataset(df: pd.DataFrame, feat_cols: list[str], lookback: int,
 
     in_win = (data.index >= window_start) & (data.index <= window_end)
     data = data[in_win]
+    feat_ok = (data[feat_names].notna().all(axis=1) if fill_mode == "zero"
+               else depth_ok.reindex(data.index).fillna(False))
     usable = (
-        data[feat_names].notna().all(axis=1)
+        feat_ok
         & data["__P_t"].notna() & data["__P_next"].notna() & data["__r_next"].notna()
     )
     data = data[usable]

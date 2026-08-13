@@ -14,7 +14,7 @@ What it does for a chosen --modality:
   4. optional --leave-one-aoi-out (gap B3): for an M2-bearing config, drop each
      AOI's RS columns in turn and report the RMSE change.
 
-Outputs (-> 05_outputs/baselines/Flat/<M*_Flat>/):
+Outputs (-> 05_outputs/baselines/Flat/<M*_Flat>/, or --out-dir):
   baseline_metrics[_<suffix>].csv
   baseline_predictions[_<suffix>].csv
   backtest[_<suffix>].png
@@ -26,6 +26,8 @@ Run:
   python3 04_code/scripts/flat/run_baseline.py --modality M1
   python3 04_code/scripts/flat/run_baseline.py --modality M2 --m2-features anom
   python3 04_code/scripts/flat/run_baseline.py --modality M4
+  python3 04_code/scripts/flat/run_baseline.py --modality M4 --fill-mode fold_median \
+      --out-dir 05_outputs/_experiments/leading_impute/M4_Flat
 """
 
 from __future__ import annotations
@@ -58,12 +60,13 @@ def get_out_dir(modality: str) -> Path:
 def run_config(df, dico, modality: str, m2_features: str, lookback: int,
                min_train: int, retrain_every: int, seed: int, feature_mode: str,
                tune: bool, val_weeks: int, drop_aoi: str | None = None,
-               m3_tier: str = "full") -> pd.DataFrame:
+               m3_tier: str = "full",
+               fill_mode: str = data.DEFAULT_FILL_MODE) -> pd.DataFrame:
     feat = flat_feat_key(modality)
     label = flat_label(feat)
     cols = data.select_features(dico, feat, m2_features, drop_aoi=drop_aoi,
                                 m3_tier=m3_tier)
-    ds = data.build_dataset(df, cols, lookback, feature_mode)
+    ds = data.build_dataset(df, cols, lookback, feature_mode, fill_mode=fill_mode)
     return rolling.rolling_origin(ds, label, min_train, retrain_every,
                                   seed, tune, val_weeks)
 
@@ -117,7 +120,8 @@ def merge_predictions(res_main: pd.DataFrame, modality: str,
 
 def leave_one_aoi_out(df, dico, modality, m2_features, res_main, lookback,
                       min_train, retrain_every, seed, feature_mode, tune,
-                      val_weeks) -> pd.DataFrame:
+                      val_weeks,
+                      fill_mode: str = data.DEFAULT_FILL_MODE) -> pd.DataFrame:
     label = flat_label(modality)
     full = metrics.evaluate(res_main, [f"{label}_Ridge", f"{label}_XGB"])
     full_r = float(full.loc[f"{label}_Ridge", "RMSE"])
@@ -127,7 +131,7 @@ def leave_one_aoi_out(df, dico, modality, m2_features, res_main, lookback,
     for aoi in data.list_aois(dico):
         res = run_config(df, dico, modality, m2_features, lookback, min_train,
                          retrain_every, seed, feature_mode, tune, val_weeks,
-                         drop_aoi=aoi)
+                         drop_aoi=aoi, fill_mode=fill_mode)
         m = metrics.evaluate(res, [f"{label}_Ridge", f"{label}_XGB"])
         r = float(m.loc[f"{label}_Ridge", "RMSE"])
         x = float(m.loc[f"{label}_XGB", "RMSE"])
@@ -196,6 +200,12 @@ def main() -> None:
     ap.add_argument("--min-train", type=int, default=104)
     ap.add_argument("--retrain-every", type=int, default=13)
     ap.add_argument("--feature-mode", choices=["all", "returns"], default="all")
+    ap.add_argument("--fill-mode", default=data.DEFAULT_FILL_MODE,
+                    choices=list(data.FILL_MODES),
+                    help="leading-gap treatment: by_family (default; zero for RS "
+                         "anomalies, fold median elsewhere), zero or fold_median")
+    ap.add_argument("--out-dir", default=None,
+                    help="override the output directory (keeps main results intact)")
     ap.add_argument("--no-tune", action="store_true")
     ap.add_argument("--val-weeks", type=int, default=52)
     ap.add_argument("--leave-one-aoi-out", action="store_true")
@@ -228,7 +238,7 @@ def main() -> None:
         dict_stem = stem.replace("weekly_feature_matrix", "weekly_feature_dictionary")
         dict_path = mp.parent / (dict_stem + mp.suffix) if mp.is_absolute() else dict_stem + mp.suffix
 
-    OUT_DIR = get_out_dir(feat)
+    OUT_DIR = Path(args.out_dir).expanduser() if args.out_dir else get_out_dir(feat)
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     suffix = f"_{tag}" if tag else ""
     met_path = OUT_DIR / f"baseline_metrics{suffix}.csv"
@@ -250,13 +260,14 @@ def main() -> None:
     print(f"Merged matrix: {df.shape}  {df.index.min().date()} ~ {df.index.max().date()}")
     print(f"Config: modality={feat} label={label} | m2_features="
           f"{args.m2_features if has_m2 else '-'} | lookback={args.lookback}w "
-          f"| tune={tune} | retrain_every={args.retrain_every} | tag={tag}\n")
+          f"| tune={tune} | retrain_every={args.retrain_every} | tag={tag} "
+          f"| fill={args.fill_mode}\n")
 
     t0 = time.time()
     res_main = run_config(df, dico, feat, args.m2_features, args.lookback,
                           args.min_train, args.retrain_every, args.seed,
                           args.feature_mode, tune, args.val_weeks,
-                          m3_tier=args.m3_tier)
+                          m3_tier=args.m3_tier, fill_mode=args.fill_mode)
     print(f"  {label:8s}: {res_main.attrs['n_raw']:3d} raw x{args.lookback} "
           f"= {res_main.attrs['n_features']:4d} feats | fits={res_main.attrs['n_fits']} "
           f"| test={len(res_main)} ({res_main.index.min().date()}~{res_main.index.max().date()})")
@@ -266,7 +277,7 @@ def main() -> None:
         res_base = run_config(df, dico, NESTED_BASE_FEAT, args.m2_features, args.lookback,
                               args.min_train, args.retrain_every, args.seed,
                               args.feature_mode, tune, args.val_weeks,
-                              m3_tier=args.m3_tier)
+                              m3_tier=args.m3_tier, fill_mode=args.fill_mode)
         common = res_main.index.intersection(res_base.index)
         res_main, res_base = res_main.loc[common], res_base.loc[common]
         print(f"  {NESTED_BASE_LABEL:8s}: {res_base.attrs['n_raw']:3d} raw x{args.lookback} "
@@ -292,7 +303,8 @@ def main() -> None:
         print(f"\nLeave-one-AOI-out ({label}, {args.m2_features}):")
         loao = leave_one_aoi_out(df, dico, feat, args.m2_features, res_main,
                                  args.lookback, args.min_train, args.retrain_every,
-                                 args.seed, args.feature_mode, tune, args.val_weeks)
+                                 args.seed, args.feature_mode, tune, args.val_weeks,
+                                 fill_mode=args.fill_mode)
         loao_path = OUT_DIR / f"baseline_loao{suffix}.csv"
         loao.to_csv(loao_path, index=False)
 

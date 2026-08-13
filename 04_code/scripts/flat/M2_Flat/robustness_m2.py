@@ -21,13 +21,15 @@ on the dimensionality-reduction effect, not tuning noise.
 Clark-West vs M1: M1 is re-run once on the same common test weeks so the
 nested-increment test is exact (same weeks, same protocol).
 
-Outputs (-> 05_outputs/baselines/Flat/M2_Flat/):
+Outputs (-> 05_outputs/baselines/Flat/M2_Flat/, or --out-dir):
   c2_summary.csv          arm × model RMSE / skill / CW_p table
   c2_overview.png         2-panel: RMSE bars + CW_p bars
 
 Run:
   python3 04_code/scripts/flat/M2_Flat/robustness_m2.py
   python3 04_code/scripts/flat/M2_Flat/robustness_m2.py --top-n 15   # shap-top15 instead of 20
+  python3 04_code/scripts/flat/M2_Flat/robustness_m2.py --fill-mode fold_median \
+      --out-dir 05_outputs/_experiments/leading_impute/M2_Flat
 """
 
 from __future__ import annotations
@@ -42,6 +44,7 @@ import numpy as np
 import pandas as pd
 from sklearn.decomposition import PCA
 from sklearn.feature_selection import SelectFromModel, VarianceThreshold
+from sklearn.impute import SimpleImputer
 from sklearn.linear_model import ElasticNet, Ridge
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
@@ -69,14 +72,21 @@ XGB_PARAMS  = dict(n_estimators=200, max_depth=2, learning_rate=0.05,
 # Pipeline factories (one callable per arm × model)
 # ---------------------------------------------------------------------------
 
+def _im():
+    """Median imputation fit on the training fold only; no-op under fill_mode='zero'."""
+    return SimpleImputer(strategy="median", keep_empty_features=True)
+
+
 def make_ridge_plain(seed):
-    return Pipeline([("vt", VarianceThreshold(0.0)),
+    return Pipeline([("im", _im()),
+                     ("vt", VarianceThreshold(0.0)),
                      ("sc", StandardScaler()),
                      ("m",  Ridge(alpha=RIDGE_ALPHA, random_state=seed))])
 
 
 def make_ridge_pca(seed):
-    return Pipeline([("vt",  VarianceThreshold(0.0)),
+    return Pipeline([("im",  _im()),
+                     ("vt",  VarianceThreshold(0.0)),
                      ("sc",  StandardScaler()),
                      ("pca", PCA(n_components=0.90, random_state=seed)),
                      ("m",   Ridge(alpha=RIDGE_ALPHA, random_state=seed))])
@@ -87,21 +97,24 @@ def make_ridge_elastic(seed):
         ElasticNet(alpha=0.05, l1_ratio=0.5, max_iter=5000, random_state=seed),
         threshold="median",
     )
-    return Pipeline([("vt",  VarianceThreshold(0.0)),
+    return Pipeline([("im",  _im()),
+                     ("vt",  VarianceThreshold(0.0)),
                      ("sc",  StandardScaler()),
                      ("sel", sel),
                      ("m",   Ridge(alpha=RIDGE_ALPHA, random_state=seed))])
 
 
 def make_xgb_plain(seed):
-    return Pipeline([("vt", VarianceThreshold(0.0)),
+    return Pipeline([("im", _im()),
+                     ("vt", VarianceThreshold(0.0)),
                      ("m",  XGBRegressor(random_state=seed, n_jobs=4,
                                         objective="reg:squarederror",
                                         **XGB_PARAMS))])
 
 
 def make_xgb_pca(seed):
-    return Pipeline([("vt",  VarianceThreshold(0.0)),
+    return Pipeline([("im",  _im()),
+                     ("vt",  VarianceThreshold(0.0)),
                      ("sc",  StandardScaler()),
                      ("pca", PCA(n_components=0.90, random_state=seed)),
                      ("m",   XGBRegressor(random_state=seed, n_jobs=4,
@@ -114,7 +127,8 @@ def make_xgb_elastic(seed):
         ElasticNet(alpha=0.05, l1_ratio=0.5, max_iter=5000, random_state=seed),
         threshold="median",
     )
-    return Pipeline([("vt",  VarianceThreshold(0.0)),
+    return Pipeline([("im",  _im()),
+                     ("vt",  VarianceThreshold(0.0)),
                      ("sc",  StandardScaler()),
                      ("sel", sel),
                      ("m",   XGBRegressor(random_state=seed, n_jobs=4,
@@ -168,14 +182,16 @@ def rolling_fixed(ds: dict, pipe_factory, label: str,
 # ---------------------------------------------------------------------------
 
 def run_arm(df, dico, arm_label: str, m2_cols: list[str],
-            min_train: int, retrain_every: int, seed: int
-            ) -> tuple[pd.DataFrame, pd.DataFrame]:
+            min_train: int, retrain_every: int, seed: int,
+            fill_mode: str = data.DEFAULT_FILL_MODE) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Return (res_m2, res_m1) on common test weeks."""
     m1_cols = data.select_features(dico, "M1")
     m2_all  = m1_cols + m2_cols
 
-    ds_m1 = data.build_dataset(df, m1_cols, lookback=4, feature_mode="all")
-    ds_m2 = data.build_dataset(df, m2_all,  lookback=4, feature_mode="all")
+    ds_m1 = data.build_dataset(df, m1_cols, lookback=4, feature_mode="all",
+                               fill_mode=fill_mode)
+    ds_m2 = data.build_dataset(df, m2_all,  lookback=4, feature_mode="all",
+                               fill_mode=fill_mode)
 
     # M1 plain Ridge & XGB (fixed params, no tuning — same as M2 arms for fair DimRed comparison)
     res_m1r = rolling_fixed(ds_m1, make_ridge_plain, "M1_Flat_Ridge", min_train, retrain_every, seed)
@@ -304,9 +320,16 @@ def main():
     ap.add_argument("--min-train",    type=int, default=104)
     ap.add_argument("--retrain-every",type=int, default=13)
     ap.add_argument("--seed",         type=int, default=42)
+    ap.add_argument("--fill-mode", default=data.DEFAULT_FILL_MODE,
+                    choices=list(data.FILL_MODES),
+                    help="leading-gap treatment: by_family (default; zero for RS "
+                         "anomalies, fold median elsewhere), zero or fold_median")
+    ap.add_argument("--out-dir", default=None,
+                    help="override the output directory (keeps main results intact)")
     args = ap.parse_args()
 
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    out_dir = Path(args.out_dir).expanduser() if args.out_dir else OUT_DIR
+    out_dir.mkdir(parents=True, exist_ok=True)
     df   = data.load_matrix()
     dico = data.load_dict()
     all_m2_cols = data.m2_columns(dico, "anom")           # all 55 anom cols
@@ -329,7 +352,7 @@ def main():
 
     print(f"C2 ablation | arms={list(arm_cols)} | L4 fixed-hyperparams | "
           f"ridge_alpha={RIDGE_ALPHA} | XGB depth={XGB_PARAMS['max_depth']} "
-          f"n_est={XGB_PARAMS['n_estimators']}\n"
+          f"n_est={XGB_PARAMS['n_estimators']} | fill={args.fill_mode}\n"
           f"Matrix: {df.shape}\n")
 
     all_rows = []
@@ -339,7 +362,8 @@ def main():
         t0 = time.time()
         print(f"── arm: {arm} ({len(m2_cols)} M2 features) …")
         res_m2, res_m1 = run_arm(df, dico, arm, m2_cols,
-                                  args.min_train, args.retrain_every, args.seed)
+                                  args.min_train, args.retrain_every, args.seed,
+                                  args.fill_mode)
         rows = arm_metrics(res_m2, res_m1, arm)
         all_rows.extend(rows)
 
@@ -355,8 +379,8 @@ def main():
         print(f"   ({time.time() - t0:.0f}s)\n")
 
     summary = pd.DataFrame(all_rows)
-    csv_path = OUT_DIR / "c2_summary.csv"
-    png_path = OUT_DIR / "c2_overview.png"
+    csv_path = out_dir / "c2_summary.csv"
+    png_path = out_dir / "c2_overview.png"
     summary.to_csv(csv_path, index=False)
     make_plot(summary, m1_rmse_r, m1_rmse_x, m0_rmse, png_path)
 

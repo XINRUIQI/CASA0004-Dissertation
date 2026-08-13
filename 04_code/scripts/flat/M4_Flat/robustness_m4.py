@@ -18,13 +18,15 @@ Key questions answered:
   - Does M3 still add value when M2 is present? (full vs minus-M3)
   - How does full M4 compare to each modality alone?
 
-Outputs (-> 05_outputs/baselines/Flat/M4_Flat/):
+Outputs (-> 05_outputs/baselines/Flat/M4_Flat/, or --out-dir):
   robustness_m4_summary.csv    arm × model (RMSE / CW_p vs M1)
   robustness_m4_overview.png   bar chart
 
 Run:
   python3 04_code/scripts/flat/M4_Flat/robustness_m4.py
   python3 04_code/scripts/flat/M4_Flat/robustness_m4.py --quick
+  python3 04_code/scripts/flat/M4_Flat/robustness_m4.py --fill-mode fold_median \
+      --out-dir 05_outputs/_experiments/leading_impute/M4_Flat
 """
 
 from __future__ import annotations
@@ -73,18 +75,19 @@ def select_arm_cols(dico, arm: str) -> list[str]:
     raise ValueError(f"Unknown arm: {arm}")
 
 
-def run_arm(df, dico, arm, min_train, retrain_every, val_weeks, seed):
+def run_arm(df, dico, arm, min_train, retrain_every, val_weeks, seed,
+            fill_mode=data.DEFAULT_FILL_MODE):
     cols = select_arm_cols(dico, arm)
     if not cols:
         return None, None, None, None
 
     m1_cols = data.select_features(dico, "M1")
-    ds_m1   = data.build_dataset(df, m1_cols, 4, "all")
+    ds_m1   = data.build_dataset(df, m1_cols, 4, "all", fill_mode=fill_mode)
     res_m1  = rolling.rolling_origin(ds_m1, M1_LABEL, min_train, retrain_every,
                                      seed, tune=True, val_weeks=val_weeks)
 
     label = "M4_Flat"
-    ds_arm  = data.build_dataset(df, cols, 4, "all")
+    ds_arm  = data.build_dataset(df, cols, 4, "all", fill_mode=fill_mode)
     res_arm = rolling.rolling_origin(ds_arm, label, min_train, retrain_every,
                                      seed, tune=True, val_weeks=val_weeks)
 
@@ -135,14 +138,21 @@ def main():
     ap.add_argument("--min-train",     type=int, default=104)
     ap.add_argument("--val-weeks",     type=int, default=52)
     ap.add_argument("--seed",          type=int, default=42)
+    ap.add_argument("--fill-mode", default=data.DEFAULT_FILL_MODE,
+                    choices=list(data.FILL_MODES),
+                    help="leading-gap treatment: by_family (default; zero for RS "
+                         "anomalies, fold median elsewhere), zero or fold_median")
+    ap.add_argument("--out-dir", default=None,
+                    help="override the output directory (keeps main results intact)")
     args = ap.parse_args()
 
     retrain_every = 26 if args.quick else 13
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    out_dir = Path(args.out_dir).expanduser() if args.out_dir else OUT_DIR
+    out_dir.mkdir(parents=True, exist_ok=True)
     df   = data.load_matrix()
     dico = data.load_dict()
     print(f"M4 LOMO | arms={args.arms} | {'quick' if args.quick else 'full'} | "
-          f"matrix {df.shape}\n")
+          f"matrix {df.shape} | fill={args.fill_mode}\n")
 
     rows = []
     for arm in args.arms:
@@ -150,7 +160,8 @@ def main():
         print(f"  running arm: {arm} ({desc}) …")
         t0 = time.time()
         res_m1, res_arm, met_m1, met_arm = run_arm(
-            df, dico, arm, args.min_train, retrain_every, args.val_weeks, args.seed)
+            df, dico, arm, args.min_train, retrain_every, args.val_weeks, args.seed,
+            args.fill_mode)
         if res_arm is None:
             continue
         n_cols = len(select_arm_cols(dico, arm))
@@ -173,8 +184,8 @@ def main():
               f"XGB={met_arm.loc['M4_Flat_XGB','RMSE']:.3f}  ({elapsed:.0f}s)")
 
     summary = pd.DataFrame(rows)
-    csv_path = OUT_DIR / "robustness_m4_summary.csv"
-    png_path = OUT_DIR / "robustness_m4_overview.png"
+    csv_path = out_dir / "robustness_m4_summary.csv"
+    png_path = out_dir / "robustness_m4_overview.png"
     summary.to_csv(csv_path, index=False)
     make_overview(summary, png_path)
 

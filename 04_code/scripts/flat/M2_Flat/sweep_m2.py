@@ -11,13 +11,15 @@ Grid axes:
   All other settings follow the locked L4_tuned protocol (tune=True,
   retrain_every=13, min_train=104, feature_mode=all).
 
-Outputs (-> 05_outputs/baselines/Flat/M2_Flat/):
+Outputs (-> 05_outputs/baselines/Flat/M2_Flat/, or --out-dir):
   sweep_m2_summary.csv        full grid (feature_contract x lookback x model)
   sweep_m2_overview.png       RMSE grid heat-map + CW_p heat-map
 
 Run:
   python3 04_code/scripts/flat/M2_Flat/sweep_m2.py
   python3 04_code/scripts/flat/M2_Flat/sweep_m2.py --quick    # retrain_every=26
+  python3 04_code/scripts/flat/M2_Flat/sweep_m2.py --fill-mode fold_median \
+      --out-dir 05_outputs/_experiments/leading_impute/M2_Flat
 """
 
 from __future__ import annotations
@@ -46,17 +48,18 @@ CONTRACTS = ["anom", "literature", "level"]
 LOOKBACKS = [1, 4, 8]
 
 
-def run_one(df, dico, lookback, m2_feat, min_train, retrain_every, val_weeks, seed):
+def run_one(df, dico, lookback, m2_feat, min_train, retrain_every, val_weeks, seed,
+            fill_mode=data.DEFAULT_FILL_MODE):
     """Run M1 and M2 on the same weeks; return (res_m1, res_m2, met_m1, met_m2)."""
     m2_modality = "M2_Flat"
 
     cols_m1 = data.select_features(dico, "M1")
-    ds_m1   = data.build_dataset(df, cols_m1, lookback, "all")
+    ds_m1   = data.build_dataset(df, cols_m1, lookback, "all", fill_mode=fill_mode)
     res_m1  = rolling.rolling_origin(ds_m1, M1_LABEL, min_train, retrain_every,
                                      seed, tune=True, val_weeks=val_weeks)
 
     cols_m2 = data.select_features(dico, "M2", m2_feat)
-    ds_m2   = data.build_dataset(df, cols_m2, lookback, "all")
+    ds_m2   = data.build_dataset(df, cols_m2, lookback, "all", fill_mode=fill_mode)
     res_m2  = rolling.rolling_origin(ds_m2, m2_modality, min_train, retrain_every,
                                      seed, tune=True, val_weeks=val_weeks)
 
@@ -68,13 +71,14 @@ def run_one(df, dico, lookback, m2_feat, min_train, retrain_every, val_weeks, se
     return res_m1, res_m2, met_m1, met_m2
 
 
-def run_grid(df, dico, min_train, retrain_every, val_weeks, seed):
+def run_grid(df, dico, min_train, retrain_every, val_weeks, seed, fill_mode=data.DEFAULT_FILL_MODE):
     rows = []
     for contract in CONTRACTS:
         for lb in LOOKBACKS:
             t0 = time.time()
             res_m1, res_m2, met_m1, met_m2 = run_one(
-                df, dico, lb, contract, min_train, retrain_every, val_weeks, seed)
+                df, dico, lb, contract, min_train, retrain_every, val_weeks, seed,
+                fill_mode)
             m0_rmse  = float(met_m2.loc["M0_RW", "RMSE"])
             m1r_rmse = float(met_m1.loc["M1_Flat_Ridge", "RMSE"])
             m1x_rmse = float(met_m1.loc["M1_Flat_XGB",   "RMSE"])
@@ -158,11 +162,18 @@ def main():
     ap.add_argument("--min-train",      type=int, default=104)
     ap.add_argument("--val-weeks",      type=int, default=52)
     ap.add_argument("--seed",           type=int, default=42)
+    ap.add_argument("--fill-mode", default=data.DEFAULT_FILL_MODE,
+                    choices=list(data.FILL_MODES),
+                    help="leading-gap treatment: by_family (default; zero for RS "
+                         "anomalies, fold median elsewhere), zero or fold_median")
+    ap.add_argument("--out-dir", default=None,
+                    help="override the output directory (keeps main results intact)")
     args = ap.parse_args()
 
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
-    csv_path = OUT_DIR / "sweep_m2_summary.csv"
-    png_path = OUT_DIR / "sweep_m2_overview.png"
+    out_dir = Path(args.out_dir).expanduser() if args.out_dir else OUT_DIR
+    out_dir.mkdir(parents=True, exist_ok=True)
+    csv_path = out_dir / "sweep_m2_summary.csv"
+    png_path = out_dir / "sweep_m2_overview.png"
 
     if args.plot_only:
         summary = pd.read_csv(csv_path)
@@ -175,9 +186,10 @@ def main():
     dico = data.load_dict()
     print(f"M2 sweep ({'quick' if args.quick else 'full'}) | "
           f"contracts={CONTRACTS} × lookbacks={LOOKBACKS} | "
-          f"matrix {df.shape}\n")
+          f"matrix {df.shape} | fill={args.fill_mode}\n")
 
-    summary = run_grid(df, dico, args.min_train, retrain_every, args.val_weeks, args.seed)
+    summary = run_grid(df, dico, args.min_train, retrain_every, args.val_weeks,
+                       args.seed, args.fill_mode)
     summary.to_csv(csv_path, index=False)
     make_overview(summary, png_path)
 

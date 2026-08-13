@@ -8,13 +8,15 @@ Grid:
   lookback: 1 / 4 / 8 weeks  (L4 is the locked main protocol)
   All other settings: L4_tuned (tune=True, retrain_every=13, min_train=104).
 
-Outputs (-> 05_outputs/baselines/Flat/M3_Flat/):
+Outputs (-> 05_outputs/baselines/Flat/M3_Flat/, or --out-dir):
   sweep_m3_summary.csv
   sweep_m3_overview.png
 
 Run:
   python3 04_code/scripts/flat/M3_Flat/sweep_m3.py
   python3 04_code/scripts/flat/M3_Flat/sweep_m3.py --quick
+  python3 04_code/scripts/flat/M3_Flat/sweep_m3.py --fill-mode fold_median \
+      --out-dir 05_outputs/_experiments/leading_impute/M3_Flat
 """
 
 from __future__ import annotations
@@ -41,14 +43,15 @@ M1_LABEL  = "M1_Flat"
 LOOKBACKS = [1, 4, 8]
 
 
-def run_one(df, dico, lookback, min_train, retrain_every, val_weeks, seed):
+def run_one(df, dico, lookback, min_train, retrain_every, val_weeks, seed,
+            fill_mode=data.DEFAULT_FILL_MODE):
     cols_m1 = data.select_features(dico, "M1")
-    ds_m1   = data.build_dataset(df, cols_m1, lookback, "all")
+    ds_m1   = data.build_dataset(df, cols_m1, lookback, "all", fill_mode=fill_mode)
     res_m1  = rolling.rolling_origin(ds_m1, M1_LABEL, min_train, retrain_every,
                                      seed, tune=True, val_weeks=val_weeks)
 
     cols_m3 = data.select_features(dico, "M3")
-    ds_m3   = data.build_dataset(df, cols_m3, lookback, "all")
+    ds_m3   = data.build_dataset(df, cols_m3, lookback, "all", fill_mode=fill_mode)
     res_m3  = rolling.rolling_origin(ds_m3, "M3_Flat", min_train, retrain_every,
                                      seed, tune=True, val_weeks=val_weeks)
 
@@ -59,12 +62,12 @@ def run_one(df, dico, lookback, min_train, retrain_every, val_weeks, seed):
     return res_m1, res_m3, met_m1, met_m3
 
 
-def run_grid(df, dico, min_train, retrain_every, val_weeks, seed):
+def run_grid(df, dico, min_train, retrain_every, val_weeks, seed, fill_mode=data.DEFAULT_FILL_MODE):
     rows = []
     for lb in LOOKBACKS:
         t0 = time.time()
         res_m1, res_m3, met_m1, met_m3 = run_one(
-            df, dico, lb, min_train, retrain_every, val_weeks, seed)
+            df, dico, lb, min_train, retrain_every, val_weeks, seed, fill_mode)
         m0_rmse = float(met_m3.loc["M0_RW", "RMSE"])
         for mdl in ("Ridge", "XGB"):
             inc = metrics.incremental_tests(res_m3, res_m1, "M3_Flat", M1_LABEL, mdl)
@@ -132,11 +135,18 @@ def main():
     ap.add_argument("--min-train",  type=int, default=104)
     ap.add_argument("--val-weeks",  type=int, default=52)
     ap.add_argument("--seed",       type=int, default=42)
+    ap.add_argument("--fill-mode", default=data.DEFAULT_FILL_MODE,
+                    choices=list(data.FILL_MODES),
+                    help="leading-gap treatment: by_family (default; zero for RS "
+                         "anomalies, fold median elsewhere), zero or fold_median")
+    ap.add_argument("--out-dir", default=None,
+                    help="override the output directory (keeps main results intact)")
     args = ap.parse_args()
 
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
-    csv_path = OUT_DIR / "sweep_m3_summary.csv"
-    png_path = OUT_DIR / "sweep_m3_overview.png"
+    out_dir = Path(args.out_dir).expanduser() if args.out_dir else OUT_DIR
+    out_dir.mkdir(parents=True, exist_ok=True)
+    csv_path = out_dir / "sweep_m3_summary.csv"
+    png_path = out_dir / "sweep_m3_overview.png"
 
     if args.plot_only:
         summary = pd.read_csv(csv_path)
@@ -148,9 +158,10 @@ def main():
     df   = data.load_matrix()
     dico = data.load_dict()
     print(f"M3 sweep ({'quick' if args.quick else 'full'}) | "
-          f"lookbacks={LOOKBACKS} | matrix {df.shape}\n")
+          f"lookbacks={LOOKBACKS} | matrix {df.shape} | fill={args.fill_mode}\n")
 
-    summary = run_grid(df, dico, args.min_train, retrain_every, args.val_weeks, args.seed)
+    summary = run_grid(df, dico, args.min_train, retrain_every, args.val_weeks,
+                       args.seed, args.fill_mode)
     summary.to_csv(csv_path, index=False)
     make_overview(summary, png_path)
 

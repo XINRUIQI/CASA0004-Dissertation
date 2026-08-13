@@ -14,12 +14,14 @@ contribution of each shipping data source under the locked L4_tuned protocol:
   gfw-aggregate       gfw_all_activity_zmean only (aggregate benchmark; derived, leak-free)
   tanker-only         Tanker-type columns only (portwatch vessel_type filter)
 
-Outputs (-> 05_outputs/baselines/Flat/M3_Flat/):
+Outputs (-> 05_outputs/baselines/Flat/M3_Flat/, or --out-dir):
   robustness_m3_summary.csv   arm × model (RMSE / CW_p vs M1)
   robustness_m3_overview.png  bar chart
 
 Run:
   python3 04_code/scripts/flat/M3_Flat/robustness_m3.py
+  python3 04_code/scripts/flat/M3_Flat/robustness_m3.py --fill-mode fold_median \
+      --out-dir 05_outputs/_experiments/leading_impute/M3_Flat
 """
 
 from __future__ import annotations
@@ -65,19 +67,20 @@ def select_m3_arm(dico: pd.DataFrame, arm: str) -> list[str]:
     raise ValueError(f"Unknown arm: {arm}")
 
 
-def run_arm(df, dico, arm, min_train, retrain_every, val_weeks, seed):
+def run_arm(df, dico, arm, min_train, retrain_every, val_weeks, seed,
+            fill_mode=data.DEFAULT_FILL_MODE):
     m3_cols = select_m3_arm(dico, arm)
     if not m3_cols:
         print(f"  WARNING: no columns found for arm '{arm}', skipping.")
         return None, None, None, None
 
     m1_cols = data.select_features(dico, "M1")
-    ds_m1   = data.build_dataset(df, m1_cols, 4, "all")
+    ds_m1   = data.build_dataset(df, m1_cols, 4, "all", fill_mode=fill_mode)
     res_m1  = rolling.rolling_origin(ds_m1, M1_LABEL, min_train, retrain_every,
                                      seed, tune=True, val_weeks=val_weeks)
 
     all_cols = m1_cols + m3_cols
-    ds_m3 = data.build_dataset(df, all_cols, 4, "all")
+    ds_m3 = data.build_dataset(df, all_cols, 4, "all", fill_mode=fill_mode)
     res_m3 = rolling.rolling_origin(ds_m3, "M3_Flat", min_train, retrain_every,
                                     seed, tune=True, val_weeks=val_weeks)
 
@@ -122,19 +125,27 @@ def main():
     ap.add_argument("--retrain-every",  type=int, default=13)
     ap.add_argument("--val-weeks",      type=int, default=52)
     ap.add_argument("--seed",           type=int, default=42)
+    ap.add_argument("--fill-mode", default=data.DEFAULT_FILL_MODE,
+                    choices=list(data.FILL_MODES),
+                    help="leading-gap treatment: by_family (default; zero for RS "
+                         "anomalies, fold median elsewhere), zero or fold_median")
+    ap.add_argument("--out-dir", default=None,
+                    help="override the output directory (keeps main results intact)")
     args = ap.parse_args()
 
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    out_dir = Path(args.out_dir).expanduser() if args.out_dir else OUT_DIR
+    out_dir.mkdir(parents=True, exist_ok=True)
     df   = data.load_matrix()
     dico = data.load_dict()
-    print(f"M3 LOCHO | arms={args.arms} | L4_tuned | matrix {df.shape}\n")
+    print(f"M3 LOCHO | arms={args.arms} | L4_tuned | matrix {df.shape} "
+          f"| fill={args.fill_mode}\n")
 
     rows = []
     for arm in args.arms:
         print(f"  running arm: {arm} …")
         res_m1, res_m3, met_m1, met_m3 = run_arm(
             df, dico, arm, args.min_train, args.retrain_every,
-            args.val_weeks, args.seed)
+            args.val_weeks, args.seed, args.fill_mode)
         if res_m3 is None:
             continue
         for mdl in ("Ridge", "XGB"):
@@ -153,8 +164,8 @@ def main():
               f"XGB={met_m3.loc['M3_Flat_XGB','RMSE']:.3f}")
 
     summary = pd.DataFrame(rows)
-    csv_path = OUT_DIR / "robustness_m3_summary.csv"
-    png_path = OUT_DIR / "robustness_m3_overview.png"
+    csv_path = out_dir / "robustness_m3_summary.csv"
+    png_path = out_dir / "robustness_m3_overview.png"
     summary.to_csv(csv_path, index=False)
     make_overview(summary, png_path)
 
