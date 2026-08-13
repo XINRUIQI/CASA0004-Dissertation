@@ -134,7 +134,8 @@ def build_deep_dataset(df: pd.DataFrame, dico: pd.DataFrame,
     n_aoi = aoi_all.shape[1]
     sites = [str(x) for x in g["node_ids"][:n_aoi]]
 
-    # 3) Finance series (M1 levels), past-only filled (ffill + leading 0).
+    # 3) Finance series (M1 levels), past-only ffill. M1 carries no gaps in the
+    #    merged matrix, so the leading-gap rule never fires on this branch.
     fin_df = data.fill_features(df[m1_cols])            # index = all W-FRI
     fin_pos = {d: i for i, d in enumerate(fin_df.index)}
     fin_vals = fin_df.to_numpy(dtype=np.float32)        # (Tf, F_fin)

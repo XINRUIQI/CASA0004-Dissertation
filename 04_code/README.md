@@ -93,6 +93,7 @@ Common flags:
 | `--seed` | 42 | random seed |
 | `--leave-one-aoi-out` | off | M2-bearing: drop each AOI in turn |
 | `--matrix` / `--dict` | merge defaults | e.g. watermask matrix variants |
+| `--fill-mode` | by_family | leading-gap rule, see §3.1 |
 | `--replot-only` | off | rebuild plots from existing CSVs only |
 
 **Outputs** → `05_outputs/baselines/Flat/M*_Flat/`
@@ -105,7 +106,19 @@ Common flags:
 
 For M2 with `anom`, filenames may be suffixed (`baseline_metrics_anom.csv`); see the script docstring.
 
-### 3.1 Flat robustness / SHAP / sweep
+### 3.1 Missing values (`--fill-mode`)
+
+Interior gaps are always forward-filled from past observations only. What differs is the treatment of *leading* gaps, the NaNs before a series' first observation, which forward fill cannot reach. Every Flat entry point takes `--fill-mode`:
+
+| Mode | Leading gaps become |
+| --- | --- |
+| `by_family` (default) | 0 for RS anomaly columns (`*_anom_*`), training-fold median for everything else |
+| `zero` | 0 on the raw scale, everywhere |
+| `fold_median` | training-fold median everywhere, via a `SimpleImputer` re-fitted at each refit |
+
+The default splits the two families because 0 is the neutral value for an anomaly but not for a shipping count. Only RS anomalies and PortWatch carry leading gaps, so `by_family` reproduces `zero` exactly for M1/M2 and `fold_median` exactly for M3; only M4 mixes the two. Every mode scores the same test weeks. `05_outputs/_experiments/leading_impute/` holds the three-way comparison.
+
+### 3.2 Flat robustness / SHAP / sweep
 
 ```bash
 python3 04_code/scripts/flat/M1_Flat/sweep_m1.py
