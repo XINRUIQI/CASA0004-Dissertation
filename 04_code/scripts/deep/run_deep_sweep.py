@@ -1,13 +1,15 @@
 """
-Robustness sweep for the deep representation-level models: multi-seed +
-hyperparameter grid (lookback / d_model / layers) + RS-branch study, to check
-the RQ2 conclusion (does the fusion beat the random walk M0, and the flat M1_Flat?)
-is stable, not a single-seed fluke, and to probe the weakest modality (RS).
+Robustness sweep for the deep representation-level models: hyperparameter grid
+(lookback / d_model / layers), regularisation grid and RS-branch study, to check
+that the RQ2 conclusion is not an artefact of the chosen capacity or regularisation,
+and to probe the weakest modality (RS).
 
-Four experiment groups:
-  seed  : {fusion, m4rep, m4xattn} x seeds {42,1,2} at lookback=4, d=32, layers=2
-          (m4xattn = cross-attention, the claimed-best fusion, now gets its own
-           multi-seed stability check — P0-2)
+Three experiment groups, all at seed=42. Reseeding is NOT done here: it lives in
+run_deep_multiseed.py, which runs on the matrix epoch budget so its seeds pool with
+the headline results, and is aggregated by scripts/tools/pool_deep_seeds.py. A
+former "seed" group in this script duplicated those (config, seed) pairs at a lower
+budget and was discarded during pooling every time, so it was removed.
+
   hyper : fusion at seed=42 over lookback {4,8,12} x d {32,64} (+ layers=1)
   rs    : RS branch — meanpool vs cls Prithvi embedding at default reg, plus a
           small lr / weight_decay / dropout grid on meanpool (P1-5): is the
@@ -15,18 +17,22 @@ Four experiment groups:
   reg   : lr / weight_decay / dropout grid on the MAIN gated fusion (P1-6): is
           the main model's skill sensitive to regularisation, not only RS?
 
-For each run we record skill vs M0, the VALID Clark-West p vs M0 (nested -> does
-it beat the random walk?) and the VALID Diebold-Mariano p vs M1_Flat_Ridge
-(non-nested model class, where Clark-West would be invalid), on the common test
-weeks (flat M1_Flat read from baseline_predictions.csv; no xgboost import).
+For each run we record skill vs M0 plus two one-sided DM-HLN p values, against M0
+and against M1_Flat_Ridge, on the common test weeks (flat M1_Flat read from
+baseline_predictions.csv; no xgboost import). Clark-West is deliberately not used:
+it presumes the benchmark is a parameter restriction of the candidate, which no Deep
+configuration satisfies. Both p values here are exploratory sensitivity readings and
+are not the dissertation's reported tests — those come from the single frozen family
+built by scripts/tools/build_test_tables.py.
 
 Outputs (-> 05_outputs/baselines/Deep/_cross/):
-  deep_sweep_summary.csv   one row per run (now incl. rs_kind / lr / wd / dropout)
-  deep_sweep.png           seed + hyperparam + RS-branch panels
+  deep_sweep_summary.csv   one row per run, incl. the epoch budget and the full grid
+  deep_sweep.png           multi-seed (read from deep_seed_pooled.csv) + hyperparam
+                           + RS-branch panels
 
 Run:
-  python3 04_code/scripts/deep/run_deep_sweep.py               # ~40 min, CPU
-  python3 04_code/scripts/deep/run_deep_sweep.py --epochs 40   # faster
+  python3 04_code/scripts/deep/run_deep_sweep.py --epochs 80   # matrix budget
+  python3 04_code/scripts/deep/run_deep_sweep.py               # ~30 min at epochs 60
 """
 
 from __future__ import annotations
@@ -164,16 +170,8 @@ def main() -> None:
 
     # --- summary stats ---
     print("\n" + "=" * 78)
-    seed_g = summ[summ["group"] == "seed"]
-    print("Multi-seed stability (skill vs M0; DM-HLN one-sided, raw p, exploratory):")
-    for c in seed_g["config"].unique():
-        s = seed_g[seed_g["config"] == c]
-        print(f"  {c:8s}: skill {s['skill_vs_M0'].mean()*100:+.2f}% "
-              f"± {s['skill_vs_M0'].std()*100:.2f}  | "
-              f"DMvsM0_p {s['DM_p_vs_M0'].mean():.4f} "
-              f"(min {s['DM_p_vs_M0'].min():.4f}, max {s['DM_p_vs_M0'].max():.4f}) "
-              f"| <0.05 in {(s['DM_p_vs_M0']<0.05).sum()}/{len(s)} "
-              f"| DMvsFlatS1<0.05 in {(s['DM_p_vs_Flat_S1']<0.05).sum()}/{len(s)}")
+    print("Multi-seed stability is not produced here. See deep_seed_summary.csv "
+          "(run_deep_multiseed.py -> pool_deep_seeds.py).")
     print("\nHyperparam sweep (fusion, seed=42):")
     hyp = summ[summ["group"] == "hyper"].sort_values(["lookback", "d", "gat"])
     print(hyp[["lookback", "d", "gat", "skill_vs_M0", "DirAcc",
@@ -220,15 +218,33 @@ def _plot(summ: pd.DataFrame, path: Path) -> None:
     import matplotlib.pyplot as plt
     fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(19, 5))
 
-    seed_g = summ[summ["group"] == "seed"]
-    configs = list(seed_g["config"].unique())
-    for i, c in enumerate(configs):
-        s = seed_g[seed_g["config"] == c]
-        ax1.scatter([i] * len(s), s["skill_vs_M0"] * 100, s=60, alpha=0.7)
-        ax1.scatter([i], [s["skill_vs_M0"].mean() * 100], marker="_", s=400, color="k")
+    # Panel 1 is no longer produced by this sweep: reseeding moved to
+    # run_deep_multiseed.py. Read the pooled per-seed table so the panel and
+    # Appendix B.4 quote the same runs, and degrade to a pointer if it is absent.
+    pooled_csv = OUT_DIR / "deep_seed_pooled.csv"
+    pooled = pd.read_csv(pooled_csv) if pooled_csv.exists() else None
+    if pooled is not None:
+        multi = (pooled.groupby("config").filter(lambda g: len(g) >= 3)
+                 .sort_values("config"))
+    else:
+        multi = None
+    if multi is not None and len(multi):
+        configs = list(dict.fromkeys(multi["config"]))
+        for i, c in enumerate(configs):
+            s = multi[multi["config"] == c]
+            ax1.scatter([i] * len(s), s["skill_vs_M0"] * 100, s=60, alpha=0.7)
+            ax1.scatter([i], [s["skill_vs_M0"].mean() * 100], marker="_",
+                        s=400, color="k")
+        ax1.set_xticks(range(len(configs)))
+        ax1.set_xticklabels([c.replace("_deep_", " ") for c in configs], rotation=15)
+        ax1.set_title("Multi-seed skill vs M0 (%)  (— = mean)\n"
+                      "source: deep_seed_pooled.csv")
+    else:
+        ax1.text(0.5, 0.5, "no pooled multi-seed table\nrun run_deep_multiseed.py "
+                 "then pool_deep_seeds.py", ha="center", va="center",
+                 fontsize=9, transform=ax1.transAxes)
+        ax1.set_title("Multi-seed skill vs M0 (%)")
     ax1.axhline(0, color="grey", ls="--", lw=0.8)
-    ax1.set_xticks(range(len(configs))); ax1.set_xticklabels(configs, rotation=15)
-    ax1.set_title("Multi-seed skill vs M0 (%)  (— = mean)")
     ax1.set_ylabel("skill vs M0 (%)"); ax1.grid(alpha=0.3, axis="y")
 
     hyp = summ[summ["group"] == "hyper"]

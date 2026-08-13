@@ -3,7 +3,8 @@ Collecting multi-seed sources:
   m3fusion          : 6 rows (epochs [np.int64(80)], configs ['m3_deep_concat', 'm3_deep_xattn'])
   m3gated80         : 2 rows (epochs [np.int64(80)], configs ['m3_deep_gated'])
   m4_80             : 4 rows (epochs [np.int64(80)], configs ['m4_deep_gated', 'm4_deep_xattn'])
-  sweep             : 9 rows of group=='seed' (of 32 total, epochs 60 assumed from default)
+  WARNING: deep_sweep_summary.csv has no epochs column; assuming 60. Re-run run_deep_sweep.py to record it.
+  sweep             : 9 rows of group=='seed' (of 32 total, epochs 60 INFERRED from run_deep_sweep.py's default — file records no epochs column)
 
 Replicate check on (config, seed) duplicates:
 

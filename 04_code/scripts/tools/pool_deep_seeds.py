@@ -126,7 +126,12 @@ def collect() -> pd.DataFrame:
               f"configs {sorted(d['config'].unique())})")
 
     sw = _read("deep_sweep_summary.csv")
-    if sw is not None:
+    if sw is not None and not (sw["group"] == "seed").any():
+        # Expected after reseeding was removed from run_deep_sweep.py. Kept as a
+        # source only so that an older sweep file still contributes.
+        print("  sweep             : no group=='seed' rows (reseeding now lives in "
+              "run_deep_multiseed.py) — nothing to take")
+    elif sw is not None:
         s = sw[sw["group"] == "seed"].copy()
         if "epochs" in s.columns:
             note = f"epochs {sorted(s['epochs'].unique())} as recorded"
