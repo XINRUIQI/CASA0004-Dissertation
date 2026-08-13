@@ -45,6 +45,7 @@ are excluded from the main analysis by design.
 
 from __future__ import annotations
 
+from functools import lru_cache
 from pathlib import Path
 
 import numpy as np
@@ -54,6 +55,9 @@ ROOT = Path(__file__).resolve().parents[3]          # casa0004 Dissertation
 MERGE_DIR = ROOT / "03_data/processed/merge/outputs"
 MERGE_CSV = MERGE_DIR / "weekly_feature_matrix.csv"
 DICT_CSV  = MERGE_DIR / "weekly_feature_dictionary.csv"
+# Long-history build of the same merge; the standard matrix is its 2019- slice.
+# Only read to seed differences at the first in-sample week (see to_stationary).
+FULL_MATRIX_CSV = MERGE_DIR / "weekly_feature_matrix_full.csv"
 
 TARGET_PRICE = "brent_price"
 RETURN_COL = "brent_log_return"                     # past r_t, for dir-persistence
@@ -231,8 +235,45 @@ def select_features(dico: pd.DataFrame, modality: str, m2_features: str = "anom"
 # ----------------------------------------------------------------------------
 # Transforms
 # ----------------------------------------------------------------------------
+@lru_cache(maxsize=1)
+def _full_history() -> "pd.DataFrame | None":
+    """Long-history merge output (2006-), or None if it has not been built.
+
+    Same pipeline and the same source-side availability lags as the standard
+    matrix, which is literally its 2019- slice, so a row read from here is
+    as-of valid at its own week.
+    """
+    if not FULL_MATRIX_CSV.exists():
+        return None
+    full = pd.read_csv(FULL_MATRIX_CSV, index_col=0, parse_dates=True).sort_index()
+    full.index.name = "week_ending_friday"
+    return full
+
+
+def presample_row(first_week: pd.Timestamp, cols: list[str]) -> "pd.DataFrame | None":
+    """The last observation strictly before `first_week`, for `cols`.
+
+    Used to seed differences at the first in-sample week without moving the
+    sample start: the value is dated before the window, so it carries no
+    information that was unavailable at `first_week`.
+    """
+    full = _full_history()
+    if full is None:
+        return None
+    prior = full.index[full.index < first_week]
+    have = [c for c in cols if c in full.columns]
+    if len(prior) == 0 or not have:
+        return None
+    return full.loc[[prior.max()], have]
+
+
 def to_stationary(df: pd.DataFrame, mode: str) -> pd.DataFrame:
     """feature_mode='returns': stationarise M1 trending level columns only.
+
+    Differences are seeded from the pre-sample week so the first in-sample week
+    carries a real change rather than a structural gap; the sample itself still
+    starts at the window start. Where no pre-sample observation exists the
+    first row falls back to zero, which is the neutral value for a change.
 
     Only the feature copy is touched; the price/target are always read from the
     original matrix, so P_t and r_{t+1} are never affected.
@@ -240,12 +281,17 @@ def to_stationary(df: pd.DataFrame, mode: str) -> pd.DataFrame:
     if mode != "returns":
         return df
     out = df.copy()
+    cols = [c for c in LOGRET_COLS + DIFF_COLS if c in out.columns]
+    prev = presample_row(df.index[0], cols)
+    base = df[cols] if prev is None else pd.concat([prev, df[cols]])
     for c in LOGRET_COLS:
         if c in out:
-            out[c] = np.log(out[c] / out[c].shift(1))
+            out[c] = np.log(base[c] / base[c].shift(1)).reindex(df.index)
     for c in DIFF_COLS:
         if c in out:
-            out[c] = out[c].diff()
+            out[c] = base[c].diff().reindex(df.index)
+    first = df.index[0]
+    out.loc[first, cols] = out.loc[first, cols].fillna(0.0)
     return out
 
 
