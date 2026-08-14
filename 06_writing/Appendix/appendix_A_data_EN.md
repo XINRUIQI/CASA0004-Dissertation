@@ -1,15 +1,15 @@
 # Appendix A — Data: variable dictionary, AOI/chokepoint lists, lags, graph edges
 
-> Merged weekly matrix `weekly_feature_matrix.csv` = 365 weeks × 212 columns
-> (2019-01-04 → 2025-12-26): 31 M1 + 55 M2 + 113 M3 + 11 masks + 2 targets.
+> Merged weekly matrix `weekly_feature_matrix.csv` = 365 weeks × 263 columns
+> (2019-01-04 → 2025-12-26): 31 M1 + 55 M2 + 164 M3 + 11 masks + 2 targets.
 > Per-variable literature/industry sourcing is in the modality data dictionaries
 > (`03_data/processed/M{1,2,3}/*_data_dictionary.md`); this appendix consolidates
 > the model-facing dictionary, the site lists, the publication lags and the
 > shipping-graph edge construction.
 
 Information sets: **M0** random walk (`brent_price` only) · **M1**
-finance (31) · **M2** M1 + remote sensing (55) · **M3** M1 + shipping full (113)
-· **M4** M1+M2+M3 (199). Flat flattens each column over a 4-week lookback
+finance (31) · **M2** M1 + remote sensing (55) · **M3** M1 + shipping full (164)
+· **M4** M1+M2+M3 (250). Flat flattens each column over a 4-week lookback
 (lag 0–3); Deep keeps modality structure inside encoders.
 
 ---
@@ -52,12 +52,14 @@ Naming `{index}_anom_{AOI}`; `anom` = within-site deseasonalised z-score
 > Literature arm (C1) = `NTL_anom` of Fujairah / RasTanura / Rotterdam / Houston
 > (4 cols).
 
-### A.1.3 M3 — Shipping, flat full tier (113 = GFW 49 + PortWatch 64)
+### A.1.3 M3 — Shipping, flat full tier (164 = GFW 49 + PortWatch 64 + SAR 51)
 
 Naming `gfw_{cp}_{stat}` and `pw_{cp}_{stat}` over 6 chokepoints, plus
-cross-chokepoint aggregates and PortWatch port export/import volumes. Main model
-= full 113 (the hand-picked 38-col *core* tier is a robustness arm; full is XGB-
-optimal, see Appendix B / `m3_data_dictionary.md` §11).
+cross-chokepoint aggregates and PortWatch port export/import volumes, plus
+`sar_{region}_{total,dark,share}` from the same GFW SAR weekly table used as
+Deep node attributes. Main model = full 164 (the hand-picked 38-col *core*
+tier and the AIS-only 113-col block remain robustness arms; see Appendix B /
+`m3_data_dictionary.md` §11).
 
 | Family | Meaning |
 | --- | --- |
@@ -71,11 +73,13 @@ optimal, see Appendix B / `m3_data_dictionary.md` §11).
 | `pw_all_*` (n_tanker_sum, n_total_sum, tanker_share) | cross-chokepoint tanker aggregates |
 | `pw_tanker_exp_imp_net` / `_asym` / `_log_ratio` / `_4w_ma` | export−import net / asymmetry / log-ratio |
 | `pw_exp_hubs_export_vol` / `pw_imp_hubs_import_vol` (+ `_wow_pct`) | export/import hub tanker tonnage |
+| `sar_{region}_{total,dark,share}` | GFW SAR detections: total / unmatched (dark) / dark share; 17 regions × 3 |
 
-### A.1.4 Deep shipping graph node features (not in flat matrix)
+### A.1.4 Deep shipping graph node features
 
-The Deep arm does **not** use the flat 113 columns; it builds a 17-node graph
-(`m3_graph17_tensors.npz`). Node feature spaces differ by type (heterogeneous).
+The Deep arm does **not** use the flat 164-column table; it builds a 17-node
+graph (`m3_graph17_tensors.npz`). Node feature spaces differ by type
+(heterogeneous).
 
 **AOI node features (11 per AOI node)**:
 `pw_portcalls_tanker`, `pw_portcalls_cargo`, `pw_import_tanker`,
@@ -153,7 +157,8 @@ each builder. Flat and Deep share the same sources but differ for shipping.
 | Monthly macro (REA, non-oil commodity) | month-end ffill | **+5 w** | `MONTHLY_LAG_WEEKS=5` · `build_m1_weekly.py` |
 | Sentinel-2 indices + VIIRS (M2) | monthly as-of | **month-end + 15 d** | `PUB_LAG_DAYS=15` · `build_m2_weekly.py` |
 | PortWatch chokepoint/port flows | daily → Fri sum | **+1 w** | `PW_LAG_WEEKS=1` · `aggregate_shipping_to_weekly.py` |
-| GFW monthly presence (flat M3, 113 cols) | month-end ffill | **+4 w** | `GFW_LAG_WEEKS=4` · `aggregate_shipping_to_weekly.py` |
+| GFW monthly presence (flat M3, 49 of 164 cols) | month-end ffill | **+4 w** | `GFW_LAG_WEEKS=4` · `aggregate_shipping_to_weekly.py` |
+| GFW SAR dark-vessel (flat M3, 51 of 164 cols) | month-end ffill | **+4 w** | `SAR_LAG_WEEKS=4` · `build_m3_graph_weekly.py` / `build_feature_matrix.py` |
 
 > Merge check: EIA already lagged at source, merge re-shift = 0
 > (`EIA_WPSR_LAG_WEEKS=0`, `build_feature_matrix.py`).
@@ -174,7 +179,7 @@ month-end + 15 d). Only the shipping graph differs.
 ### A.3.3 Why GFW is +4 w (Flat) but +2 w (Deep)
 
 Different GFW products, not the same stream lagged differently. **Flat +4 w** =
-monthly vessel-presence columns (`gfw_{cp}_*`, 49 of the 113): a calendar month
+monthly vessel-presence columns (`gfw_{cp}_*`, 49 of the 164): a calendar month
 is only complete at month end + a conservative ~1-month availability buffer
 (project-level conservatism, **not** an official 4-week release rule). **Deep
 +2 w** = near-real-time AIS event/voyage O-D stream (~96 h) with a conservative
@@ -184,7 +189,7 @@ two-week buffer. The two are not interchangeable.
 
 GFW monthly presence testable at lag ∈ {1, 4, 8} w; `MONTHLY_LAG_WEEKS` at
 {3, 5, 7} w; all exposed as CLI flags (`--gfw-lag`, `--eia-lag`, …) so the whole
-matrix can be rebuilt without code edits. Results in Appendix B.
+matrix can be rebuilt without code edits. Results in Appendix B.3.8.
 
 ---
 
@@ -205,11 +210,13 @@ verified (`P006→P004 ≠ P004→P006`). Lag +2 w.
 
 ### A.4.2 Static AOI↔chokepoint edges
 
-Fixed undirected links by geographic association (13 undirected edges), present
-every week (`aoi_oil_infrastructure_sites.md` §4). Every AOI carries at least one
-corridor link: P007 (Jamnagar) is a demand-side refinery rather than a Gulf
-export terminal, but its crude slate is dominated by Persian Gulf loadings, so it
-is attached to Hormuz on the import side.
+Fixed undirected corridor links (13 undirected edges), specified in advance from
+each site's main documented oil-trade corridor rather than inferred from weekly
+vessel movements or geographic proximity. Present every week
+(`aoi_oil_infrastructure_sites.md` §4; `CHOKE_AOI` in `build_m3_graph17.py`).
+Every AOI carries at least one corridor link: P007 (Jamnagar) is a demand-side
+refinery rather than a Gulf export terminal, but its crude slate is dominated by
+Persian Gulf loadings, so it is attached to Hormuz on the import side.
 
 | Chokepoint | Linked AOIs |
 | --- | --- |
@@ -227,10 +234,11 @@ is attached to Hormuz on the import side.
 - **Symmetrise + self-loop**: for message passing the adjacency is symmetrised
   and self-looped (dense 17×17 boolean mask; dense is simpler than sparse for
   this tiny dynamic graph).
-- **Edge-weight transform (attention prior)**: the O-D flow enters the GAT as
-  `log1p(flow)` scaled by a **learned gain `edge_scale`**, i.e. busy lanes get a
-  higher attention prior instead of the flow being discarded by the boolean
-  adjacency; the model can down-weight the prior if unhelpful.
+- **Edge-weight transform (attention prior)**: `log1p` of the symmetrised O-D
+  flow is **added to the GAT attention logits**, scaled by a **learned gain
+  `edge_scale`**, then softmax; it is not a multiplier on the attention weights
+  and is not used as an edge feature in message passing. Busy lanes therefore
+  receive a higher prior, and the model can down-weight it if unhelpful.
 - **Encoder**: type-specific projection (`F_aoi=11`, `F_choke=20` → `d_model=64`)
   + node-type embedding → 2-layer dense multi-head GAT (heads = 4) → causal TCN
   (lookback L) → node-attention pooling → 32-d `z_ship` (~42k params). Node-

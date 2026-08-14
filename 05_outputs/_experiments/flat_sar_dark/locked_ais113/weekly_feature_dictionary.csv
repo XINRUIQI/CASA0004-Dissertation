@@ -30,10 +30,10 @@ brent_f1_spot_log_basis,M1,market daily,none; week-close,365,100.0,2019-01-04,20
 brent_roll_week,M1,market daily,none; week-close,365,100.0,2019-01-04,2025-12-26
 cadusd_log_return,M1,market daily,none; week-close,365,100.0,2019-01-04,2025-12-26
 dgs10_change,M1,market daily,none; week-close,365,100.0,2019-01-04,2025-12-26
-avail_market,mask,modality availability,,365,100.0,2019-01-04,2025-12-26
-avail_eia_weekly,mask,modality availability,,365,100.0,2019-01-04,2025-12-26
-avail_sp500,mask,modality availability,,365,100.0,2019-01-04,2025-12-26
-avail_dollar_index,mask,modality availability,,365,100.0,2019-01-04,2025-12-26
+avail_market,mask,modality availability,n/a,365,100.0,2019-01-04,2025-12-26
+avail_eia_weekly,mask,modality availability,n/a,365,100.0,2019-01-04,2025-12-26
+avail_sp500,mask,modality availability,n/a,365,100.0,2019-01-04,2025-12-26
+avail_dollar_index,mask,modality availability,n/a,365,100.0,2019-01-04,2025-12-26
 NDVI_anom_Houston,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
 NDVI_anom_NingboZhoushan,M2,RS index (anomaly),+15d as-of release (applied in M2),328,89.9,2019-09-20,2025-12-26
 NDVI_anom_Rotterdam,M2,RS index (anomaly),+15d as-of release (applied in M2),365,100.0,2019-01-04,2025-12-26
@@ -202,63 +202,12 @@ pw_tanker_exp_imp_asym,M3,PortWatch ports (directional),+1w (applied in M3),364,
 pw_tanker_exp_imp_log_ratio,M3,PortWatch ports (directional),+1w (applied in M3),364,99.7,2019-01-11,2025-12-26
 pw_tanker_exp_imp_asym_4w_ma,M3,PortWatch ports (directional),+1w (applied in M3),364,99.7,2019-01-11,2025-12-26
 pw_exp_hubs_export_vol_wow_pct,M3,PortWatch ports (directional),+1w (applied in M3),363,99.5,2019-01-18,2025-12-26
-avail_gfw,mask,modality availability,,365,100.0,2019-01-04,2025-12-26
-avail_pw_chokepoints,mask,modality availability,,365,100.0,2019-01-04,2025-12-26
-avail_pw_ports,mask,modality availability,,365,100.0,2019-01-04,2025-12-26
-avail_shipping,mask,modality availability,,365,100.0,2019-01-04,2025-12-26
+avail_gfw,mask,modality availability,n/a,365,100.0,2019-01-04,2025-12-26
+avail_pw_chokepoints,mask,modality availability,n/a,365,100.0,2019-01-04,2025-12-26
+avail_pw_ports,mask,modality availability,n/a,365,100.0,2019-01-04,2025-12-26
+avail_shipping,mask,modality availability,n/a,365,100.0,2019-01-04,2025-12-26
 target_price_next,target,label,t+1 (next week),364,99.7,2019-01-04,2025-12-19
 target_log_return_next,target,label,t+1 (next week),364,99.7,2019-01-04,2025-12-19
-avail_m1,mask,modality availability,,365,100.0,2019-01-04,2025-12-26
-avail_m2,mask,modality availability,,365,100.0,2019-01-04,2025-12-26
-avail_m3,mask,modality availability,,365,100.0,2019-01-04,2025-12-26
-sar_aoi_basra_total,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_aoi_fujairah_total,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_aoi_houston_total,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_aoi_jamnagar_total,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_aoi_jurong_total,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_aoi_kharg_total,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_aoi_ningbozhoushan_total,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_aoi_rastanura_total,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_aoi_rotterdam_total,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_aoi_ulsan_total,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_aoi_yanbu_total,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_cp_cape_total,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_cp_hormuz_total,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_cp_malacca_total,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_cp_mandeb_total,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_cp_panama_total,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_cp_suez_total,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_aoi_basra_dark,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_aoi_fujairah_dark,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_aoi_houston_dark,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_aoi_jamnagar_dark,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_aoi_jurong_dark,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_aoi_kharg_dark,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_aoi_ningbozhoushan_dark,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_aoi_rastanura_dark,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_aoi_rotterdam_dark,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_aoi_ulsan_dark,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_aoi_yanbu_dark,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_cp_cape_dark,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_cp_hormuz_dark,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_cp_malacca_dark,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_cp_mandeb_dark,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_cp_panama_dark,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_cp_suez_dark,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_aoi_basra_share,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_aoi_fujairah_share,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_aoi_houston_share,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_aoi_jamnagar_share,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_aoi_jurong_share,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_aoi_kharg_share,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_aoi_ningbozhoushan_share,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_aoi_rastanura_share,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_aoi_rotterdam_share,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_aoi_ulsan_share,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_aoi_yanbu_share,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_cp_cape_share,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_cp_hormuz_share,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_cp_malacca_share,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_cp_mandeb_share,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_cp_panama_share,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
-sar_cp_suez_share,M3,GFW SAR dark-vessel (experiment),already lagged in graph builder (+4w),357,97.8,2019-03-01 00:00:00,2025-12-26 00:00:00
+avail_m1,mask,modality availability,n/a,365,100.0,2019-01-04,2025-12-26
+avail_m2,mask,modality availability,n/a,365,100.0,2019-01-04,2025-12-26
+avail_m3,mask,modality availability,n/a,365,100.0,2019-01-04,2025-12-26

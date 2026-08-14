@@ -2,20 +2,20 @@
 
 # 附录 A — 数据：变量词典、AOI/咽喉列表、滞后期表、航运图边定义
 
-> Merged weekly matrix `weekly_feature_matrix.csv` = 365 weeks × 212 columns
-> (2019-01-04 → 2025-12-26): 31 M1 + 55 M2 + 113 M3 + 11 masks + 2 targets.
+> Merged weekly matrix `weekly_feature_matrix.csv` = 365 weeks × 263 columns
+> (2019-01-04 → 2025-12-26): 31 M1 + 55 M2 + 164 M3 + 11 masks + 2 targets.
 > Per-variable literature/industry sourcing is in the modality data dictionaries
 > (`03_data/processed/M{1,2,3}/*_data_dictionary.md`); this appendix consolidates
 > the model-facing dictionary, the site lists, the publication lags and the
 > shipping-graph edge construction.
 >
-> 合并周频矩阵 = 365 周 × 212 列（31 M1 + 55 M2 + 113 M3 + 11 掩膜 + 2 目标）。
+> 合并周频矩阵 = 365 周 × 263 列（31 M1 + 55 M2 + 164 M3 + 11 掩膜 + 2 目标）。
 > 逐变量文献/业界来源见各模态数据字典；本附录汇编入模词典、站点列表、发布滞后与
 > 航运图边构造。
 
 Information sets / 信息集：**M0** random walk (`brent_price` only) · **M1**
-finance (31) · **M2** M1 + remote sensing (55) · **M3** M1 + shipping full (113)
-· **M4** M1+M2+M3 (199). Flat flattens each column over a 4-week lookback
+finance (31) · **M2** M1 + remote sensing (55) · **M3** M1 + shipping full (164)
+· **M4** M1+M2+M3 (250). Flat flattens each column over a 4-week lookback
 (lag 0–3); Deep keeps modality structure inside encoders.
 
 ---
@@ -59,12 +59,14 @@ Naming `{index}_anom_{AOI}`; `anom` = within-site deseasonalised z-score
 > Literature arm (C1) = `NTL_anom` of Fujairah / RasTanura / Rotterdam / Houston
 > (4 cols). / 文献精选臂 = 4 站 NTL_anom。
 
-### A.1.3 M3 — Shipping, flat full tier (113 = GFW 49 + PortWatch 64) / 航运扁平主层
+### A.1.3 M3 — Shipping, flat full tier (164 = GFW 49 + PortWatch 64 + SAR 51) / 航运扁平主层
 
 Naming `gfw_{cp}_{stat}` and `pw_{cp}_{stat}` over 6 chokepoints, plus
-cross-chokepoint aggregates and PortWatch port export/import volumes. Main model
-= full 113 (the hand-picked 38-col *core* tier is a robustness arm; full is XGB-
-optimal, see Appendix B / `m3_data_dictionary.md` §11).
+cross-chokepoint aggregates and PortWatch port export/import volumes, plus
+`sar_{region}_{total,dark,share}` from the same GFW SAR weekly table used as
+Deep node attributes. Main model = full 164 (the hand-picked 38-col *core*
+tier and the AIS-only 113-col block remain robustness arms; see Appendix B /
+`m3_data_dictionary.md` §11).
 
 | Family / 变量族 | Meaning / 含义 |
 | --- | --- |
@@ -78,12 +80,14 @@ optimal, see Appendix B / `m3_data_dictionary.md` §11).
 | `pw_all_*` (n_tanker_sum, n_total_sum, tanker_share) | cross-chokepoint tanker aggregates / 跨咽喉汇总 |
 | `pw_tanker_exp_imp_net` / `_asym` / `_log_ratio` / `_4w_ma` | export−import net / asymmetry / log-ratio / 出口−进口净额·不对称 |
 | `pw_exp_hubs_export_vol` / `pw_imp_hubs_import_vol` (+ `_wow_pct`) | export/import hub tanker tonnage / 出口·进口枢纽吨位 |
+| `sar_{region}_{total,dark,share}` | GFW SAR detections: total / unmatched (dark) / dark share; 17 regions × 3 / SAR 检测总数·未匹配（暗船）·占比 |
 
-### A.1.4 Deep shipping graph node features (not in flat matrix) / 深度图节点特征
+### A.1.4 Deep shipping graph node features / 深度图节点特征
 
-The Deep arm does **not** use the flat 113 columns; it builds a 17-node graph
-(`m3_graph17_tensors.npz`). Node feature spaces differ by type (heterogeneous).
-深度臂用 17 节点图，节点特征按类型异质。
+The Deep arm does **not** use the flat 164-column table; it builds a 17-node
+graph (`m3_graph17_tensors.npz`). Node feature spaces differ by type
+(heterogeneous).
+深度臂用 17 节点图而非扁平表；节点特征按类型异质。
 
 **AOI node features (11 per AOI node)** / AOI 节点特征：
 `pw_portcalls_tanker`, `pw_portcalls_cargo`, `pw_import_tanker`,
@@ -157,7 +161,8 @@ each builder. Flat and Deep share the same sources but differ for shipping.
 | Monthly macro (REA, non-oil commodity) | month-end ffill | **+5 w** | `MONTHLY_LAG_WEEKS=5` · `build_m1_weekly.py` |
 | Sentinel-2 indices + VIIRS (M2) | monthly as-of | **month-end + 15 d** | `PUB_LAG_DAYS=15` · `build_m2_weekly.py` |
 | PortWatch chokepoint/port flows | daily → Fri sum | **+1 w** | `PW_LAG_WEEKS=1` · `aggregate_shipping_to_weekly.py` |
-| GFW monthly presence (flat M3, 113 cols) | month-end ffill | **+4 w** | `GFW_LAG_WEEKS=4` · `aggregate_shipping_to_weekly.py` |
+| GFW monthly presence (flat M3, 49 of 164 cols) | month-end ffill | **+4 w** | `GFW_LAG_WEEKS=4` · `aggregate_shipping_to_weekly.py` |
+| GFW SAR dark-vessel (flat M3, 51 of 164 cols) | month-end ffill | **+4 w** | `SAR_LAG_WEEKS=4` · `build_m3_graph_weekly.py` / `build_feature_matrix.py` |
 
 > Merge check: EIA already lagged at source, merge re-shift = 0
 > (`EIA_WPSR_LAG_WEEKS=0`, `build_feature_matrix.py`). / 合并仅复查，不再二次移位。
@@ -178,7 +183,7 @@ month-end + 15 d). Only the shipping graph differs.
 ### A.3.3 Why GFW is +4 w (Flat) but +2 w (Deep) / 为何 GFW 扁平 +4、深度 +2
 
 Different GFW products, not the same stream lagged differently. **Flat +4 w** =
-monthly vessel-presence columns (`gfw_{cp}_*`, 49 of the 113): a calendar month
+monthly vessel-presence columns (`gfw_{cp}_*`, 49 of the 164): a calendar month
 is only complete at month end + a conservative ~1-month availability buffer
 (project-level conservatism, **not** an official 4-week release rule). **Deep
 +2 w** = near-real-time AIS event/voyage O-D stream (~96 h) with a conservative
@@ -191,7 +196,7 @@ two-week buffer. The two are not interchangeable.
 
 GFW monthly presence testable at lag ∈ {1, 4, 8} w; `MONTHLY_LAG_WEEKS` at
 {3, 5, 7} w; all exposed as CLI flags (`--gfw-lag`, `--eia-lag`, …) so the whole
-matrix can be rebuilt without code edits. Results in Appendix B.
+matrix can be rebuilt without code edits. Results in Appendix B.3.8.
 
 ---
 
@@ -214,12 +219,16 @@ verified (`P006→P004 ≠ P004→P006`). Lag +2 w.
 
 ### A.4.2 Static AOI↔chokepoint edges / 静态 AOI↔咽喉边
 
-Fixed undirected links by geographic association (13 undirected edges), present
-every week (`aoi_oil_infrastructure_sites.md` §4). Every AOI carries at least one
-corridor link: P007 (Jamnagar) is a demand-side refinery rather than a Gulf
-export terminal, but its crude slate is dominated by Persian Gulf loadings, so it
-is attached to Hormuz on the import side. / 每个 AOI 至少有一条走廊边；P007 为需求
-侧炼厂，原油进料以波斯湾装载为主，故在进口侧连接霍尔木兹。
+Fixed undirected corridor links (13 undirected edges), specified in advance from
+each site's main documented oil-trade corridor rather than inferred from weekly
+vessel movements or geographic proximity. Present every week
+(`aoi_oil_infrastructure_sites.md` §4; `CHOKE_AOI` in `build_m3_graph17.py`).
+Every AOI carries at least one corridor link: P007 (Jamnagar) is a demand-side
+refinery rather than a Gulf export terminal, but its crude slate is dominated by
+Persian Gulf loadings, so it is attached to Hormuz on the import side.
+固定无向走廊边（13 条），按各站点主要石油贸易走廊预先设定，而非由周度船舶移动
+或地理邻近关系推断。每周均在。每个 AOI 至少有一条走廊边；P007 为需求侧炼厂，
+原油进料以波斯湾装载为主，故在进口侧连接霍尔木兹。
 
 | Chokepoint | Linked AOIs |
 | --- | --- |

@@ -19,6 +19,8 @@ Per-modality release-lag responsibility (who applies which lag):
         (daily, available at week close); brent_price is the target base.
   - M3 GFW monthly (+4w) and PortWatch weekly (+1w) ... already lagged inside
         aggregate_shipping_to_weekly.py; RE-CHECKED here, not shifted again.
+  - M3 GFW SAR dark-vessel (+4w) ... already lagged inside
+        build_m3_graph_weekly.py; joined here, not shifted again.
   - M2 (when available) ... 55 main-analysis anomaly columns only
         ({NDVI,NDWI,NDBI,BSI,NTL}_anom_{aoi}); level/age/avail stay in
         m2_weekly_features.csv for robustness/EDA but are NOT merged.
@@ -64,6 +66,8 @@ PROC_DIR = MERGE_DIR.parent                         # processed
 M1_PATH = PROC_DIR / "M1" / "outputs" / "m1_weekly_features.csv"
 M2_PATH = PROC_DIR / "M2" / "outputs" / "m2_weekly_features.csv"
 M3_PATH = PROC_DIR / "M3" / "outputs" / "m3_weekly_features.csv"
+DARK_PATH = PROC_DIR / "M3" / "outputs" / "m3_graph_darkvessel_weekly.csv"
+AOI_PATH = PROC_DIR.parent / "raw" / "02_sentinel2" / "aoi_oil_infrastructure.csv"
 OUT_DIR = MERGE_DIR / "outputs"
 MATRIX_PATH = OUT_DIR / "weekly_feature_matrix.csv"
 DICT_PATH = OUT_DIR / "weekly_feature_dictionary.csv"
@@ -128,6 +132,38 @@ def filter_m2_anom_columns(df: pd.DataFrame) -> pd.DataFrame:
     return df[cols].copy()
 
 
+def load_sar_dark_wide() -> pd.DataFrame:
+    """17-region GFW SAR counts already lagged +4w in the graph builder."""
+    if not DARK_PATH.exists():
+        print(f"  [skip] SAR dark-vessel: {DARK_PATH.name} not found")
+        return pd.DataFrame()
+    aoi_map = {}
+    if AOI_PATH.exists():
+        aoi = pd.read_csv(AOI_PATH)
+        aoi_map = {r.site_id: str(r.site_short).lower() for r in aoi.itertuples()}
+    dark = pd.read_csv(DARK_PATH, parse_dates=["week_ending_friday"])
+
+    def _key(row) -> str:
+        if row.region_type == "chokepoint":
+            return f"cp_{row.region_short}"
+        return f"aoi_{aoi_map.get(row.region_id, str(row.region_id).lower())}"
+
+    dark = dark.copy()
+    dark["key"] = dark.apply(_key, axis=1)
+    frames = []
+    for src, short in (("detections_total", "total"),
+                       ("detections_dark", "dark"),
+                       ("dark_share", "share")):
+        wide = dark.pivot_table(
+            index="week_ending_friday", columns="key", values=src, aggfunc="first")
+        wide.columns = [f"sar_{c}_{short}" for c in wide.columns]
+        frames.append(wide)
+    out = pd.concat(frames, axis=1).sort_index()
+    out.index.name = "week_ending_friday"
+    print(f"  SAR dark-vessel: {out.shape}  {out.index.min().date()} ~ {out.index.max().date()}")
+    return out
+
+
 def load_modality(path: Path, label: str, required: bool = False) -> pd.DataFrame:
     if not path.exists():
         msg = f"  [{'MISSING' if required else 'skip'}] {label}: {path.name} not found"
@@ -168,6 +204,8 @@ def classify(col: str) -> tuple[str, str, str]:
         return ("M1", "price (daily->W-FRI)", "none; week-close")
     if col in M1_MARKET_DAILY:
         return ("M1", "market daily", "none; week-close")
+    if col.startswith("sar_"):
+        return ("M3", "GFW SAR dark-vessel", "+4w (applied in graph builder)")
     if col.startswith("gfw_"):
         return ("M3", "GFW monthly presence", "+4w (applied in M3)")
     if col.startswith("pw_") and ("_exp_" in col or "_imp_" in col):
@@ -295,6 +333,12 @@ def main() -> None:
     if not m2.empty:
         m2 = filter_m2_anom_columns(m2)
     m3 = load_modality(M3_PATH, "M3 shipping", required=True)
+    sar = load_sar_dark_wide()
+    if not sar.empty:
+        overlap = [c for c in sar.columns if c in m3.columns]
+        if overlap:
+            raise ValueError(f"SAR columns collide with M3: {overlap}")
+        m3 = m3.join(sar, how="left")
 
     # 1) Union W-FRI index across all available modalities.
     union = build_union_index(
@@ -321,7 +365,8 @@ def main() -> None:
         m1u[eia_present] = m1u[eia_present].shift(eia_lag)
         print(f"\n[override] Applied EIA WPSR lag +{eia_lag}w to {len(eia_present)} columns.")
     print("Re-check (not re-shifted): EIA WPSR +1w & M1 monthlies lagged in M1; "
-          "M3 GFW +4w / PortWatch +1w lagged in M3.")
+          "M3 GFW +4w / PortWatch +1w lagged in M3; "
+          "SAR dark-vessel +4w lagged in the graph builder.")
 
     # 4) Concatenate column-wise; guard against name collisions.
     matrix = pd.concat(parts, axis=1)

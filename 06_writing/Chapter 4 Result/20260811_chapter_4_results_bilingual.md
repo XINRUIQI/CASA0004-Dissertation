@@ -6,82 +6,116 @@
 
 ## 4.1 描述性概览
 
-This chapter reports one-week-ahead Brent forecasts for 257 rolling origins from 22 January 2021 to 19 December 2025; the target dates extend from 29 January 2021 to 26 December 2025. Models predict log returns, which are converted to prices for evaluation. Performance is measured by RMSE and skill relative to M0, whose RMSE is 4.152 USD per barrel.
+This chapter reports one-week-ahead Brent forecasts for 257 rolling forecast origins from 22 January 2021 to 19 December 2025. The corresponding target dates extend from 29 January 2021 to 26 December 2025. Models predict next-week log returns, which are converted to prices for evaluation. Performance is measured using  RMSE improvement vs M0, whose RMSE is 4.152 USD per barrel. Positive improvement indicates a lower RMSE than M0.
 
-Weekly returns are centred near zero, with large movements clustered in several periods. Remote-sensing anomalies show weak contemporaneous associations with returns. Their incremental value is assessed through the rolling out-of-sample comparisons below.
+本章报告 257 个滚动预测起点上的提前一周 Brent 预测。预测起点为 2021 年 1 月 22 日至 2025 年 12 月 19 日，对应的目标日期为 2021 年 1 月 29 日至 2025 年 12 月 26 日。模型预测下一周的对数收益率，并将其转换为价格进行评价。模型表现采用 RMSE 及相对于 M0 的 衡量，M0 的 RMSE 为每桶 4.152 美元。正  表示 RMSE 低于 M0。 
+
+Weekly returns are centred near zero, with large movements clustered in several periods. Remote-sensing anomalies show weak contemporaneous associations with returns. Their incremental predictive value is therefore assessed through the rolling out-of-sample comparisons below.
+
+周度收益率接近零均值，较大幅度的变动集中在若干时期。遥感异常与收益率之间的同期关联较弱。因此，其增量预测价值将通过下文的滚动样本外比较进行评价。
 
 ## 4.2 Flat-model results
 
+
+
 ## 4.2 Flat 模型结果
 
-Table 4.1 reports the out-of-sample performance of Ridge and XGBoost under M1–M4, with M0 shown for comparison. All learned specifications have higher RMSE than M0 and therefore negative skill.
+Table 4.1 reports the out-of-sample performance of the Flat Ridge and XGBoost models across feature sets S1–S4, with M0 shown for comparison. All eight Flat models have higher RMSE than M0 and therefore record negative RMSE improvement.
+
+表 4.1 报告 Flat Ridge 与 XGBoost 模型在特征集 S1–S4 上的样本外表现，并列出 M0 作为比较基准。八个已训练模型的 RMSE 均高于 M0，因此其 均为负值。
 
 **Table 4.1 — Flat out-of-sample performance** *(n = 257)*
 
 **表 4.1 — Flat 模型样本外表现** *（n = 257）*
 
 
-| Set | Variables                         | Ridge RMSE | Ridge skill vs M0 | XGB RMSE | XGB skill vs M0 |
-| --- | --------------------------------- | ---------- | ----------------- | -------- | --------------- |
-| M0  | no-change benchmark               | 4.152      | —                 | 4.152    | —               |
-| S1  | financial time series only        | 4.256      | −2.5%             | 4.368    | −5.2%           |
-| S2  | financial time series + RS        | 4.414      | −6.3%             | 4.440    | −6.9%           |
-| S3  | financial time series + shipping  | 4.447      | −7.1%             | 4.408    | −6.2%           |
-| S4  | financial time series + RS + ship | 4.536      | −9.3%             | 4.506    | −8.5%           |
+| Set       | Variables                         | Model         | RMSE  | Improvement vs M0 (%) |
+| --------- | --------------------------------- | ------------- | ----- | --------------------- |
+| Benchmark |                                   | M0-Ridge      | 4.152 |                       |
+|           |                                   | M0-XGB        | 4.152 |                       |
+| S1        | financial time series             | M1-Flat-Ridge | 4.256 | −2.5%                 |
+|           |                                   | M1-Flat-XGB   | 4.368 | −5.2%                 |
+| S2        | financial time series + RS        | M2-Flat-Ridge | 4.414 | −6.3%                 |
+|           |                                   | M2-Flat-XGB   | 4.440 | −6.9%                 |
+| S3        | financial time series + shipping  | M3-Flat-Ridge | 4.553 | −9.7%                 |
+|           |                                   | M3-Flat-XGB   | 4.357 | −4.9%                 |
+| S4        | financial time series + RS + ship | M4-Flat-Ridge | 4.539 | −9.3%                 |
+|           |                                   | M4-Flat-XGB   | 4.412 | −6.3%                 |
 
 
-*Note: Skill is measured relative to M0; positive values indicate lower RMSE.*
+*Note:* Positive values indicate lower RMSE than M0.
 
-Among the learned specifications, M1 performs best for both Ridge (4.256) and XGBoost (4.368), whereas M4 performs worst. Adding remote sensing, shipping, or both does not reduce RMSE relative to finance alone. Thus, within the Flat early-fusion framework, alternative data provide neither an incremental RMSE reduction over M1 nor a lower RMSE than M0. Formal RQ1 inference is assessed using the prespecified DM–HLN tests with Holm adjustment.
+For Ridge, S1 has the lowest RMSE and S3 the highest; adding remote sensing, shipping, or both raises RMSE relative to S1. For XGBoost, S3 records a slightly lower RMSE than S1 (4.357 versus 4.368), while S2 and S4 remain higher than S1. No Flat model records a positive RMSE improvement relative to M0. The Flat results therefore provide no descriptive evidence that alternative data improve forecasts relative to the no-change benchmark.
+
+对 Ridge 而言，S1 的 RMSE 最低、S3 最高；加入遥感、航运或两者均抬高相对于 S1 的 RMSE。对 XGBoost 而言，S3 的 RMSE 略低于 S1（4.357 对 4.368），而 S2 与 S4 仍高于 S1。没有任何 Flat 模型取得相对于 M0 的正 RMSE improvement。因此，Flat 结果未提供另类数据相对不变基准改善预测的描述性证据。
 
 ## 4.3 Deep-model results
 
+
+
 ## 4.3 Deep 模型结果
 
-Table 4.2 reports Deep performance by information set. Gated fusion is the main Deep specification; cross-attention is a comparison where multimodal fusion applies, so it has no entry at S1, where only the finance encoder is active. S1 and S2 both fail to beat M0 (gated RMSE 4.250 and 4.253; both −2.4% skill). Gated absolute error barely moves when remote sensing enters, and cross-attention at S2 is markedly worse (4.396, −5.9%), so no fusion mechanism recovers value from remote sensing alone.
+Table 4.2 reports Deep-model performance across S1–S4. Gated fusion is the prespecified main specification, while cross-attention is reported as a secondary comparison where multimodal fusion applies. No cross-attention result is reported for S1 because only the finance encoder is active.
 
-表 4.2 按信息集报告 Deep 表现。门控融合为主要 Deep 设定；交叉注意力为多模态融合处的对照，故在仅金融编码器参与的 S1 上无对应数值。S1 与 S2 均未优于 M0（门控 RMSE 4.250 与 4.253；skill 均为 −2.4%）。遥感进入后门控的绝对误差几乎不动，而 S2 上的交叉注意力明显更差（4.396，−5.9%），故没有任何融合机制能单靠遥感取得价值。
+表 4.2 报告 Deep 模型在 S1–S4 上的表现。门控融合是预先设定的主要模型，交叉注意力则作为适用于多模态特征集的次要比较。S1 仅启用金融编码器，因此不报告交叉注意力结果。
 
 **Table 4.2 — Deep out-of-sample performance** *(gated = main specification)*
 
-**表 4.2 — Deep 模型样本外表现** *（门控融合为主要设定）*
+
+| Set       | Variables                         | Model         | RMSE  | Improvement vs M0 (%) |
+| --------- | --------------------------------- | ------------- | ----- | --------------------- |
+| Benchmark |                                   | M0            | 4.152 |                       |
+| S1        | financial time series             | M1-Deep       | 4.250 | −2.4%                 |
+| S2        | financial time series + RS        | M2-Deep-Gated | 4.253 | −2.4%                 |
+|           |                                   | M2-Deep-XAttn | 4.396 | −5.9%                 |
+| S3        | financial time series + shipping  | M3-Deep-Gated | 4.146 | +0.15%                |
+|           |                                   | M3-Deep-XAttn | 4.110 | +1.00%                |
+| S4        | financial time series + RS + ship | M4-Deep-Gated | 4.180 | −0.67%                |
+|           |                                   | M4-Deep-XAttn | 4.144 | +0.19%                |
 
 
-| Set | Variables                         | Gated RMSE | Gated skill vs M0 | Cross-attn RMSE | Cross-attn skill vs M0 |
-| --- | --------------------------------- | ---------- | ----------------- | --------------- | ---------------------- |
-| M0  | no-change benchmark               | 4.152      | —                 | 4.152           | —                      |
-| S1  | financial time series only        | 4.250      | −2.4%             | —               | —                      |
-| S2  | financial time series + RS        | 4.253      | −2.4%             | 4.396           | −5.9%                  |
-| S3  | financial time series + shipping  | 4.145      | +0.16%            | 4.110           | +1.00%                 |
-| S4  | financial time series + RS + ship | 4.180      | −0.67%            | 4.144           | +0.19%                 |
+The gated S1 and S2 models record similar RMSE of 4.250 and 4.253, both higher than that of M0. Adding remote sensing therefore provides no descriptive improvement. Neither reported fusion approach reduces RMSE relative to the finance-only Deep model at S2.
 
+门控 S1 与 S2 模型的 RMSE 均高于 M0，分别为 4.250 和 4.253。两种融合方法均未能在 S2 上相对于仅金融的 Deep 模型降低 RMSE。  
 
-Once shipping is included, gated S3 reduces RMSE to 4.145 (+0.16% skill). Cross-attention on the same set reaches 4.110 (+1.00%) on this reported seed. Shipping is the modality that moves Deep forecasts across the M0 line relative to Deep S1. Gated S4 rises again to 4.180 (−0.67%); cross-attention S4 is above M0 at +0.19% but does not displace gated S3 as the main finding. Both cross-attention entries are single-seed figures from the fusion matrix and do not survive reseeding — cross-attention has the worst seed-averaged skill of the three S3 fusions (Appendix B.4) — so they are reported as descriptive comparisons rather than as the better specification. The gated margin is likewise small and should not be over-read on a short weekly sample; Section 4.5 returns to seed sensitivity.
+With shipping included, gated S3 records the lowest RMSE among the gated models at 4.146, improving on M0 by 0.15%. Gated S4 rises to 4.180, 0.67% worse than M0, indicating that adding remote sensing to S3 does not provide a further improvement.
 
-一旦纳入航运，门控 S3 将 RMSE 降至 4.145（+0.16% skill）。同一信息集上交叉注意力在此报告种子上达到 4.110（+1.00%）。相对 Deep S1，航运是使 Deep 预测越过 M0 的模态。门控 S4 回升至 4.180（−0.67%）；交叉注意力 S4 以 +0.19% 高于 M0，但不取代门控 S3 作为主发现。两个交叉注意力数值均来自融合矩阵的单一种子，且不耐重新设定种子——在三种 S3 融合中，交叉注意力的跨种子平均 skill 最差（见附录 B.4）——故仅作描述性对照报告，而非「更优设定」。门控的增益幅度同样很小，在较短周度样本上不宜过度解读；第 4.5 节回到种子敏感性。
+On the reported seed-42 run, cross-attention has a higher RMSE than gated fusion at S2, at 4.396 compared with 4.253, but lower RMSEs at S3 and S4. Cross-attention records RMSEs of 4.110 and 4.144 at S3 and S4, corresponding to RMSE improvements of 1.00% and 0.19%. These results are therefore reported as descriptive secondary comparisons rather than evidence that cross-attention is superior.  
 
-For RQ1 under Deep, shipping-inclusive forecasts clear M0 by a modest margin, while remote sensing does not add a comparable absolute-error gain.
+在报告的随机种子 42 结果中，交叉注意力在 S2 上的 RMSE 高于门控融合，分别为 4.396 和 4.253，但在 S3 和 S4 上取得了更低的 RMSE。交叉注意力在 S3 和 S4 上的 RMSE 分别为 4.110 和 4.144，对应的正 分别为 1.00% 和 0.19%。然而，门控融合与交叉注意力之间的比较均未通过 Holm 校正。交叉注意力在 S3 和 S4 上相对于 M0 的正 也均不显著。因此，这些结果仅作为描述性的次要比较报告，而不构成交叉注意力更优的证据。
 
-对 Deep 路径下的 RQ1 而言，含航运预测以小幅优势越过 M0，而遥感未提供可相比的绝对误差增益。
+For RQ1, the within-learner comparisons show that shipping reduces RMSE relative to M0 only in the main Deep pathway. In the Flat family, XGBoost S3 is slightly below S1 but still worse than M0, and Ridge S3 is worse than S1. Remote sensing provides no improvement either alone or when added to shipping.
+
+对于 RQ1，同一学习器内部的比较表明，航运数据仅在主要 Deep 路径中相对于 M0 降低了 RMSE。在 Flat 族中，XGBoost 的 S3 略低于 S1，但仍弱于 M0；Ridge 的 S3 弱于 S1。遥感无论单独加入还是在航运基础上加入均未带来改善。
 
 ## 4.4 Flat versus Deep
 
+
+
 ## 4.4 Flat 与 Deep 的配对比较
 
-**Table 4.3 — Paired Flat versus Deep**  
-*(Flat = Table 4.1 XGBoost; Deep = Table 4.2 gated; percentages are skill versus M0)*
+Table 4.3 compares the main Deep pathway with both Flat learners within each feature set. The feature-set category, forecast dates and evaluation sample are held constant. The main Deep pathway uses the finance-only Deep model at S1 and gated fusion at S2–S4. These comparisons evaluate the overall Flat and Deep modelling pathways rather than isolating the fusion operator alone.
 
-**表 4.3 — Flat 与 Deep 的配对比较**  
-*（Flat = 表 4.1 XGBoost；Deep = 表 4.2 门控；百分比为相对 M0 的 skill）*
+表 4.3 在每个特征集内，将主要 Deep 路径分别与两种 Flat 学习器进行比较，并保持特征集类别、预测日期和评价样本一致。主要 Deep 路径在 S1 使用仅金融的 Deep 模型，在 S2–S4 使用门控融合。这些比较评价的是完整的 Flat 与 Deep 建模路径，而不是单独识别融合算子的作用。
+
+**Table 4.3 — Matched Flat–Deep comparisons by feature set** *(n = 257)*
 
 
-| Pair | Flat RMSE | Deep RMSE | Flat skill vs M0 | Deep skill vs M0 |
-| ---- | --------- | --------- | ---------------- | ---------------- |
-| S1   | 4.368     | 4.250     | −5.2%            | −2.4%            |
-| S2   | 4.440     | 4.253     | −6.9%            | −2.4%            |
-| S3   | 4.408     | 4.145     | −6.2%            | +0.16%           |
-| S4   | 4.506     | 4.180     | −8.5%            | −0.67%           |
+| Feature set | Flat model    | Flat RMSE | Main Deep model | Deep RMSE | **Deep vs Flat (%)** |
+| ----------- | ------------- | --------- | --------------- | --------- | -------------------- |
+| S1          | Ridge         | 4.256     | M1–Deep         | 4.250     | +0.15%               |
+| S1          | M1–Flat–XGB   | 4.368     | M1–Deep         | 4.250     | +2.71%               |
+| S2          | M2–Flat–Ridge | 4.414     | M2–Deep–Gated   | 4.253     | +3.64%               |
+| S2          | M2–Flat–XGB   | 4.440     | M2–Deep–Gated   | 4.253     | +4.22%               |
+| S3          | M3–Flat–Ridge | 4.553     | M3–Deep–Gated   | 4.146     | +8.95%               |
+| S3          | M3–Flat–XGB   | 4.357     | M3–Deep–Gated   | 4.146     | +4.85%               |
+| S4          | M4–Flat–Ridge | 4.539     | M4–Deep–Gated   | 4.180     | +7.90%               |
+| S4          | M4–Flat–XGB   | 4.412     | M4–Deep–Gated   | 4.180     | +5.26%               |
 
+
+*Note. Positive values indicate a lower Deep RMSE than the matched Flat model. Percentages use unrounded RMSEs.*
+
+*注。Deep RMSE reduction 为 Deep 相对对应 Flat 模型的 RMSE 降幅，正值表示 Deep 更低。百分比由未四舍五入的 RMSE 计算。*
 
 Figure 4.2
 
@@ -89,21 +123,27 @@ Figure 4.2
 
 **图 4.2 — 各信息集上由 Flat XGBoost 到 Deep 门控融合的配对斜率，S3 高亮。**
 
-Deep has lower RMSE than Flat in every matched pair. Finance-only and finance-plus-RS pairs improve on Flat but remain negative versus M0. S3 is the pivotal pair descriptively: Flat skill −6.2% versus gated Deep +0.16%—the only matched pair in which Deep also beats M0. Deep S4 improves on Flat S4 but stays negative versus M0 and does not improve on Deep S3. The paired margin widens as the information set grows, from +2.71% at S1 against XGBoost to +7.23% at S4, and four of the eight matched rows have raw p below 5%, including S3 at 0.010 and S4 at 0.009. The smallest Holm-adjusted p in the fourteen-comparison RQ2 family is nevertheless 0.132, so the primary test supports no formal claim that the Deep pathway outperforms the Flat pathway. The ordering is consistent and repeated across all four sets, but it remains nominal evidence.
+Across all four feature sets, the main Deep model records lower RMSE than both Ridge and XGBoost. The reduction ranges from 0.15% against Ridge at S1 to 8.95% against Ridge at S3. The difference at S1 is therefore negligible, while larger reductions appear once alternative data are included.
 
-每一匹配配对中 Deep 的 RMSE 均低于 Flat。仅金融与金融加遥感相对 Flat 有改善，但相对 M0 仍为负。描述层面上的关键配对是 S3：Flat skill −6.2%，门控 Deep +0.16%——唯一 Deep 同时优于 M0 的匹配对。Deep S4 优于 Flat S4，但相对 M0 仍为负，且未优于 Deep S3。配对增益随信息集扩大而变大，从 S1 相对 XGBoost 的 +2.71% 增至 S4 的 +7.23%，八个匹配对中有四个原始 p 值低于 5%，其中 S3 为 0.010、S4 为 0.009。但 14 项 RQ2 族中最小的 Holm 调整后 p 值为 0.132，故主检验不支持「Deep 路径优于 Flat 路径」的正式论断。该排序在四个信息集上一致且重复出现，但仍属名义证据。
+在每个特征集上，主要 Deep 模型的 RMSE 均低于两种 Flat 学习器，因此所有匹配比较在描述层面均有利于 Deep 路径。降幅从 S1 相对于 Ridge 的 0.15% 到 S3 相对于 Ridge 的 8.95% 不等。因此，S1 上的差异可以忽略，而加入另类数据后，Deep 相对于 Flat 的 RMSE 降幅更大。
 
-For RQ2, representation-level Deep modelling reduces RMSE relative to Flat at every matched set, but an M0-beating paired outcome appears only when shipping is included, and no paired comparison survives Holm adjustment.
+At S1 and S2, the main Deep models improve on both Flat learners but remain worse than M0. S3 is the only feature set which has lower RMSE than M0. Although the main Deep S4 model improves substantially over both Flat models, it remains worse than M0 and does not improve on the main Deep S3 model.
 
-对 RQ2 而言，表示级 Deep 在每一匹配集上相对 Flat 降低 RMSE，但配对结果越过 M0 仅出现在含航运时，且没有任何配对比较能通过 Holm 调整。
+在 S1 和 S2 上，主要 Deep 模型均优于两种 Flat 学习器，但仍弱于 M0。S3 是唯一一个主要 Deep 模型的 RMSE 同时低于 M0 的特征集。尽管主要 Deep S4 模型相对于两种 Flat 模型均有明显改善，但其表现仍弱于 M0，也未优于主要 Deep S3 模型。
+
+For RQ2, the matched comparisons show that the main Deep pathway records lower RMSE than both Flat learners at every feature set.
+
+对于 RQ2，配对比较表明，主要 Deep 路径在每个特征集上的 RMSE 均低于两种 Flat 学习器。
 
 ## 4.5 Robustness and sensitivity
 
+
+
 ## 4.5 稳健性与敏感性
 
-Appendix B collects the detailed robustness tables. Flat checks that vary lookback and feature settings produce no Flat specification that beats M0. Finance-only S1 remains the strongest Flat absolute-error baseline; remote sensing stays weak and is not driven by a single site. Under the primary one-sided DM-HLN test, the seven shipping channel arms in Appendix B give p values against S1 between 0.384 and 0.727, with the main 113-column arm at 0.633, so no XGBoost shipping specification is distinguishable from the financial baseline. Four arms—tanker-only, PortWatch-only, GFW-presence and GFW-aggregate—do reduce RMSE slightly relative to S1, which keeps the descriptive ordering from being uniformly against shipping, but no valid test supports a Flat nested shipping increment. Clark–West is not reported for XGBoost under the frozen test plan (Section 3.7.2); among the Ridge arms, where it is admissible, only GFW-aggregate falls below 5% (p = 0.032), and that is also the only Ridge arm whose RMSE sits below S1. Figure 4.3 shows the raw and Holm-adjusted p-values for the RQ1 and RQ2 families side by side.
+Appendix B collects the detailed robustness tables. Flat checks that vary lookback and feature settings produce no Flat specification that beats M0. Ridge’s finance-only S1 remains its strongest absolute-error specification; XGBoost’s lowest RMSE is S3, still above M0. Remote sensing stays weak and is not driven by a single site. Under the primary one-sided DM-HLN test, the seven shipping channel arms in Appendix B give p values against S1 between 0.384 and 0.727, with the AIS-only 113-column arm at 0.633, so no XGBoost shipping specification in that appendix is distinguishable from the financial baseline. Four arms—tanker-only, PortWatch-only, GFW-presence and GFW-aggregate—do reduce RMSE slightly relative to S1, which keeps the descriptive ordering from being uniformly against shipping, but no valid test supports a Flat nested shipping increment. Clark–West is not reported for XGBoost under the frozen test plan (Section 3.7.2); among the Ridge arms, where it is admissible, only GFW-aggregate falls below 5% (p = 0.032), and that is also the only Ridge arm whose RMSE sits below S1. Figure 4.3 shows the raw and Holm-adjusted p-values for the RQ1 and RQ2 families side by side.
 
-附录 B 汇集详细稳健性表。改变回看与特征设定的 Flat 检查均未产生优于 M0 的 Flat 设定。仅金融 S1 仍是最强 Flat 绝对误差基线；遥感仍弱且非单站驱动。在主检验（单侧 DM–HLN）下，附录 B 七个航运通道臂相对 S1 的 p 值介于 0.384 与 0.727 之间，作为主设定的 113 列臂为 0.633，因此没有任何 XGBoost 航运设定能与金融基线区分开。有四个臂——仅油轮、仅 PortWatch、GFW 存在度与 GFW 聚合——的 RMSE 略低于 S1，使描述性排序不至于一致不利于航运，但没有任何有效检验支持 Flat 下的嵌套航运增量。按冻结检验方案（3.7.2 节），XGBoost 不报告 Clark–West；在可用该检验的 Ridge 各臂中，仅 GFW 聚合臂低于 5%（p = 0.032），而该臂也是唯一 RMSE 低于 S1 的 Ridge 臂。图 4.3 并列展示 RQ1 与 RQ2 两族的原始 p 值与 Holm 调整后 p 值。
+附录 B 汇集详细稳健性表。改变回看与特征设定的 Flat 检查均未产生优于 M0 的 Flat 设定。Ridge 仍以仅金融 S1 为最强绝对误差设定；XGBoost 的最低 RMSE 为 S3，但仍高于 M0。遥感仍弱且非单站驱动。在主检验（单侧 DM–HLN）下，附录 B 七个航运通道臂相对 S1 的 p 值介于 0.384 与 0.727 之间，其中仅 AIS 的 113 列臂为 0.633，因此该附录中没有任何 XGBoost 航运设定能与金融基线区分开。有四个臂——仅油轮、仅 PortWatch、GFW 存在度与 GFW 聚合——的 RMSE 略低于 S1，使描述性排序不至于一致不利于航运，但没有任何有效检验支持 Flat 下的嵌套航运增量。按冻结检验方案（3.7.2 节），XGBoost 不报告 Clark–West；在可用该检验的 Ridge 各臂中，仅 GFW 聚合臂低于 5%（p = 0.032），而该臂也是唯一 RMSE 低于 S1 的 Ridge 臂。图 4.3 并列展示 RQ1 与 RQ2 两族的原始 p 值与 Holm 调整后 p 值。
 
 Figure 4.3
 
@@ -126,6 +166,8 @@ Figure 4.4
 **图 4.4 — 全样本、早期窗（2023 年前）与晚期窗（2023 年起）相对 M0 的 RMSE skill，Flat 与 Deep 两条路径分面显示。**
 
 ## 4.6 Interpretability
+
+
 
 ## 4.6 可解释性
 

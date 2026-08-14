@@ -13,12 +13,13 @@ Modality column selection (by the dictionary `modality` field):
                                  cols vs the 35-col single table, which are
                                  equivalent because VarianceThreshold drops them.)
   M2 = M1 + remote sensing
-  M3 = M1 + shipping        (main model = FULL tier, all 113 cols, by default)
+  M3 = M1 + shipping        (main model = FULL tier, 164 cols, by default)
   M4 = M1 + remote sensing + shipping
 Targets (target_*) and mask columns (avail_*) are never used as features.
 
 M3 shipping tier (--m3-tier, see m3_data_dictionary.md §11):
-  full (DEFAULT, 113 cols) every shipping column (PortWatch 64 + GFW 49); the
+  full (DEFAULT, 164 cols) every shipping column (PortWatch 64 + GFW 49 +
+                          SAR dark-vessel 51); the
                           MAIN model, chosen because the hand-picked core tier
                           is not XGB-optimal (m3_data_dictionary.md §11 / robustness).
   core (38 cols)          GFW 6x4 (total_hours, total_vessels, cargo_hours,
@@ -208,7 +209,7 @@ def select_features(dico: pd.DataFrame, modality: str, m2_features: str = "anom"
     """Feature columns for a modality config (never targets/masks).
 
     drop_aoi (leave-one-AOI-out): remove every M2 column belonging to that AOI.
-    m3_tier: 'full' (all 113 shipping cols, DEFAULT main model) or 'core'
+    m3_tier: 'full' (all 164 shipping cols, DEFAULT main model) or 'core'
              (§11.1 38-col hand-picked set, now a robustness arm).
     """
     if modality not in MODALITY_SETS:

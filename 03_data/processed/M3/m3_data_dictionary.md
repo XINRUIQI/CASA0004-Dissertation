@@ -533,9 +533,9 @@ PortWatch 是 IMF 为监测海运贸易与关键航道中断构建的 AIS 指标
 
 ## 11. M3 主模型（full）与 core tier 稳健性臂（4.1–4.4 汇总）
 
-> **主模型（2026-07-05 起）= full tier：全部 113 航运列（GFW 49 + PortWatch 64）**。改用 full 的理由：本节 §11.1 的 38 列人工精选 core tier 在 XGB 下反而**最弱且不显著**（RMSE 4.476、CW_p 0.096），而 full 显著（RMSE 4.429、CW_p 0.0002），说明人工筛选丢弃了树模型可利用的非线性航运信号（见 §9/§10 与 `flat_baseline_log.md` M3 LOCHO）。§11.1 的 core tier **降级为稳健性臂**，与 portwatch-only / tanker-only / gfw-aggregate 等并列。
+> **主模型（2026-08-14 起）= full tier：164 航运列（GFW 49 + PortWatch 64 + SAR 暗船 51）**。113 列 AIS 宽表仍为 core 之前的 full 航运块；17 区 GFW SAR（`sar_*_{total,dark,share}`）并入合并矩阵，与 Deep 图节点同一数据源、同一 +4 周滞后。§11.1 的 38 列 core 仍为稳健性臂。
 >
-> **代码现状（2026-07-05 已实现）**：`m3_weekly_features.csv` 与合并矩阵输出全部列（GFW 49 + PortWatch 64 + 4 mask）；`04_code/src/backtest/data.py::select_features(..., m3_tier="full")` **默认选全部 113 航运列**（M3、M4 主模型均生效，含 `mean_presence` 6 列）。`gfw_all_activity_zmean` 为建模阶段派生列、**不在 CSV/full 内**，仅 `gfw-aggregate` 实验注入。`--m3-tier core` 切回 §11.1 的 38 列 core 稳健性臂；`robustness_m3.py` 提供 `core / full / portwatch-only / tanker-only / gfw-presence / gfw-aggregate` 等臂。
+> **代码现状（2026-08-14）**：`m3_weekly_features.csv` 仍为 GFW 49 + PortWatch 64；SAR 51 列在 `build_feature_matrix.py` 从 `m3_graph_darkvessel_weekly.csv` 并入合并矩阵。`select_features(..., m3_tier="full")` 默认选全部 164 航运列。`gfw_all_activity_zmean` 仍为建模阶段派生、仅 `gfw-aggregate` 实验注入。`--m3-tier core` 仍为 38 列稳健性臂。
 
 ### 11.1 core tier 清单（38 列，稳健性臂；每咽喉短码：hormuz/suez/malacca/mandeb/panama/cape）
 
