@@ -1,0 +1,97 @@
+period_id,label,kind,n_weeks,group,modality,mean_shap_abs,mean_shap_signed,share_total,share_within_modality
+full,Full OOS,all,257,oil_price_basis,finance,0.006064694,0.00057708425,0.20321617,0.20987387
+full,Full OOS,all,257,financial_macro,finance,0.009377634,-0.00090472517,0.3142264,0.32452098
+full,Full OOS,all,257,eia_fundamentals,finance,0.013011512,-0.0013184098,0.4359906,0.4502744
+full,Full OOS,all,257,gpr,finance,0.00044301,0.00013567932,0.014844408,0.0153307365
+full,Full OOS,all,257,GFW,shipping,0.0002861967,1.5493042e-05,0.009589898,0.30230665
+full,Full OOS,all,257,PortWatch_chokepoint,shipping,0.00028931862,-2.2098058e-05,0.009694507,0.30560428
+full,Full OOS,all,257,PortWatch_directional,shipping,0.00014277526,1.092608e-06,0.0047841226,0.15081204
+full,Full OOS,all,257,SAR,shipping,0.00022841935,1.1514063e-05,0.00765389,0.24127701
+early,Early (<2023-01-01),split,102,oil_price_basis,finance,0.0053516366,-0.001636253,0.20816883,0.21658173
+early,Early (<2023-01-01),split,102,financial_macro,finance,0.009250441,0.00015304075,0.35982516,0.37436706
+early,Early (<2023-01-01),split,102,eia_fundamentals,finance,0.009677316,0.002445389,0.37642983,0.3916428
+early,Early (<2023-01-01),split,102,gpr,finance,0.0004301545,0.00014268642,0.01673222,0.017408432
+early,Early (<2023-01-01),split,102,GFW,shipping,0.0003444381,2.9288285e-05,0.01339801,0.34491882
+early,Early (<2023-01-01),split,102,PortWatch_chokepoint,shipping,0.0002725067,-3.0024245e-05,0.010600011,0.27288702
+early,Early (<2023-01-01),split,102,PortWatch_directional,shipping,0.00016727271,-7.490453e-07,0.0065066013,0.16750616
+early,Early (<2023-01-01),split,102,SAR,shipping,0.00021438878,2.9335246e-05,0.008339331,0.21468799
+late,Late (>=2023-01-01),split,155,oil_price_basis,finance,0.006533932,0.002033603,0.20064324,0.20642792
+late,Late (>=2023-01-01),split,155,financial_macro,finance,0.009461336,-0.0016008033,0.29053763,0.29891402
+late,Late (>=2023-01-01),split,155,eia_fundamentals,finance,0.015205628,-0.0037952324,0.4669327,0.4803947
+late,Late (>=2023-01-01),split,155,gpr,finance,0.0004514698,0.0001310682,0.013863684,0.014263383
+late,Late (>=2023-01-01),split,155,GFW,shipping,0.00024787014,6.4148817e-06,0.007611568,0.271621
+late,Late (>=2023-01-01),split,155,PortWatch_chokepoint,shipping,0.00030038194,-1.6882115e-05,0.009224095,0.32916448
+late,Late (>=2023-01-01),split,155,PortWatch_directional,shipping,0.00012665434,2.3045347e-06,0.0038892874,0.13879034
+late,Late (>=2023-01-01),split,155,SAR,shipping,0.00023765238,-2.1342512e-07,0.0072978023,0.26042417
+year_2021,2021,calendar,50,oil_price_basis,finance,0.004582952,-0.0009596309,0.18188156,0.18983315
+year_2021,2021,calendar,50,financial_macro,finance,0.00935323,0.00010233492,0.37119743,0.38742566
+year_2021,2021,calendar,50,eia_fundamentals,finance,0.009893834,0.003451823,0.39265215,0.40981832
+year_2021,2021,calendar,50,gpr,finance,0.0003119843,1.8268032e-06,0.012381582,0.012922886
+year_2021,2021,calendar,50,GFW,shipping,0.0003774835,4.0064504e-05,0.014981018,0.35765067
+year_2021,2021,calendar,50,PortWatch_chokepoint,shipping,0.00032045168,-3.7264974e-05,0.012717622,0.30361527
+year_2021,2021,calendar,50,PortWatch_directional,shipping,0.00016104184,-1.6244654e-05,0.0063911956,0.15258077
+year_2021,2021,calendar,50,SAR,shipping,0.00019647604,7.009341e-06,0.007797457,0.18615328
+year_2022,2022,calendar,52,oil_price_basis,finance,0.006090756,-0.0022868512,0.23247859,0.24116778
+year_2022,2022,calendar,52,financial_macro,finance,0.009151604,0.00020179636,0.34930837,0.3623642
+year_2022,2022,calendar,52,eia_fundamentals,finance,0.009469125,0.0014776641,0.36142787,0.3749367
+year_2022,2022,calendar,52,gpr,finance,0.00054377964,0.00027812834,0.020755572,0.021531338
+year_2022,2022,calendar,52,GFW,shipping,0.00031266373,1.8926534e-05,0.011934089,0.33123052
+year_2022,2022,calendar,52,PortWatch_chokepoint,shipping,0.00022640577,-2.3062004e-05,0.008641701,0.23985034
+year_2022,2022,calendar,52,PortWatch_directional,shipping,0.00017326395,1.415058e-05,0.0066133267,0.18355282
+year_2022,2022,calendar,52,SAR,shipping,0.00023161256,5.0802464e-05,0.00884044,0.24536632
+year_2023,2023,calendar,52,oil_price_basis,finance,0.0038456623,-0.0010341316,0.17269427,0.18218674
+year_2023,2023,calendar,52,financial_macro,finance,0.008065921,-0.002884148,0.36221027,0.38211983
+year_2023,2023,calendar,52,eia_fundamentals,finance,0.0089212665,-0.0022127447,0.4006206,0.4226415
+year_2023,2023,calendar,52,gpr,finance,0.00027550652,0.00010847656,0.012371965,0.013052013
+year_2023,2023,calendar,52,GFW,shipping,0.00033254176,1.3281868e-05,0.014933203,0.28660986
+year_2023,2023,calendar,52,PortWatch_chokepoint,shipping,0.00032847357,-4.6161542e-05,0.014750516,0.2831036
+year_2023,2023,calendar,52,PortWatch_directional,shipping,0.00017919365,-6.113207e-06,0.008046915,0.15444276
+year_2023,2023,calendar,52,SAR,shipping,0.00032005037,-1.9452747e-05,0.014372261,0.27584383
+year_2024,2024,calendar,52,oil_price_basis,finance,0.00404372,0.00015491032,0.17789443,0.18734103
+year_2024,2024,calendar,52,financial_macro,finance,0.0070390413,-0.0015079232,0.30966687,0.32611093
+year_2024,2024,calendar,52,eia_fundamentals,finance,0.010170931,-0.0021665061,0.44744736,0.4712079
+year_2024,2024,calendar,52,gpr,finance,0.0003311148,0.00020963412,0.014566655,0.015340179
+year_2024,2024,calendar,52,GFW,shipping,0.0002790086,1.1587764e-05,0.012274358,0.2434195
+year_2024,2024,calendar,52,PortWatch_chokepoint,shipping,0.00044362943,-1.2183102e-05,0.019516485,0.38704205
+year_2024,2024,calendar,52,PortWatch_directional,shipping,0.00014216159,1.1975217e-05,0.006254081,0.124028094
+year_2024,2024,calendar,52,SAR,shipping,0.0002814052,-1.3627658e-06,0.0123797925,0.2455104
+year_2025,2025,calendar,51,oil_price_basis,finance,0.011813952,0.0070770183,0.22252747,0.22430952
+year_2025,2025,calendar,51,financial_macro,finance,0.013353902,-0.0003869966,0.25153396,0.2535483
+year_2025,2025,calendar,51,eia_fundamentals,finance,0.026746629,-0.0070694108,0.5037992,0.5078338
+year_2025,2025,calendar,51,gpr,finance,0.00075359823,7.399638e-05,0.014194769,0.014308443
+year_2025,2025,calendar,51,GFW,shipping,0.0001297892,-5.8610617e-06,0.002444708,0.3077221
+year_2025,2025,calendar,51,PortWatch_chokepoint,shipping,0.0001256833,8.180261e-06,0.0023673694,0.29798728
+year_2025,2025,calendar,51,PortWatch_directional,shipping,5.727356e-05,1.0270271e-06,0.0010788041,0.13579203
+year_2025,2025,calendar,51,SAR,shipping,0.00010902801,2.0575017e-05,0.0020536506,0.2584986
+event_russia_ukraine,Russia–Ukraine,event,16,oil_price_basis,finance,0.007619445,-0.002936961,0.29255384,0.30309978
+event_russia_ukraine,Russia–Ukraine,event,16,financial_macro,finance,0.0069236504,0.0036534204,0.26583833,0.2754212
+event_russia_ukraine,Russia–Ukraine,event,16,eia_fundamentals,finance,0.009422709,0.005119931,0.3617914,0.3748332
+event_russia_ukraine,Russia–Ukraine,event,16,gpr,finance,0.0011726014,0.00063416216,0.045022838,0.046645813
+event_russia_ukraine,Russia–Ukraine,event,16,GFW,shipping,0.0003516868,2.4104076e-05,0.013503256,0.38809663
+event_russia_ukraine,Russia–Ukraine,event,16,PortWatch_chokepoint,shipping,0.00019494737,-2.1528256e-05,0.0074851387,0.2151301
+event_russia_ukraine,Russia–Ukraine,event,16,PortWatch_directional,shipping,0.00012734944,-2.83654e-06,0.0048896694,0.14053382
+event_russia_ukraine,Russia–Ukraine,event,16,SAR,shipping,0.00023219996,8.413687e-06,0.008915477,0.25623944
+event_eu_ru_oil_ban,EU RU oil ban announced,event,16,oil_price_basis,finance,0.00623528,-0.0021296036,0.24800281,0.25842458
+event_eu_ru_oil_ban,EU RU oil ban announced,event,16,financial_macro,finance,0.009022648,0.0014172135,0.35886794,0.37394857
+event_eu_ru_oil_ban,EU RU oil ban announced,event,16,eia_fundamentals,finance,0.008415225,0.0020431508,0.3347082,0.34877357
+event_eu_ru_oil_ban,EU RU oil ban announced,event,16,gpr,finance,0.00045489307,0.000292129,0.018092975,0.018853292
+event_eu_ru_oil_ban,EU RU oil ban announced,event,16,GFW,shipping,0.00031693964,2.0813877e-05,0.012605997,0.31258646
+event_eu_ru_oil_ban,EU RU oil ban announced,event,16,PortWatch_chokepoint,shipping,0.00027186063,-4.9333416e-05,0.010813018,0.2681266
+event_eu_ru_oil_ban,EU RU oil ban announced,event,16,PortWatch_directional,shipping,0.00018716198,2.8225206e-05,0.007444204,0.1845913
+event_eu_ru_oil_ban,EU RU oil ban announced,event,16,SAR,shipping,0.0002379641,5.052221e-05,0.009464813,0.23469564
+event_opec_plus,OPEC+ surprise cut,event,16,oil_price_basis,finance,0.00435282,-0.0010147818,0.2051884,0.2144501
+event_opec_plus,OPEC+ surprise cut,event,16,financial_macro,finance,0.008618185,-0.0032755854,0.40625423,0.42459157
+event_opec_plus,OPEC+ surprise cut,event,16,eia_fundamentals,finance,0.0071654883,-0.0029580495,0.3377753,0.35302165
+event_opec_plus,OPEC+ surprise cut,event,16,gpr,finance,0.00016109465,-4.4090677e-05,0.0075938706,0.00793664
+event_opec_plus,OPEC+ surprise cut,event,16,GFW,shipping,0.00029822616,-6.920653e-06,0.014058138,0.32550892
+event_opec_plus,OPEC+ surprise cut,event,16,PortWatch_chokepoint,shipping,0.00024843813,7.9160345e-06,0.011711171,0.2711661
+event_opec_plus,OPEC+ surprise cut,event,16,PortWatch_directional,shipping,0.000108732165,8.2254e-06,0.0051255454,0.11867935
+event_opec_plus,OPEC+ surprise cut,event,16,SAR,shipping,0.00026078787,5.0276125e-05,0.012293328,0.28464565
+event_red_sea,Houthi Red Sea attacks,event,16,oil_price_basis,finance,0.0034326902,-0.0010034185,0.15292364,0.16249727
+event_red_sea,Houthi Red Sea attacks,event,16,financial_macro,finance,0.006782857,-0.0023511536,0.3021709,0.32108802
+event_red_sea,Houthi Red Sea attacks,event,16,eia_fundamentals,finance,0.010284625,-0.0022533475,0.45817193,0.4868553
+event_red_sea,Houthi Red Sea attacks,event,16,gpr,finance,0.0006244312,0.00042438554,0.027817916,0.029559428
+event_red_sea,Houthi Red Sea attacks,event,16,GFW,shipping,0.0003345437,3.69471e-05,0.014903658,0.2529663
+event_red_sea,Houthi Red Sea attacks,event,16,PortWatch_chokepoint,shipping,0.000367629,-7.431236e-05,0.016377581,0.27798387
+event_red_sea,Houthi Red Sea attacks,event,16,PortWatch_directional,shipping,0.00021718213,-7.2036905e-06,0.009675292,0.16422297
+event_red_sea,Houthi Red Sea attacks,event,16,SAR,shipping,0.00040312836,-4.176958e-05,0.01795905,0.30482683

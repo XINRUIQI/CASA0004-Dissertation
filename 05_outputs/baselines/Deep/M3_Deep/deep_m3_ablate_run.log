@@ -1,0 +1,61 @@
+=== M3_Deep_gated ablation seed=42 lb=4 epochs=80 n_oos=257 arms=['intact', 'gfw', 'portwatch', 'shipping'] ===
+  mask: scaled channels -> 0; adj unchanged; no retrain
+  GFW aoi=['gfw_n_visits', 'gfw_dwell_hrs_mean', 'gfw_dwell_hrs_median', 'gfw_self_loops'] choke=['gfw_total_hours', 'gfw_total_vessels', 'gfw_cargo_hours', 'gfw_bunker_hours', 'gfw_other_hours', 'gfw_other_share', 'gfw_total_hours_mom_pct', 'gfw_mean_presence_hours_per_vessel']
+  PW  aoi=['pw_portcalls_tanker', 'pw_portcalls_cargo', 'pw_import_tanker', 'pw_export_tanker'] choke=['pw_n_tanker', 'pw_n_total', 'pw_capacity_tanker', 'pw_capacity', 'pw_tanker_share', 'pw_tanker_cap_share', 'pw_avg_tanker_size', 'pw_n_tanker_wow_pct', 'pw_capacity_tanker_4w_ma']
+  fit @ 2021-01-22 train=104
+    ablate 13/257  2021-04-16
+  fit @ 2021-04-23 train=117
+    ablate 26/257  2021-07-16
+  fit @ 2021-07-23 train=130
+    ablate 39/257  2021-10-15
+  fit @ 2021-10-22 train=143
+    ablate 52/257  2022-01-14
+  fit @ 2022-01-21 train=156
+    ablate 65/257  2022-04-15
+  fit @ 2022-04-22 train=169
+    ablate 78/257  2022-07-15
+  fit @ 2022-07-22 train=182
+    ablate 91/257  2022-10-14
+  fit @ 2022-10-21 train=195
+    ablate 104/257  2023-01-13
+  fit @ 2023-01-20 train=208
+    ablate 117/257  2023-04-14
+  fit @ 2023-04-21 train=221
+    ablate 130/257  2023-07-14
+  fit @ 2023-07-21 train=234
+    ablate 143/257  2023-10-13
+  fit @ 2023-10-20 train=247
+    ablate 156/257  2024-01-12
+  fit @ 2024-01-19 train=260
+    ablate 169/257  2024-04-12
+  fit @ 2024-04-19 train=273
+    ablate 182/257  2024-07-12
+  fit @ 2024-07-19 train=286
+    ablate 195/257  2024-10-11
+  fit @ 2024-10-18 train=299
+    ablate 208/257  2025-01-10
+  fit @ 2025-01-17 train=312
+    ablate 221/257  2025-04-11
+  fit @ 2025-04-18 train=325
+    ablate 234/257  2025-07-11
+  fit @ 2025-07-18 train=338
+    ablate 247/257  2025-10-10
+  fit @ 2025-10-17 train=351
+    ablate 257/257  2025-12-19
+
+Damage = 100*(RMSE_masked / RMSE_intact - 1); positive means the masked source was helping.
+           period_id  n_weeks RMSE_intact RMSE_gfw damage_gfw_pct RMSE_portwatch damage_portwatch_pct RMSE_shipping damage_shipping_pct skill_intact_vs_S1_pct
+                full      257       4.146    4.145          -0.02          4.146                +0.01         4.145               -0.02                  +2.45
+           year_2021       50       3.014    3.016          +0.09          3.015                +0.04         3.020               +0.20                  +3.79
+           year_2022       52       6.613    6.609          -0.06          6.614                +0.02         6.608               -0.07                  +1.20
+           year_2023       52       3.790    3.791          +0.03          3.790                -0.02         3.789               -0.02                  +4.00
+           year_2024       52       3.083    3.082          -0.02          3.084                +0.03         3.083               +0.01                  +5.49
+           year_2025       51       2.963    2.963          +0.02          2.963                -0.00         2.962               -0.02                  +1.14
+event_russia_ukraine       16       8.822    8.818          -0.04          8.821                -0.00         8.817               -0.05                  +2.64
+ event_eu_ru_oil_ban       16       5.059    5.057          -0.03          5.065                +0.12         5.065               +0.13                  +2.56
+     event_opec_plus       16       4.358    4.360          +0.04          4.358                -0.01         4.357               -0.02                  -2.04
+       event_red_sea       16       3.265    3.265          +0.02          3.270                +0.16         3.270               +0.15                 +15.94
+
+Saved:
+  /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/Deep/M3_Deep/deep_m3_ablate_weekly.csv
+  /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/Deep/M3_Deep/deep_m3_ablate_period.csv

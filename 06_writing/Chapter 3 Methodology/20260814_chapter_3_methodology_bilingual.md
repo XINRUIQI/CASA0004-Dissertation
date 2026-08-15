@@ -22,6 +22,7 @@ The predictors are organised into four information sets. S1 contains financial t
 
 **表 3.1 — 信息集**
 
+
 | Set            | Variables                                                                   |
 | -------------- | --------------------------------------------------------------------------- |
 | Benchmark (M0) | Last week's price                                                           |
@@ -29,6 +30,7 @@ The predictors are organised into four information sets. S1 contains financial t
 | S2             | S1 + remote sensing                                                         |
 | S3             | S1 + shipping                                                               |
 | S4             | S1 + remote sensing + shipping                                              |
+
 
 
 | 集合     | 变量                |
@@ -64,6 +66,8 @@ Figure 3.1
 
 ## 3.2 Prediction target and sample period
 
+
+
 ## 3.2 预测目标与样本期
 
 Let P_t denote the last available daily Brent spot-price observation in week t, where each week ends on Friday, measured in US dollars per barrel. The forecast target is next week’s price P_{t+1}. Models are not trained directly on the price level. They predict the one-week logarithmic return
@@ -78,15 +82,17 @@ and reconstruct the price forecast as
 
 \hat{P}*{t+1|t}=P_t\exp\left(\hat{r}*{t+1|t}\right).
 
-Log returns are used to reduce the strong persistence in the price level and to express the forecasting task in terms of proportional weekly changes. RMSE, MAE and skill versus M0 are computed from the reconstructed price forecasts. Under this mapping, the no-change benchmark \hat{P}*{t+1|t}=P_t is exactly the same as forecasting a zero return \hat{r}*{t+1|t}=0.
+Log returns are used to reduce the strong persistence in the price level and to express the forecasting task in terms of proportional weekly changes. RMSE and the percentage improvement in RMSE over M0 are computed from the reconstructed price forecasts. Under this mapping, the no-change benchmark \hat{P}*{t+1|t}=P_t is exactly the same as forecasting a zero return \hat{r}*{t+1|t}=0.
 
-使用对数收益是为了减弱价格水平的强持续性，并将预测任务表示为周度比例变化。RMSE、MAE 以及相对 M0 的 skill 均根据重构后的价格预测计算。在此对应关系下，不变预测基准 \hat{P}*{t+1|t}=P_t 与预测收益为零 \hat{r}*{t+1|t}=0 完全一致。
+使用对数收益是为了减弱价格水平的强持续性，并将预测任务表示为周度比例变化。RMSE、MAE 以及相对 M0 的 均根据重构后的价格预测计算。在此对应关系下，不变预测基准 \hat{P}*{t+1|t}=P_t 与预测收益为零 \hat{r}*{t+1|t}=0 完全一致。
 
 The modelling window covers 2019–2025 and provides a common weekly index of 365 observations (4 January 2019 to 26 December 2025). The training and evaluation samples are separated in time on an expanding window, rather than by random assignment, to prevent future information from leaking into model fitting. The full validation protocol is in Section 3.6.
 
 建模窗口覆盖 2019–2025 年，提供含 365 个观测的共同周索引（2019 年 1 月 4 日至 2025 年 12 月 26 日）。训练样本与评价样本在扩展窗口下按时间分开，而非随机划分，以避免未来信息泄漏到模型拟合中。完整验证协议见第 3.6 节。
 
 ## 3.3 Geographic scope and monitoring sites
+
+
 
 ## 3.3 地理范围与监测站点
 
@@ -110,9 +116,15 @@ Figure 3.3
 
 ## 3.4 Data sources and preparation
 
+
+
 ## 3.4 数据来源与准备
 
+
+
 ### 3.4.1 Data sources
+
+
 
 ### 3.4.1 数据来源
 
@@ -152,11 +164,13 @@ For the remote-sensing block, the Flat and Deep pathways extract inputs from the
 
 对于遥感数据块，Flat和Deep两条路径从相同的十一个 AOI 提取遥感输入，但空间范围、产品与表征不同。Flat 路径使用 Sentinel-2 光学指数与 VIIRS 夜光，Deep 路径使用由 Sentinel-2 影像块得到的冻结 Prithvi-EO-2.0 嵌入，且无单独的 VIIRS 输入流。
 
-The shipping block covers activity at the eleven AOIs and six chokepoints. IMF PortWatch supplies tanker-flow measures at ports and chokepoints. Global Fishing Watch supplies measures of vessel presence and activity duration. These variables serve as proxies for physical shipping activity, tanker movements and congestion. In the Flat pathway, PortWatch and GFW enter as weekly tabular features. In the Deep pathway, GFW SAR-derived dark-vessel detections enter as node attributes in the 17-node graph, while port-visit sequences are used to construct dynamic AOI–AOI voyage links. Full variable definitions are reported in Appendix A.1.
+The shipping block covers activity at the eleven AOIs and six chokepoints. IMF PortWatch supplies tanker-flow measures at ports and chokepoints. Global Fishing Watch supplies measures of vessel presence and activity duration. These variables serve as proxies for physical shipping activity, tanker movements and congestion. In the Flat pathway, PortWatch and GFW enter as weekly tabular features. In the Deep pathway, the 17-node graph uses PortWatch flows, GFW AIS vessel-presence and activity measures, and GFW SAR-derived dark-vessel detections as node attributes, while dynamic AOI–AOI voyage links are constructed from GFW port-visit sequences. Full variable definitions are reported in Appendix A.1.
 
-航运数据块覆盖十一个 AOI 和六个航运咽喉的活动。IMF PortWatch 提供港口和咽喉的油轮流量指标。Global Fishing Watch 提供船舶存在情况和活动时长指标。这些变量用于表征实物航运活动、油轮移动和拥堵情况。在 Flat 路径中，PortWatch 和 GFW 数据以周度表格特征的形式输入模型。在 Deep 路径中，GFW 基于 SAR 的暗船检测作为 17 节点图的节点属性输入，而港口访问序列用于构建 AOI 之间的动态航次连接。完整变量定义见附录 A.1。
+航运数据块覆盖十一个 AOI 和六个航运咽喉的活动。IMF PortWatch 提供港口和咽喉的油轮流量指标。Global Fishing Watch 提供船舶存在情况和活动时长指标。这些变量用于表征实物航运活动、油轮移动和拥堵情况。在 Flat 路径中，PortWatch 和 GFW 数据以周度表格特征的形式输入模型。在 Deep 路径中，17 节点图将 PortWatch 流量、GFW 的 AIS 船舶存在与活动指标，以及 GFW 基于 SAR 的暗船检测作为节点属性；AOI 之间的动态航次边则由 GFW 港口访问序列构建。完整变量定义见附录 A.1。
 
 ### 3.4.2 Temporal alignment
+
+
 
 ### 3.4.2 时间对齐
 
@@ -170,6 +184,8 @@ Publication timing is approximated using source- and product-specific fixed lag 
 
 ### 3.4.3 Data quality and missing values
 
+
+
 ### 3.4.3 数据质量与缺失值
 
 Monthly optical composites are cloud-filtered before the indices are constructed, and cloud-quality indicators are not used as predictors. On the weekly calendar, mean coverage across the four optical indices is approximately 97 per cent, while VIIRS night-time-light anomalies are fully observed. Site-level coverage and counts of independent monthly composites are reported in Appendix A.5.
@@ -182,9 +198,15 @@ After temporal alignment, missing values in the Flat inputs are first forward-fi
 
 ## 3.5 Forecasting models
 
+
+
 ## 3.5 预测模型
 
+
+
 ### 3.5.1 Flat models
+
+
 
 ### 3.5.1 Flat 模型
 
@@ -193,6 +215,8 @@ Flat models implement early feature-level fusion. For each information set, all 
 Flat 模型采用早期特征级融合。对每个信息集，所有可用数值特征拼接为一张周度特征表，并在每个预测起点将最近四周展平为一行。该表上估计两种学习器。Ridge 采用 L2 正则化（Hoerl and Kennard, 1970），作为透明的线性对照。XGBoost 是非线性梯度提升树集成（Chen and Guestrin, 2016），用于捕捉 Ridge 无法表示的非线性与交互。由于两种学习器都作用于同一张展平表，因此都不保留模态专属结构。二者均预测提前一周的对数收益，再还原相应的价格预测。超参数选择遵循第 3.6 节所述的时序程序，具体搜索网格见附录 C。
 
 ### 3.5.2 Deep models
+
+
 
 ### 3.5.2 Deep 模型
 
@@ -216,9 +240,15 @@ Fusion is applied only to Deep models for S2–S4, while S1 passes its finance r
 
 ## 3.6 Estimation and validation
 
+
+
 ## 3.6 估计与验证
 
+
+
 ### 3.6.1 Expanding-window estimation and re-estimation
+
+
 
 ### 3.6.1 扩展窗估计与重估
 
@@ -229,7 +259,6 @@ With a four-week input window and a one-week forecast horizon, the 365 weekly ob
 A one-week-ahead forecast is produced at every forecast origin t, using only information available by that date. Each model is first estimated at the start of the evaluation period and re-estimated every 13 forecast origins as the training window expands. Between re-estimations, the fitted model and preprocessing parameters remain fixed, while the input window is updated at every forecast origin. This produces 20 estimation blocks: the first 19 contain 13 forecast origins each, and the final block contains 10. At each re-estimation, the training sample includes only observations whose following week’s target price is already known. Target prices that become available later are added at the next scheduled re-estimation. All preprocessing parameters calculated from the data are estimated using only the corresponding training sample.
 
 每个预测起点 t 都进行一次提前一周预测，并且只使用截至该日已经可获得的信息。每个模型首先在评价期开始时进行估计，随后随着训练窗口扩展，每隔 13 个预测起点重新估计一次。在两次重新估计之间，模型和预处理参数保持不变，但输入窗口会在每个预测起点更新。由此形成 20 个估计块：前 19 个各包含 13 个预测起点，最后一个包含 10 个。每次重新估计时，训练样本只包含下一周目标价格已经确定的观测。之后才获得的目标价格会在下一次预定的重新估计时加入训练样本。所有根据数据计算的预处理参数也只使用对应的训练样本进行估计。
-
 
 Figure 3.2 presents the full schedule, while Figure 3.4 illustrates a single re-estimation origin.
 
@@ -243,25 +272,20 @@ Figure 3.4
 
 ### 3.6.2 Model and Hyperparameter selection
 
+
+
 ### 3.6.2 模型和超参数选择
 
-Flat models re-select Ridge and XGBoost hyperparameters at each scheduled re-estimation, then refit on the full estimation sample available at that date. Deep models instead use a configuration fixed before evaluation, including the four-week lookback shared with Flat models and the latent size. At each Deep re-estimation, inner validation is used for early stopping, and the checkpoint with the lowest validation loss is retained. The selected Deep checkpoint is used for the following forecasting. The model is not retrained using the combined training and validation data. Sensitivity analyses using the evaluation sample are reported separately in Appendix B and are not used to select or revise the main specification. Search grids, fixed configurations and early-stopping settings are reported in Appendix C.
+Flat models re-select Ridge and XGBoost hyperparameters at each scheduled re-estimation, then refit on the full estimation sample available at that date. Deep models instead use a configuration fixed before evaluation, including the latent size. They share the four-week lookback used by the Flat models, which covers approximately one update cycle of the monthly remote-sensing and macroeconomic inputs. At each Deep re-estimation, inner validation is used for early stopping, and the checkpoint with the lowest validation loss is retained. The selected Deep checkpoint is used for the following forecasting. The model is not retrained using the combined training and validation data. Sensitivity analyses using the evaluation sample are reported separately in Appendix B and are not used to select or revise the main specification. Search grids, fixed configurations and early-stopping settings are reported in Appendix C.
 
 Flat 模型在每次预定的重新估计时重新选择 Ridge 和 XGBoost 的超参数，然后使用当时可获得的完整估计样本重新拟合模型。Deep 模型则使用在评价开始前固定的配置，包括与 Flat 模型相同的四周回看窗口和潜在维度。每次重新估计 Deep 模型时，使用内部验证进行早停，并保留验证损失最低的 checkpoint。选定的 Deep checkpoint 直接用于后续预测，模型不会再使用合并后的训练集和验证集重新训练。基于评价样本的敏感性分析单独报告在附录 B 中，不用于选择或修改主要模型设定。搜索网格、固定配置和早停设置见附录 C。
 
 ## 3.7 Model Evaluation and Interpretation
 
-## 3.7 模型评估与解释
-
-### 3.7.1 Error metrics and skill scores
-
-### 3.7.1 误差指标与 skill 得分
+### 3.7.1 Forecast Evaluation
 
 The primary evaluation metrics are calculated from reconstructed price forecasts over the common sample of T=257 forecast origins. For model m,
 
-主要评价指标根据共同样本中 T=257 个预测起点的重构价格预测计算。对于模型 m，
-
-# 
 \mathrm{RMSE}_m
 
 \sqrt{
@@ -270,59 +294,18 @@ The primary evaluation metrics are calculated from reconstructed price forecasts
 \left(P_{t+1}-\hat{P}_{m,t+1\mid t}\right)^2
 }
 
+Performance relative to the no-change benchmark M0 is summarised by the percentage improvement in RMSE
 
-and
+RMSE improvement vs M0m​ (%)=100×(1−RMSEM0​RMSEm​​).
 
-以及
-
-# 
-\mathrm{MAE}_m
-
-\frac{1}{T}
-\sum_{t=1}^{T}
-\left|P_{t+1}-\hat{P}_{m,t+1\mid t}\right|.
+Here, P_{t+1} is the observed price and \hat{P}_{m,t+1\mid t} is the price forecast produced by model m at forecast origin t. A positive value indicates a lower RMSE than M0, zero indicates equal RMSE, and a negative value indicates worse performance.
 
 
-Performance relative to the no-change benchmark M0 is summarised by RMSE skill, expressed as a percentage.
 
-相对不变预测基准 M0 的表现以 RMSE skill 汇总，并表示为百分比。
+### 3.7.2 Model Interpretation and Robustness Checks
 
-# 
-\mathrm{Skill}_m
+Model interpretability concerns identifying where a model’s predictive ability comes from, including which data sources and features contribute more or less to its predictions. For Deep alternative-data models with positive RMSE improvement relative to M0, SHapley Additive exPlanations (SHAP) values are calculated to quantify each input’s contribution (Lundberg and Lee, 2017). Absolute SHAP values are aggregated by data source and, where applicable, spatial site or node. For gated models, weekly modality weights are also reported to describe how the model allocates weight across financial, remote-sensing and shipping representations. SHAP and gate weights describe model attribution and internal allocation rather than causal importance.Robustness is assessed by rerunning the prespecified Deep models with random seeds and comparing their RMSE.
 
-100\times
-\left(
-1-
-\frac{\mathrm{RMSE}*m}
-{\mathrm{RMSE}*{\mathrm{M0}}}
-\right)
-
-
-Here, P_{t+1} is the observed price and \hat{P}_{m,t+1\mid t} is the price forecast produced by model m at origin t. Positive skill indicates lower RMSE than M0, zero indicates equal RMSE, and negative skill indicates worse performance.
-
-其中，P_{t+1} 为观测价格，\hat{P}_{m,t+1\mid t} 为模型 m 在预测起点 t 作出的价格预测。Skill 为正表示 RMSE 低于 M0，为零表示与 M0 相同，为负则表示表现更差。
-
-### 3.7.2 Forecast-comparison tests
-
-### 3.7.2 预测比较检验
-
-Formal forecast comparisons use the Diebold–Mariano test (Diebold and Mariano, 1995) with the Harvey, Leybourne and Newbold (1997) finite-sample correction, applied to squared errors of reconstructed price forecasts. Test direction is determined before observing the results. Comparisons against M0, information-set extensions within the same learner and matched Deep–Flat comparisons are one-sided, while comparisons among Deep fusion mechanisms are two-sided.
-
-正式预测比较采用带 Harvey、Leybourne 与 Newbold（1997）有限样本修正的 Diebold–Mariano 检验（Diebold and Mariano, 1995），并作用于重构价格预测的平方误差。检验方向在观察结果之前确定。各模型与 M0 的比较、同一学习器内的信息集扩展比较以及匹配的 Deep–Flat 比较采用单侧检验，Deep 融合机制之间的比较则采用双侧检验。
-
-Three comparison families are defined before testing, comprising 18 benchmark comparisons, 15 RQ1 comparisons and 14 RQ2 comparisons. Holm’s (1979) adjustment is applied separately within each family. Formal inference uses Holm-adjusted p-values, while raw p-values are reported as nominal evidence. Exact family membership, supplementary Clark–West tests, variance estimation and exploratory sensitivity analyses are reported in Appendix B, with implementation details in Appendix C.
-
-检验前预先定义三个比较族，分别包含 18 项基准比较、15 项 RQ1 比较和 14 项 RQ2 比较。Holm（1979）调整分别在各族内实施。正式推断依据 Holm 调整后的 p 值，原始 p 值仅作为名义证据报告。各比较族的具体构成、补充 Clark–West 检验、方差估计与探索性敏感性分析见附录 B，实现细节见附录 C。
-
-【备注：3.7.2 Forecast-comparison tests，没动，不知道最终用的是哪些】
-
-### 3.7.3 Model interpretation
-
-### 3.7.3 模型解释
-
-RQ3 diagnostics are restricted to Deep specifications with positive mean out-of-sample RMSE skill across three random seeds. This is a descriptive eligibility criterion and does not imply statistically significant superiority to M0. Gated models provide modality weights and encoder-level site or node attention, cross-attention models provide token-level attention, and concatenation models retain only the applicable encoder-level diagnostics. Patterns are interpreted only when they remain stable across seeds, while unstable or approximately uniform attention is not given substantive interpretation. These diagnostics describe internal model weighting rather than causal importance.
-
-RQ3 诊断仅用于三个随机种子上平均样本外 RMSE skill 为正的 Deep 设定。这是描述性准入标准，并不表示在统计上显著优于 M0。门控模型提供模态权重以及编码器层面的站点或节点注意力，交叉注意力模型提供 token 层面的注意力，拼接模型则仅保留适用的编码器层面诊断。只有跨种子保持稳定的模式才加以解释，不稳定或近似均匀的注意力不作实质性解读。这些诊断描述模型内部加权，而非因果重要性。
 【备注：3.7.3 Model interpretation整段需要重写。
 1.什么是可解释性：解释一
 个模型的能力来自哪里，例如什么数据/特征更有用，什么特征更没用。而稳健性/跨种子等方法，是研究一批模型的表现是否稳定，是偶然表现好还是一直表现好，与本研究无关。
@@ -332,7 +315,6 @@ RQ3仅针对满足xxxx条件的模型。对于这些模型，采用xxxx方法，
 
 ## 3.8 Ethical considerations
 
-## 3.8 伦理考量
 
 The study uses only secondary, aggregate data and does not involve human participants. It received approval through UCL’s low-risk ethics process. All datasets were used in accordance with their published licences and terms of use, including the Copernicus open licence for Sentinel-2, the open distribution terms for VIIRS night-time lights, and the research-use terms of IMF PortWatch and Global Fishing Watch. Remote-sensing and vessel-activity variables are analysed only at the aggregate site or chokepoint level; no attempt is made to identify individual vessels, operators or persons.
 

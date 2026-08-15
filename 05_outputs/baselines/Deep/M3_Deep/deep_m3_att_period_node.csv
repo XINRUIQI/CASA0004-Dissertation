@@ -1,0 +1,205 @@
+period_id,label,kind,n_weeks,node_id,mean_attention
+full,Full OOS,all,257,hormuz,0.1322800438952585
+full,Full OOS,all,257,suez,0.0931045980507993
+full,Full OOS,all,257,panama,0.08621852403571861
+full,Full OOS,all,257,mandeb,0.08481349029980509
+full,Full OOS,all,257,cape,0.07442532806631884
+full,Full OOS,all,257,malacca,0.05821637951330448
+full,Full OOS,all,257,P001,0.05076197078560224
+full,Full OOS,all,257,P003,0.0498328894260792
+full,Full OOS,all,257,P009,0.048861395843066084
+full,Full OOS,all,257,P005,0.047124433160871795
+full,Full OOS,all,257,P006,0.045061497545007434
+full,Full OOS,all,257,P004,0.04100809779366046
+full,Full OOS,all,257,P007,0.040114850666489885
+full,Full OOS,all,257,P011,0.039771861579732976
+full,Full OOS,all,257,P002,0.03925565859041958
+full,Full OOS,all,257,P008,0.03613909499190656
+full,Full OOS,all,257,P010,0.0330098845383536
+early,Early (<2023-01-01),split,102,hormuz,0.08936958120880169
+early,Early (<2023-01-01),split,102,cape,0.07085546918724678
+early,Early (<2023-01-01),split,102,P003,0.06666135618134453
+early,Early (<2023-01-01),split,102,P001,0.06608016956962785
+early,Early (<2023-01-01),split,102,P009,0.06587915423819242
+early,Early (<2023-01-01),split,102,panama,0.06179320675266135
+early,Early (<2023-01-01),split,102,P005,0.06074540899591699
+early,Early (<2023-01-01),split,102,suez,0.06065069208396412
+early,Early (<2023-01-01),split,102,P006,0.0589239791620011
+early,Early (<2023-01-01),split,102,P002,0.05501163075221514
+early,Early (<2023-01-01),split,102,malacca,0.05499546368624646
+early,Early (<2023-01-01),split,102,mandeb,0.054833863314021986
+early,Early (<2023-01-01),split,102,P007,0.051512590828625554
+early,Early (<2023-01-01),split,102,P004,0.04964606538780175
+early,Early (<2023-01-01),split,102,P011,0.0474679398660858
+early,Early (<2023-01-01),split,102,P008,0.045790158960895166
+early,Early (<2023-01-01),split,102,P010,0.03978327276440808
+late,Late (>=2023-01-01),split,155,hormuz,0.16051789675989453
+late,Late (>=2023-01-01),split,155,suez,0.11446136197736181
+late,Late (>=2023-01-01),split,155,mandeb,0.10454201902593331
+late,Late (>=2023-01-01),split,155,panama,0.10229195863489177
+late,Late (>=2023-01-01),split,155,cape,0.07677452552222432
+late,Late (>=2023-01-01),split,155,malacca,0.06033594992852975
+late,Late (>=2023-01-01),split,155,P001,0.0406816077148241
+late,Late (>=2023-01-01),split,155,P003,0.03875867259358202
+late,Late (>=2023-01-01),split,155,P005,0.03816095228877755
+late,Late (>=2023-01-01),split,155,P009,0.03766261289917649
+late,Late (>=2023-01-01),split,155,P006,0.0359390902873729
+late,Late (>=2023-01-01),split,155,P004,0.03532375782848361
+late,Late (>=2023-01-01),split,155,P011,0.03470734554613305
+late,Late (>=2023-01-01),split,155,P007,0.03261440230172964
+late,Late (>=2023-01-01),split,155,P008,0.02978807225102374
+late,Late (>=2023-01-01),split,155,P002,0.028887212393625083
+late,Late (>=2023-01-01),split,155,P010,0.02855255809282098
+year_2021,2021,calendar,50,hormuz,0.10687174469232556
+year_2021,2021,calendar,50,cape,0.08914373785257336
+year_2021,2021,calendar,50,panama,0.07542798951268191
+year_2021,2021,calendar,50,suez,0.07175037957727903
+year_2021,2021,calendar,50,mandeb,0.06790745418518777
+year_2021,2021,calendar,50,malacca,0.06036229766905303
+year_2021,2021,calendar,50,P001,0.060235045105218835
+year_2021,2021,calendar,50,P009,0.05765300992876287
+year_2021,2021,calendar,50,P003,0.05676407996565099
+year_2021,2021,calendar,50,P005,0.05459671977907415
+year_2021,2021,calendar,50,P006,0.050784004181623404
+year_2021,2021,calendar,50,P002,0.04917852610349651
+year_2021,2021,calendar,50,P004,0.04813268709927793
+year_2021,2021,calendar,50,P008,0.0418629021570086
+year_2021,2021,calendar,50,P007,0.0418369254097342
+year_2021,2021,calendar,50,P010,0.03378715768456454
+year_2021,2021,calendar,50,P011,0.03370534434914584
+year_2022,2022,calendar,52,P003,0.07617796792720369
+year_2022,2022,calendar,52,P009,0.0737889083818747
+year_2022,2022,calendar,52,hormuz,0.07254057785925952
+year_2022,2022,calendar,52,P001,0.07170048155463654
+year_2022,2022,calendar,52,P006,0.06675087818159503
+year_2022,2022,calendar,52,P005,0.06665761016595818
+year_2022,2022,calendar,52,P007,0.06081611526986723
+year_2022,2022,calendar,52,P011,0.06070120478622039
+year_2022,2022,calendar,52,P002,0.060620385222136926
+year_2022,2022,calendar,52,cape,0.05327059547058661
+year_2022,2022,calendar,52,P004,0.051101236819074664
+year_2022,2022,calendar,52,suez,0.049977915648084376
+year_2022,2022,calendar,52,malacca,0.049835046395086284
+year_2022,2022,calendar,52,P008,0.04956636742617071
+year_2022,2022,calendar,52,panama,0.04868283871418004
+year_2022,2022,calendar,52,P010,0.045548768033488396
+year_2022,2022,calendar,52,mandeb,0.042263102860977966
+year_2023,2023,calendar,52,hormuz,0.1429117009616815
+year_2023,2023,calendar,52,suez,0.08933117649016467
+year_2023,2023,calendar,52,panama,0.08519805122453429
+year_2023,2023,calendar,52,mandeb,0.0796650319288556
+year_2023,2023,calendar,52,cape,0.07782700113379033
+year_2023,2023,calendar,52,malacca,0.06153431305518513
+year_2023,2023,calendar,52,P001,0.048438141552301514
+year_2023,2023,calendar,52,P003,0.04636667905232077
+year_2023,2023,calendar,52,P005,0.046189128349606756
+year_2023,2023,calendar,52,P009,0.04598521691961926
+year_2023,2023,calendar,52,P004,0.04397452092514584
+year_2023,2023,calendar,52,P006,0.04305626441223112
+year_2023,2023,calendar,52,P007,0.040973276365548324
+year_2023,2023,calendar,52,P011,0.039144053410452094
+year_2023,2023,calendar,52,P008,0.038510185236541074
+year_2023,2023,calendar,52,P002,0.03585365260593016
+year_2023,2023,calendar,52,P010,0.03504159294355369
+year_2024,2024,calendar,52,hormuz,0.151734417447677
+year_2024,2024,calendar,52,suez,0.11569301784038541
+year_2024,2024,calendar,52,panama,0.10539230661323432
+year_2024,2024,calendar,52,mandeb,0.10487900402110353
+year_2024,2024,calendar,52,cape,0.08273760673518361
+year_2024,2024,calendar,52,malacca,0.06707086313802459
+year_2024,2024,calendar,52,P001,0.03920277258237963
+year_2024,2024,calendar,52,P005,0.03905320124557381
+year_2024,2024,calendar,52,P009,0.03729778474483348
+year_2024,2024,calendar,52,P011,0.037054403183551896
+year_2024,2024,calendar,52,P003,0.037012301349582534
+year_2024,2024,calendar,52,P006,0.034714915252362255
+year_2024,2024,calendar,52,P004,0.033561019334368926
+year_2024,2024,calendar,52,P007,0.031830259634611655
+year_2024,2024,calendar,52,P002,0.02778530368008288
+year_2024,2024,calendar,52,P008,0.02752976531449415
+year_2024,2024,calendar,52,P010,0.02745106207350121
+year_2025,2025,calendar,51,hormuz,0.18742501648033363
+year_2025,2025,calendar,51,suez,0.13882849022161722
+year_2025,2025,calendar,51,mandeb,0.12956319763964294
+year_2025,2025,calendar,51,panama,0.11655990158518151
+year_2025,2025,calendar,51,cape,0.06962140875996323
+year_2025,2025,calendar,51,malacca,0.052247119154415836
+year_2025,2025,calendar,51,P001,0.03428081687831991
+year_2025,2025,calendar,51,P003,0.03278210335502433
+year_2025,2025,calendar,51,P006,0.029930542195763615
+year_2025,2025,calendar,51,P009,0.029548802212172806
+year_2025,2025,calendar,51,P005,0.029065616976688847
+year_2025,2025,calendar,51,P004,0.02830067392000376
+year_2025,2025,calendar,51,P011,0.02779056503455716
+year_2025,2025,calendar,51,P007,0.024891146759995594
+year_2025,2025,calendar,51,P008,0.0231975249069578
+year_2025,2025,calendar,51,P010,0.023059381245105825
+year_2025,2025,calendar,51,P002,0.02290769008116098
+event_russia_ukraine,Russia–Ukraine,event,16,hormuz,0.09664963046088809
+event_russia_ukraine,Russia–Ukraine,event,16,P007,0.06583412876352665
+event_russia_ukraine,Russia–Ukraine,event,16,P003,0.06353478296659884
+event_russia_ukraine,Russia–Ukraine,event,16,P009,0.06210932182148095
+event_russia_ukraine,Russia–Ukraine,event,16,cape,0.06185936671681698
+event_russia_ukraine,Russia–Ukraine,event,16,P001,0.06001649680547412
+event_russia_ukraine,Russia–Ukraine,event,16,suez,0.05987415276467796
+event_russia_ukraine,Russia–Ukraine,event,16,panama,0.059847070137038785
+event_russia_ukraine,Russia–Ukraine,event,16,P005,0.056430553784593884
+event_russia_ukraine,Russia–Ukraine,event,16,mandeb,0.05581419891677792
+event_russia_ukraine,Russia–Ukraine,event,16,P011,0.0554446714231744
+event_russia_ukraine,Russia–Ukraine,event,16,malacca,0.05346844275481994
+event_russia_ukraine,Russia–Ukraine,event,16,P010,0.052962654619477634
+event_russia_ukraine,Russia–Ukraine,event,16,P002,0.051841626642271835
+event_russia_ukraine,Russia–Ukraine,event,16,P006,0.05029320879839356
+event_russia_ukraine,Russia–Ukraine,event,16,P008,0.04795681010000403
+event_russia_ukraine,Russia–Ukraine,event,16,P004,0.0460628997534513
+event_eu_ru_oil_ban,EU RU oil ban announced,event,16,P003,0.076833794824779
+event_eu_ru_oil_ban,EU RU oil ban announced,event,16,P009,0.07393785379827016
+event_eu_ru_oil_ban,EU RU oil ban announced,event,16,P001,0.06903226859867569
+event_eu_ru_oil_ban,EU RU oil ban announced,event,16,P005,0.0686182568315416
+event_eu_ru_oil_ban,EU RU oil ban announced,event,16,P006,0.06847992539405819
+event_eu_ru_oil_ban,EU RU oil ban announced,event,16,hormuz,0.06347985961474473
+event_eu_ru_oil_ban,EU RU oil ban announced,event,16,P011,0.06322628748603161
+event_eu_ru_oil_ban,EU RU oil ban announced,event,16,P007,0.06075954902917142
+event_eu_ru_oil_ban,EU RU oil ban announced,event,16,cape,0.059006674448028165
+event_eu_ru_oil_ban,EU RU oil ban announced,event,16,P002,0.05718324636109168
+event_eu_ru_oil_ban,EU RU oil ban announced,event,16,P010,0.05361352581530805
+event_eu_ru_oil_ban,EU RU oil ban announced,event,16,suez,0.05318046116735783
+event_eu_ru_oil_ban,EU RU oil ban announced,event,16,panama,0.052620331989601206
+event_eu_ru_oil_ban,EU RU oil ban announced,event,16,P004,0.04884156282059843
+event_eu_ru_oil_ban,EU RU oil ban announced,event,16,P008,0.04625511099584397
+event_eu_ru_oil_ban,EU RU oil ban announced,event,16,mandeb,0.04561317490879441
+event_eu_ru_oil_ban,EU RU oil ban announced,event,16,malacca,0.0393181170802563
+event_opec_plus,OPEC+ surprise cut,event,16,hormuz,0.16096687456592915
+event_opec_plus,OPEC+ surprise cut,event,16,suez,0.08974028867669398
+event_opec_plus,OPEC+ surprise cut,event,16,mandeb,0.07439097017049785
+event_opec_plus,OPEC+ surprise cut,event,16,panama,0.07297940319404002
+event_opec_plus,OPEC+ surprise cut,event,16,malacca,0.06134966411627825
+event_opec_plus,OPEC+ surprise cut,event,16,cape,0.06085358560085292
+event_opec_plus,OPEC+ surprise cut,event,16,P001,0.051136324182152706
+event_opec_plus,OPEC+ surprise cut,event,16,P003,0.04861843097023662
+event_opec_plus,OPEC+ surprise cut,event,16,P004,0.04756484134122726
+event_opec_plus,OPEC+ surprise cut,event,16,P009,0.046901533612981404
+event_opec_plus,OPEC+ surprise cut,event,16,P005,0.04680600250139828
+event_opec_plus,OPEC+ surprise cut,event,16,P006,0.044958629179745864
+event_opec_plus,OPEC+ surprise cut,event,16,P008,0.041500740917399484
+event_opec_plus,OPEC+ surprise cut,event,16,P007,0.039548230124637436
+event_opec_plus,OPEC+ surprise cut,event,16,P011,0.03889346600044514
+event_opec_plus,OPEC+ surprise cut,event,16,P010,0.03717881429474796
+event_opec_plus,OPEC+ surprise cut,event,16,P002,0.03661219682544466
+event_red_sea,Houthi Red Sea attacks,event,16,hormuz,0.1435621124692261
+event_red_sea,Houthi Red Sea attacks,event,16,panama,0.10122958803549405
+event_red_sea,Houthi Red Sea attacks,event,16,cape,0.09647225495427841
+event_red_sea,Houthi Red Sea attacks,event,16,suez,0.09301082184538241
+event_red_sea,Houthi Red Sea attacks,event,16,mandeb,0.08789240662008521
+event_red_sea,Houthi Red Sea attacks,event,16,malacca,0.06981367734260853
+event_red_sea,Houthi Red Sea attacks,event,16,P005,0.0427521846722811
+event_red_sea,Houthi Red Sea attacks,event,16,P001,0.041976584820076775
+event_red_sea,Houthi Red Sea attacks,event,16,P009,0.041240965016186196
+event_red_sea,Houthi Red Sea attacks,event,16,P003,0.04052819660864766
+event_red_sea,Houthi Red Sea attacks,event,16,P004,0.04005822842009362
+event_red_sea,Houthi Red Sea attacks,event,16,P006,0.037143110646866206
+event_red_sea,Houthi Red Sea attacks,event,16,P008,0.034799683606252026
+event_red_sea,Houthi Red Sea attacks,event,16,P007,0.03463990194723006
+event_red_sea,Houthi Red Sea attacks,event,16,P002,0.03322492970619346
+event_red_sea,Houthi Red Sea attacks,event,16,P011,0.03244047367479647
+event_red_sea,Houthi Red Sea attacks,event,16,P010,0.02921487286221231

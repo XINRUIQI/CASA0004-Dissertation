@@ -1,0 +1,10 @@
+group_id,modality,description
+oil_price_basis,finance,"Oil prices, returns, Brent–WTI spread, futures basis and roll"
+financial_macro,finance,"VIX/OVX, dollar, rates, equities, gold, activity, CAD, DGS10 change"
+eia_fundamentals,finance,"EIA stocks, production, trade, refining and product supplied"
+gpr,finance,Geopolitical risk index
+GFW,shipping,All gfw_* features on AOI and chokepoint nodes
+PortWatch_chokepoint,shipping,pw_* features on the 6 chokepoint nodes
+PortWatch_directional,shipping,pw_* features on the 11 AOI nodes (port calls and directional flows)
+SAR,shipping,sar_* detections on AOI and chokepoint nodes
+shipping_other,shipping,Any remaining shipping feature

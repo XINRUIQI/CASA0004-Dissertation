@@ -1,0 +1,13 @@
+period_id,label,kind,start,end,event_date,window_weeks,rule
+full,Full OOS,all,,,,,all scored OOS weeks
+early,Early (<2023-01-01),split,,2023-01-01,,,date < 2023-01-01
+late,Late (>=2023-01-01),split,2023-01-01,,,,date >= 2023-01-01
+year_2021,2021,calendar,2021-01-01,2022-01-01,,,2021-01-01 <= date < 2022-01-01
+year_2022,2022,calendar,2022-01-01,2023-01-01,,,2022-01-01 <= date < 2023-01-01
+year_2023,2023,calendar,2023-01-01,2024-01-01,,,2023-01-01 <= date < 2024-01-01
+year_2024,2024,calendar,2024-01-01,2025-01-01,,,2024-01-01 <= date < 2025-01-01
+year_2025,2025,calendar,2025-01-01,2026-01-01,,,2025-01-01 <= date < 2026-01-01
+event_russia_ukraine,Russia–Ukraine,event,,,2022-02-24,8,"event_date ± 8 weeks, inclusive both ends"
+event_eu_ru_oil_ban,EU RU oil ban announced,event,,,2022-06-01,8,"event_date ± 8 weeks, inclusive both ends"
+event_opec_plus,OPEC+ surprise cut,event,,,2023-04-02,8,"event_date ± 8 weeks, inclusive both ends"
+event_red_sea,Houthi Red Sea attacks,event,,,2023-11-19,8,"event_date ± 8 weeks, inclusive both ends"

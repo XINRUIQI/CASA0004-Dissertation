@@ -9,6 +9,7 @@ in some cases, under a different epoch budget:
                             that adding seeds means adding a file, not editing this
                             script (run_deep_multiseed.py writes these)
   deep_fusion_matrix.csv    seed 42 for all nine combo x fusion cells (epochs 80)
+  deep_metrics.csv          seed 42 for S1 Deep (m1_deep); S1 is not a matrix cell
   deep_sweep_summary.csv    group=="seed" rows                       (epochs 60)
 
 Appendix B.4 must not hand-copy those figures, and must not append single runs as
@@ -69,9 +70,9 @@ SELF_OUTPUTS = {"deep_seed_pooled.csv", "deep_seed_summary.csv"}
 
 def _src_rank(source: str) -> int:
     """Tie-break when two sources offer the same (config, seed) at equal epochs.
-    Prefer a dedicated multi-seed run over the matrix cell, and the matrix over the
-    sweep, whose epoch budget is inferred rather than recorded."""
-    return {"sweep": 2, "fusion_matrix": 1}.get(source, 0)
+    Prefer a dedicated multi-seed run over the matrix / baseline cell, and those
+    over the sweep, whose epoch budget is inferred rather than recorded."""
+    return {"sweep": 2, "fusion_matrix": 1, "baseline": 1}.get(source, 0)
 
 
 def _read(name: str) -> pd.DataFrame | None:
@@ -110,6 +111,12 @@ def collect() -> pd.DataFrame:
         frames.append(m)
         print(f"  fusion_matrix     : {len(m)} rows (seed {m['seed'].iloc[0]}, "
               f"epochs {MATRIX_EPOCHS})")
+
+    s1 = _baseline_s1()
+    if s1 is not None:
+        frames.append(s1)
+        print(f"  baseline          : {len(s1)} rows "
+              f"(m1_deep seed 42, epochs {MATRIX_EPOCHS})")
 
     for p in sorted(OUT_DIR.glob("deep_seed_*.csv")):
         if p.name in SELF_OUTPUTS:

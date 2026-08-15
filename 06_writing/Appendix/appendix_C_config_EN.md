@@ -58,6 +58,7 @@ differences are not confounded with protocol differences.
 | Supplementary test | Clark–West, **Ridge only** (5 comparisons), never for XGBoost or Deep |
 | Unified test table | `05_outputs/tests/test_table_main.csv` via `04_code/scripts/tools/build_test_tables.py` |
 | Seed | **42** (main); 1, 2 for robustness |
+| Flat leading-gap fill | **locked**: RS anomalies → 0; shipping counts → training-fold median. Not varied in Appendix B. |
 
 **Variance estimation in the DM statistic.** The loss differential is
 \(d_t = L_{\text{reference},t} - L_{\text{candidate},t}\), so a positive statistic
@@ -143,9 +144,9 @@ refit on the inner-validation weeks.
 | Purpose | Script | Output dir |
 | --- | --- | --- |
 | Flat M0–M4 baselines | `04_code/scripts/flat/run_baseline.py` (+ `flat/M{1..4}_Flat/*.py`) | `05_outputs/baselines/Flat/M*_Flat/` |
-| Deep baselines & fusion | `04_code/scripts/deep/run_deep_baseline.py` | `05_outputs/baselines/Deep/{M*_Deep,_cross}/` |
-| Deep sweeps (seed/lookback/dim/reg) | `04_code/scripts/deep/run_deep_sweep.py` | `05_outputs/baselines/Deep/_cross/deep_sweep_summary.csv` |
-| Fusion matrix (3×3) | `run_deep_fusion_matrix.py` | `deep_fusion_matrix.{csv,png}` |
+| Table 4.2 / B.2 fusion matrix | `04_code/scripts/deep/run_deep_fusion_matrix.py` | `05_outputs/baselines/Deep/_cross/deep_fusion_matrix.csv` |
+| Deep multi-seed (B.4) | `04_code/scripts/tools/pool_deep_seeds.py` | `05_outputs/baselines/Deep/_cross/deep_seed_{pooled,summary}.csv` |
+| Deep sweeps (B.4.1–B.4.3) | `04_code/scripts/deep/run_deep_sweep.py` | `05_outputs/baselines/Deep/_cross/deep_sweep_summary.csv` |
 | Advanced ablations (fusion/dropout/sub-period) | `run_deep_advanced.py` | `deep_advanced_summary.csv` |
 | Sub-period early/late (Flat + Deep, offline) | `subperiod_eval.py` | `05_outputs/baselines/subperiod/subperiod_summary.csv` |
 | **Frozen comparison families + Holm** | `04_code/scripts/tools/build_test_tables.py` | `05_outputs/tests/test_table_{main,cw_supplementary,robustness}.csv` |
@@ -156,8 +157,9 @@ Reproduce end-to-end:
 
 ```bash
 python3 -m pip install -r 04_code/requirements.txt
-python3 04_code/scripts/flat/run_baseline.py --modality M3      # flat example
-python3 04_code/scripts/deep/run_deep_baseline.py               # deep main
+python3 04_code/scripts/flat/run_baseline.py --modality M3      # Table 4.1
+python3 04_code/scripts/deep/run_deep_fusion_matrix.py          # Table 4.2 / B.2
+python3 04_code/scripts/tools/pool_deep_seeds.py                # B.4 multi-seed
 python3 04_code/scripts/tools/subperiod_eval.py                  # early/late table
 python3 04_code/scripts/tools/build_test_tables.py               # all reported p-values
 ```

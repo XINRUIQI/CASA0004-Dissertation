@@ -1,0 +1,5 @@
+deep dataset N=361 lookback=4
+10 runs = 5 configs x 2 seeds (epochs=80, matrix protocol)
+
+  [1/10] m1_deep         seed=1   skill=-0.95% DirAcc=0.545 RMSE=4.191268 (8s)
+  [2/10] m1_deep         seed=2   skill=+0.30% DirAcc=0.506 RMSE=4.139232 (17s)

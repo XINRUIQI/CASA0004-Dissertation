@@ -1,0 +1,25 @@
+period_id,label,kind,n_weeks,modality,mean_shap_abs,mean_shap_signed,share_total
+full,Full OOS,all,257,finance,0.028896851,-0.0015103715,0.9682776
+full,Full OOS,all,257,shipping,0.00094670994,6.0016546e-06,0.03172242
+early,Early (<2023-01-01),split,102,finance,0.024709547,0.0011048632,0.961156
+early,Early (<2023-01-01),split,102,shipping,0.0009986063,2.7850241e-05,0.038843952
+late,Late (>=2023-01-01),split,155,finance,0.031652365,-0.0032313645,0.97197723
+late,Late (>=2023-01-01),split,155,shipping,0.0009125588,-8.376124e-06,0.028022753
+year_2021,2021,calendar,50,finance,0.024141999,0.0025963539,0.9581127
+year_2021,2021,calendar,50,shipping,0.0010554531,-6.435783e-06,0.041887295
+year_2022,2022,calendar,52,finance,0.025255265,-0.00032926232,0.9639704
+year_2022,2022,calendar,52,shipping,0.000943946,6.0817572e-05,0.03602956
+year_2023,2023,calendar,52,finance,0.021108355,-0.006022548,0.9478971
+year_2023,2023,calendar,52,shipping,0.0011602594,-5.844563e-05,0.052102897
+year_2024,2024,calendar,52,finance,0.021584807,-0.0033098848,0.9495753
+year_2024,2024,calendar,52,shipping,0.0011462048,1.0017113e-05,0.050424714
+year_2025,2025,calendar,51,finance,0.05266808,-0.00030539278,0.9920555
+year_2025,2025,calendar,51,shipping,0.00042177408,2.3921242e-05,0.007944533
+event_russia_ukraine,Russia–Ukraine,event,16,finance,0.025138406,0.0064705526,0.96520644
+event_russia_ukraine,Russia–Ukraine,event,16,shipping,0.00090618356,8.152967e-06,0.03479354
+event_eu_ru_oil_ban,EU RU oil ban announced,event,16,finance,0.024128046,0.0016228897,0.9596719
+event_eu_ru_oil_ban,EU RU oil ban announced,event,16,shipping,0.0010139263,5.0227878e-05,0.040328033
+event_opec_plus,OPEC+ surprise cut,event,16,finance,0.020297589,-0.007292507,0.9568118
+event_opec_plus,OPEC+ surprise cut,event,16,shipping,0.00091618433,5.9496906e-05,0.043188184
+event_red_sea,Houthi Red Sea attacks,event,16,finance,0.021124603,-0.005183534,0.9410844
+event_red_sea,Houthi Red Sea attacks,event,16,shipping,0.0013224832,-8.633853e-05,0.05891558

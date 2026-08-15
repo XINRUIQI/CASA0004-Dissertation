@@ -1,0 +1,117 @@
+=== M3 node ablation seed=42 n_oos=257 epochs=80 ===
+  mask: scaled choke[node, :] -> 0; adj/AOI/other nodes unchanged
+  fit @ 2021-01-22 train=104
+    node-ablate 13/257  2021-04-16
+  fit @ 2021-04-23 train=117
+    node-ablate 26/257  2021-07-16
+  fit @ 2021-07-23 train=130
+    node-ablate 39/257  2021-10-15
+  fit @ 2021-10-22 train=143
+    node-ablate 52/257  2022-01-14
+  fit @ 2022-01-21 train=156
+    node-ablate 65/257  2022-04-15
+  fit @ 2022-04-22 train=169
+    node-ablate 78/257  2022-07-15
+  fit @ 2022-07-22 train=182
+    node-ablate 91/257  2022-10-14
+  fit @ 2022-10-21 train=195
+    node-ablate 104/257  2023-01-13
+  fit @ 2023-01-20 train=208
+    node-ablate 117/257  2023-04-14
+  fit @ 2023-04-21 train=221
+    node-ablate 130/257  2023-07-14
+  fit @ 2023-07-21 train=234
+    node-ablate 143/257  2023-10-13
+  fit @ 2023-10-20 train=247
+    node-ablate 156/257  2024-01-12
+  fit @ 2024-01-19 train=260
+    node-ablate 169/257  2024-04-12
+  fit @ 2024-04-19 train=273
+    node-ablate 182/257  2024-07-12
+  fit @ 2024-07-19 train=286
+    node-ablate 195/257  2024-10-11
+  fit @ 2024-10-18 train=299
+    node-ablate 208/257  2025-01-10
+  fit @ 2025-01-17 train=312
+    node-ablate 221/257  2025-04-11
+  fit @ 2025-04-18 train=325
+    node-ablate 234/257  2025-07-11
+  fit @ 2025-07-18 train=338
+    node-ablate 247/257  2025-10-10
+  fit @ 2025-10-17 train=351
+    node-ablate 257/257  2025-12-19
+
+ΔRMSE>0 => mask hurts (node was useful).
+        period             masked_node  n_weeks original_RMSE masked_RMSE delta_RMSE delta_RMSE_pct
+      full OOS                  Hormuz      257        4.1456      4.1455   -0.00015         -0.004
+      full OOS                    Suez      257        4.1456      4.1455   -0.00006         -0.002
+      full OOS                 Malacca      257        4.1456      4.1456   -0.00002         -0.000
+      full OOS                  Mandeb      257        4.1456      4.1458   +0.00017         +0.004
+      full OOS                  Panama      257        4.1456      4.1456   +0.00003         +0.001
+      full OOS                    Cape      257        4.1456      4.1461   +0.00052         +0.012
+      full OOS Hormuz+Suez+Mandeb+Cape      257        4.1456      4.1462   +0.00055         +0.013
+          2021                  Hormuz       50        3.0135      3.0136   +0.00009         +0.003
+          2021                    Suez       50        3.0135      3.0139   +0.00036         +0.012
+          2021                 Malacca       50        3.0135      3.0136   +0.00008         +0.003
+          2021                  Mandeb       50        3.0135      3.0137   +0.00016         +0.005
+          2021                  Panama       50        3.0135      3.0135   -0.00003         -0.001
+          2021                    Cape       50        3.0135      3.0147   +0.00122         +0.041
+          2021 Hormuz+Suez+Mandeb+Cape       50        3.0135      3.0152   +0.00169         +0.056
+          2022                  Hormuz       52        6.6128      6.6125   -0.00030         -0.004
+          2022                    Suez       52        6.6128      6.6126   -0.00028         -0.004
+          2022                 Malacca       52        6.6128      6.6131   +0.00026         +0.004
+          2022                  Mandeb       52        6.6128      6.6132   +0.00034         +0.005
+          2022                  Panama       52        6.6128      6.6128   -0.00009         -0.001
+          2022                    Cape       52        6.6128      6.6136   +0.00076         +0.012
+          2022 Hormuz+Suez+Mandeb+Cape       52        6.6128      6.6135   +0.00068         +0.010
+          2023                  Hormuz       52        3.7901      3.7901   -0.00002         -0.001
+          2023                    Suez       52        3.7901      3.7905   +0.00043         +0.011
+          2023                 Malacca       52        3.7901      3.7898   -0.00029         -0.008
+          2023                  Mandeb       52        3.7901      3.7896   -0.00054         -0.014
+          2023                  Panama       52        3.7901      3.7904   +0.00032         +0.009
+          2023                    Cape       52        3.7901      3.7906   +0.00048         +0.013
+          2023 Hormuz+Suez+Mandeb+Cape       52        3.7901      3.7905   +0.00036         +0.010
+          2024                  Hormuz       52        3.0827      3.0823   -0.00041         -0.013
+          2024                    Suez       52        3.0827      3.0825   -0.00019         -0.006
+          2024                 Malacca       52        3.0827      3.0825   -0.00027         -0.009
+          2024                  Mandeb       52        3.0827      3.0837   +0.00095         +0.031
+          2024                  Panama       52        3.0827      3.0829   +0.00019         +0.006
+          2024                    Cape       52        3.0827      3.0829   +0.00013         +0.004
+          2024 Hormuz+Suez+Mandeb+Cape       52        3.0827      3.0836   +0.00086         +0.028
+          2025                  Hormuz       51        2.9627      2.9627   -0.00004         -0.001
+          2025                    Suez       51        2.9627      2.9622   -0.00052         -0.018
+          2025                 Malacca       51        2.9627      2.9626   -0.00013         -0.005
+          2025                  Mandeb       51        2.9627      2.9627   -0.00004         -0.001
+          2025                  Panama       51        2.9627      2.9626   -0.00018         -0.006
+          2025                    Cape       51        2.9627      2.9627   -0.00008         -0.003
+          2025 Hormuz+Suez+Mandeb+Cape       51        2.9627      2.9620   -0.00072         -0.024
+Russia–Ukraine                  Hormuz       16        8.8217      8.8216   -0.00008         -0.001
+Russia–Ukraine                    Suez       16        8.8217      8.8213   -0.00038         -0.004
+Russia–Ukraine                 Malacca       16        8.8217      8.8213   -0.00041         -0.005
+Russia–Ukraine                  Mandeb       16        8.8217      8.8220   +0.00034         +0.004
+Russia–Ukraine                  Panama       16        8.8217      8.8216   -0.00013         -0.001
+Russia–Ukraine                    Cape       16        8.8217      8.8231   +0.00141         +0.016
+Russia–Ukraine Hormuz+Suez+Mandeb+Cape       16        8.8217      8.8235   +0.00181         +0.021
+ EU RU oil ban                  Hormuz       16        5.0585      5.0568   -0.00171         -0.034
+ EU RU oil ban                    Suez       16        5.0585      5.0591   +0.00064         +0.013
+ EU RU oil ban                 Malacca       16        5.0585      5.0580   -0.00048         -0.010
+ EU RU oil ban                  Mandeb       16        5.0585      5.0587   +0.00017         +0.003
+ EU RU oil ban                  Panama       16        5.0585      5.0588   +0.00029         +0.006
+ EU RU oil ban                    Cape       16        5.0585      5.0595   +0.00100         +0.020
+ EU RU oil ban Hormuz+Suez+Mandeb+Cape       16        5.0585      5.0587   +0.00016         +0.003
+         OPEC+                  Hormuz       16        4.3581      4.3594   +0.00122         +0.028
+         OPEC+                    Suez       16        4.3581      4.3587   +0.00051         +0.012
+         OPEC+                 Malacca       16        4.3581      4.3580   -0.00013         -0.003
+         OPEC+                  Mandeb       16        4.3581      4.3579   -0.00028         -0.006
+         OPEC+                  Panama       16        4.3581      4.3578   -0.00038         -0.009
+         OPEC+                    Cape       16        4.3581      4.3575   -0.00063         -0.015
+         OPEC+ Hormuz+Suez+Mandeb+Cape       16        4.3581      4.3586   +0.00045         +0.010
+       Red Sea                  Hormuz       16        3.2647      3.2687   +0.00392         +0.120
+       Red Sea                    Suez       16        3.2647      3.2649   +0.00019         +0.006
+       Red Sea                 Malacca       16        3.2647      3.2666   +0.00187         +0.057
+       Red Sea                  Mandeb       16        3.2647      3.2655   +0.00075         +0.023
+       Red Sea                  Panama       16        3.2647      3.2642   -0.00058         -0.018
+       Red Sea                    Cape       16        3.2647      3.2630   -0.00176         -0.054
+       Red Sea Hormuz+Suez+Mandeb+Cape       16        3.2647      3.2685   +0.00379         +0.116
+
+Saved /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/Deep/M3_Deep/period_node_ablation_seed42.csv
