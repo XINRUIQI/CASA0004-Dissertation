@@ -48,7 +48,7 @@ ALL_GROUPS = FIN_GROUPS + SHIP_GROUPS
 MODALITY = {g: ("finance" if g in FIN_GROUPS else "shipping") for g in ALL_GROUPS}
 
 PERIOD_ORDER = [
-    "full", "early", "late",
+    "full",
     "year_2021", "year_2022", "year_2023", "year_2024", "year_2025",
     "event_russia_ukraine", "event_eu_ru_oil_ban",
     "event_opec_plus", "event_red_sea",
@@ -216,10 +216,12 @@ def main() -> None:
     show = p_mod.pivot(index=["period_id", "n_weeks"], columns="modality",
                        values="share_total")
     print(show.round(4).to_string(), flush=True)
-    print("\n=== group share of total |SHAP| (full / early / late) ===", flush=True)
-    sub = p_group[p_group["period_id"].isin(["full", "early", "late"])]
+    years = ["full"] + [f"year_{y}" for y in range(2021, 2026)]
+    print("\n=== group share of total |SHAP| (full / calendar years) ===",
+          flush=True)
+    sub = p_group[p_group["period_id"].isin(years)]
     print(sub.pivot(index="group", columns="period_id",
-                    values="share_total")[["full", "early", "late"]]
+                    values="share_total")[years]
           .round(4).to_string(), flush=True)
     print("\nSaved:", flush=True)
     for name in [

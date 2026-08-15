@@ -174,7 +174,7 @@ The shipping block covers activity at the eleven AOIs and six chokepoints. IMF P
 
 ### 3.4.2 时间对齐
 
-All series are aligned to a common Friday-ending weekly calendar. Daily observations are converted using end-of-week values, weekly means or weekly sums as appropriate, while monthly series are carried forward only after their assumed availability dates. Monthly remote-sensing products are aligned as of their conservative availability dates and the most recent eligible composite is carried forward.
+All series are aligned to a common Friday-ending weekly calendar. Daily observations are converted using end-of-week values, weekly means or weekly sums as appropriate, while monthly series are carried forward only after their assumed availability dates. Monthly remote-sensing products are aligned as of their conservative availability dates and the most recent eligible composite is carried forward. This uses the latest composite that would already have been known at the forecast origin. It does not assume that oil prices, shipping activity or remote-sensing indicators are unchanged within the month; a later composite would not yet have been available, and using it would leak future information.
 
 所有序列均对齐至共同的周五截止周历。日度观测根据变量性质采用周末值、周均值或周总和，月度序列则只有在假定可用日期到达后才向后延续。月度遥感产品按其保守可用日期进行 as-of 对齐，最近一期已可用的合成结果随后向后延续。
 
@@ -192,7 +192,8 @@ Monthly optical composites are cloud-filtered before the indices are constructed
 
 月度光学合成影像在构建指数前进行云筛选，云质量指标不作为预测变量。在周度日历上，四项光学指数的平均覆盖率约为 97%，VIIRS 夜间灯光距平则完全可用。站点级覆盖率与独立月度合成数量见附录 A.5。
 
-After temporal alignment, missing values in the Flat inputs are first forward-filled using past observations only. Any remaining leading gaps in remote sensing are set to zero. Leading gaps in shipping-count variables are filled with the median from the corresponding training fold. Deep finance inputs contain no missing values after merging. Missing remote-sensing embeddings and shipping-graph values are set to zero after scaling. All imputation and scaling parameters are estimated separately within each training window.
+
+After temporal alignment, the remaining gaps occur almost entirely before each series’ first valid observation. These leading gaps are set to zero for remote-sensing variables and filled with the training-fold median for each shipping-count variable.Deep finance inputs contain no missing values after merging. Missing remote-sensing embeddings and shipping-graph values are set to zero after scaling. All imputation and scaling parameters are estimated separately within each training window.
 
 时间对齐后，Flat 输入中的缺失值首先仅使用过去的观测进行前向填充。遥感数据中仍然存在的前导缺失值设为零。航运计数变量的前导缺失值使用对应训练折的中位数填补。Deep 金融输入在合并后不存在缺失值。缺失的遥感嵌入和航运图数值在缩放后设为零。所有填补和缩放参数均分别在对应的训练窗口内估计。
 
@@ -224,7 +225,9 @@ Deep models encode each modality separately and fuse the resulting representatio
 
 Deep 模型对每个模态分别编码，并在 S2–S4 上融合所得表征。
 
-The finance encoder applies a causal temporal convolutional network (TCN; Bai, Kolter and Koltun, 2018) to the four-week financial sequence retained across S1–S4. It produces one finance representation per forecast origin using only current and earlier positions at each convolutional layer.金融编码器将因果时间卷积网络（TCN；Bai, Kolter and Koltun, 2018）应用于 S1–S4 均保留的四周金融序列。各卷积层仅使用当前位置及其之前的位置，并为每个预测起点生成一个金融表征。
+The finance encoder applies a causal temporal convolutional network (TCN; Bai, Kolter and Koltun, 2018) to the four-week financial sequence retained across S1–S4. It produces one finance representation per forecast origin using only current and earlier positions at each convolutional layer.
+
+金融编码器将因果时间卷积网络（TCN；Bai, Kolter and Koltun, 2018）应用于 S1–S4 均保留的四周金融序列。各卷积层仅使用当前位置及其之前的位置，并为每个预测起点生成一个金融表征。
 
 The remote-sensing encoder receives monthly embeddings for the 11 AOIs, extracted from Sentinel-2 Surface Reflectance Harmonized patches using a frozen Prithvi-EO-2.0-300M encoder. The patches are adapted to the six-band convention of the HLS-pretrained encoder, with band mapping, standardisation and resampling documented in Appendix A. Temporal attention combines the four-week embeddings for each AOI. Site attention then combines the 11 AOIs into one remote-sensing representation.
 
@@ -234,9 +237,19 @@ The shipping encoder applies a graph attention network with temporal encoding (G
 
 航运编码器将带时间编码的图注意力网络（GAT；Veličković et al., 2018）应用于四周回看窗口内的周度 17 节点图，为每个预测起点生成一个航运表征。图的构建如第 3.3 节所述。进入消息传递时，有向航次边与无向走廊边合并为一张对称化邻接，因此编码器不再保留边的方向与类型。对称化后的航次流量作为先验进入注意力计算。邻接关系与边权细节见附录 A.4.3。
 
-Fusion is applied only to Deep models for S2–S4, while S1 passes its finance representation directly to the regression head. Three mechanisms are compared. Gated fusion, the main design, assigns non-negative modality weights that sum to one at each forecast origin. Encoder concatenation and cross-attention are used only as alternatives. The resulting representation is trained by mean squared error to predict the one-week-ahead log return. Fixed fusion settings are reported in Appendix C.4.2–C.4.3.
+Fusion is applied only to Deep models for S2–S4, while S1 passes its finance representation directly to the regression head. Three mechanisms are compared. Gated fusion is designated as the main design because it provides forecast-origin-specific modality weights for the subsequent interpretability analysis. These weights are non-negative and sum to one at each forecast origin. Encoder concatenation and cross-attention are used only as alternatives. The resulting representation is trained by mean squared error to predict the one-week-ahead log return. Fixed fusion settings are reported in Appendix C.4.2–C.4.3.
 
 融合仅用于 S2–S4，S1 的金融表征则直接进入回归头。研究比较了三种机制。作为主要设计的门控融合在每个预测起点分配总和为 1 的非负模态权重。编码器拼接与交叉注意力为备选。所得表征以均方误差训练，用于预测提前一周的对数收益。固定融合设置见附录 C.4.2–C.4.3。
+
+Figure 3.5 summarises the three encoders, the fusion stage used for S2–S4, and the regression head.
+
+图 3.5 概括三个编码器、S2–S4 所用的融合阶段，以及回归头。
+
+Figure 3.5
+
+**Figure 3.5 — Deep model architecture: modality-specific encoders, fusion (gated fusion as the main specification) and the regression head that predicts the one-week-ahead log return.**
+
+**图 3.5 — Deep 模型架构：模态专属编码器、融合（门控融合为主要设定），以及预测提前一周对数收益的回归头。**
 
 ## 3.6 Estimation and validation
 
@@ -282,6 +295,8 @@ Flat 模型在每次预定的重新估计时重新选择 Ridge 和 XGBoost 的�
 
 ## 3.7 Model Evaluation and Interpretation
 
+
+
 ### 3.7.1 Forecast Evaluation
 
 The primary evaluation metrics are calculated from reconstructed price forecasts over the common sample of T=257 forecast origins. For model m,
@@ -296,7 +311,7 @@ The primary evaluation metrics are calculated from reconstructed price forecasts
 
 Performance relative to the no-change benchmark M0 is summarised by the percentage improvement in RMSE
 
-RMSE improvement vs M0m​ (%)=100×(1−RMSEM0​RMSEm​​).
+RMSE improvement vs M0m​(%)=100×(1−RMSEM0​RMSEm​​).
 
 Here, P_{t+1} is the observed price and \hat{P}_{m,t+1\mid t} is the price forecast produced by model m at forecast origin t. A positive value indicates a lower RMSE than M0, zero indicates equal RMSE, and a negative value indicates worse performance.
 
@@ -304,7 +319,8 @@ Here, P_{t+1} is the observed price and \hat{P}_{m,t+1\mid t} is the price forec
 
 ### 3.7.2 Model Interpretation and Robustness Checks
 
-Model interpretability concerns identifying where a model’s predictive ability comes from, including which data sources and features contribute more or less to its predictions. For Deep alternative-data models with positive RMSE improvement relative to M0, SHapley Additive exPlanations (SHAP) values are calculated to quantify each input’s contribution (Lundberg and Lee, 2017). Absolute SHAP values are aggregated by data source and, where applicable, spatial site or node. For gated models, weekly modality weights are also reported to describe how the model allocates weight across financial, remote-sensing and shipping representations. SHAP and gate weights describe model attribution and internal allocation rather than causal importance.Robustness is assessed by rerunning the prespecified Deep models with random seeds and comparing their RMSE.
+Model interpretability concerns identifying where a model’s predictive ability comes from, including which data sources and features contribute more or less to its predictions. For Deep alternative-data models with positive RMSE improvement relative to M0, SHapley Additive exPlanations (SHAP) values are calculated to quantify each input’s contribution (Lundberg and Lee, 2017). 
+Absolute SHAP values are aggregated by data source and, where applicable, spatial site or node. Results are reported for the full sample, by year, and within predefined ±8-week event windows. For gated models, weekly modality weights are also reported to describe how the model allocates weight across financial, remote-sensing and shipping representations. SHAP and gate weights describe model attribution and internal allocation rather than causal importance.Robustness is assessed by rerunning the prespecified Deep models with random seeds and comparing their RMSE.
 
 【备注：3.7.3 Model interpretation整段需要重写。
 1.什么是可解释性：解释一
@@ -314,7 +330,6 @@ RQ3仅针对满足xxxx条件的模型。对于这些模型，采用xxxx方法，
 】
 
 ## 3.8 Ethical considerations
-
 
 The study uses only secondary, aggregate data and does not involve human participants. It received approval through UCL’s low-risk ethics process. All datasets were used in accordance with their published licences and terms of use, including the Copernicus open licence for Sentinel-2, the open distribution terms for VIIRS night-time lights, and the research-use terms of IMF PortWatch and Global Fishing Watch. Remote-sensing and vessel-activity variables are analysed only at the aggregate site or chokepoint level; no attempt is made to identify individual vessels, operators or persons.
 

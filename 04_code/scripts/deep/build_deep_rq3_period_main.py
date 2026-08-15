@@ -41,7 +41,7 @@ M0_COL = "P_hat_M0"
 Y_COL = "P_next_actual"
 
 PERIOD_ORDER = [
-    "full", "early", "late",
+    "full",
     "year_2021", "year_2022", "year_2023", "year_2024", "year_2025",
     "event_russia_ukraine", "event_eu_ru_oil_ban",
     "event_opec_plus", "event_red_sea",

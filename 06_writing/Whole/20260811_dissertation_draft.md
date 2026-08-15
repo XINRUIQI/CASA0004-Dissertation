@@ -130,7 +130,7 @@ This dissertation addresses these gaps through a shared rolling-origin out-of-sa
 
 
 
-# Chapter 3 — Methodology *(2,914 words)*
+# Chapter 3 — Methodology *(2,966 words)*
 
 ## 3.1 Research design
 
@@ -240,7 +240,7 @@ The remote-sensing encoder receives monthly embeddings for the 11 AOIs, extracte
 
 The shipping encoder applies a graph attention network with temporal encoding (GAT; Veličković et al., 2018) to the weekly 17-node graph over the four-week lookback, producing one shipping representation per forecast origin. The graph is constructed as described in Section 3.3. For message passing, the directed voyage links and undirected corridor links are combined in a symmetrised adjacency matrix, so the encoder does not retain edge direction or type. Symmetrised voyage counts are used as a prior in the attention calculation. Adjacency and edge-weighting details are reported in Appendix A.4.3.
 
-Fusion is applied only to Deep models for S2–S4, while S1 passes its finance representation directly to the regression head. Three mechanisms are compared. Gated fusion, the main design, assigns non-negative modality weights that sum to one at each forecast origin. Encoder concatenation and cross-attention are used only as alternatives. The resulting representation is trained by mean squared error to predict the one-week-ahead log return. Fixed fusion settings are reported in Appendix C.4.2–C.4.3.
+Fusion is applied only to Deep models for S2–S4, while S1 passes its finance representation directly to the regression head. Three mechanisms are compared. Gated fusion is designated as the main design because it provides forecast-origin-specific modality weights for the subsequent interpretability analysis. These weights are non-negative and sum to one at each forecast origin. Encoder concatenation and cross-attention are used only as alternatives. The resulting representation is trained by mean squared error to predict the one-week-ahead log return. Fixed fusion settings are reported in Appendix C.4.2–C.4.3.
 
 ## 3.6 Estimation and validation
 
@@ -293,7 +293,7 @@ Here, P_{t+1} is the observed price and \hat{P}_{m,t+1\mid t} is the price forec
 
 ### 3.7.2 Model Interpretation and Robustness Checks
 
-Model interpretability concerns identifying where a model’s predictive ability comes from, including which data sources and features contribute more or less to its predictions. For Deep alternative-data models with positive RMSE improvement relative to M0, SHapley Additive exPlanations (SHAP) values are calculated to quantify each input’s contribution (Lundberg and Lee, 2017). Absolute SHAP values are aggregated by data source and, where applicable, spatial site or node. For gated models, weekly modality weights are also reported to describe how the model allocates weight across financial, remote-sensing and shipping representations. SHAP and gate weights describe model attribution and internal allocation rather than causal importance. Robustness is assessed by rerunning the prespecified Deep models with random seeds and comparing their RMSE.
+Model interpretability concerns identifying where a model’s predictive ability comes from, including which data sources and features contribute more or less to its predictions. For Deep alternative-data models with positive RMSE improvement relative to M0, SHapley Additive exPlanations (SHAP) values are calculated to quantify each input’s contribution (Lundberg and Lee, 2017). Absolute SHAP values are aggregated by data source and, where applicable, spatial site or node. Results are reported for the full sample, by year, and within predefined ±8-week event windows. For gated models, weekly modality weights are also reported to describe how the model allocates weight across financial, remote-sensing and shipping representations. SHAP and gate weights describe model attribution and internal allocation rather than causal importance. Robustness is assessed by rerunning the prespecified Deep models with random seeds and comparing their RMSE.
 
 ## 3.8 Ethical considerations
 
@@ -306,95 +306,142 @@ Analysis was conducted in Python, and the code required to reproduce the analysi
 
 
 
-# Chapter 4 — Results（～**1,200** ）
-
-
+# Chapter 4 — Results（**1,200 words** ）
 
 ## 4.1 Descriptive overview
 
-This chapter reports out-of-sample one-week-ahead Brent forecasts on the common evaluation sample of 257 weeks (22 January 2021–19 December 2025). Performance is summarised by RMSE on reconstructed prices and by RMSE skill versus the no-change benchmark M0 (Murphy, 1988). Skill is positive when RMSE is lower than M0 and negative when it is higher. On this sample the M0 RMSE is 4.152 USD per barrel.
+This chapter reports one-week-ahead Brent forecasts for 257 rolling forecast origins from 22 January 2021 to 19 December 2025. The corresponding target dates extend from 29 January 2021 to 26 December 2025. Models predict next-week log returns, which are converted to prices for evaluation. Performance is measured using  RMSE improvement vs M0, whose RMSE is 4.152 USD per barrel. Positive improvement indicates a lower RMSE than M0.
 
-Weekly Brent log returns have near-zero mean and clear volatility clustering. Exploratory checks show only weak contemporaneous association between remote-sensing anomalies and returns. Shipping enters as a noisy proxy for trade and congestion, not as a direct measure of next week’s price.
+Weekly returns are centred near zero, with large movements clustered in several periods. Remote-sensing anomalies show weak contemporaneous associations with returns. Their incremental predictive value is therefore assessed through the rolling out-of-sample comparisons below.
 
 ## 4.2 Flat-model results
 
-Table 4.1 reports Flat out-of-sample performance for Ridge and XGBoost across M0–M4. Every learned Flat specification has negative skill versus M0, so the no-change forecast remains the best absolute-error benchmark in the Flat family.
+Table 4.1 reports the out-of-sample performance of the Flat Ridge and XGBoost models across feature sets S1–S4, with M0 shown for comparison. All eight Flat models have higher RMSE than M0 and therefore record negative RMSE improvement.
 
 **Table 4.1 — Flat out-of-sample performance** *(n = 257)*
 
+| Set       | Variables                         | Model         | RMSE  | Improvement vs M0 (%) |
+| --------- | --------------------------------- | ------------- | ----- | --------------------- |
+| Benchmark |                                   | M0-Ridge      | 4.152 |                       |
+|           |                                   | M0-XGB        | 4.152 |                       |
+| S1        | financial time series             | M1-Flat-Ridge | 4.256 | −2.5%                 |
+|           |                                   | M1-Flat-XGB   | 4.368 | −5.2%                 |
+| S2        | financial time series + RS        | M2-Flat-Ridge | 4.414 | −6.3%                 |
+|           |                                   | M2-Flat-XGB   | 4.440 | −6.9%                 |
+| S3        | financial time series + shipping  | M3-Flat-Ridge | 4.553 | −9.7%                 |
+|           |                                   | M3-Flat-XGB   | 4.357 | −4.9%                 |
+| S4        | financial time series + RS + ship | M4-Flat-Ridge | 4.539 | −9.3%                 |
+|           |                                   | M4-Flat-XGB   | 4.412 | −6.3%                 |
 
-| Set | Content                           | Ridge RMSE | Ridge skill vs M0 | XGB RMSE | XGB skill vs M0 |
-| --- | --------------------------------- | ---------- | ----------------- | -------- | --------------- |
-| M0  | no-change benchmark               | 4.152      | —                 | 4.152    | —               |
-| M1  | financial time series only        | 4.256      | −2.5%             | 4.368    | −5.2%           |
-| M2  | financial time series + RS        | 4.414      | −6.3%             | 4.440    | −6.9%           |
-| M3  | financial time series + shipping  | 4.447      | −7.1%             | 4.408    | −6.2%           |
-| M4  | financial time series + RS + ship | 4.536      | −9.3%             | 4.506    | −8.5%           |
+*Note:* Positive values indicate lower RMSE than M0.
 
-
-Finance-only M1 records the lowest Flat RMSE among learned sets (Ridge 4.256, −2.5%; XGBoost 4.368, −5.2%). Adding remote sensing (M2) or shipping (M3) raises RMSE relative to M1 under both learners. The full Flat set M4 is weakest (Ridge 4.536, −9.3%; XGBoost 4.506, −8.5%). Ridge and XGBoost agree: M1 is best among Flat learners, M4 is worst, and neither remote sensing nor shipping reduces absolute RMSE below the finance-only Flat baseline.
-
-Under early feature fusion, noisy alternative-data proxies do not improve one-week-ahead Brent RMSE relative to M0 or to finance alone. For RQ1, Flat results therefore show no absolute out-of-sample gain from remote sensing or shipping.
+For Ridge, S1 has the lowest RMSE and S3 the highest; adding remote sensing, shipping, or both raises RMSE relative to S1. For XGBoost, S3 records a slightly lower RMSE than S1 (4.357 versus 4.368), while S2 and S4 remain higher than S1. No Flat model records a positive RMSE improvement relative to M0. The Flat results therefore provide no descriptive evidence that alternative data improve forecasts relative to the no-change benchmark.
 
 ## 4.3 Deep-model results
 
-Table 4.2 reports Deep performance by information set. Gated fusion is the main Deep specification; cross-attention is a comparison where multimodal fusion applies. For M1 only the finance encoder is active. M1 and M2 both fail to beat M0 (gated RMSE 4.250 and 4.253; both −2.4% skill). Absolute error barely moves when remote sensing enters.
+Table 4.2 reports Deep-model performance across S1–S4. Gated fusion is the prespecified main specification, while cross-attention is reported as a secondary comparison where multimodal fusion applies. No cross-attention result is reported for S1 because only the finance encoder is active.
 
 **Table 4.2 — Deep out-of-sample performance** *(gated = main specification)*
 
+| Set       | Variables                         | Model         | RMSE  | Improvement vs M0 (%) |
+| --------- | --------------------------------- | ------------- | ----- | --------------------- |
+| Benchmark |                                   | M0            | 4.152 |                       |
+| S1        | financial time series             | M1-Deep       | 4.250 | −2.4%                 |
+| S2        | financial time series + RS        | M2-Deep-Gated | 4.253 | −2.4%                 |
+|           |                                   | M2-Deep-XAttn | 4.396 | −5.9%                 |
+| S3        | financial time series + shipping  | M3-Deep-Gated | 4.146 | +0.15%                |
+|           |                                   | M3-Deep-XAttn | 4.110 | +1.00%                |
+| S4        | financial time series + RS + ship | M4-Deep-Gated | 4.180 | −0.67%                |
+|           |                                   | M4-Deep-XAttn | 4.144 | +0.19%                |
 
-| Set | Content                           | Gated RMSE | Gated skill vs M0 | Cross-attn RMSE | Cross-attn skill vs M0 |
-| --- | --------------------------------- | ---------- | ----------------- | --------------- | ---------------------- |
-| M0  | no-change benchmark               | 4.152      | —                 | 4.152           | —                      |
-| M1  | financial time series only        | 4.250      | −2.4%             | —               | —                      |
-| M2  | financial time series + RS        | 4.253      | −2.4%             | —               | —                      |
-| M3  | financial time series + shipping  | 4.145      | +0.16%            | 4.110           | +1.00%                 |
-| M4  | financial time series + RS + ship | 4.180      | −0.67%            | 4.144           | +0.19%                 |
+The gated S1 and S2 models record similar RMSE of 4.250 and 4.253, both higher than that of M0. Adding remote sensing therefore provides no descriptive improvement. Neither reported fusion approach reduces RMSE relative to the finance-only Deep model at S2.
 
+With shipping included, gated S3 records the lowest RMSE among the gated models at 4.146, improving on M0 by 0.15%. Gated S4 rises to 4.180, 0.67% worse than M0, indicating that adding remote sensing to S3 does not provide a further improvement.
 
-Once shipping is included, gated M3 reduces RMSE to 4.145 (+0.16% skill). Cross-attention on the same set reaches 4.110 (+1.00%) on this reported seed. Shipping is the modality that moves Deep forecasts across the M0 line relative to Deep M1. Gated M4 rises again to 4.180 (−0.67%); cross-attention M4 is above M0 at +0.19% but does not displace gated M3 as the main finding. Both cross-attention entries are single-seed figures from the fusion matrix and do not survive reseeding — cross-attention has the worst seed-averaged skill of the three M3 fusions (Appendix B.4) — so they are reported as descriptive comparisons rather than as the better specification. The gated margin is likewise small and should not be over-read on a short weekly sample; Section 4.5 returns to seed sensitivity.
+On the reported seed-42 run, cross-attention has a higher RMSE than gated fusion at S2, at 4.396 compared with 4.253, but lower RMSEs at S3 and S4. Cross-attention records RMSEs of 4.110 and 4.144 at S3 and S4, corresponding to RMSE improvements of 1.00% and 0.19%. These results are therefore reported as descriptive secondary comparisons rather than evidence that cross-attention is superior.  
 
-For RQ1 under Deep, shipping-inclusive forecasts clear M0 by a modest margin, while remote sensing does not add a comparable absolute-error gain.
+For RQ1, the within-learner comparisons show that shipping reduces RMSE relative to M0 only in the main Deep pathway. In the Flat family, XGBoost S3 is slightly below S1 but still worse than M0, and Ridge S3 is worse than S1. Remote sensing provides no improvement either alone or when added to shipping.
 
 ## 4.4 Flat versus Deep
 
-**Table 4.3 — Paired Flat versus Deep**
-*(Flat = Table 4.1 XGBoost; Deep = Table 4.2 gated; percentages are skill versus M0)*
+Table 4.3 compares the main Deep pathway with both Flat learners within each feature set. The feature-set category, forecast dates and evaluation sample are held constant. The main Deep pathway uses the finance-only Deep model at S1 and gated fusion at S2–S4. These comparisons evaluate the overall Flat and Deep modelling pathways rather than isolating the fusion operator alone.
 
+**Table 4.3 — Matched Flat–Deep comparisons by feature set** *(n = 257)*
 
-| Pair | Flat RMSE | Deep RMSE | Flat skill vs M0 | Deep skill vs M0 |
-| ---- | --------- | --------- | ---------------- | ---------------- |
-| M1   | 4.368     | 4.250     | −5.2%            | −2.4%            |
-| M2   | 4.440     | 4.253     | −6.9%            | −2.4%            |
-| M3   | 4.408     | 4.145     | −6.2%            | +0.16%           |
-| M4   | 4.506     | 4.180     | −8.5%            | −0.67%           |
+| Feature set | Flat model    | Flat RMSE | Main Deep model | Deep RMSE | **Deep vs Flat (%)** |
+| ----------- | ------------- | --------- | --------------- | --------- | -------------------- |
+| S1          | Ridge         | 4.256     | M1–Deep         | 4.250     | +0.15%               |
+| S1          | M1–Flat–XGB   | 4.368     | M1–Deep         | 4.250     | +2.71%               |
+| S2          | M2–Flat–Ridge | 4.414     | M2–Deep–Gated   | 4.253     | +3.64%               |
+| S2          | M2–Flat–XGB   | 4.440     | M2–Deep–Gated   | 4.253     | +4.22%               |
+| S3          | M3–Flat–Ridge | 4.553     | M3–Deep–Gated   | 4.146     | +8.95%               |
+| S3          | M3–Flat–XGB   | 4.357     | M3–Deep–Gated   | 4.146     | +4.85%               |
+| S4          | M4–Flat–Ridge | 4.539     | M4–Deep–Gated   | 4.180     | +7.90%               |
+| S4          | M4–Flat–XGB   | 4.412     | M4–Deep–Gated   | 4.180     | +5.26%               |
 
+*Note. Positive values indicate a lower Deep RMSE than the matched Flat model. Percentages use unrounded RMSEs.*
 
-Deep has lower RMSE than Flat in every matched pair. Finance-only and finance-plus-RS pairs improve on Flat but remain negative versus M0. The decisive pair is M3: Flat skill −6.2% versus gated Deep +0.16%—the only matched pair in which Deep also beats M0. Deep M4 improves on Flat M4 but stays negative versus M0 and does not improve on Deep M3.
+Figure 4.2
 
-For RQ2, representation-level Deep modelling reduces RMSE relative to Flat at every matched set, but an M0-beating paired outcome appears only when shipping is included.
+**Figure 4.2 — Paired slopes from Flat XGBoost to Deep gated fusion at each information set, with S3 highlighted.**
 
-## 4.5 Robustness and sensitivity
+Across all four feature sets, the main Deep model records lower RMSE than both Ridge and XGBoost. The reduction ranges from 0.15% against Ridge at S1 to 8.95% against Ridge at S3. The difference at S1 is therefore negligible, while larger reductions appear once alternative data are included.
 
-Appendix B collects the detailed robustness tables. Flat checks that vary lookback and feature settings produce no Flat specification that beats M0. Finance-only M1 remains the strongest Flat absolute-error baseline; remote sensing stays weak and is not driven by a single site. Nested Clark–West tests versus M1 in Appendix B detect incremental information over the financial baseline for some XGBoost shipping specifications, even when absolute RMSE remains higher than M1 and skill versus M0 remains negative. Shipping can therefore show a nested Flat signal without overturning Table 4.1’s absolute-error ranking. **Revised under the frozen test plan (Section 3.7.2): Clark–West is not reported for XGBoost, so the nested reading above no longer stands. Under the primary one-sided DM-HLN test the seven channel arms in Appendix B give p values between 0.384 and 0.727, and the main 113-column arm gives 0.633, so no XGBoost shipping specification is distinguishable from M1. Four arms do reduce RMSE slightly relative to M1, which keeps the descriptive ordering from being uniformly against shipping, but no valid test supports a Flat nested shipping increment.**
+At S1 and S2, the main Deep models improve on both Flat learners but remain worse than M0. S3 is the only feature set which has lower RMSE than M0. Although the main Deep S4 model improves substantially over both Flat models, it remains worse than M0 and does not improve on the main Deep S3 model.
 
-Deep checks that vary random seeds and fusion choices leave no configuration reliably positive. For gated finance-plus-shipping the mean skill across seeds 42, 1 and 2 is −0.51% (± 0.80), so the +0.16% in Table 4.2 is a seed-42 outcome rather than expected skill, and averaged over seeds no Deep configuration beats M0. Reseeding also reverses the fusion ranking outright. On seed 42 the M3 order is cross-attention (+1.00%) > gated (+0.15%) > concat (−0.22%); across the three seeds it becomes concat (−0.27% ± 0.35) > gated (−0.51% ± 0.80) > cross-attention (−3.01% ± 4.07), dispersion widening in the same order. The single-seed peak therefore belongs to the least stable operator: cross-attention posts the best figure in Table 4.2 and the worst seed-averaged skill of the three, collapsing to −7.14% on one seed. Gated is retained as the main specification because it is the fusion that exposes modality gates for the Section 4.6 analysis, not because it is more accurate than concat — the gap between their seed-averaged means is smaller than either configuration's own cross-seed spread, so the two are not separable on accuracy. Larger encoder width than the main setting tends to worsen performance on the short weekly sample, as does halving encoder depth. The sub-period split is also less favourable: gated M3 is positive in the early window (+0.33%) but marginally negative in the late window (−0.13%), and no Deep configuration is positive in both. The small full-sample gain is therefore neither evenly distributed over time nor robust to reseeding, and both facts are reported as limitations rather than as further support. The matched Deep advantage over Flat, especially with shipping, survives these checks.
+For RQ2, the matched comparisons show that the main Deep pathway records lower RMSE than both Flat learners at every feature set.
 
-These checks leave the RQ1–RQ2 rankings unchanged: Flat absolute gains remain absent; Deep’s small shipping-centred M0 clearance is the more stable positive case.
+## 4.5 Interpretability
 
-## 4.6 Interpretability
+Following the eligibility rule in Section 3.7.2, interpretation is reported for gated Deep S3, the only model with positive RMSE improvement relative to M0. Table 4.4 combines period-specific forecast performance, modality-gate weights and absolute SHAP attribution for the 257 forecast origins.
 
-Interpretability is restricted to Deep specifications that improve on M0, principally Deep M3, using seeds 42, 1 and 2. Reported patterns are those that agree across seeds. Modality gates give each modality’s fusion-weight share; shipping node attention identifies which graph locations receive weight. A high shipping gate does not by itself mean the model focuses on a particular chokepoint; spatial detail is read from node attention.
+**Table 4.4 — Period-specific performance and attribution for gated Deep S3**
 
-For Deep M3, mean gates are about 0.61 (financial time series) and 0.39 (shipping). Week-level shipping-gate paths are unstable across seeds—pairwise correlations between the weekly paths range from −0.05 to 0.50—so single-seed event stories are not warranted. Among pre-specified event windows (±8 weeks), the Russia–Ukraine announcement window (February 2022) is the only one in which all three seeds move the shipping gate in the same direction, and there the gate falls rather than rises. The Red Sea window (November 2023) is mixed across seeds and is not retained. Spatially, the Strait of Hormuz carries the highest mean shipping-node attention and the best mean rank, but it enters the top-five set in only two of the three seeds, and no chokepoint is top-five in all three. Figure 4.1 summarises the Deep M3 gate and attention diagnostics; further panels are in Appendix B.
+| Period         | n   | RMSE  | Improvement vs M0 (%) | Gate finance | Gate shipping | SHAP finance | SHAP shipping |
+| -------------- | --- | ----- | --------------------- | ------------ | ------------- | ------------ | ------------- |
+| Full sample    | 257 | 4.146 | +0.15%                | 0.558        | 0.442         | 96.8%        | 3.2%          |
+| 2021           | 50  | 3.014 | −1.98%                | 0.521        | 0.479         | 95.8%        | 4.2%          |
+| 2022           | 52  | 6.613 | +0.77%                | 0.519        | 0.481         | 96.4%        | 3.6%          |
+| 2023           | 52  | 3.790 | −0.37%                | 0.481        | 0.519         | 94.8%        | 5.2%          |
+| 2024           | 52  | 3.083 | −0.79%                | 0.520        | 0.480         | 95.0%        | 5.0%          |
+| 2025           | 51  | 2.960 | +0.99%                | 0.749        | 0.251         | 99.2%        | 0.8%          |
+| Russia–Ukraine | 16  | 8.822 | +1.15%                | 0.536        | 0.464         | 96.5%        | 3.5%          |
+| EU oil ban     | 16  | 5.059 | −0.21%                | 0.524        | 0.476         | 96.0%        | 4.0%          |
+| OPEC+          | 16  | 4.358 | +0.76%                | 0.485        | 0.515         | 95.7%        | 4.3%          |
+| Red Sea        | 16  | 3.265 | +2.55%                | 0.489        | 0.511         | 94.1%        | 5.9%          |
 
-Figure 4.1 — Deep M3 modality gates and shipping-node attention (multi-seed summary).
+*Note. RMSE is evaluated in price levels, while SHAP attributes predicted log returns; gate weights and SHAP shares are not directly comparable. Event windows are ±8 weeks.*
 
-*[Figure 4.1 — Deep M3 interpretability: modality gates and shipping-node attention.]*
+Financial inputs dominate absolute SHAP throughout the sample, accounting for 96.8% of full-sample attribution compared with 3.2% for shipping. Shipping attribution is relatively higher in 2023–2024 and during the Red Sea window, at between 5.0% and 5.9%, but falls to 0.8% in 2025. Its contribution is therefore small and episodic rather than persistently elevated.
 
-For RQ3, when Deep shipping-inclusive forecasts clear M0, the stable main-text reliance pattern is shared weight on finance and shipping, with Hormuz the highest-weighted network location but not a focus on which all seeds agree. These diagnostics describe model dependence after a stability filter; they do not identify causal drivers of Brent prices.
+The main-run gate allocates average weights of 55.8% to finance and 44.2% to shipping, a substantially more balanced division than the SHAP attribution. This contrast reflects the difference between internal representation weighting and output attribution; SHAP is therefore used as the primary basis for interpreting RQ3.
 
----
+At the input-group level, EIA variables provide the largest full-sample contribution at 43.6%, followed by financial and macroeconomic variables at 31.4%. All twenty highest-ranked individual features are financial inputs, led by crude production, Cushing stocks and the federal funds rate. No shipping subgroup contributes more than 2.0% in any reported period, although PortWatch and SAR become modestly more prominent during the Red Sea window.
+
+Within the shipping representation, the highest full-sample node shares belong to Jurong, Hormuz, Suez, the Cape route and Bab el-Mandeb. Jurong and Hormuz lead the rankings from 2021 to 2023, while Suez, Bab el-Mandeb and the Cape route occupy the first three positions in 2024. During the Red Sea window, attribution is distributed across several locations, with no individual node accounting for more than 12% of shipping attribution. These conditional node shares do not represent their contribution to total model attribution.
+
+For RQ3, the gated Deep S3 model relies predominantly on financial information across all reported periods. Shipping attribution remains small but varies over time, while its internal geographic focus changes across years rather than remaining concentrated on a single chokepoint.
+
+## 4.6 Robustness
+
+**Table 4.5 — Random-seed robustness of all Deep specifications** *(improvement vs M0, %)*
+
+| Set | Model          | Main-run improvement | Across-run mean ± SD | Positive runs |
+| --- | -------------- | -------------------- | -------------------- | ------------- |
+| S1  | M1-Deep        | −2.36%               | −1.00% ± 1.33        | 1/3           |
+| S2  | M2-Deep-Gated  | −2.43%               | −3.15% ± 1.67        | 0/3           |
+|     | M2-Deep-Concat | −2.01%               | −1.79% ± 0.77        | 0/3           |
+|     | M2-Deep-XAttn  | −5.87%               | −3.57% ± 2.77        | 0/3           |
+| S3  | M3-Deep-Gated  | +0.15%               | −0.51% ± 0.80        | 1/3           |
+|     | M3-Deep-Concat | −0.22%               | −0.27% ± 0.35        | 1/3           |
+|     | M3-Deep-XAttn  | +1.00%               | −3.01% ± 4.07        | 1/3           |
+| S4  | M4-Deep-Gated  | −0.68%               | −0.91% ± 0.26        | 0/3           |
+|     | M4-Deep-Concat | −8.30%               | −3.79% ± 3.95        | 0/3           |
+|     | M4-Deep-XAttn  | +0.19%               | −1.90% ± 2.75        | 1/3           |
+
+*Note. The seed-42 column is the main reported run in Tables 4.2–4.4. S1 has no fusion operator.*
+
+Table 4.5 reports the results of rerunning all Deep specifications with several random seeds. None records a positive mean RMSE improvement relative to M0, and only five of the thirty individual runs are positive. The best mean result is −0.27% for S3 concatenation, while the main gated S3 model records −0.51%. Gated S3 also outperforms S1 in only one of the three matched runs, and all S2 runs remain worse than M0. The positive results in the main run are therefore sensitive to random initialisation.
 
 
 

@@ -25,6 +25,7 @@ Outputs (-> 05_outputs/baselines/Deep/M3_Deep/):
 Run:
   python3 04_code/scripts/deep/run_deep_shap_m3.py
   python3 04_code/scripts/deep/run_deep_shap_m3.py --max-weeks 2 --epochs 5
+  python3 04_code/scripts/deep/run_deep_shap_m3.py --lock-only
 """
 
 from __future__ import annotations
@@ -53,8 +54,8 @@ CONFIG_KEY = "m3_deep_gated"
 
 # ---------------------------------------------------------------------------
 # Locked periods (OOS prediction-origin dates)
+# Full OOS, calendar years 2021–2025, four event windows. No early/late split.
 # ---------------------------------------------------------------------------
-SPLIT_DATE = "2023-01-01"
 EVENT_WINDOW_WEEKS = 8
 EVENTS = [
     ("event_russia_ukraine", "2022-02-24", "Russia–Ukraine"),
@@ -270,12 +271,6 @@ def lock_period_table() -> pd.DataFrame:
         {"period_id": "full", "label": "Full OOS", "kind": "all",
          "start": "", "end": "", "event_date": "",
          "window_weeks": "", "rule": "all scored OOS weeks"},
-        {"period_id": "early", "label": "Early (<2023-01-01)", "kind": "split",
-         "start": "", "end": SPLIT_DATE, "event_date": "",
-         "window_weeks": "", "rule": f"date < {SPLIT_DATE}"},
-        {"period_id": "late", "label": "Late (>=2023-01-01)", "kind": "split",
-         "start": SPLIT_DATE, "end": "", "event_date": "",
-         "window_weeks": "", "rule": f"date >= {SPLIT_DATE}"},
     ]
     for y in CALENDAR_YEARS:
         rows.append({
@@ -296,13 +291,10 @@ def lock_period_table() -> pd.DataFrame:
 
 
 def period_membership(dates: pd.DatetimeIndex) -> pd.DataFrame:
-    split = pd.Timestamp(SPLIT_DATE)
     rows = []
     for d in dates:
         flags = {
             "full": True,
-            "early": d < split,
-            "late": d >= split,
         }
         for y in CALENDAR_YEARS:
             flags[f"year_{y}"] = (pd.Timestamp(f"{y}-01-01")
@@ -365,6 +357,9 @@ def main() -> None:
     ap.add_argument("--max-weeks", type=int, default=0,
                     help="0 = all OOS weeks; >0 for a smoke test")
     ap.add_argument("--device", type=str, default="cpu")
+    ap.add_argument("--lock-only", action="store_true",
+                    help="rewrite period lock + membership from existing "
+                         "deep_m3_shap_dates.csv; do not recompute SHAP")
     args = ap.parse_args()
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -372,6 +367,19 @@ def main() -> None:
     groups = lock_group_table()
     periods.to_csv(OUT_DIR / "deep_m3_shap_lock_periods.csv", index=False)
     groups.to_csv(OUT_DIR / "deep_m3_shap_lock_groups.csv", index=False)
+    if args.lock_only:
+        dates_path = OUT_DIR / "deep_m3_shap_dates.csv"
+        if not dates_path.exists():
+            raise FileNotFoundError(
+                f"{dates_path} missing; run without --lock-only first")
+        dates_ix = pd.DatetimeIndex(pd.read_csv(dates_path)["date"])
+        memb = period_membership(dates_ix)
+        memb.to_csv(OUT_DIR / "deep_m3_shap_period_membership.csv",
+                    index=False)
+        print(f"Rewrote lock periods ({len(periods)} rows) and membership "
+              f"({len(memb)} rows) from {len(dates_ix)} dates.", flush=True)
+        print(memb.groupby("period_id").size().to_string(), flush=True)
+        return
 
     df = data.load_matrix()
     dico = data.load_dict()

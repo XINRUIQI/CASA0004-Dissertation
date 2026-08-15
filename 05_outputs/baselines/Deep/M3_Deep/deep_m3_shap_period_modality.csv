@@ -1,10 +1,6 @@
 period_id,label,kind,n_weeks,modality,mean_shap_abs,mean_shap_signed,share_total
 full,Full OOS,all,257,finance,0.028896851,-0.0015103715,0.9682776
 full,Full OOS,all,257,shipping,0.00094670994,6.0016546e-06,0.03172242
-early,Early (<2023-01-01),split,102,finance,0.024709547,0.0011048632,0.961156
-early,Early (<2023-01-01),split,102,shipping,0.0009986063,2.7850241e-05,0.038843952
-late,Late (>=2023-01-01),split,155,finance,0.031652365,-0.0032313645,0.97197723
-late,Late (>=2023-01-01),split,155,shipping,0.0009125588,-8.376124e-06,0.028022753
 year_2021,2021,calendar,50,finance,0.024141999,0.0025963539,0.9581127
 year_2021,2021,calendar,50,shipping,0.0010554531,-6.435783e-06,0.041887295
 year_2022,2022,calendar,52,finance,0.025255265,-0.00032926232,0.9639704

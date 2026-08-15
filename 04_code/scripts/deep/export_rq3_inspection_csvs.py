@@ -4,7 +4,7 @@ Export the two RQ3 inspection CSVs (seed 42):
   node_weekly_seed42.csv
   period_ablation_seed42.csv
 
-No retraining. Drops the early/late split. Node-level masks were not run.
+No retraining. Periods are full OOS, calendar years and event windows.
 """
 
 from __future__ import annotations
@@ -106,7 +106,7 @@ def main() -> None:
     ab_path = OUT_DIR / "period_ablation_seed42.csv"
     ab.to_csv(ab_path, index=False)
 
-    print("period date ranges (exclusive of early/late):")
+    print("period date ranges:")
     for pid, lab in PERIOD_LABEL.items():
         d = memb.loc[memb["period_id"] == pid, "date"]
         if d.empty:

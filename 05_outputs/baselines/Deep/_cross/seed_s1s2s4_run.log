@@ -3,3 +3,37 @@ deep dataset N=361 lookback=4
 
   [1/10] m1_deep         seed=1   skill=-0.95% DirAcc=0.545 RMSE=4.191268 (8s)
   [2/10] m1_deep         seed=2   skill=+0.30% DirAcc=0.506 RMSE=4.139232 (17s)
+  [3/10] m2_deep_gated   seed=1   skill=-1.96% DirAcc=0.447 RMSE=4.233222 (32s)
+  [4/10] m2_deep_gated   seed=2   skill=-5.07% DirAcc=0.463 RMSE=4.362086 (47s)
+  [5/10] m2_deep_concat  seed=1   skill=-2.42% DirAcc=0.451 RMSE=4.252176 (62s)
+  [6/10] m2_deep_concat  seed=2   skill=-0.94% DirAcc=0.525 RMSE=4.190664 (75s)
+  [7/10] m2_deep_xattn   seed=1   skill=-0.50% DirAcc=0.518 RMSE=4.172639 (90s)
+  [8/10] m2_deep_xattn   seed=2   skill=-4.33% DirAcc=0.409 RMSE=4.331441 (104s)
+  [9/10] m4_deep_concat  seed=1   skill=-2.09% DirAcc=0.537 RMSE=4.238698 (208s)
+  [10/10] m4_deep_concat  seed=2   skill=-0.98% DirAcc=0.498 RMSE=4.192476 (319s)
+
+==============================================================================
+
+Multi-seed stability over seeds [1, 2] (epochs=80):
+  m1_deep        : skill -0.32% ± 0.89  (min -0.95, max +0.30)  | positive in 1/2 seeds
+  m2_deep_gated  : skill -3.51% ± 2.19  (min -5.07, max -1.96)  | positive in 0/2 seeds
+  m2_deep_concat : skill -1.68% ± 1.05  (min -2.42, max -0.94)  | positive in 0/2 seeds
+  m2_deep_xattn  : skill -2.41% ± 2.70  (min -4.33, max -0.50)  | positive in 0/2 seeds
+  m4_deep_concat : skill -1.54% ± 0.79  (min -2.09, max -0.98)  | positive in 0/2 seeds
+
+Per-run detail:
+        config  seed   RMSE  skill_vs_M0  DirAcc  DM_p_vs_M0  DM_p_vs_Flat_S1
+       m1_deep     1 4.1913      -0.0095  0.5447      0.8970           0.1889
+       m1_deep     2 4.1392       0.0030  0.5058      0.3564           0.0412
+ m2_deep_gated     1 4.2332      -0.0196  0.4475      0.9554           0.3945
+ m2_deep_gated     2 4.3621      -0.0507  0.4630      0.9185           0.7338
+m2_deep_concat     1 4.2522      -0.0242  0.4514      0.9976           0.4785
+m2_deep_concat     2 4.1907      -0.0094  0.5253      0.8867           0.1998
+ m2_deep_xattn     1 4.1726      -0.0050  0.5175      0.6571           0.1923
+ m2_deep_xattn     2 4.3314      -0.0433  0.4086      0.9982           0.7967
+m4_deep_concat     1 4.2387      -0.0209  0.5370      0.9846           0.4095
+m4_deep_concat     2 4.1925      -0.0098  0.4981      0.9151           0.1892
+==============================================================================
+
+Elapsed 319s
+Saved: /Users/shirly/CASA/casa0004 Dissertation/05_outputs/baselines/Deep/_cross/deep_seed_s1s2s4.csv
