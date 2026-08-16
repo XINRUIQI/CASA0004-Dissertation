@@ -10,6 +10,7 @@ The models are evaluated against a no-change benchmark that sets next week’s p
 
 ---
 
+
 ## Chapter 1 — Introduction *(~600 words)*
 
 ### 1.1 Importance and background
@@ -30,7 +31,7 @@ This dissertation therefore addresses two empirical questions. First, do remote-
 
 ### 1.2 Aim and research questions
 
-The main aim of this dissertation is to develop a reproducible comparison framework for evaluating how different data sources and model designs perform in one-week-ahead Brent price forecasting. The framework combines financial time-series data, satellite remote-sensing data and shipping data. It uses a rolling-origin forecasting design that prevents the use of future information and applies formal statistical tests to compare predictive performance. Flat feature fusion places all inputs in a single feature table before modelling. Representation-level fusion encodes each modality separately and then combines the resulting representations. This framework enables consistent comparisons of the incremental value of different data sources and the effects of different fusion designs. The empirical setting is weekly, Friday-ending Brent spot prices from 2019 to 2025, with remote-sensing and shipping inputs covering eleven oil-related monitoring sites and six major maritime chokepoints.
+The main aim of this dissertation is to develop a reproducible comparison framework for evaluating how different data sources and model designs perform in one-week-ahead Brent price forecasting. The framework combines financial time-series data, satellite remote-sensing data and shipping data. It uses a rolling-origin forecasting design that prevents the use of future information and applies formal statistical tests to compare predictive performance. Flat feature fusion places all inputs in a single feature table before modelling. Representation-level fusion encodes each modality separately and then combines the resulting representations. This framework enables consistent comparisons of the incremental value of different data sources and the effects of different fusion designs. The empirical setting uses weekly Friday-ending Brent spot prices from 2019 to 2025, spanning periods of demand, supply and maritime disruption, with remote-sensing and shipping inputs covering eleven oil-related monitoring sites and six major maritime chokepoints.
 
 The study is organised around three research questions.
 
@@ -41,7 +42,6 @@ The study is organised around three research questions.
 **RQ3.** Which data sources do the models rely on under different market conditions?
 
 ---
-
 
 
 # Chapter 2 — Literature Review
@@ -129,8 +129,7 @@ This dissertation addresses these gaps through a shared rolling-origin out-of-sa
 ---
 
 
-
-# Chapter 3 — Methodology *(2,966 words)*
+# Chapter 3 — Methodology
 
 ## 3.1 Research design
 
@@ -152,7 +151,9 @@ The predictors are organised into four information sets. S1 contains financial t
 | S3             | S1 + shipping                                                               |
 | S4             | S1 + remote sensing + shipping                                              |
 
-Two model families are applied to these information sets. The Flat family first combines all selected predictors into a weekly feature table. The most recent weeks are then flattened into a single row and used to fit Ridge and XGBoost. This early joining of features is called flat feature fusion. The Deep family initially keeps each data type separate. Financial, remote-sensing and shipping data are encoded independently. The resulting representations are then combined, with gated fusion learning how much weight to assign to each data type. Flat and Deep are compared using the same information set and evaluation sample. Because the two families also differ in model class, capacity and some modality-specific representations, these comparisons are interpreted as comparisons between overall modelling strategies rather than as tests of fusion alone. Fusion is assessed more directly within the Deep family by comparing simple concatenation, gated fusion and cross-attention while holding the encoders and inputs fixed. Together, these comparisons address RQ2.
+| ------ | ----------------- |
+
+Two model families are applied to these information sets. TThe Flat family first combines all selected predictors into a weekly feature table. The most recent weeks are then flattened into a single row and used to fit Ridge and XGBoost. This early joining of features is called flat feature fusion. The Deep family initially keeps each data type separate. Financial, remote-sensing and shipping data are encoded independently. The resulting representations are then combined, with gated fusion learning how much weight to assign to each data type. Flat and Deep are compared using the same information set and evaluation sample. Because the two families also differ in model class, capacity and some modality-specific representations, these comparisons are interpreted as comparisons between overall modelling strategies rather than as tests of fusion alone. Fusion is assessed more directly within the Deep family by comparing simple concatenation, gated fusion and cross-attention while holding the encoders and inputs fixed. Together, these comparisons address RQ2.
 
 Within each model family, comparisons across S1–S4 use the same forecasting method and evaluation sample; only the information included in the model changes. S2 against S1 measures the contribution of adding remote sensing alone, while S3 against S1 measures the contribution of shipping. S4 against S1 measures their joint contribution. S4 against S3 and S4 against S2 examine whether each source still adds useful information once the other is already included. These comparisons, together with each model’s comparison against M0, address RQ1.
 
@@ -172,9 +173,9 @@ r_{t+1}=\log\left(\frac{P_{t+1}}{P_t}\right)
 
 and reconstruct the price forecast as
 
-\hat{P}_{t+1|t}=P_t\exp\left(\hat{r}_{t+1|t}\right).
+\hat{P}*{t+1|t}=P_t\exp\left(\hat{r}*{t+1|t}\right).
 
-Log returns are used to reduce the strong persistence in the price level and to express the forecasting task in terms of proportional weekly changes. RMSE and the percentage improvement in RMSE over M0 are computed from the reconstructed price forecasts. Under this mapping, the no-change benchmark \hat{P}_{t+1|t}=P_t is exactly the same as forecasting a zero return \hat{r}_{t+1|t}=0.
+Log returns are used to reduce the strong persistence in the price level and to express the forecasting task in terms of proportional weekly changes. RMSE and the percentage improvement in RMSE over M0 are computed from the reconstructed price forecasts. Under this mapping, the no-change benchmark \hat{P}*{t+1|t}=P_t is exactly the same as forecasting a zero return \hat{r}*{t+1|t}=0.
 
 The modelling window covers 2019–2025 and provides a common weekly index of 365 observations (4 January 2019 to 26 December 2025). The training and evaluation samples are separated in time on an expanding window, rather than by random assignment, to prevent future information from leaking into model fitting. The full validation protocol is in Section 3.6.
 
@@ -182,7 +183,7 @@ The modelling window covers 2019–2025 and provides a common weekly index of 36
 
 Because the prediction target is the global Brent benchmark rather than a local physical cargo price at a single terminal, the study does not use one specific study region. Spatial information instead comes from eleven oil-infrastructure monitoring sites and six maritime chokepoints. Together they cover major supply, transit, refining and demand locations in the international oil system. Figure 3.3 places these sites and chokepoints on a world map. Full site names, coordinates, patch sizes and graph edge definitions are in Appendix A.
 
-The eleven sites comprise ports, refineries and export terminals selected purposively for their strategic roles and observability in the available satellite products. Flat remote-sensing features are summarised within a circular buffer of 5 km radius around each site. Deep image patches are centred on the same sites but vary in size by facility type and local spatial constraints. The sizes are generally larger for ports, intermediate for refineries and smaller for terminals.
+The eleven sites comprise ports, refineries and export terminals selected purposively for their strategic roles and observability in the available satellite products.Flat remote-sensing features are summarised within a circular buffer of 5 km radius around each site. Deep image patches are centred on the same sites but vary in size by facility type and local spatial constraints. The sizes are generally larger for ports, intermediate for refineries and smaller for terminals.
 
 The shipping graph augments the eleven sites with six maritime chokepoints: the Strait of Hormuz, the Suez Canal, the Strait of Malacca, Bab el-Mandeb, the Panama Canal and the Cape of Good Hope. The resulting weekly graph contains seventeen nodes and two forms of connection. Dynamic links between the eleven AOIs are directed origin–destination pairs, weighted by the number of voyages counted in each week from Global Fishing Watch (GFW) port-visit sequences. Fixed links are undirected. Each site is connected to the chokepoint or chokepoints on its main documented oil-trade corridor. These links are defined in advance rather than inferred from weekly vessel movements or geographic proximity. Complete edge definitions are reported in Appendix A.4, and graph encoding is described in Section 3.5.2.
 
@@ -206,6 +207,8 @@ The study uses three broad types of data: financial time series, satellite remot
 | Shipping (Flat)       | PortWatch and Global Fishing Watch AIS and SAR data                                   | Port and chokepoint tanker flows; vessel-activity features                                                                     | [IMF PortWatch](https://portwatch.imf.org/) (AIS-derived); [Global Fishing Watch](https://globalfishingwatch.org/our-apis/) (AIS- and SAR-derived)                                                                                                    |
 | Shipping (Deep)       | PortWatch and Global Fishing Watch AIS and SAR data                                   | Weekly node attributes, dynamic voyage links and fixed corridor links for a 17-node graph comprising 11 AOIs and 6 chokepoints | [IMF PortWatch](https://portwatch.imf.org/) (AIS-derived); [Global Fishing Watch](https://globalfishingwatch.org/our-apis/) (AIS- and SAR-derived)                                                                                                    |
 
+| -------- | ----------------------------------------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+
 The financial block combines oil-market and macro-financial series from the US Energy Information Administration (EIA), Federal Reserve Economic Data (FRED), Yahoo Finance, the Dallas Fed Index of Global Real Economic Activity, and the Caldara–Iacoviello geopolitical risk (GPR) index. These series are observed at different native frequencies and include crude prices and spreads, inventories, production and refinery activity, volatility and risk measures, interest rates, exchange rates, and futures-based oil indicators.
 
 For the remote-sensing block, the Flat and Deep pathways extract inputs from the same eleven AOIs, but differ in their spatial coverage, products and representations. The Flat pathway uses Sentinel-2 optical indices and VIIRS night-time lights, whereas the Deep pathway uses frozen Prithvi-EO-2.0 embeddings derived from Sentinel-2 image patches and has no separate VIIRS input stream.
@@ -214,7 +217,7 @@ The shipping block covers activity at the eleven AOIs and six chokepoints. IMF P
 
 ### 3.4.2 Temporal alignment
 
-All series are aligned to a common Friday-ending weekly calendar. Daily observations are converted using end-of-week values, weekly means or weekly sums as appropriate, while monthly series are carried forward only after their assumed availability dates. Monthly remote-sensing products are aligned as of their conservative availability dates and the most recent eligible composite is carried forward.
+All series are aligned to a common Friday-ending weekly calendar. Daily observations are converted using end-of-week values, weekly means or weekly sums as appropriate, while monthly series are carried forward only after their assumed availability dates. Monthly remote-sensing products are aligned to their conservative availability dates, with the most recent eligible composite carried forward to avoid look-ahead bias.
 
 Publication timing is approximated using source- and product-specific fixed lag buffers rather than observation-level release timestamps. Exact aggregation rules, lag constants and implementation scripts are reported in Appendix A.3. One-week buffers are applied to EIA fundamentals and PortWatch flows, while monthly macroeconomic series, remote-sensing products and individual GFW AIS and SAR products receive longer buffers.
 
@@ -222,7 +225,7 @@ Publication timing is approximated using source- and product-specific fixed lag 
 
 Monthly optical composites are cloud-filtered before the indices are constructed, and cloud-quality indicators are not used as predictors. On the weekly calendar, mean coverage across the four optical indices is approximately 97 per cent, while VIIRS night-time-light anomalies are fully observed. Site-level coverage and counts of independent monthly composites are reported in Appendix A.5.
 
-After temporal alignment, missing values in the Flat inputs are first forward-filled using past observations only. Any remaining leading gaps in remote sensing are set to zero. Leading gaps in shipping-count variables are filled with the median from the corresponding training fold. Deep finance inputs contain no missing values after merging. Missing remote-sensing embeddings and shipping-graph values are set to zero after scaling. All imputation and scaling parameters are estimated separately within each training window.
+After temporal alignment, the remaining gaps occur almost entirely before each series’ first valid observation. These leading gaps are set to zero for remote-sensing variables and filled with the training-fold median for each shipping-count variable.Deep finance inputs contain no missing values after merging. Missing remote-sensing embeddings and shipping-graph values are set to zero after scaling. All imputation and scaling parameters are estimated separately within each training window.
 
 ## 3.5 Forecasting models
 
@@ -241,6 +244,12 @@ The remote-sensing encoder receives monthly embeddings for the 11 AOIs, extracte
 The shipping encoder applies a graph attention network with temporal encoding (GAT; Veličković et al., 2018) to the weekly 17-node graph over the four-week lookback, producing one shipping representation per forecast origin. The graph is constructed as described in Section 3.3. For message passing, the directed voyage links and undirected corridor links are combined in a symmetrised adjacency matrix, so the encoder does not retain edge direction or type. Symmetrised voyage counts are used as a prior in the attention calculation. Adjacency and edge-weighting details are reported in Appendix A.4.3.
 
 Fusion is applied only to Deep models for S2–S4, while S1 passes its finance representation directly to the regression head. Three mechanisms are compared. Gated fusion is designated as the main design because it provides forecast-origin-specific modality weights for the subsequent interpretability analysis. These weights are non-negative and sum to one at each forecast origin. Encoder concatenation and cross-attention are used only as alternatives. The resulting representation is trained by mean squared error to predict the one-week-ahead log return. Fixed fusion settings are reported in Appendix C.4.2–C.4.3.
+
+Figure 3.5 summarises the three encoders, the fusion stage used for S2–S4, and the regression head.
+
+Figure 3.5
+
+**Figure 3.5 — Deep model architecture: modality-specific encoders, fusion (gated fusion as the main specification) and the regression head that predicts the one-week-ahead log return.**
 
 ## 3.6 Estimation and validation
 
@@ -266,34 +275,26 @@ Flat models re-select Ridge and XGBoost hyperparameters at each scheduled re-est
 
 The primary evaluation metrics are calculated from reconstructed price forecasts over the common sample of T=257 forecast origins. For model m,
 
-\[
 \mathrm{RMSE}_m
-=
+
 \sqrt{
 \frac{1}{T}
 \sum_{t=1}^{T}
 \left(P_{t+1}-\hat{P}_{m,t+1\mid t}\right)^2
 }
-\]
 
 Performance relative to the no-change benchmark M0 is summarised by the percentage improvement in RMSE
 
-\[
-\mathrm{RMSE\ improvement\ vs\ M0}_m\ (\%)
-=
-100\times
-\left(
-1-
-\frac{\mathrm{RMSE}_m}
-{\mathrm{RMSE}_{\mathrm{M0}}}
-\right).
-\]
+RMSE improvement vs M0m​(%)=100×(1−RMSEM0​RMSEm​​).
 
 Here, P_{t+1} is the observed price and \hat{P}_{m,t+1\mid t} is the price forecast produced by model m at forecast origin t. A positive value indicates a lower RMSE than M0, zero indicates equal RMSE, and a negative value indicates worse performance.
 
 ### 3.7.2 Model Interpretation and Robustness Checks
 
-Model interpretability concerns identifying where a model’s predictive ability comes from, including which data sources and features contribute more or less to its predictions. For Deep alternative-data models with positive RMSE improvement relative to M0, SHapley Additive exPlanations (SHAP) values are calculated to quantify each input’s contribution (Lundberg and Lee, 2017). Absolute SHAP values are aggregated by data source and, where applicable, spatial site or node. Results are reported for the full sample, by year, and within predefined ±8-week event windows. For gated models, weekly modality weights are also reported to describe how the model allocates weight across financial, remote-sensing and shipping representations. SHAP and gate weights describe model attribution and internal allocation rather than causal importance. Robustness is assessed by rerunning the prespecified Deep models with random seeds and comparing their RMSE.
+Model interpretability concerns identifying where a model’s predictive ability comes from, including which data sources and features contribute more or less to its predictions. For Deep alternative-data models with positive RMSE improvement relative to M0, SHapley Additive exPlanations (SHAP) values are calculated to quantify each input’s contribution (Lundberg and Lee, 2017).
+Absolute SHAP values are aggregated by data source and, where applicable, spatial site or node. Results are reported for the full sample, by year, and within predefined ±8-week event windows. For gated models, weekly modality weights are also reported to describe how the model allocates weight across financial, remote-sensing and shipping representations. SHAP and gate weights describe model attribution and internal allocation rather than causal importance.Robustness is assessed by rerunning the prespecified Deep models with random seeds and comparing their RMSE.
+
+】
 
 ## 3.8 Ethical considerations
 
@@ -304,15 +305,7 @@ Analysis was conducted in Python, and the code required to reproduce the analysi
 ---
 
 
-
-
-# Chapter 4 — Results（**1,200 words** ）
-
-## 4.1 Descriptive overview
-
-This chapter reports one-week-ahead Brent forecasts for 257 rolling forecast origins from 22 January 2021 to 19 December 2025. The corresponding target dates extend from 29 January 2021 to 26 December 2025. Models predict next-week log returns, which are converted to prices for evaluation. Performance is measured using  RMSE improvement vs M0, whose RMSE is 4.152 USD per barrel. Positive improvement indicates a lower RMSE than M0.
-
-Weekly returns are centred near zero, with large movements clustered in several periods. Remote-sensing anomalies show weak contemporaneous associations with returns. Their incremental predictive value is therefore assessed through the rolling out-of-sample comparisons below.
+# Chapter 4 — Results
 
 ## 4.2 Flat-model results
 
@@ -320,80 +313,77 @@ Table 4.1 reports the out-of-sample performance of the Flat Ridge and XGBoost mo
 
 **Table 4.1 — Flat out-of-sample performance** *(n = 257)*
 
-| Set       | Variables                         | Model         | RMSE  | Improvement vs M0 (%) |
-| --------- | --------------------------------- | ------------- | ----- | --------------------- |
-| Benchmark |                                   | M0-Ridge      | 4.152 |                       |
-|           |                                   | M0-XGB        | 4.152 |                       |
-| S1        | financial time series             | M1-Flat-Ridge | 4.256 | −2.5%                 |
-|           |                                   | M1-Flat-XGB   | 4.368 | −5.2%                 |
-| S2        | financial time series + RS        | M2-Flat-Ridge | 4.414 | −6.3%                 |
-|           |                                   | M2-Flat-XGB   | 4.440 | −6.9%                 |
-| S3        | financial time series + shipping  | M3-Flat-Ridge | 4.553 | −9.7%                 |
-|           |                                   | M3-Flat-XGB   | 4.357 | −4.9%                 |
-| S4        | financial time series + RS + ship | M4-Flat-Ridge | 4.539 | −9.3%                 |
-|           |                                   | M4-Flat-XGB   | 4.412 | −6.3%                 |
+| Set       | Variables                            | Model         | RMSE  | Improvement vs M0 (%) |
+| --------- | ------------------------------------ | ------------- | ----- | --------------------- |
+| Benchmark |                                      | M0            | 4.152 |                       |
+| S1        | financial time series                | M1-Flat-Ridge | 4.256 | −2.5%                 |
+|           |                                      | M1-Flat-XGB   | 4.368 | −5.2%                 |
+| S2        | financial time series + RS           | M2-Flat-Ridge | 4.414 | −6.3%                 |
+|           |                                      | M2-Flat-XGB   | 4.440 | −6.9%                 |
+| S3        | financial time series + shipping     | M3-Flat-Ridge | 4.553 | −9.7%                 |
+|           |                                      | M3-Flat-XGB   | 4.357 | −4.9%                 |
+| S4        | financial time series + RS + shiping | M4-Flat-Ridge | 4.539 | −9.3%                 |
+|           |                                      | M4-Flat-XGB   | 4.412 | −6.3%                 |
 
 *Note:* Positive values indicate lower RMSE than M0.
 
-For Ridge, S1 has the lowest RMSE and S3 the highest; adding remote sensing, shipping, or both raises RMSE relative to S1. For XGBoost, S3 records a slightly lower RMSE than S1 (4.357 versus 4.368), while S2 and S4 remain higher than S1. No Flat model records a positive RMSE improvement relative to M0. The Flat results therefore provide no descriptive evidence that alternative data improve forecasts relative to the no-change benchmark.
+For Ridge, S1 has the lowest RMSE and S3 the highest; adding remote sensing, shipping, or both raises RMSE relative to S1. For XGBoost, S3 records a slightly lower RMSE than S1 (4.357 versus 4.368), while S2 and S4 remain higher than S1. No Flat model records a positive RMSE improvement relative to M0. Overall, the Flat family performs worse than the no-change benchmark across all information sets.
+
+The Flat results therefore provide no evidence of improvement relative to the no-change benchmark. Remote sensing consistently reduces performance for both Ridge and XGBoost. Shipping slightly improves XGBoost relative to S1 but worsens Ridge performance, and in neither case is the improvement sufficient to outperform M0.
 
 ## 4.3 Deep-model results
 
-Table 4.2 reports Deep-model performance across S1–S4. Gated fusion is the prespecified main specification, while cross-attention is reported as a secondary comparison where multimodal fusion applies. No cross-attention result is reported for S1 because only the finance encoder is active.
+Table 4.2 reports Deep-model performance across S1–S4. Gated fusion is the prespecified main specification, while cross-attention is reported as a secondary comparison. No cross-attention result is reported for S1 because only the finance encoder is active.
 
-**Table 4.2 — Deep out-of-sample performance** *(gated = main specification)*
+**Table 4.2 — Deep out-of-sample performance** *(gated = main specification)*：XAttn
 
-| Set       | Variables                         | Model         | RMSE  | Improvement vs M0 (%) |
-| --------- | --------------------------------- | ------------- | ----- | --------------------- |
-| Benchmark |                                   | M0            | 4.152 |                       |
-| S1        | financial time series             | M1-Deep       | 4.250 | −2.4%                 |
-| S2        | financial time series + RS        | M2-Deep-Gated | 4.253 | −2.4%                 |
-|           |                                   | M2-Deep-XAttn | 4.396 | −5.9%                 |
-| S3        | financial time series + shipping  | M3-Deep-Gated | 4.146 | +0.15%                |
-|           |                                   | M3-Deep-XAttn | 4.110 | +1.00%                |
-| S4        | financial time series + RS + ship | M4-Deep-Gated | 4.180 | −0.67%                |
-|           |                                   | M4-Deep-XAttn | 4.144 | +0.19%                |
+| Set       | Variables                            | Model         | RMSE  | Improvement vs M0 (%) |
+| --------- | ------------------------------------ | ------------- | ----- | --------------------- |
+| Benchmark |                                      | M0            | 4.152 |                       |
+| S1        | financial time series                | M1-Deep       | 4.250 | −2.4%                 |
+| S2        | financial time series + RS           | M2-Deep-Gated | 4.253 | −2.4%                 |
+|           |                                      | M2-Deep-XAttn | 4.396 | −5.9%                 |
+| S3        | financial time series + shipping     | M3-Deep-Gated | 4.146 | +0.15%                |
+|           |                                      | M3-Deep-XAttn | 4.110 | +1.00%                |
+| S4        | financial time series + RS + shiping | M4-Deep-Gated | 4.180 | −0.67%                |
+|           |                                      | M4-Deep-XAttn | 4.144 | +0.19%                |
 
-The gated S1 and S2 models record similar RMSE of 4.250 and 4.253, both higher than that of M0. Adding remote sensing therefore provides no descriptive improvement. Neither reported fusion approach reduces RMSE relative to the finance-only Deep model at S2.
+The gated S1 and S2 models record similar RMSE of 4.250 and 4.253, both higher than that of M0. Adding remote sensing therefore provides no descriptive improvement. Neither reported fusion approach reduces RMSE relative to the finance-only Deep model at S2. With shipping included, gated S3 records the lowest RMSE among the gated models at 4.146, improving on M0 by 0.15%. Gated S4 rises to 4.180, 0.67% worse than M0, indicating that adding remote sensing to S3 does not provide a further improvement.
 
-With shipping included, gated S3 records the lowest RMSE among the gated models at 4.146, improving on M0 by 0.15%. Gated S4 rises to 4.180, 0.67% worse than M0, indicating that adding remote sensing to S3 does not provide a further improvement.
+On the reported seed-42 run, cross-attention has a higher RMSE than gated fusion at S2, at 4.396 compared with 4.253, but lower RMSEs at S3 and S4. Cross-attention records RMSEs of 4.110 and 4.144 at S3 and S4, corresponding to RMSE improvements of 1.00% and 0.19%. However, none of the comparisons between gated fusion and cross-attention passes the Holm correction. The positive improvements of cross-attention over M0 at S3 and S4 are also not statistically significant. These results are therefore reported only as descriptive secondary comparisons and do not provide evidence that cross-attention is superior.
 
-On the reported seed-42 run, cross-attention has a higher RMSE than gated fusion at S2, at 4.396 compared with 4.253, but lower RMSEs at S3 and S4. Cross-attention records RMSEs of 4.110 and 4.144 at S3 and S4, corresponding to RMSE improvements of 1.00% and 0.19%. These results are therefore reported as descriptive secondary comparisons rather than evidence that cross-attention is superior.  
-
-For RQ1, the within-learner comparisons show that shipping reduces RMSE relative to M0 only in the main Deep pathway. In the Flat family, XGBoost S3 is slightly below S1 but still worse than M0, and Ridge S3 is worse than S1. Remote sensing provides no improvement either alone or when added to shipping.
+Overall, the Deep family performs better than the Flat family, although most Deep specifications still do not outperform M0. For RQ1, shipping provides the clearest improvement. S3 achieves the best performance under both gated fusion and cross-attention, and both models outperform M0 in the reported run. Remote sensing provides little additional value. It does not improve the finance-only model at S2 and weakens the gated model when added to shipping at S4.
 
 ## 4.4 Flat versus Deep
 
-Table 4.3 compares the main Deep pathway with both Flat learners within each feature set. The feature-set category, forecast dates and evaluation sample are held constant. The main Deep pathway uses the finance-only Deep model at S1 and gated fusion at S2–S4. These comparisons evaluate the overall Flat and Deep modelling pathways rather than isolating the fusion operator alone.
+Table 4.3 compares the main Deep model with both Flat models within each feature set. The feature-set category, forecast dates and evaluation sample are held constant. The main Deep pathway uses the finance-only Deep model at S1 and gated fusion at S2–S4.
 
 **Table 4.3 — Matched Flat–Deep comparisons by feature set** *(n = 257)*
 
-| Feature set | Flat model    | Flat RMSE | Main Deep model | Deep RMSE | **Deep vs Flat (%)** |
-| ----------- | ------------- | --------- | --------------- | --------- | -------------------- |
-| S1          | Ridge         | 4.256     | M1–Deep         | 4.250     | +0.15%               |
-| S1          | M1–Flat–XGB   | 4.368     | M1–Deep         | 4.250     | +2.71%               |
-| S2          | M2–Flat–Ridge | 4.414     | M2–Deep–Gated   | 4.253     | +3.64%               |
-| S2          | M2–Flat–XGB   | 4.440     | M2–Deep–Gated   | 4.253     | +4.22%               |
-| S3          | M3–Flat–Ridge | 4.553     | M3–Deep–Gated   | 4.146     | +8.95%               |
-| S3          | M3–Flat–XGB   | 4.357     | M3–Deep–Gated   | 4.146     | +4.85%               |
-| S4          | M4–Flat–Ridge | 4.539     | M4–Deep–Gated   | 4.180     | +7.90%               |
-| S4          | M4–Flat–XGB   | 4.412     | M4–Deep–Gated   | 4.180     | +5.26%               |
+| Feature set | Flat model    | Flat RMSE | Deep model    | Deep RMSE | **Deep vs Flat (%)** |
+| ----------- | ------------- | --------- | ------------- | --------- | -------------------- |
+| S1          | Ridge         | 4.256     | M1–Deep       | 4.250     | +0.15%               |
+| S1          | M1–Flat–XGB   | 4.368     | M1–Deep       | 4.250     | +2.71%               |
+| S2          | M2–Flat–Ridge | 4.414     | M2–Deep–Gated | 4.253     | +3.64%               |
+| S2          | M2–Flat–XGB   | 4.440     | M2–Deep–Gated | 4.253     | +4.22%               |
+| S3          | M3–Flat–Ridge | 4.553     | M3–Deep–Gated | 4.146     | +8.95%               |
+| S3          | M3–Flat–XGB   | 4.357     | M3–Deep–Gated | 4.146     | +4.85%               |
+| S4          | M4–Flat–Ridge | 4.539     | M4–Deep–Gated | 4.180     | +7.90%               |
+| S4          | M4–Flat–XGB   | 4.412     | M4–Deep–Gated | 4.180     | +5.26%               |
 
-*Note. Positive values indicate a lower Deep RMSE than the matched Flat model. Percentages use unrounded RMSEs.*
+*Note. Positive values indicate a lower Deep RMSE than the matched Flat model.*
 
 Figure 4.2
 
 **Figure 4.2 — Paired slopes from Flat XGBoost to Deep gated fusion at each information set, with S3 highlighted.**
 
-Across all four feature sets, the main Deep model records lower RMSE than both Ridge and XGBoost. The reduction ranges from 0.15% against Ridge at S1 to 8.95% against Ridge at S3. The difference at S1 is therefore negligible, while larger reductions appear once alternative data are included.
+Across all four feature sets, the main Deep model records lower RMSE than both Ridge and XGBoost. The reduction ranges from 0.15% against Ridge at S1 to 8.95% against Ridge at S3. At S1 and S2, the main Deep models improve on both Flat learners but remain worse than M0. S3 is the only feature set which has lower RMSE than M0. Although the main Deep S4 model improves substantially over both Flat models, it remains worse than M0 and does not improve on the main Deep S3 model.
 
-At S1 and S2, the main Deep models improve on both Flat learners but remain worse than M0. S3 is the only feature set which has lower RMSE than M0. Although the main Deep S4 model improves substantially over both Flat models, it remains worse than M0 and does not improve on the main Deep S3 model.
-
-For RQ2, the matched comparisons show that the main Deep pathway records lower RMSE than both Flat learners at every feature set.
+Overall, this comparisons show that the main Deep pathway records lower RMSE than both Flat learners across all four feature sets. For RQ2, this provides consistent evidence that modality-aware representation-level modelling performs better than flat feature fusion when using matched information sets. However, because the Deep and Flat pathways also differ in model architecture and data representation, the improvement cannot be attributed to representation-level fusion alone. Nevertheless, the comparison suggests that how heterogeneous data are organised and represented may affect the extent to which different information is retained and used by the model, and that preserving the distinct structure and characteristics of different data types may be valuable for future research.
 
 ## 4.5 Interpretability
 
-Following the eligibility rule in Section 3.7.2, interpretation is reported for gated Deep S3, the only model with positive RMSE improvement relative to M0. Table 4.4 combines period-specific forecast performance, modality-gate weights and absolute SHAP attribution for the 257 forecast origins.
+Following the eligibility rule in Section 3.7.2, interpretation is reported for gated Deep model on S3. Table 4.4 combines period-specific forecast performance, modality-gate weights and absolute SHAP attribution for the 257 forecast origins.
 
 **Table 4.4 — Period-specific performance and attribution for gated Deep S3**
 
@@ -410,7 +400,7 @@ Following the eligibility rule in Section 3.7.2, interpretation is reported for 
 | OPEC+          | 16  | 4.358 | +0.76%                | 0.485        | 0.515         | 95.7%        | 4.3%          |
 | Red Sea        | 16  | 3.265 | +2.55%                | 0.489        | 0.511         | 94.1%        | 5.9%          |
 
-*Note. RMSE is evaluated in price levels, while SHAP attributes predicted log returns; gate weights and SHAP shares are not directly comparable. Event windows are ±8 weeks.*
+*Note. RMSE is evaluated in price levels, while SHAP attributes predicted log returns. Event windows are ±8 weeks.*
 
 Financial inputs dominate absolute SHAP throughout the sample, accounting for 96.8% of full-sample attribution compared with 3.2% for shipping. Shipping attribution is relatively higher in 2023–2024 and during the Red Sea window, at between 5.0% and 5.9%, but falls to 0.8% in 2025. Its contribution is therefore small and episodic rather than persistently elevated.
 
@@ -418,9 +408,9 @@ The main-run gate allocates average weights of 55.8% to finance and 44.2% to shi
 
 At the input-group level, EIA variables provide the largest full-sample contribution at 43.6%, followed by financial and macroeconomic variables at 31.4%. All twenty highest-ranked individual features are financial inputs, led by crude production, Cushing stocks and the federal funds rate. No shipping subgroup contributes more than 2.0% in any reported period, although PortWatch and SAR become modestly more prominent during the Red Sea window.
 
-Within the shipping representation, the highest full-sample node shares belong to Jurong, Hormuz, Suez, the Cape route and Bab el-Mandeb. Jurong and Hormuz lead the rankings from 2021 to 2023, while Suez, Bab el-Mandeb and the Cape route occupy the first three positions in 2024. During the Red Sea window, attribution is distributed across several locations, with no individual node accounting for more than 12% of shipping attribution. These conditional node shares do not represent their contribution to total model attribution.
+Within the shipping representation, the highest full-sample node shares belong to Jurong, Hormuz, Suez, the Cape route and Bab el-Mandeb. Jurong and Hormuz lead the rankings from 2021 to 2023, while Suez, Bab el-Mandeb and the Cape route occupy the first three positions in 2024. During the Red Sea window, attribution is distributed across several locations, with no individual node accounting for more than 12% of shipping attribution.
 
-For RQ3, the gated Deep S3 model relies predominantly on financial information across all reported periods. Shipping attribution remains small but varies over time, while its internal geographic focus changes across years rather than remaining concentrated on a single chokepoint.
+For RQ3, the model relies predominantly on financial information across all market conditions. Shipping provides a much smaller and more episodic contribution, becoming relatively more important in some periods of market and trade disruption, particularly in 2023–2024 and during the Red Sea event window. Its geographic focus also shifts over time across major ports and chokepoints rather than remaining concentrated in one location. Overall, the results suggest that financial data provide the model’s core predictive information, while shipping data act as a supplementary source whose importance increases under particular market conditions.
 
 ## 4.6 Robustness
 
@@ -441,64 +431,81 @@ For RQ3, the gated Deep S3 model relies predominantly on financial information a
 
 *Note. The seed-42 column is the main reported run in Tables 4.2–4.4. S1 has no fusion operator.*
 
-Table 4.5 reports the results of rerunning all Deep specifications with several random seeds. None records a positive mean RMSE improvement relative to M0, and only five of the thirty individual runs are positive. The best mean result is −0.27% for S3 concatenation, while the main gated S3 model records −0.51%. Gated S3 also outperforms S1 in only one of the three matched runs, and all S2 runs remain worse than M0. The positive results in the main run are therefore sensitive to random initialisation.
-
-
-
-# Chapter 5 — Discussion *(~1,600)*
-
-Chapter 4 reported out-of-sample one-week-ahead Brent forecasts under a shared evaluation protocol. This chapter interprets those findings against the oil-forecasting, alternative-data and multimodal-learning literatures reviewed in Chapters 1–2, and against the broader energy-security and market-monitoring agendas introduced there. The discussion begins narrowly with the three research questions, then widens to implications, transferability, limitations and future work. Critical reflection here means asking how the results relate to prior studies and policy-relevant debates—not merely listing project constraints.
-
-## 5.1 RQ1 — Do alternative data help?
-
-RQ1 asked whether remote sensing and shipping add out-of-sample value beyond financial time series and the no-change benchmark (M0), which sets next week’s price equal to this week’s. The answer depends on the contrast used, and that dependence is itself part of the finding. No Flat model outperforms M0. This accords with the short-horizon oil-forecasting literature that treats the no-change forecast as a demanding reference (Alquist, Kilian and Vigfusson, 2013). Within the Flat family, Table 4.1 shows that absolute RMSE rises when remote sensing or shipping is added to the finance-only set (M1). Nested Clark–West tests nevertheless detect incremental information for some XGBoost shipping specifications relative to M1, even though skill versus M0 remains negative. Absolute-error rankings and nested increments should therefore be read together; shipping can show a nested Flat signal without overturning the absolute ranking in which M1 remains best among Flat learners. **Revised under the frozen test plan (Section 3.7.2): Clark–West is not reported for XGBoost, and under the primary one-sided DM-HLN test the seven channel arms in Appendix B give p values between 0.384 and 0.727. No XGBoost shipping specification is distinguishable from M1, so there is no valid nested increment to set against the absolute-error ranking. Four arms do reduce RMSE slightly relative to M1, which keeps the descriptive ordering from being uniformly against shipping, but M1 remains best among Flat learners on both the absolute ranking and the formal test.**
-
-Under the Deep pathway, the finance-plus-shipping specification (M3) records a small positive skill versus M0. Adding remote sensing on top of that combination often brings no further reduction in error. Shipping is therefore the more informative alternative modality in this weekly Brent design, while remote sensing contributes little to one-week-ahead forecast skill. The positive skill against M0 is a substantive result in a setting where many learned models fail that benchmark. At the same time, the margin is modest, and this study does not evaluate trading costs, hedging profit and loss, or other economic criteria. The claim therefore remains one of statistical and benchmark value, not of ready operational use.
-
-This differs from much of the AIS and satellite work in Chapter 2. Those studies often show that ships or satellites carry trade or activity information. They less often test whether the same data improve one-week-ahead Brent forecasts against both a financial baseline and M0. The present results do not deny that physical information. They show a simpler point: measuring trade is not the same as beating a hard weekly price benchmark. Signals may also be noisy or move with prices rather than ahead of them. Nested gains over financial time series and skill versus M0 should therefore be reported together.
-
-## 5.2 RQ2 — Does representation-level fusion beat flat fusion?
-
-RQ2 asked whether modality-aware representation-level fusion outperforms flat feature fusion when the underlying data and evaluation protocol are held fixed. On matched information sets, the Deep pathway records lower out-of-sample RMSE than the Flat pathway for every pair: finance only, finance plus remote sensing, finance plus shipping, and the full set. In that paired sense, representation-level fusion outperforms flat fusion throughout. The size of the gap, and whether Deep also outperforms M0, still depends on which modalities are included. Gains remain limited for finance-only and finance-plus-remote-sensing pairs. The only matched pair that also beats M0 is finance plus shipping.
-
-The finding sits between two literatures. Flat early fusion remains a convenient default for classical high-dimensional oil-price learners, but it does not retain network structure. Gated and modality-aware models show that separate streams can matter (Arevalo et al., 2017; Gohari et al., 2024), yet those studies are not weekly Brent designs that combine AIS–PortWatch graphs with a no-change price benchmark. The paired results therefore complement both lines of work. The RMSE advantage of Deep over Flat is uniform under matched sets. Preserving shipping-network structure is what turns that advantage into skill versus M0. The same Deep machinery does not make remote sensing decisive for weekly Brent. The choice among fusion rules, however, cuts against the expectation those studies set up. On a single seed the ranking rewards adaptivity — cross-attention above gated, gated above plain concatenation — but averaged over three seeds the order reverses completely, with concatenation ahead of gated and cross-attention last by a wide margin, and cross-seed dispersion widening in step with fusion complexity. On a sample this short, the extra capacity that adaptive fusion spends on learning how to weight modalities is recovered as variance rather than as accuracy, so the more adaptive operator buys a higher single-seed ceiling at the cost of a worse expected one. The Flat-versus-Deep RMSE ranking, which reflects whether network structure is preserved at all, is stable under the same reseeding; preference among fusion rules within the Deep pathway is not, and single-seed comparisons of fusion mechanisms on weekly samples of this size should be treated as uninformative about expected performance.
-
-## 5.3 RQ3 — What does the model rely on when value exists?
-
-RQ3 asked whether modality-level interpretability can show which signals the model relies on when forecasts already have predictive value. Analysis is therefore limited to Deep specifications that improve on M0, principally Deep M3, and follows a multi-seed rule: only patterns that agree across seeds 42, 1 and 2 are treated as main-text findings. Mean modality gates place substantial weight on both financial time series and shipping (about 0.61 and 0.39). Week-by-week shipping-gate paths are unstable across seeds, so fine-grained event stories based on one seed are not warranted. Among the pre-specified disruption windows, only the Russia–Ukraine announcement window of February 2022 moves the shipping gate in a direction shared by all three seeds, and there the gate falls rather than rises. The Red Sea disruption window centred on November 2023 does not co-move at all across seeds and is therefore not reported as a robust main-text result. Spatially, the Strait of Hormuz carries the highest mean attention among shipping-graph nodes, but it enters the top-ranked set in only two of the three seeds, so no maritime chokepoint is stable across all three.
-
-That reading matches a cautious view of attention and gates. Such weights describe operations inside a fitted model and need not identify causal features (Jain and Wallace, 2019). It also differs from monitoring narratives—common in energy-security and trade commentary after the 2022 crisis—that treat a single disruption window, or one seed’s chokepoint map, as actionable evidence. The diagnostics support a narrower claim. When Deep shipping-inclusive forecasts outperform M0, the Strait of Hormuz carries the most attention weight on average, but not consistently enough across seeds to be presented as a stable spatial focus, and no chokepoint clears that bar. Event-window gate changes are discussed only where they survive the multi-seed filter. These quantities remain model-dependence diagnostics rather than causal explanations of Brent prices, and they should not be read as stand-alone policy alerts.
-
-## 5.4 Implications
-
-The immediate implication is methodological. For this weekly Brent task, a shared evaluation protocol matters as much as a new fusion module. Nested contrasts against financial time series and absolute contrasts against M0 jointly show that shipping can help, and that under Deep it can outperform the no-change benchmark, while remote sensing adds little. Flat early fusion of alternative data is not automatically useful. Teams that are offered multimodal “signals” can therefore require the same double test used here before treating those signals as decision-relevant at a weekly horizon: nested gain over financial time series, and skill versus a no-change rule.
-
-That recommendation is deliberately procedural rather than a claim that Deep M3 should replace existing hedges or enter live trading. Chapter 1 framed oil-price surprises as relevant to risk management, budgeting and planning for governments, firms and investors. The results speak to that agenda, but they do not “support policy” in a vague sense. They suggest a concrete evaluative standard. Physical-flow monitors based on AIS, PortWatch or satellite products can remain useful for describing disruption. They should not be equated with proven one-week-ahead Brent forecast value unless they clear both baselines. After the 2022 energy crisis and later maritime disruptions, that distinction matters for energy-security monitoring, trade planning and inflation-sensitive fiscal management: better description of physical stress is not the same as a better short-horizon price forecast.
-
-More broadly, alternative-data and Earth-observation providers can report nested gains and M0 skill together, so that nested-only improvements are not oversold. Methods researchers can reuse the matched Flat–Deep design for other commodities, horizons or multimodal economic series where one modality has relational structure worth preserving. The transferable object is the comparison protocol—information ladders, paired architectures and double baselines—not a single trained weekly Brent model.
-
-## 5.5 Limitations
-
-Several constraints bound how far the claims can travel. The forecast horizon is weekly, and the scored sample after warm-up is modest, so small skill differences should not be over-interpreted. Alternative-data proxies are noisy and may respond to prices as well as lead them. Frozen Earth-observation embeddings, shipping-graph construction and missingness rules affect Deep results; cross-attention is especially sensitive to the random seed, spanning +1.00% to −7.14% across three seeds on the shipping-inclusive set. Seed sensitivity also bounds the headline Deep result itself: averaged over seeds 42, 1 and 2, gated finance-plus-shipping scores −0.51% against M0, so the positive figures reported for a single seed are not expected skill, and the same specification is positive in the early sub-period but marginally negative in the late one. Because reseeding reverses the ranking of fusion mechanisms, the choice of gated fusion as the main specification rests on its interpretability requirement for RQ3 rather than on demonstrated superiority over simple concatenation. The Deep gain over M0 should therefore be read as a narrow and unevenly distributed edge rather than a settled one. Matched Flat–Deep comparisons also differ in model class and capacity, so they isolate the overall modelling pathway more cleanly than a single fusion operator. In addition, the Flat and Deep remote-sensing inputs are not identical: Flat uses spectral indices and VIIRS night-light anomalies, whereas Deep uses frozen Sentinel-2 image embeddings and excludes VIIRS. The paired architecture contrast therefore reflects differences in the full modelling pathway, not a pure operator contrast on the same remote-sensing features. Finally, the study does not conduct an economic evaluation of trading or hedging performance, so practical value for desks or ministries remains untested.
-
-## 5.6 Future research and closing statement
-
-Future work can extend the strongest Deep specifications to longer histories and more seeds; enrich the shipping graph and missing-modality stress tests; and apply the same Flat–Deep protocol to other horizons or related energy commodities. Where data allow, a stricter like-for-like remote-sensing comparison between Flat and Deep would isolate architecture more cleanly. Economic evaluation—transaction costs, simple hedging rules or stress scenarios around major disruptions—would test whether the small statistical edge against M0 survives criteria that matter to users. Those extensions would show whether the shipping-centred pattern of modest positive skill generalises beyond this weekly Brent window.
-
-Taken together, the study’s point is evaluative as much as predictive. Alternative data and representation-level fusion can help one-week-ahead Brent forecasting, but only conditionally, and only when judged against strong baselines already central to the oil-forecasting literature and to the risk-management agendas that motivate short-horizon price work. Keeping that standard explicit is the main recommendation this dissertation offers to researchers, data providers and users who must decide what counts as evidence.
+Table 4.5 reports the results of rerunning all Deep specifications with multiple random seeds. None of the models achieves a positive mean RMSE improvement relative to M0 across runs, and only five of the thirty individual runs are positive. S3 concatenation has the best mean result, but it is still negative at −0.27%, while the main gated S3 model records −0.51%. Gated S3 also outperforms S1 in only one of the three matched runs, and all S2 runs remain worse than M0. The positive improvements observed in the main run are therefore sensitive to random initialisation. Overall, although the Deep models do not consistently outperform M0, some specifications, particularly S3, show predictive potential and merit further investigation. The better-performing Deep specifications remain broadly close to M0 rather than demonstrating a consistent forecasting advantage.
 
 ---
 
 
+# Chapter 5 — Discussion
 
-# Chapter 6 — Conclusion *(~300)*
+## 5.1 RQ1 — Do alternative data help?
 
-Short-horizon oil-price surprises matter for hedging, budgeting and market-risk decisions. The 2019–2025 window spans the COVID-19 shock, the 2022 energy crisis and later market adjustment, when physical disruption and prices often moved together—yet weekly Brent remains hard to improve upon once a no-change benchmark is imposed. This dissertation therefore asked whether satellite remote sensing and maritime shipping add predictive information beyond financial time series for one-week-ahead Brent prices, and whether modality-aware representation-level fusion outperforms flat feature fusion. The design used a shared leakage-safe rolling-origin protocol, an M0–M4 information ladder, paired Flat (Ridge/XGBoost) and Deep (modality encoders plus gated or cross-attention fusion) models, and formal nested and non-nested forecast tests.
+RQ1 asked whether remote sensing and shipping add out-of-sample value beyond financial time series and the no-change benchmark. The answer depends on the modelling pathway. Within the Flat family, no model outperforms no-change benchmark, consistent with the short-horizon oil-forecasting literature that treats the no-change forecast as a demanding reference (Alquist, Kilian and Vigfusson, 2013) Relative to the finance-only S1 specification, remote sensing increases forecast error for both Ridge and XGBoost, while shipping increases error for Ridge but slightly reduces it for XGBoost. The latter result shows that shipping is not uniformly detrimental within the Flat pathway, but the improvement remains insufficient to outperform M0. Overall, simply adding alternative-data features to Flat models does not produce additional predictive value against the no-change benchmark.
 
-No Flat model beats M0, though shipping still helps relative to financial time series while remote sensing does not. Under Deep, finance plus shipping (M3) shows only a small positive skill versus M0, and adding remote sensing (M4) does not clearly dominate M3. At matched sets, Deep outperforms Flat most clearly once shipping enters. Where forecasts improve on M0, multi-seed diagnostics show substantial average shipping-gate weight, while the Strait of Hormuz leads on mean node attention without being top-ranked in every seed; Red Sea event-window gate moves do not survive the multi-seed consistency filter and are therefore not treated as robust main-text findings. These readings describe model dependence, not causal price drivers.
+Under the Deep pathway, adding remote sensing to finance in S2 does not improve forecast accuracy over either S1 or M0. By contrast, adding shipping to finance in S3 produces a small positive RMSE improvement relative to M0, making S3 the best-performing specification in the main gated pathway. Extending S3 with remote sensing in S4 does not further reduce forecast error. The secondary cross-attention results show the same ordering across the multimodal specifications, with S3 performing best, followed by S4 and S2. Shipping is therefore the more informative alternative modality in this weekly Brent design, while remote sensing contributes little to one-week-ahead predictive accuracy. The improvement is notable because the other main modelling specifications fail to beat M0, although its magnitude remains modest. It should be interpreted as evidence of predictive rather than operational value.
 
-## The contribution is integrative: a leakage-safe nested multimodal comparison of financial time series, remote sensing and shipping; paired Flat–Deep contrasts at matched information sets; joint reporting of nested increments and absolute skill versus M0; and interpretability kept behind a predictive-value and multi-seed filter. For risk-management and energy-crisis monitoring agendas already raised in the introduction, the practical change is evaluative rather than operational—require double tests against financial time series and M0, and treat only cross-seed-stable diagnostics as discussable model reliance. Alternative data and representation-level fusion can help, but strong baselines come first and absolute gains remain modest.
+Distributed observations of port and chokepoint activity appear more useful for short-horizon forecasting than the selected site-level remote-sensing proxies. The lack of remote-sensing gains may reflect a temporal and spatial mismatch between monthly, localised AOI signals and a weekly global benchmark price.
 
+These findings refine the AIS and satellite literature reviewed in Chapter 2. Existing studies often demonstrate that ships and satellites contain information about trade or physical activity (Adland, Jia and Strandenes, 2017; Yan et al., 2020; Hao and Wang, 2023), but less often ask whether those signals improve one-week-ahead Brent forecasts relative to both a financial baseline and M0. The present results distinguish informational content from predictive value. The ability to measure trade or industrial activity does not necessarily produce a forecast improvement against a demanding weekly benchmark.
+
+## 5.2 RQ2 — Does representation-level fusion beat flat fusion?
+
+RQ2 asked whether representation-level Deep modelling outperforms flat feature fusion when the information sets and evaluation protocol are held fixed. Across the matched multimodal sets S2–S4, the main Deep pathway records lower RMSE than both Flat learners. The differences are largest in the shipping-inclusive S3 and S4 sets, although only S3 in the main Deep pathway also outperforms M0. The results therefore favour the Deep pathway over early feature concatenation, while showing that an advantage over Flat models does not necessarily translate into an improvement over the no-change benchmark.
+
+Early-fusion approaches combine heterogeneous predictors within a single feature space, whereas multimodal models retain separate representations before fusion (Arevalo et al., 2017; Gohari et al., 2024). The larger Deep advantage in the shipping-inclusive S3 and S4 sets extends this comparison to weekly Brent forecasting. From a spatial perspective, the result suggests that representation-level modelling may be particularly useful for observations distributed across networks of ports and chokepoints. Treating the same observations as independent tabular features does not explicitly represent these spatial relationships. This pattern is consistent with spatial relationships among shipping nodes providing useful structure.
+
+However, the matched comparisons evaluate complete modelling pathways, including their encoders and fusion strategies. They therefore support the overall Deep approach but do not identify the preservation of network structure or any individual fusion operator as the cause of its lower RMSE.
+
+## 5.3 RQ3 — What does the model rely on when value exists?
+
+RQ3 asked how the model uses information when an alternative-data specification improves on the benchmark. The gate and SHAP results show that internal representation weights do not translate directly into contributions to model output. The forecast continues to rely primarily on financial and EIA information, with shipping providing a complementary signal. The coexistence of a relatively small shipping attribution and an improvement over M0 indicates that a modality can add predictive value without dominating the forecast.
+
+This complementary role also varies with the type of disruption. Shipping becomes relatively more prominent during the Red Sea period, whereas financial inputs remain more prominent during the Russia–Ukraine window. This contrast is consistent with transport-specific disruptions increasing the relevance of maritime activity, while broader geopolitical shocks may affect Brent through a wider combination of supply expectations, inventories and financial-market channels. The spatial pattern supports the same interpretation. The model’s focus shifts from Jurong and Hormuz in earlier years towards Suez, Bab el-Mandeb and the Cape route in 2024. This pattern broadly coincides with disruption and rerouting around the Red Sea. Yet no single location dominates within that window. The model therefore appears to respond to changes in the spatial configuration of shipping activity rather than relying persistently on one chokepoint.
+
+Attention and gate weights describe operations within a fitted model rather than causal relationships (Jain and Wallace, 2019), while SHAP attributes predicted log returns rather than explaining the causes of price movements. The temporal and spatial diagnostics can therefore identify periods and transport corridors for further investigation, but should not be treated as stand-alone policy alerts.
+
+## 5.4 Implications
+
+Model choice should be aligned with the structure of the input data. For relational data such as shipping networks, preserving within-modality structure before fusion may be more appropriate than direct concatenation. Whatever framework is used, each new modality should be evaluated under the same rolling out-of-sample protocol against finance-only S1 and no-change M0. The former shows whether the modality adds information beyond conventional predictors, while the latter shows whether the complete system improves on a simple forecasting rule.
+
+These models offer diagnostic rather than causal insight into oil prices. They show which information is useful for next-week prediction and can direct attention to periods and parts of the supply network that warrant further investigation, but they do not identify the mechanisms generating price movements. Their role is therefore to organise predictive evidence for market analysis rather than to substitute for structural or causal explanations of oil-price formation.
+
+Spatial data should be assessed according to how well their scale, frequency and structure match the forecasting target, rather than by geographic specificity alone. Remote sensing describes conditions at selected facilities, so its monthly signals may be more suitable for monitoring facility activity or regional production. Shipping data capture flows across connected ports, chokepoints and corridors and therefore better reflect disruption and adjustment across the global oil supply network. They can complement weekly Brent monitoring, although their contribution remains too limited to replace financial and EIA information. For energy-security monitoring, trade planning and inflation-sensitive fiscal management, better observation of physical stress does not necessarily improve one-week-ahead Brent forecasts.
+
+## 5.5 Limitations
+
+With only 257 rolling out-of-sample forecasts, the small improvement of Deep S3 over M0, concentrated in some subperiods and event windows, provides evidence of limited and conditional rather than stable predictive value. The findings are specific to one-week-ahead Brent forecasting and should not be generalised to other horizons, regional oil prices or targets such as volatility.
+
+Despite publication lags and as-of alignment, the study uses revised historical series rather than real-time vintages and therefore does not fully reproduce the information available at each forecast origin. Monthly GFW and remote-sensing inputs are repeated between releases, limiting their ability to capture short-lived changes. Because alternative-data variables are indirect proxies and preprocessing choices such as missing-value treatment and frozen Earth-observation embeddings introduce additional assumptions, model performance cannot be attributed solely to the underlying signals.
+
+The spatial findings are conditional on a purposively selected network of eleven sites and six chokepoints, concentrated on Gulf export and Asian import and refining hubs while excluding Russian, West African and Latin American loading regions. Selecting partly for satellite observability introduced further geographic bias, while graph symmetrisation removed the direction and type of connections. Node attributions therefore describe dependence within this constructed network rather than a comprehensive ranking of global oil infrastructure.
+
+The Flat–Deep comparisons evaluate complete modelling pathways rather than individual components because the models differ in class, capacity, encoders and fusion procedures. Their remote-sensing inputs are not fully identical, and the Deep shipping pathway also introduces an explicit graph structure. Performance differences therefore cannot be attributed specifically to the shipping GAT or gated fusion.The gated model was selected as the main Deep specification because it provides the modality weights required for RQ3, not because gated fusion was shown to outperform other fusion mechanisms. Finally, RMSE alone does not establish operational value because trading costs and returns, hedging outcomes and policy interventions were not evaluated.
+
+## 5.6 Future research and closing statement
+
+Future research should test whether the shipping contribution persists over longer periods and across a broader oil-transport network. A longer evaluation using archived releases and expanded coverage of Russian Baltic and Black Sea ports, West African loading regions and Latin American exporters would extend the evidence beyond the present sample and selected corridors. Where AIS coverage is incomplete, SAR-based vessel detection could extend observation to tracking gaps and dark-fleet activity.
+
+Transferability should be tested across forecasting targets and markets. The matched Flat–Deep design could be applied to longer horizons, regional oil prices and related energy commodities, including WTI, LNG and natural gas. Applying the same design to grain or metals would test whether network representation remains useful beyond energy markets. Remote sensing could also be evaluated against facility activity, regional production or longer-horizon prices that better match its spatial and temporal scale. Where data allow, a stricter like-for-like remote-sensing comparison between Flat and Deep would isolate architecture more cleanly.
+
+Future research should test practical value beyond RMSE using transaction-cost-adjusted trading, simple hedging rules and forecast performance during major disruptions. For public-sector use, probabilistic forecasts and scenario ranges could be compared with existing financial and EIA monitoring to assess whether shipping information improves the timing or prioritisation of investigation in energy-security monitoring, trade planning and inflation-sensitive budgeting. Model attribution should remain a diagnostic aid rather than an automatic policy alert.
+
+Future research should test practical value beyond RMSE using transaction-cost-adjusted trading, simple hedging rules and forecast performance during major disruptions. For public-sector use, probabilistic forecasts and scenario ranges could be compared with existing financial and EIA monitoring to assess whether shipping information improves the timing or prioritisation of investigation in energy-security monitoring, trade planning and inflation-sensitive budgeting. Evaluating specific interventions, such as strategic reserve releases, sanctions or fiscal responses, would require combining forecasting with causal identification or decision-analysis frameworks to estimate counterfactual effects on prices and supply together with policy costs. Model attribution should remain a diagnostic aid rather than an automatic policy alert.
+
+---
+
+
+# Chapter 6 — Conclusion
+
+Short-horizon oil-price surprises affect hedging, budgeting and market-risk decisions, yet weekly Brent forecasts remain difficult to improve on a simple no-change rule. Using weekly data from 2019 to 2025, this dissertation examined whether satellite remote sensing and maritime shipping add predictive information beyond conventional financial and physical-market indicators, and whether preserving the structure of each data type improves on flat feature fusion. Under a common rolling out-of-sample design, each data addition was compared with both a finance-only model and the no-change benchmark, separating incremental contribution from overall forecast performance.
+
+The results show that additional data and model complexity do not automatically produce better forecasts. Remote sensing added no forecast value, whether introduced alone or on top of shipping. Shipping was more useful, but no Flat model outperformed the no-change benchmark. Among the main specifications, only the modality-aware finance-plus-shipping model achieved a small improvement. Across matched information sets, modality-aware models generally produced lower errors than flat fusion. This shows that preserving data structure can improve relative performance without guaranteeing forecasts that outperform the benchmark. Model diagnostics indicated that predictions remained led by financial and EIA information, while shipping made a smaller contribution that varied across disruption periods and locations in the transport network. These patterns show how the model used the available information but do not identify the causes of oil-price movements.
+
+The main contribution is a clearer standard for deciding when alternative spatial data constitute forecast evidence. Their value depends on whether their scale, frequency and structure match the forecasting target, and whether they improve on both conventional information and a simple forecasting rule. Remote sensing of local facility conditions may be better suited to facility or regional monitoring, while shipping observations can complement monitoring of network-wide disruption and rerouting. For energy-security monitoring, trade planning and inflation-sensitive budgeting, financial and EIA indicators should therefore remain the core, with spatial data providing additional context rather than stand-alone policy signals. Better observation of physical stress is not the same as better short-horizon price prediction.
+
+Future research should test the transferability of these findings using longer real-time histories, broader transport networks and stricter like-for-like model comparisons, alongside economic and policy evaluation. Rather than identifying a universally superior model or data source, this study shows that the predictive value of alternative data depends on alignment with the target, how the data are represented and whether improvements hold against credible benchmarks.
+
+---
 
 
 # Appendix A — Data: variable dictionary, AOI/chokepoint lists, lags, graph edges

@@ -15,17 +15,17 @@ Table 4.1 reports the out-of-sample performance of the Flat Ridge and XGBoost mo
 **表 4.1 — Flat 模型样本外表现** *（n = 257）*
 
 
-| Set       | Variables                         | Model         | RMSE  | Improvement vs M0 (%) |
-| --------- | --------------------------------- | ------------- | ----- | --------------------- |
-| Benchmark |                                   | M0            | 4.152 |                       |
-| S1        | financial time series             | M1-Flat-Ridge | 4.256 | −2.5%                 |
-|           |                                   | M1-Flat-XGB   | 4.368 | −5.2%                 |
-| S2        | financial time series + RS        | M2-Flat-Ridge | 4.414 | −6.3%                 |
-|           |                                   | M2-Flat-XGB   | 4.440 | −6.9%                 |
-| S3        | financial time series + shipping  | M3-Flat-Ridge | 4.553 | −9.7%                 |
-|           |                                   | M3-Flat-XGB   | 4.357 | −4.9%                 |
+| Set       | Variables                            | Model         | RMSE  | Improvement vs M0 (%) |
+| --------- | ------------------------------------ | ------------- | ----- | --------------------- |
+| Benchmark |                                      | M0            | 4.152 |                       |
+| S1        | financial time series                | M1-Flat-Ridge | 4.256 | −2.5%                 |
+|           |                                      | M1-Flat-XGB   | 4.368 | −5.2%                 |
+| S2        | financial time series + RS           | M2-Flat-Ridge | 4.414 | −6.3%                 |
+|           |                                      | M2-Flat-XGB   | 4.440 | −6.9%                 |
+| S3        | financial time series + shipping     | M3-Flat-Ridge | 4.553 | −9.7%                 |
+|           |                                      | M3-Flat-XGB   | 4.357 | −4.9%                 |
 | S4        | financial time series + RS + shiping | M4-Flat-Ridge | 4.539 | −9.3%                 |
-|           |                                   | M4-Flat-XGB   | 4.412 | −6.3%                 |
+|           |                                      | M4-Flat-XGB   | 4.412 | −6.3%                 |
 
 
 *Note:* Positive values indicate lower RMSE than M0.
@@ -40,6 +40,8 @@ The Flat results therefore provide no evidence of improvement relative to the no
 
 ## 4.3 Deep-model results
 
+
+
 ## 4.3 Deep 模型结果
 
 Table 4.2 reports Deep-model performance across S1–S4. Gated fusion is the prespecified main specification, while cross-attention is reported as a secondary comparison. No cross-attention result is reported for S1 because only the finance encoder is active.
@@ -49,23 +51,21 @@ Table 4.2 reports Deep-model performance across S1–S4. Gated fusion is the pre
 **Table 4.2 — Deep out-of-sample performance** *(gated = main specification)*【备注：说一下表格里的XAttn 的全称】
 
 
-| Set       | Variables                         | Model         | RMSE  | Improvement vs M0 (%) |
-| --------- | --------------------------------- | ------------- | ----- | --------------------- |
-| Benchmark |                                   | M0            | 4.152 |                       |
-| S1        | financial time series             | M1-Deep       | 4.250 | −2.4%                 |
-| S2        | financial time series + RS        | M2-Deep-Gated | 4.253 | −2.4%                 |
-|           |                                   | M2-Deep-XAttn | 4.396 | −5.9%                 |
-| S3        | financial time series + shipping  | M3-Deep-Gated | 4.146 | +0.15%                |
-|           |                                   | M3-Deep-XAttn | 4.110 | +1.00%                |
+| Set       | Variables                            | Model         | RMSE  | Improvement vs M0 (%) |
+| --------- | ------------------------------------ | ------------- | ----- | --------------------- |
+| Benchmark |                                      | M0            | 4.152 |                       |
+| S1        | financial time series                | M1-Deep       | 4.250 | −2.4%                 |
+| S2        | financial time series + RS           | M2-Deep-Gated | 4.253 | −2.4%                 |
+|           |                                      | M2-Deep-XAttn | 4.396 | −5.9%                 |
+| S3        | financial time series + shipping     | M3-Deep-Gated | 4.146 | +0.15%                |
+|           |                                      | M3-Deep-XAttn | 4.110 | +1.00%                |
 | S4        | financial time series + RS + shiping | M4-Deep-Gated | 4.180 | −0.67%                |
-|           |                                   | M4-Deep-XAttn | 4.144 | +0.19%                |
+|           |                                      | M4-Deep-XAttn | 4.144 | +0.19%                |
 
 
 The gated S1 and S2 models record similar RMSE of 4.250 and 4.253, both higher than that of M0. Adding remote sensing therefore provides no descriptive improvement. Neither reported fusion approach reduces RMSE relative to the finance-only Deep model at S2. With shipping included, gated S3 records the lowest RMSE among the gated models at 4.146, improving on M0 by 0.15%. Gated S4 rises to 4.180, 0.67% worse than M0, indicating that adding remote sensing to S3 does not provide a further improvement.
 
 门控 S1 与 S2 模型的 RMSE 均高于 M0，分别为 4.250 和 4.253。两种融合方法均未能在 S2 上相对于仅金融的 Deep 模型降低 RMSE。加入航运数据后，门控融合的 S3 在各门控模型中取得最低 RMSE，为 4.146，相比 M0 改善了 0.15%。门控融合的 S4 的 RMSE 上升至 4.180，比 M0 高 0.67%，表明在 S3 的基础上进一步加入遥感数据并未带来额外改善。
-
-On the reported seed-42 run, cross-attention has a higher RMSE than gated fusion at S2, at 4.396 compared with 4.253, but lower RMSEs at S3 and S4. Cross-attention records RMSEs of 4.110 and 4.144 at S3 and S4, corresponding to RMSE improvements of 1.00% and 0.19%. These results are therefore reported as descriptive secondary comparisons rather than evidence that cross-attention is superior.  
 
 On the reported seed-42 run, cross-attention has a higher RMSE than gated fusion at S2, at 4.396 compared with 4.253, but lower RMSEs at S3 and S4. Cross-attention records RMSEs of 4.110 and 4.144 at S3 and S4, corresponding to RMSE improvements of 1.00% and 0.19%. However, none of the comparisons between gated fusion and cross-attention passes the Holm correction. The positive improvements of cross-attention over M0 at S3 and S4 are also not statistically significant. These results are therefore reported only as descriptive secondary comparisons and do not provide evidence that cross-attention is superior.
 
@@ -77,6 +77,8 @@ Overall, the Deep family performs better than the Flat family, although most Dee
 
 ## 4.4 Flat versus Deep
 
+
+
 ## 4.4 Flat 与 Deep 的配对比较
 
 Table 4.3 compares the main Deep model with both Flat models within each feature set. The feature-set category, forecast dates and evaluation sample are held constant. The main Deep pathway uses the finance-only Deep model at S1 and gated fusion at S2–S4. 
@@ -85,16 +87,17 @@ Table 4.3 compares the main Deep model with both Flat models within each feature
 
 **Table 4.3 — Matched Flat–Deep comparisons by feature set** *(n = 257)*
 
-| Feature set | Flat model    | Flat RMSE | Deep model | Deep RMSE | **Deep vs Flat (%)** |
-| ----------- | ------------- | --------- | --------------- | --------- | -------------------- |
-| S1          | Ridge         | 4.256     | M1–Deep         | 4.250     | +0.15%               |
-| S1          | M1–Flat–XGB   | 4.368     | M1–Deep         | 4.250     | +2.71%               |
-| S2          | M2–Flat–Ridge | 4.414     | M2–Deep–Gated   | 4.253     | +3.64%               |
-| S2          | M2–Flat–XGB   | 4.440     | M2–Deep–Gated   | 4.253     | +4.22%               |
-| S3          | M3–Flat–Ridge | 4.553     | M3–Deep–Gated   | 4.146     | +8.95%               |
-| S3          | M3–Flat–XGB   | 4.357     | M3–Deep–Gated   | 4.146     | +4.85%               |
-| S4          | M4–Flat–Ridge | 4.539     | M4–Deep–Gated   | 4.180     | +7.90%               |
-| S4          | M4–Flat–XGB   | 4.412     | M4–Deep–Gated   | 4.180     | +5.26%               |
+
+| Feature set | Flat model    | Flat RMSE | Deep model    | Deep RMSE | **Deep vs Flat (%)** |
+| ----------- | ------------- | --------- | ------------- | --------- | -------------------- |
+| S1          | Ridge         | 4.256     | M1–Deep       | 4.250     | +0.15%               |
+| S1          | M1–Flat–XGB   | 4.368     | M1–Deep       | 4.250     | +2.71%               |
+| S2          | M2–Flat–Ridge | 4.414     | M2–Deep–Gated | 4.253     | +3.64%               |
+| S2          | M2–Flat–XGB   | 4.440     | M2–Deep–Gated | 4.253     | +4.22%               |
+| S3          | M3–Flat–Ridge | 4.553     | M3–Deep–Gated | 4.146     | +8.95%               |
+| S3          | M3–Flat–XGB   | 4.357     | M3–Deep–Gated | 4.146     | +4.85%               |
+| S4          | M4–Flat–Ridge | 4.539     | M4–Deep–Gated | 4.180     | +7.90%               |
+| S4          | M4–Flat–XGB   | 4.412     | M4–Deep–Gated | 4.180     | +5.26%               |
 
 
 *Note. Positive values indicate a lower Deep RMSE than the matched Flat model.*
@@ -165,6 +168,8 @@ For RQ3, the model relies predominantly on financial information across all mark
 对于 RQ3，模型在不同市场条件下均主要依赖金融信息。航运数据的整体贡献明显较小，并呈现出阶段性特征，在部分市场和贸易扰动时期相对更加重要，尤其是在 2023–2024 年以及红海事件窗口内。航运信息的地域重点也会随时间在不同主要港口和咽喉之间变化，而不会长期集中于单一地点。总体而言，金融数据构成模型预测的核心信息来源，而航运数据则作为补充信息源，其重要性会在特定市场条件下上升。
 
 ## 4.6 Robustness
+
+
 
 ## 4.6 稳健性
 

@@ -84,7 +84,7 @@ and reconstruct the price forecast as
 
 Log returns are used to reduce the strong persistence in the price level and to express the forecasting task in terms of proportional weekly changes. RMSE and the percentage improvement in RMSE over M0 are computed from the reconstructed price forecasts. Under this mapping, the no-change benchmark \hat{P}*{t+1|t}=P_t is exactly the same as forecasting a zero return \hat{r}*{t+1|t}=0.
 
-使用对数收益是为了减弱价格水平的强持续性，并将预测任务表示为周度比例变化。RMSE、MAE 以及相对 M0 的 均根据重构后的价格预测计算。在此对应关系下，不变预测基准 \hat{P}*{t+1|t}=P_t 与预测收益为零 \hat{r}*{t+1|t}=0 完全一致。
+使用对数收益是为了减弱价格水平的强持续性，并将预测任务表示为周度比例变化。RMSE 以及相对 M0 的 RMSE 百分比改善均根据重构后的价格预测计算。在此对应关系下，不变预测基准 \hat{P}*{t+1|t}=P_t 与预测收益为零 \hat{r}*{t+1|t}=0 完全一致。
 
 The modelling window covers 2019–2025 and provides a common weekly index of 365 observations (4 January 2019 to 26 December 2025). The training and evaluation samples are separated in time on an expanding window, rather than by random assignment, to prevent future information from leaking into model fitting. The full validation protocol is in Section 3.6.
 
@@ -174,9 +174,9 @@ The shipping block covers activity at the eleven AOIs and six chokepoints. IMF P
 
 ### 3.4.2 时间对齐
 
-All series are aligned to a common Friday-ending weekly calendar. Daily observations are converted using end-of-week values, weekly means or weekly sums as appropriate, while monthly series are carried forward only after their assumed availability dates. Monthly remote-sensing products are aligned as of their conservative availability dates and the most recent eligible composite is carried forward. This uses the latest composite that would already have been known at the forecast origin. It does not assume that oil prices, shipping activity or remote-sensing indicators are unchanged within the month; a later composite would not yet have been available, and using it would leak future information.
+All series are aligned to a common Friday-ending weekly calendar. Daily observations are converted using end-of-week values, weekly means or weekly sums as appropriate, while monthly series are carried forward only after their assumed availability dates. Monthly remote-sensing products are aligned to their conservative availability dates, with the most recent eligible composite carried forward to avoid look-ahead bias.
 
-所有序列均对齐至共同的周五截止周历。日度观测根据变量性质采用周末值、周均值或周总和，月度序列则只有在假定可用日期到达后才向后延续。月度遥感产品按其保守可用日期进行 as-of 对齐，最近一期已可用的合成结果随后向后延续。
+所有时间序列均对齐至统一的、以周五为周末的周度日历。对于日度数据，根据变量性质分别采用周末值、周均值或周总和进行周度聚合；对于月度数据，则仅在其假定的可获得日期之后向前填充。月度遥感产品按照较为保守的可获得日期进行对齐，并仅向前延用最近一期已符合可用条件的合成数据，以避免前视偏差。
 
 Publication timing is approximated using source- and product-specific fixed lag buffers rather than observation-level release timestamps. Exact aggregation rules, lag constants and implementation scripts are reported in Appendix A.3. One-week buffers are applied to EIA fundamentals and PortWatch flows, while monthly macroeconomic series, remote-sensing products and individual GFW AIS and SAR products receive longer buffers.
 
@@ -195,7 +195,7 @@ Monthly optical composites are cloud-filtered before the indices are constructed
 
 After temporal alignment, the remaining gaps occur almost entirely before each series’ first valid observation. These leading gaps are set to zero for remote-sensing variables and filled with the training-fold median for each shipping-count variable.Deep finance inputs contain no missing values after merging. Missing remote-sensing embeddings and shipping-graph values are set to zero after scaling. All imputation and scaling parameters are estimated separately within each training window.
 
-时间对齐后，Flat 输入中的缺失值首先仅使用过去的观测进行前向填充。遥感数据中仍然存在的前导缺失值设为零。航运计数变量的前导缺失值使用对应训练折的中位数填补。Deep 金融输入在合并后不存在缺失值。缺失的遥感嵌入和航运图数值在缩放后设为零。所有填补和缩放参数均分别在对应的训练窗口内估计。
+时间对齐后，剩余的缺失值几乎全部出现在各时间序列首次有效观测之前。对于这些前置缺失值，遥感变量统一填充为 0，而各航运计数变量则使用对应训练折的中位数进行填补。深度金融输入在合并后不存在缺失值。对于缺失的遥感嵌入和航运图数值，则在完成缩放后将其设为 0。所有用于缺失值填补和数据缩放的参数，均在每个训练窗口内独立估计，以避免数据泄漏。
 
 ## 3.5 Forecasting models
 
