@@ -40,8 +40,6 @@ The Flat results therefore provide no evidence of improvement relative to the no
 
 ## 4.2 Deep-model results
 
-
-
 ## 4.2 Deep 模型结果
 
 Table 4.2 reports Deep-model performance across S1–S4. Gated fusion is the prespecified main specification, while cross-attention is reported as a secondary comparison. No cross-attention result is reported for S1 because only the finance encoder is active.
@@ -106,17 +104,17 @@ Table 4.3 compares the main Deep model with both Flat models within each feature
 
 Figure 4.2
 
-**Figure 4.2 — Paired slopes from Flat XGBoost to Deep gated fusion at each information set, with S3 highlighted.**
+**Figure 4.2 — Change in out-of-sample price RMSE from flat XGBoost to gated Deep models. The vertical axis is reversed, so upward slopes indicate lower RMSE. All results use the common 257-week evaluation sample. The dashed line marks the M0 no-change benchmark. S1 is included as a modelling-path reference, while the modality-matched comparisons relevant to RQ2 are S2–S4.**
 
-**图 4.2 — 各信息集上由 Flat XGBoost 到 Deep 门控融合的配对斜率，S3 高亮。**
+**图 4.2 — 扁平 XGBoost 到门控 Deep 模型的样本外价格 RMSE 变化。纵轴反向，向上表示 RMSE 下降。全部结果使用共同的 257 周评价样本。虚线为 M0 无变化基准。S1 作为建模路径参照，与 RQ2 相关的模态匹配比较为 S2–S4。**
 
 Across all four feature sets, the main Deep model records lower RMSE than both Ridge and XGBoost. The reduction ranges from 0.15% against Ridge at S1 to 8.95% against Ridge at S3. At S1 and S2, the main Deep models improve on both Flat learners but remain worse than M0. S3 is the only feature set which has lower RMSE than M0. Although the main Deep S4 model improves substantially over both Flat models, it remains worse than M0 and does not improve on the main Deep S3 model.
 
 在全部四个特征集上，主要 Deep 模型的 RMSE 都低于 Ridge 和 XGBoost。相较于 Ridge，其 RMSE 降幅从 S1 的 0.15% 到 S3 的 8.95% 不等。在 S1 和 S2 上，主要 Deep 模型虽然优于两个 Flat 模型，但表现仍弱于 M0。S3 是唯一一个 RMSE 低于 M0 的特征集。尽管主要 Deep S4 模型相比两个 Flat 模型都有明显改善，但其表现仍弱于 M0，也没有优于主要 Deep S3 模型。
 
-Overall, this comparisons show that the main Deep pathway records lower RMSE than both Flat learners across all four feature sets. For RQ2, this provides consistent evidence that modality-aware representation-level modelling performs better than flat feature fusion when using matched information sets. However, because the Deep and Flat pathways also differ in model architecture and data representation, the improvement cannot be attributed to representation-level fusion alone. Nevertheless, the comparison suggests that how heterogeneous data are organised and represented may affect the extent to which different information is retained and used by the model, and that preserving the distinct structure and characteristics of different data types may be valuable for future research.
+Overall, this comparisons show that the main Deep pathway records lower RMSE than both Flat learners across all four feature sets. For RQ2, this provides consistent evidence that modality-aware representation-level modelling performs better than flat feature fusion when using matched modality sets. However, because the Deep and Flat pathways also differ in model architecture and data representation, the improvement cannot be attributed to representation-level fusion alone. Nevertheless, the comparison suggests that how heterogeneous data are organised and represented may affect the extent to which different information is retained and used by the model, and that preserving the distinct structure and characteristics of different data types may be valuable for future research.
 
-总体来看，比较结果表明，主要 Deep 路径在全部四个特征集上的 RMSE 均低于两种 Flat 学习器。对于 RQ2，这一结果一致表明，在使用匹配信息集时，模态感知的表征级建模优于扁平特征融合。不过，由于 Deep 与 Flat 路径在模型架构和数据表征上也存在差异，因此这一改善不能完全归因于表征级融合本身。尽管如此，这一比较表明，异质数据的组织和表征方式可能会影响不同信息在模型中的保留与利用程度，并说明在处理不同类型的数据时，保留其各自的数据结构和特征可能具有研究价值。
+总体来看，比较结果表明，主要 Deep 路径在全部四个特征集上的 RMSE 均低于两种 Flat 学习器。对于 RQ2，这一结果一致表明，在使用匹配模态集时，模态感知的表征级建模优于扁平特征融合。不过，由于 Deep 与 Flat 路径在模型架构和数据表征上也存在差异，因此这一改善不能完全归因于表征级融合本身。尽管如此，这一比较表明，异质数据的组织和表征方式可能会影响不同信息在模型中的保留与利用程度，并说明在处理不同类型的数据时，保留其各自的数据结构和特征可能具有研究价值。
 
 ## 4.4 Interpretability
 
@@ -151,9 +149,9 @@ Financial inputs dominate absolute SHAP throughout the sample, accounting for 96
 
 金融输入在整个样本内始终主导绝对 SHAP，在完整样本中占 96.8%，航运仅占 3.2%。航运归因在 2023 至 2024 年及红海窗口内相对较高，介于 5.0%和 5.9%之间，但在 2025 年降至 0.8%。因此，航运贡献整体较小，只在部分时期暂时上升。
 
-The main-run gate allocates average weights of 55.8% to finance and 44.2% to shipping, a substantially more balanced division than the SHAP attribution. This contrast reflects the difference between internal representation weighting and output attribution; SHAP is therefore used as the primary basis for interpreting RQ3.
+The main-run gate allocates average weights of 55.8% to finance and 44.2% to shipping, a substantially more balanced division than the SHAP attribution. Figure 4.3 isolates this contrast for shipping: the gate assigns it a representation weight of about 25–52%, while its realised share of absolute SHAP remains 0.8–5.9%. The two quantities are not interchangeable; SHAP is therefore used as the primary basis for interpreting RQ3.
 
-主要运行中的门控权重平均向金融和航运表示分配 55.8%和 44.2%，明显比 SHAP 归因更加均衡。这种差异反映了内部表示加权与模型输出归因衡量的是不同内容。因此，RQ3 的主要解释依据是 SHAP。
+主要运行中的门控权重平均向金融和航运表示分配 55.8%和 44.2%，明显比 SHAP 归因更加均衡。图 4.3 单独画出航运一侧：门控给予约 25–52% 的表征权重，而其实现的绝对 SHAP 份额仅为 0.8–5.9%。二者不可互换，因此 RQ3 的主要解释依据是 SHAP。
 
 At the input-group level, EIA variables provide the largest full-sample contribution at 43.6%, followed by financial and macroeconomic variables at 31.4%. All twenty highest-ranked individual features are financial inputs, led by crude production, Cushing stocks and the federal funds rate. No shipping subgroup contributes more than 2.0% in any reported period, although PortWatch and SAR become modestly more prominent during the Red Sea window.
 
@@ -168,6 +166,8 @@ For RQ3, the model relies predominantly on financial information across all mark
 对于 RQ3，模型在不同市场条件下均主要依赖金融信息。航运数据的整体贡献明显较小，并呈现出阶段性特征，在部分市场和贸易扰动时期相对更加重要，尤其是在 2023–2024 年以及红海事件窗口内。航运信息的地域重点也会随时间在不同主要港口和咽喉之间变化，而不会长期集中于单一地点。总体而言，金融数据构成模型预测的核心信息来源，而航运数据则作为补充信息源，其重要性会在特定市场条件下上升。
 
 ## 4.5 Robustness
+
+
 
 ## 4.5 稳健性
 
@@ -194,6 +194,10 @@ For RQ3, the model relies predominantly on financial information across all mark
 
 *注。seed 42 列为表 4.2–4.4 的主报告运行。S1 无融合算子。*
 
-Table 4.5 reports the results of rerunning all Deep specifications with multiple random seeds. None of the models achieves a positive mean RMSE improvement relative to M0 across runs, and only five of the thirty individual runs are positive. S3 concatenation has the best mean result, but it is still negative at −0.27%, while the main gated S3 model records −0.51%. Gated S3 also outperforms S1 in only one of the three matched runs, and all S2 runs remain worse than M0. The positive improvements observed in the main run are therefore sensitive to random initialisation. Overall, although the Deep models do not consistently outperform M0, some specifications, particularly S3, show predictive potential and merit further investigation. The better-performing Deep specifications remain broadly close to M0 rather than demonstrating a consistent forecasting advantage.
+**Figure 4.6 — Random-seed robustness of Deep specifications: individual seeds and means relative to M0. The main seed-42 run is marked with a diamond.**
 
-表 4.5 报告了全部 Deep 模型在多个随机种子下的重复运行结果。所有模型在跨运行平均后均未取得相对于 M0 的正 RMSE improvement，三十次运行中也只有五次为正。S3 拼接模型的平均结果最好，但仍为 −0.27%；主要门控 S3 模型的平均结果为 −0.51%。门控 S3 也只在三次匹配运行中的一次优于 S1，且全部 S2 运行均弱于 M0。因此，主运行中的正改善对随机初始化较为敏感。总体而言，Deep 模型虽然尚未表现出稳定优于 M0 的预测能力，但部分设定，尤其是 S3，显示出一定的预测潜力和进一步研究价值。表现较好的 Deep 设定仍主要接近 M0，而未形成稳定的预测优势。
+**图 4.6 — Deep 设定的随机种子稳健性：各次种子结果及其均值相对 M0。主运行（种子 42）以菱形标出。**
+
+Table 4.5 and Figure 4.6 report the results of rerunning all Deep specifications with multiple random seeds. None of the models achieves a positive mean RMSE improvement relative to M0 across runs, and only five of the thirty individual runs are positive. No S2 fusion is positive in any seed. S3 concatenation has the best mean result, but it is still negative at −0.27%, while the main gated S3 model records −0.51%. Across seeds the S3 order reverses: concatenation (−0.27%) remains closest to M0, ahead of gated (−0.51%) and cross-attention (−3.01%). Gated S3 also outperforms S1 in only one of the three matched runs. The positive improvements observed in the main run are therefore sensitive to random initialisation. Gated fusion remains the main specification because it supplies modality weights for RQ3, not because it is the more accurate operator. Overall, although the Deep models do not consistently outperform M0, some specifications, particularly S3, show predictive potential and merit further investigation. The better-performing Deep specifications remain broadly close to M0 rather than demonstrating a consistent forecasting advantage.
+
+表 4.5 与图 4.6 报告了全部 Deep 模型在多个随机种子下的重复运行结果。所有模型在跨运行平均后均未取得相对于 M0 的正 RMSE improvement，三十次运行中也只有五次为正。S2 三种融合在任一种子上均为负。S3 拼接模型的平均结果最好，但仍为 −0.27%；主要门控 S3 模型的平均结果为 −0.51%。跨种子后 S3 排序反转：拼接（−0.27%）最接近 M0，其次为门控（−0.51%）和交叉注意力（−3.01%）。门控 S3 也只在三次匹配运行中的一次优于 S1。因此，主运行中的正改善对随机初始化较为敏感。仍以门控为主设定，是因为它为 RQ3 提供模态权重，而不是因为它更准。总体而言，Deep 模型虽然尚未表现出稳定优于 M0 的预测能力，但部分设定，尤其是 S3，显示出一定的预测潜力和进一步研究价值。表现较好的 Deep 设定仍主要接近 M0，而未形成稳定的预测优势。

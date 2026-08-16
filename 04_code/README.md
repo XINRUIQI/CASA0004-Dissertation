@@ -7,6 +7,7 @@ Full method / result narrative:
 - Flat: `00_admin/最新待整理/flat_baseline_full_walkthrough_EN.md`
 - Deep: `00_admin/最新待整理/deep_model_full_walkthrough_EN.md`
 - Locked hyperparameters: `06_writing/Appendix/appendix_C_config.md`
+- Software environment: repository `Readme.md` and `04_code/requirements.txt`
 
 ---
 
@@ -22,12 +23,25 @@ python3 -m pip install -r 04_code/requirements.txt
 
 | Item | Note |
 | --- | --- |
-| Python | **3.9.x** (tested 3.9.6) |
+| Python | **3.9.x** (tested 3.9.6, CPython, macOS) |
 | Device | Deep main analysis defaults to **CPU** |
 | Not required | `transformers`, online Prithvi download (embeddings are precomputed) |
 | macOS | Deep scripts **read** existing Flat M1 predictions to avoid loading torch+xgboost in one process (OpenMP conflict) |
 
-Core packages: see `requirements.txt` (numpy / pandas / scipy / scikit-learn / xgboost / torch / matplotlib / shap).
+Pinned packages used for the reported results:
+
+| Package | Version | Role |
+| --- | --- | --- |
+| numpy | 2.0.2 | arrays |
+| pandas | 2.3.3 | weekly matrix |
+| scipy | 1.13.1 | *p* values |
+| scikit-learn | 1.6.1 | Ridge, scaling |
+| xgboost | 2.1.4 | Flat XGBoost |
+| torch | 2.8.0 | Deep encoders and fusion (CPU) |
+| matplotlib | 3.9.4 | figures |
+| shap | 0.49.1 | attribution |
+
+The Deep remote-sensing branch uses pre-computed frozen Prithvi-EO-2.0 embeddings. Training and evaluation do not load the foundation model.
 
 ---
 

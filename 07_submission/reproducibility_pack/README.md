@@ -4,9 +4,9 @@ This folder is the submission-facing entry for reproduction. Code and data remai
 
 Authoritative run instructions:
 
-1. [`../../Readme.md`](../../Readme.md) — project overview + quick commands  
+1. [`../../Readme.md`](../../Readme.md) — project overview, software environment, protocol  
 2. [`../../04_code/README.md`](../../04_code/README.md) — **full runbook**  
-3. [`../../06_writing/Appendix/appendix_C_config.md`](../../06_writing/Appendix/appendix_C_config.md) — environment & locked hyperparameters  
+3. [`../../06_writing/Appendix/appendix_C_config.md`](../../06_writing/Appendix/appendix_C_config.md) — locked hyperparameter grids  
 4. [`../../06_writing/Appendix/appendix_A_data.md`](../../06_writing/Appendix/appendix_A_data.md) — variables / AOIs / lags / graph edges  
 
 ---
@@ -19,7 +19,7 @@ Authoritative run instructions:
 python3 -m pip install -r 04_code/requirements.txt
 ```
 
-Python **3.9.x**; see `04_code/requirements.txt`. Training and evaluation do **not** need `transformers`.
+Python **3.9.6** (CPython, macOS); pinned packages in `04_code/requirements.txt` (numpy 2.0.2, pandas 2.3.3, scipy 1.13.1, scikit-learn 1.6.1, xgboost 2.1.4, torch 2.8.0, matplotlib 3.9.4, shap 0.49.1). Training and evaluation do **not** need `transformers`. Full table: [`../../Readme.md`](../../Readme.md) § Software environment.
 
 ### Inputs (processed products already in repo)
 
@@ -62,7 +62,7 @@ Main-number narrative: `00_admin/最新待整理/项目逻辑与结果总览_CN.
 | min_train | 104 |
 | retrain_every | 13 |
 | val_weeks | 52 |
-| seed (main) | 42 |
+| seed (main) | 42 (robustness: 1, 2) |
 | Flat main settings | M2=`anom`; M3=`full` |
 | Deep main fusion | gated; representation dim d=32 |
 

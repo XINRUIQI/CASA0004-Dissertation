@@ -1,6 +1,6 @@
 # Core runtime for the Brent modality-aware fusion pipeline (Flat + Deep).
 # Tested with Python 3.9.6 (CPython, macOS). Pin exact versions used to produce
-# the reported results; see 06_writing/appendix_C_config.md for context.
+# the reported results; see the repository Readme.md (Software environment).
 #
 # Prithvi-EO-2.0 embeddings are PRE-COMPUTED offline and stored as tensors, so
 # training/evaluation does NOT import `transformers` or download any model at

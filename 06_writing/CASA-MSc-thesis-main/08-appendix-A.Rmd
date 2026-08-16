@@ -250,7 +250,7 @@ two-week buffer. The two are not interchangeable.
 
 GFW monthly presence testable at lag ∈ {1, 4, 8} w; `MONTHLY_LAG_WEEKS` at
 {3, 5, 7} w; all exposed as CLI flags (`--gfw-lag`, `--eia-lag`, …) so the whole
-matrix can be rebuilt without code edits. Results in Appendix B.3.8.
+matrix can be rebuilt without code edits. Results in Appendix B.4.
 
 ---
 

@@ -22,7 +22,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from matplotlib.lines import Line2D
-from matplotlib.patches import FancyBboxPatch, Rectangle
+from matplotlib.patches import FancyArrowPatch, FancyBboxPatch, Rectangle
 from matplotlib.patches import Patch
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -50,13 +50,6 @@ AOI = {
     "P010": ("Kharg", "terminal"),
     "P011": ("Yanbu", "terminal"),
 }
-
-# Matrix axis order: type groups (port / terminal / refinery), west→east within type.
-AOI_ORDER = [
-    "P005", "P001", "P006",          # ports
-    "P011", "P008", "P010", "P003", "P002",  # terminals
-    "P007", "P004", "P009",          # refineries
-]
 
 CHOKE = {
     "hormuz": "Hormuz",
@@ -184,29 +177,42 @@ def box(ax, x0, y0, x1, y1, *, face=C["box"], edge=C["line"], lw=1.0,
 # --------------------------------------------------------------------------
 # Figure 3.6 — two edge classes
 # --------------------------------------------------------------------------
-def _load_voyage_all() -> tuple[pd.DataFrame, int, pd.Timestamp, pd.Timestamp]:
-    """Directed AOI→AOI lanes summed over the full voyage sample."""
+def _load_voyage_edges() -> pd.DataFrame:
     df = pd.read_csv(EDGE_CSV)
     df["week_ending_friday"] = pd.to_datetime(df["week_ending_friday"])
     pos = df[df["n_voyages"] > 0].copy()
     if pos.empty:
         raise ValueError(f"No voyage edges in {EDGE_CSV}")
-    agg = (pos.groupby(["from_site", "to_site"], as_index=False)["n_voyages"]
-           .sum())
-    n_weeks = int(pos["week_ending_friday"].nunique())
-    t0 = pos["week_ending_friday"].min()
-    t1 = pos["week_ending_friday"].max()
-    return agg, n_weeks, t0, t1
+    return pos
 
 
-def _voyage_log_matrix(voy: pd.DataFrame, order: list[str]) -> np.ndarray:
-    idx = {s: i for i, s in enumerate(order)}
-    n = len(order)
-    mat = np.full((n, n), np.nan)
-    for _, row in voy.iterrows():
-        mat[idx[row["from_site"]], idx[row["to_site"]]] = np.log1p(
-            float(row["n_voyages"]))
-    return mat
+def _median_density_week(pos: pd.DataFrame) -> tuple[pd.DataFrame, pd.Timestamp, int]:
+    """Week whose directed-lane count is closest to the sample median.
+
+    Ties: closest weekly voyage total to the sample-median total, then earliest
+    Friday. No site is favoured.
+    """
+    n_lanes = pos.groupby("week_ending_friday").size()
+    tot = pos.groupby("week_ending_friday")["n_voyages"].sum()
+    med_n = float(n_lanes.median())
+    med_tot = float(tot.median())
+    delta_n = (n_lanes - med_n).abs()
+    cands = n_lanes.index[delta_n == delta_n.min()]
+    tot_c = tot.loc[cands]
+    delta_t = (tot_c - med_tot).abs()
+    week = tot_c.index[int(delta_t.to_numpy().argmin())]
+    sub = pos[pos["week_ending_friday"] == week].copy()
+    return sub, week, int(round(med_n))
+
+
+def _shorten(p0, p1, r=4.2):
+    p0, p1 = np.asarray(p0, float), np.asarray(p1, float)
+    v = p1 - p0
+    n = np.linalg.norm(v)
+    if n < 1e-6:
+        return tuple(p0), tuple(p1)
+    u = v / n
+    return tuple(p0 + u * r), tuple(p1 - u * r)
 
 
 def _draw_aoi_nodes(ax, *, labels=True):
@@ -240,100 +246,58 @@ def _style_network(ax, title, subtitle):
             ha="left", va="top", transform=ax.transData, linespacing=1.35)
 
 
-def _draw_voyage_heatmap(ax, cax, mat: np.ndarray, n_weeks: int) -> None:
-    n = mat.shape[0]
-    vmax = float(np.nanmax(mat))
-    cmap = mpl.colors.LinearSegmentedColormap.from_list(
-        "voyage", ["#F7D7C4", "#E89A6A", "#D1622B", "#8A3D16"])
-    cmap.set_bad("#F4F2EE")
-
-    ax.imshow(mat, origin="upper", cmap=cmap, vmin=0, vmax=vmax,
-              aspect="equal", interpolation="nearest")
-    ax.set_xlim(-0.5, n - 0.5)
-    ax.set_ylim(n - 0.5, -0.5)
-    ax.set_xticks(np.arange(n))
-    ax.set_yticks(np.arange(n))
-    ax.set_xticklabels([])
-    ax.set_yticklabels([])
-    ax.set_xticks(np.arange(-0.5, n, 1), minor=True)
-    ax.set_yticks(np.arange(-0.5, n, 1), minor=True)
-    ax.grid(which="minor", color="white", linestyle="-", linewidth=0.85, zorder=3)
-    ax.tick_params(which="both", length=0)
-    for spine in ax.spines.values():
-        spine.set_color("#C8C4BC")
-        spine.set_linewidth(0.7)
-    ax.set_xlabel("Destination AOI", fontsize=8.0, color=C["muted"], labelpad=18)
-    ax.set_ylabel("Origin AOI", fontsize=8.0, color=C["muted"], labelpad=2)
-    ax.set_title(
-        "(a)  Observed voyage connectivity  ·  directed and time-varying",
-        loc="left", fontsize=9.5, color=C["ink"], pad=10)
-    ax.text(
-        0.0, 1.02,
-        f"Cell colour shows log total voyages over {n_weeks} weeks.  "
-        "Weekly edge sets are substantially sparser and vary over time.",
-        transform=ax.transAxes, fontsize=7.2, color=C["muted"],
-        ha="left", va="bottom", clip_on=False)
-
-    for i, sid in enumerate(AOI_ORDER):
-        name, stype = AOI[sid]
-        mk = dict(marker=TYPE_MARKER[stype], s=26, color=C["aoi"],
-                  edgecolor="white", linewidth=0.4, clip_on=False, zorder=5)
-        ax.scatter(-0.92, i, **mk)
-        ax.text(-1.18, i, name, ha="right", va="center", fontsize=7.0,
-                color="#1F3E5F", clip_on=False)
-        ax.scatter(i, n - 0.5 + 0.42, **mk)
-        ax.text(i, n - 0.5 + 0.72, name, ha="right", va="top", fontsize=7.0,
-                color="#1F3E5F", rotation=45, rotation_mode="anchor",
-                clip_on=False)
-
-    bands = [("port", 0, 3), ("terminal", 3, 8), ("refinery", 8, 11)]
-    band_col = {"port": "#1F4E79", "terminal": "#2E5A88", "refinery": "#7A93AE"}
-    for stype, i0, i1 in bands:
-        ax.add_patch(Rectangle(
-            (-0.72, i0 - 0.5), 0.18, i1 - i0,
-            facecolor=band_col[stype], edgecolor="none",
-            clip_on=False, zorder=4))
-
-    cbar = plt.colorbar(ax.images[0], cax=cax)
-    ticks = np.log1p(np.array([1, 10, 100, 1000, 10000], dtype=float))
-    ticks = ticks[ticks <= vmax + 1e-6]
-    cbar.set_ticks(ticks)
-    cbar.set_ticklabels(["1", "10", "100", "1 000", "10 000"][:len(ticks)])
-    cbar.ax.tick_params(labelsize=6.6, length=2.5, color="#BBBBBB")
-    cbar.set_label("Total voyages  (log scale)", fontsize=7.2, color=C["muted"])
-    cbar.outline.set_linewidth(0.6)
-    cbar.outline.set_edgecolor("#C8C4BC")
+def _draw_voyage_week(ax, voy: pd.DataFrame) -> None:
+    n_max = float(voy["n_voyages"].max())
+    for _, row in voy.sort_values("n_voyages").iterrows():
+        n = float(row["n_voyages"])
+        a, b = row["from_site"], row["to_site"]
+        p0, p1 = _shorten(AOI_XY[a], AOI_XY[b], r=4.5)
+        p0, p1 = np.asarray(p0, float), np.asarray(p1, float)
+        end = p0 + 0.82 * (p1 - p0)
+        rad = 0.12 if a < b else -0.12
+        frac = float(np.sqrt(n / n_max))
+        lw = 0.40 + 2.20 * frac
+        ax.add_patch(FancyArrowPatch(
+            tuple(p0), tuple(end), arrowstyle="-|>", mutation_scale=7,
+            color=C["voyage"], linewidth=lw, alpha=0.82, zorder=3,
+            shrinkA=0, shrinkB=0,
+            connectionstyle=f"arc3,rad={rad}"))
 
 
 def fig36_edge_classes() -> None:
-    voy, n_weeks, _t0, _t1 = _load_voyage_all()
-    n_lanes = len(voy)
-    n_voyages = float(voy["n_voyages"].sum())
-    mat = _voyage_log_matrix(voy, AOI_ORDER)
+    pos = _load_voyage_edges()
+    n_unique = int(pos.groupby(["from_site", "to_site"]).ngroups)
+    n_voyages = float(pos["n_voyages"].sum())
+    voy, week, med_n = _median_density_week(pos)
 
-    fig = plt.figure(figsize=(11.2, 6.90))
+    fig = plt.figure(figsize=(10.8, 6.90))
     gs = fig.add_gridspec(
-        3, 3, height_ratios=[1.0, 0.09, 0.24],
-        width_ratios=[1.18, 0.055, 1.12],
-        hspace=0.06, wspace=0.10,
-        left=0.11, right=0.99, top=0.86, bottom=0.045)
+        3, 2, height_ratios=[1.0, 0.10, 0.26],
+        hspace=0.05, wspace=0.06,
+        left=0.02, right=0.99, top=0.88, bottom=0.04)
     ax_l = fig.add_subplot(gs[0, 0])
-    cax = fig.add_subplot(gs[0, 1])
-    ax_r = fig.add_subplot(gs[0, 2])
+    ax_r = fig.add_subplot(gs[0, 1])
     ax_leg = fig.add_subplot(gs[1, :])
     ax_n = fig.add_subplot(gs[2, :])
     ax_leg.axis("off")
     ax_n.axis("off")
 
     fig.suptitle("Two edge classes in the 17-node shipping graph",
-                 x=0.11, ha="left", fontsize=11, color=C["ink"])
+                 x=0.02, ha="left", fontsize=11, color=C["ink"])
 
-    _draw_voyage_heatmap(ax_l, cax, mat, n_weeks)
+    _style_network(
+        ax_l,
+        "(a)  Weekly voyage graph  ·  directed and weighted",
+        "Illustrative median-density week.  Arrows indicate direction; "
+        "width indicates weekly voyage count.",
+    )
+    _draw_voyage_week(ax_l, voy)
+    _draw_aoi_nodes(ax_l)
 
     _style_network(
         ax_r,
-        "(b)  Specified corridor connectivity  ·  undirected and fixed",
-        "13 AOI–chokepoint links, specified ex ante.  Identical every week.",
+        "(b)  Fixed corridor graph  ·  undirected and unweighted",
+        "Thirteen ex-ante AOI–chokepoint links, identical in every week.",
     )
     for cp, sites in CORRIDOR.items():
         cx, cy = CHOKE_XY[cp]
@@ -353,10 +317,12 @@ def fig36_edge_classes() -> None:
                markeredgecolor="white", markersize=7, label="AOI  ·  refinery"),
         Line2D([], [], marker="D", linestyle="", color=C["choke"],
                markeredgecolor="white", markersize=7, label="Chokepoint"),
+        Line2D([], [], color=C["voyage"], linewidth=1.8,
+               label="Directed voyage edge"),
         Line2D([], [], color=C["corridor"], linewidth=1.8,
                label="Undirected corridor edge"),
     ]
-    ax_leg.legend(handles=handles, loc="center", ncol=5, columnspacing=1.35,
+    ax_leg.legend(handles=handles, loc="center", ncol=6, columnspacing=1.15,
                   handletextpad=0.45, fontsize=7.4)
 
     box(ax_n, 0.015, 0.12, 0.985, 0.90, face=C["band"], edge="none",
@@ -364,18 +330,20 @@ def fig36_edge_classes() -> None:
     ax_n.set_xlim(0, 1)
     ax_n.set_ylim(0, 1)
     ax_n.text(
-        0.50, 0.66,
+        0.50, 0.68,
         "Entering the GAT: the two classes are stacked, then symmetrised "
         "and self-looped.  Direction and edge type are not retained.",
-        ha="center", va="center", fontsize=8.4, color=C["ink"],
+        ha="center", va="center", fontsize=8.3, color=C["ink"],
         fontweight="bold",
     )
+    week_str = week.strftime("%-d %B %Y")
     ax_n.text(
-        0.50, 0.32,
-        f"(a) {n_lanes} directed lanes; {n_voyages:,.0f} voyages.  "
-        "Symmetrised voyage counts enter only as an attention prior  "
-        "(Appendix A.4.3).",
-        ha="center", va="center", fontsize=7.5, color=C["muted"],
+        0.50, 0.30,
+        f"Across the full sample, the weekly voyage graphs comprise "
+        f"{n_unique} unique directed lanes and {n_voyages:,.0f} voyages.  "
+        f"Panel (a) is the week ending {week_str} "
+        f"({len(voy)} lanes = sample median of {med_n}).",
+        ha="center", va="center", fontsize=7.4, color=C["muted"],
     )
 
     save(fig, "fig_3_6_edge_classes")

@@ -1,48 +1,12 @@
 # Appendix C — Hyperparameter grids & locked settings
 
-This appendix records the software versions and locked settings used for the
-reported results. Installation commands and scripts are in the GitHub repository.
+This appendix records the locked hyperparameter grids and training settings used
+for the reported results. Software versions, installation commands and scripts
+are in the GitHub repository.
 
 ---
 
-## C.1 Software environment
-
-Python 3.9.6 (CPython, macOS). Core packages:
-
-| Package | Version | Role |
-| --- | --- | --- |
-| numpy | 2.0.2 | arrays |
-| pandas | 2.3.3 | weekly matrix |
-| scipy | 1.13.1 | *p* values |
-| scikit-learn | 1.6.1 | Ridge, scaling |
-| xgboost | 2.1.4 | Flat XGBoost |
-| torch | 2.8.0 | Deep encoders and fusion (CPU) |
-| matplotlib | 3.9.4 | figures |
-| shap | 0.49.1 | attribution |
-
-The Deep remote-sensing branch uses pre-computed frozen Prithvi-EO-2.0 embeddings.
-Training and evaluation do not load the foundation model.
-
----
-
-## C.2 Shared protocol and seeds
-
-Flat and Deep use the same rolling-origin schedule.
-
-| Item | Value |
-| --- | --- |
-| Sample | 2019–2025 (365 weeks) |
-| Lookback | **4 weeks** |
-| Initial training (not scored) | **104 weeks** |
-| Re-estimation interval | **13 weeks** |
-| Inner validation | **52 weeks** (tail of each training fold) |
-| Evaluation sample | **257 weeks** |
-| Main seed | **42** |
-| Robustness seeds | **1, 2** |
-
----
-
-## C.3 Flat search grids
+## C.1 Flat search grids
 
 Hyperparameters are chosen inside each training fold on the inner-validation
 segment only.
@@ -57,12 +21,12 @@ segment only.
 
 ---
 
-## C.4 Locked Deep architecture and training
+## C.2 Locked Deep architecture and training
 
 The main specification is locked to lookback 4 and latent size 32, matching the
 Flat lookback. Sensitivity is reported in Appendix B.
 
-### C.4.1 Encoders
+### C.2.1 Encoders
 
 | Encoder | Settings | Output |
 | --- | --- | --- |
@@ -70,15 +34,7 @@ Flat lookback. Sensitivity is reported in Appendix B.
 | Remote sensing | frozen Prithvi embeddings (1024-d), temporal then site attention | 32-d |
 | Shipping GAT | 17 nodes, 2 GAT layers, 4 heads, then 2-layer TCN | 32-d |
 
-### C.4.2 Fusion
-
-| Option | Role |
-| --- | --- |
-| Concatenation | alternative |
-| **Gated fusion** | **main specification** (modality weights for RQ3) |
-| Cross-attention (finance as query, 4 heads) | secondary comparison |
-
-### C.4.3 Training
+### C.2.2 Training
 
 | Item | Value |
 | --- | --- |

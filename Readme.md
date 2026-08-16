@@ -36,6 +36,28 @@ python3 04_code/scripts/deep/run_deep_interpret.py --seeds 42,1,2 --lookback 4
 
 ---
 
+## Software environment
+
+Python **3.9.6** (CPython, macOS). Pinned in [`04_code/requirements.txt`](04_code/requirements.txt).
+
+
+| Package      | Version | Role                         |
+| ------------ | ------- | ---------------------------- |
+| numpy        | 2.0.2   | arrays                       |
+| pandas       | 2.3.3   | weekly matrix                |
+| scipy        | 1.13.1  | *p* values                   |
+| scikit-learn | 1.6.1   | Ridge, scaling               |
+| xgboost      | 2.1.4   | Flat XGBoost                 |
+| torch        | 2.8.0   | Deep encoders and fusion (CPU) |
+| matplotlib   | 3.9.4   | figures                      |
+| shap         | 0.49.1  | attribution                  |
+
+
+The Deep remote-sensing branch uses pre-computed frozen Prithvi-EO-2.0 embeddings.
+Training and evaluation do not load the foundation model (`transformers` is not required).
+
+---
+
 
 
 ## Research questions
@@ -98,11 +120,11 @@ casa0004 Dissertation/
 | Window                                           | 2019–2025 (merged matrix); scored test ≈ **257 weeks**     |
 | lookback / min_train / retrain_every / val_weeks | **4 / 104 / 13 / 52**                                      |
 | Target                                           | r_{t+1}=\ln(P_{t+1}/P_t), reconstructed to next-week price |
-| Seed                                             | Main analysis **42**                                       |
+| Seed                                             | Main analysis **42**; robustness **1, 2**                  |
 | Metrics / tests                                  | RMSE · MAE · DirAcc · skill vs M0; DM (HLN); Clark–West    |
 
 
-Details: `[06_writing/Appendix/appendix_C_config.md](06_writing/Appendix/appendix_C_config.md)`.
+Hyperparameter grids: `[06_writing/Appendix/appendix_C_config.md](06_writing/Appendix/appendix_C_config.md)`.
 
 ---
 
@@ -118,7 +140,8 @@ Details: `[06_writing/Appendix/appendix_C_config.md](06_writing/Appendix/appendi
 | Deep end-to-end walkthrough | [`00_admin/deep_model_full_walkthrough.md`](00_admin/deep_model_full_walkthrough.md) |
 | Flat variable inventory | [`00_admin/flat_baseline_variable_list.md`](00_admin/flat_baseline_variable_list.md) |
 | Directory map | [`00_admin/File Structure.md`](00_admin/File%20Structure.md) |
-| Data / config appendices | `06_writing/Appendix/appendix_{A_data,C_config}.md` |
+| Software environment | this file, § Software environment |
+| Data / hyperparameter appendices | `06_writing/Appendix/appendix_{A_data,C_config}.md` |
 | External sources | [`03_data/Dataset/external_sources.md`](03_data/Dataset/external_sources.md) |
 
 

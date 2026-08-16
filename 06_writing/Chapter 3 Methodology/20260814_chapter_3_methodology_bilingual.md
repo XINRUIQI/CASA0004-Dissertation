@@ -239,9 +239,9 @@ The shipping encoder applies a graph attention network with temporal encoding (G
 
 航运编码器将带时间编码的图注意力网络（GAT；Veličković et al., 2018）应用于四周回看窗口内的周度 17 节点图，为每个预测起点生成一个航运表征。图的构建如第 3.3 节所述。进入消息传递时，有向航次边与无向走廊边合并为一张对称化邻接，因此编码器不再保留边的方向与类型。对称化后的航次流量作为先验进入注意力计算。邻接关系与边权细节见附录 A.4.3。
 
-Fusion is applied only to Deep models for S2–S4, while S1 passes its finance representation directly to the regression head. Three mechanisms are compared. Gated fusion is designated as the main design because it provides forecast-origin-specific modality weights for the subsequent interpretability analysis. These weights are non-negative and sum to one at each forecast origin. Encoder concatenation and cross-attention are used only as alternatives. The resulting representation is trained by mean squared error to predict the one-week-ahead log return. Fixed fusion settings are reported in Appendix C.
+Fusion is applied only to Deep models for S2–S4, while S1 passes its finance representation directly to the regression head. Three mechanisms are compared. Gated fusion is designated as the main design because it provides forecast-origin-specific modality weights for the subsequent interpretability analysis. These weights are non-negative and sum to one at each forecast origin. Encoder concatenation and cross-attention are used only as alternatives. The resulting representation is trained by mean squared error to predict the one-week-ahead log return. Encoder and training settings are reported in Appendix C.
 
-融合仅用于 S2–S4，S1 的金融表征则直接进入回归头。研究比较了三种机制。作为主要设计的门控融合在每个预测起点分配总和为 1 的非负模态权重。编码器拼接与交叉注意力为备选。所得表征以均方误差训练，用于预测提前一周的对数收益。固定融合设置见附录 C.4.2–C.4.3。
+融合仅用于 S2–S4，S1 的金融表征则直接进入回归头。研究比较了三种机制。作为主要设计的门控融合在每个预测起点分配总和为 1 的非负模态权重。编码器拼接与交叉注意力为备选。所得表征以均方误差训练，用于预测提前一周的对数收益。编码器与训练设定见附录 C。
 
 Figure 3.5 summarises the three encoders, the fusion stage used for S2–S4, and the regression head.
 
@@ -335,9 +335,9 @@ The study uses only secondary, aggregate data and does not involve human partici
 
 本研究仅使用二手、汇总型数据，不涉及人类参与者。研究已通过 UCL 低风险伦理审批。所有数据集均按其公布的许可与使用条款使用，包括 Sentinel-2 的 Copernicus 开放许可、VIIRS 夜光的开放分发条款，以及 IMF PortWatch 与 Global Fishing Watch 的研究使用条款。遥感与船舶活动变量仅在站点或咽喉的汇总层面分析；不试图识别单船、运营商或个人。
 
-Analysis was conducted in Python, and the code required to reproduce the analysis is available on GitHub: [repository link]. Package versions, configuration settings and random-seed specifications are provided in Appendix C.
+Analysis was conducted in Python, and the code required to reproduce the analysis is available on GitHub: [repository link]. Package versions, random seeds and installation commands are documented in the repository README. Search grids and locked training settings are reported in Appendix C.
 
-分析在 Python 中完成，复现所需代码见 GitHub：[repository link]。软件包版本、配置设定与随机种子说明见附录 C。
+分析在 Python 中完成，复现所需代码见 GitHub：[repository link]。软件包版本、随机种子与安装命令见仓库 README。搜索网格与锁定训练设定见附录 C。
 
 ---
 

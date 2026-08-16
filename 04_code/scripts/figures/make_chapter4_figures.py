@@ -8,8 +8,8 @@ Does not retrain models.
     python 04_code/scripts/figures/make_chapter4_figures.py --only 4.1 4.3 4.5
 
     4.1  Brent price, weekly log returns, evaluation sample, four event windows
-    4.2  Flat XGBoost → Deep gated paired slopes (S3 highlighted)
-    4.3  Period SHAP finance vs shipping, with gate weights as dots
+    4.2  Flat XGBoost → Deep gated paired slopes (S3 highlighted; S1 as path reference)
+    4.3  Shipping gate weight vs shipping |SHAP| share (dual-dot, no link)
     4.4  Two-panel proportional-symbol map (full sample | 2024)
     4.5  Node × week shipping-internal SHAP-share heatmap
     4.6  Deep seed robustness (three seeds + mean, vs M0)
@@ -298,11 +298,14 @@ def fig42_slope() -> None:
 
     for i, s in enumerate(SETS):
         highlight = s == "S3"
+        is_ref = s == "S1"
         ax.plot([0, 1], [flat[i], deep[i]], "-o", markersize=5.5,
                 color=C["deep"] if highlight else C["grey"],
                 linewidth=2.2 if highlight else 1.3,
                 zorder=3 if highlight else 2)
-        ax.text(-0.05, flat_lab[i], f"{s}  {flat[i]:.3f}", ha="right",
+        left = (f"{s} (ref.)  {flat[i]:.3f}" if is_ref
+                else f"{s}  {flat[i]:.3f}")
+        ax.text(-0.05, flat_lab[i], left, ha="right",
                 va="center", fontsize=8)
         ax.text(1.05, deep_lab[i], f"{deep[i]:.3f}  {s}", ha="left",
                 va="center", fontsize=8,
@@ -314,20 +317,22 @@ def fig42_slope() -> None:
             fontsize=8, style="italic",
             bbox=dict(facecolor="white", edgecolor="none", pad=1.2))
 
-    ax.set_xlim(-0.48, 1.48)
+    ax.set_xlim(-0.62, 1.48)
     ax.set_xticks([0, 1])
     ax.set_xticklabels(["Flat\n(XGBoost)", "Deep\n(gated fusion)"])
-    ax.set_ylabel("Out-of-sample RMSE (USD per barrel)")
-    ax.set_title("Same information set and evaluation sample, "
-                 "modelling path only;\nS3 is the only Deep specification "
-                 "that also clears M0", loc="left")
+    ax.set_ylabel("Out-of-sample RMSE (USD per barrel; reversed)")
+    ax.set_title(
+        "Within matched modality sets and the common evaluation sample,\n"
+        "all Deep specifications reduce RMSE relative to XGBoost; only S3 also beats M0",
+        loc="left",
+    )
     ax.invert_yaxis()
     ax.grid(axis="x", visible=False)
     save(fig, "fig_4_2_flat_vs_deep_slope")
 
 
 # --------------------------------------------------------------------------
-# 4.3  Period SHAP: finance vs shipping
+# 4.3  Shipping only: gate weight vs |SHAP| share
 # --------------------------------------------------------------------------
 PERIOD_ORDER = [
     "full",
@@ -335,65 +340,79 @@ PERIOD_ORDER = [
     "event_russia_ukraine", "event_eu_ru_oil_ban",
     "event_opec_plus", "event_red_sea",
 ]
-PERIOD_XLABEL = {
-    "full": "Full\nsample",
+PERIOD_YLABEL = {
+    "full": "Full sample",
     "year_2021": "2021", "year_2022": "2022", "year_2023": "2023",
     "year_2024": "2024", "year_2025": "2025",
-    "event_russia_ukraine": "Russia–\nUkraine",
-    "event_eu_ru_oil_ban": "EU oil\nban",
+    "event_russia_ukraine": "Russia–Ukraine",
+    "event_eu_ru_oil_ban": "EU oil ban",
     "event_opec_plus": "OPEC+",
     "event_red_sea": "Red Sea",
 }
 
 
 def fig43_shap_modality() -> None:
+    """Dual-dot plot of shipping gate weight vs shipping |SHAP| share.
+
+    Finance is omitted (always 100% minus shipping). The two series are not
+    joined by a line: gate is a representation weight, SHAP is output
+    attribution.
+    """
     main = pd.read_csv(M3 / "deep_m3_rq3_period_main.csv")
     main = main.set_index("period_id").loc[PERIOD_ORDER]
 
-    fig, ax = plt.subplots(figsize=(9.8, 4.3))
-    x = np.arange(len(PERIOD_ORDER))
-    fin = main["shap_share_finance"].to_numpy(float) * 100
-    ship = main["shap_share_shipping"].to_numpy(float) * 100
-    g_fin = main["gate_finance"].to_numpy(float) * 100
-    g_ship = main["gate_shipping"].to_numpy(float) * 100
+    gate = main["gate_shipping"].to_numpy(float) * 100
+    shap = main["shap_share_shipping"].to_numpy(float) * 100
 
-    ax.bar(x, fin, color=C["finance"], width=0.72, label="SHAP finance",
-           edgecolor="white", linewidth=0.4, zorder=2)
-    ax.bar(x, ship, bottom=fin, color=C["shipping"], width=0.72,
-           label="SHAP shipping", edgecolor="white", linewidth=0.4, zorder=2)
+    n = len(PERIOD_ORDER)
+    y = np.arange(n)[::-1]
+    # Offset so the two metrics sit as a pair, not on top of each other.
+    y_gate = y + 0.16
+    y_shap = y - 0.16
 
-    for xi, f, s in zip(x, fin, ship):
-        ax.text(xi, f * 0.5, f"{f:.1f}", ha="center", va="center",
-                fontsize=6.8, color="white", zorder=3)
-        ax.text(xi, 100.6, f"{s:.1f}", ha="center", va="bottom",
-                fontsize=7.2, color=C["shipping"], fontweight="bold", zorder=3)
+    fig, ax = plt.subplots(figsize=(6.8, 5.5))
 
-    ax.scatter(x + 0.28, g_fin, s=22, marker="o", facecolors="white",
-               edgecolors=C["finance"], linewidths=1.1, zorder=4,
-               label="Gate finance")
-    ax.scatter(x + 0.28, g_ship, s=26, marker="D", facecolors="white",
-               edgecolors=C["shipping"], linewidths=1.1, zorder=4,
-               label="Gate shipping")
+    year_lo, year_hi = y[5] - 0.48, y[1] + 0.48
+    event_lo, event_hi = y[9] - 0.48, y[6] + 0.48
+    ax.axhspan(year_lo, year_hi, color="#F4F4F4", zorder=0)
+    ax.axhline((y[5] + y[6]) / 2, color="#C8C8C8", linewidth=0.8, zorder=1)
+    ax.hlines(y, 0, 60, color="#E8E8E8", linewidth=0.6, zorder=1)
 
-    ax.axvline(5.5, color="#CCCCCC", linewidth=0.8, linestyle="-", zorder=1)
-    ax.set_xticks(x)
-    ax.set_xticklabels([PERIOD_XLABEL[p] for p in PERIOD_ORDER], fontsize=8)
-    ax.set_ylim(0, 112)
-    ax.set_ylabel("Share of absolute SHAP (%)")
-    ax.set_title("Absolute SHAP share (bars) and modality-gate weights "
-                 "(markers), gated Deep S3\n"
-                 "Gate is a representation weight; SHAP is output attribution "
-                 "— they are not interchangeable", loc="left")
-    ax.legend(ncol=4, loc="lower left", bbox_to_anchor=(0.0, -0.34),
-              fontsize=7.5)
-    ax.grid(axis="x", visible=False)
+    ax.scatter(gate, y_gate, s=62, marker="D",
+               facecolors="white", edgecolors=C["shipping"],
+               linewidths=1.35, zorder=4, label="Shipping gate weight")
+    ax.scatter(shap, y_shap, s=50, marker="o",
+               facecolors=C["shipping"], edgecolors=C["shipping"],
+               linewidths=0.4, zorder=4,
+               label="Shipping share of absolute SHAP")
+
+    ax.set_yticks(y)
+    ax.set_yticklabels([PERIOD_YLABEL[p] for p in PERIOD_ORDER], fontsize=8)
+    ax.get_yticklabels()[0].set_fontweight("bold")
+    ax.set_xlim(-1.2, 60)
+    ax.set_xticks(np.arange(0, 61, 10))
+    ax.set_ylim(-0.72, n - 0.28)
+    ax.set_xlabel("Percent")
+    ax.set_title(
+        "Shipping received 25–52% of the gate weight but only "
+        "0.8–5.9% of absolute SHAP\n"
+        "Gate is a representation weight; SHAP is output attribution "
+        "— they are not interchangeable",
+        loc="left",
+    )
+    ax.grid(axis="y", visible=False)
     ax.set_axisbelow(True)
-    ax.text(2.5, -0.22, "calendar years", ha="center", fontsize=7.2,
-            color="#666666", transform=ax.get_xaxis_transform())
-    ax.text(7.5, -0.22, "event windows (\u00b18 weeks)", ha="center",
-            fontsize=7.2, color="#666666",
-            transform=ax.get_xaxis_transform())
-    fig.tight_layout()
+
+    ax.text(61.6, (year_lo + year_hi) / 2, "calendar years",
+            rotation=90, va="center", ha="left", fontsize=7.2,
+            color="#666666", clip_on=False)
+    ax.text(61.6, (event_lo + event_hi) / 2, "event windows (\u00b18 weeks)",
+            rotation=90, va="center", ha="left", fontsize=7.2,
+            color="#666666", clip_on=False)
+
+    ax.legend(ncol=2, loc="upper center", bbox_to_anchor=(0.48, -0.11),
+              fontsize=7.5, handletextpad=0.4)
+    fig.subplots_adjust(left=0.20, right=0.90, top=0.88, bottom=0.16)
     save(fig, "fig_4_3_shap_modality")
 
 
