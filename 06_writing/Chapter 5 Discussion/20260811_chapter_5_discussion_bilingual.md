@@ -1,16 +1,12 @@
 # Chapter 5 — Discussion
 
-
 ## 5.1 RQ1 — Do alternative data help?
-
 
 RQ1 asked whether remote sensing and shipping add out-of-sample value beyond financial time series and the no-change benchmark. The answer depends on the modelling pathway. Within the Flat family, no model outperforms no-change benchmark, consistent with the short-horizon oil-forecasting literature that treats the no-change forecast as a demanding reference (Alquist, Kilian and Vigfusson, 2013) Rela.tive to the finance-only S1 specification, remote sensing increases forecast error for both Ridge and XGBoost, while shipping increases error for Ridge but slightly reduces it for XGBoost. The latter result shows that shipping is not uniformly detrimental within the Flat pathway, but the improvement remains insufficient to outperform M0. Overall, simply adding alternative-data features to Flat models does not produce additional predictive value against the no-change benchmark.
 
 研究问题一询问：遥感与航运能否在金融时序和不变预测基准之外带来样本外价值。答案取决于建模路径。在 Flat 模型族中，没有任何模型优于 M0，这与短期限油价预测文献将不变预测视为严格参照的判断一致（Alquist, Kilian and Vigfusson, 2013）。相对于仅金融的 S1 设定，加入遥感会同时提高 Ridge 与 XGBoost 的预测误差；加入航运则提高 Ridge 的误差，但略微降低 XGBoost 的误差。后一结果表明，航运在 Flat 路径中并非一律有害，但这一改善仍不足以优于 M0。总体而言，仅仅向 Flat 模型加入另类数据特征，并不能相对不变预测基准产生额外的预测价值。
 
-
 Under the Deep pathway, adding remote sensing to finance in S2 does not improve forecast accuracy over either S1 or M0. By contrast, adding shipping to finance in S3 produces a small positive RMSE improvement relative to M0, making S3 the best-performing specification in the main gated pathway. Extending S3 with remote sensing in S4 does not further reduce forecast error. The secondary cross-attention results show the same ordering across the multimodal specifications, with S3 performing best, followed by S4 and S2. Shipping is therefore the more informative alternative modality in this weekly Brent design, while remote sensing contributes little to one-week-ahead predictive accuracy. The improvement is notable because the other main modelling specifications fail to beat M0, although its magnitude remains modest.**it should be interpreted as evidence of predictive rather than operational value.**是否有必要加？
-
 
 在 Deep 路径下，S2 在金融数据的基础上加入遥感数据后，相较于 S1 或 M0，并未提升预测准确性。相比之下，S3 在金融数据中加入航运数据后，相对于 M0 的 RMSE 出现了小幅改善，因此 S3 成为主要门控路径中表现最佳的模型设定。进一步在 S3 的基础上加入遥感数据形成 S4，并未继续降低预测误差。次要的交叉注意力结果也显示出相同的多模态模型排序：S3 表现最佳，其次是 S4，最后是 S2。因此，在这一以周度布伦特原油为对象的预测设计中，航运数据是更具信息价值的替代模态，而遥感数据对于提前一周的预测准确性贡献很小。 这一改善值得关注，因为其他主要模型设定均未能优于 M0。
 
@@ -21,7 +17,6 @@ Distributed observations of port and chokepoint activity appear more useful for 
 These findings refine the AIS and satellite literature reviewed in Chapter 2. Existing studies often demonstrate that ships and satellites contain information about trade or physical activity (Adland, Jia and Strandenes, 2017; Yan et al., 2020; Hao and Wang, 2023), but less often ask whether those signals improve one-week-ahead Brent forecasts relative to both a financial baseline and M0. The present results distinguish informational content from predictive value. The ability to measure trade or industrial activity does not necessarily produce a forecast improvement against a demanding weekly benchmark.
 
 这些发现细化了第 2 章所回顾的 AIS 与卫星文献。既有研究通常表明船舶和卫星包含贸易或实物活动信息（Adland, Jia and Strandenes, 2017; Yan et al., 2020; Hao and Wang, 2023），却较少追问这些信号能否同时相对于金融基线和 M0 改善提前一周的 Brent 预测。本文结果将信息含量与预测价值区分开来。能够测量贸易或工业活动，并不必然意味着能够在严格的周度基准下改善预测。
-
 
 ## 5.2 RQ2 — Does representation-level fusion beat flat fusion?
 
@@ -51,7 +46,6 @@ Attention and gate weights describe operations within a fitted model rather than
 
 注意力与门控权重描述拟合模型内部的运算，而非因果关系（Jain and Wallace, 2019）；SHAP 归因于预测的对数收益率，也不能解释价格变化的成因。因此，时间与空间诊断可以帮助识别值得进一步调查的时期和运输通道，但不应被视为独立的政策警报。
 
-
 ## 5.4 Implications
 
 ## 5.4 启示
@@ -67,7 +61,6 @@ These models offer diagnostic rather than causal insight into oil prices. They s
 Spatial data should be assessed according to how well their scale, frequency and structure match the forecasting target, rather than by geographic specificity alone. Remote sensing describes conditions at selected facilities, so its monthly signals may be more suitable for monitoring facility activity or regional production. Shipping data capture flows across connected ports, chokepoints and corridors and therefore better reflect disruption and adjustment across the global oil supply network. They can complement weekly Brent monitoring, although their contribution remains too limited to replace financial and EIA information. For energy-security monitoring, trade planning and inflation-sensitive fiscal management, better observation of physical stress does not necessarily improve one-week-ahead Brent forecasts.
 
 空间数据应根据其尺度、频率和结构与预测目标的匹配程度进行评价，而不能仅凭其具有明确的地理定位便判断其预测价值。遥感描述选定设施的局部状态，其月度信号可能更适合监测设施活动或地区产出。航运数据描述相互连接的港口、咽喉和运输通道之间的流动，因此更能反映全球石油供应网络的扰动与调整。航运数据可以补充周度 Brent 监测，但其贡献仍不足以取代金融与 EIA 信息。对于能源安全监测、贸易规划和关注通胀的财政管理，更清楚地观测实物压力并不一定能够改善提前一周的 Brent 预测。
-
 
 ## 5.5 Limitations
 
@@ -89,9 +82,10 @@ The Flat–Deep comparisons evaluate complete modelling pathways rather than ind
 
 Flat–Deep 的比较评估的是完整的建模路径，而不是单个模型组件，因为这些模型在模型类别、模型容量、编码器以及融合方式等方面均存在差异。此外，它们使用的遥感输入并不完全相同，而 Deep 航运路径还额外引入了显式的图结构。因此，模型性能上的差异不能被明确归因于航运 GAT 或门控融合机制本身。之所以选择门控模型作为主要的 Deep 模型设定，是因为该模型能够提供回答 RQ3 所需的模态权重，而并非因为已有证据表明门控融合优于其他融合机制。最后，仅凭 RMSE 并不足以证明模型具有实际运营价值，因为本研究并未评估交易成本与收益、套期保值效果以及政策干预等方面。
 
-## 5.6 Future research and closing statement
+## 5.6 Future research
 
 ## 5.6 未来研究与收束
+
 Future research should test whether the shipping contribution persists over longer periods and across a broader oil-transport network. A longer evaluation using archived releases and expanded coverage of Russian Baltic and Black Sea ports, West African loading regions and Latin American exporters would extend the evidence beyond the present sample and selected corridors. Where AIS coverage is incomplete, SAR-based vessel detection could extend observation to tracking gaps and dark-fleet activity.
 
 未来研究应检验航运数据的贡献能否在更长时期和更广泛的石油运输网络中持续存在。使用存档发布数据延长评价时期，并将监测范围扩展至俄罗斯波罗的海与黑海港口、西非装货地区和拉丁美洲出口地，可以将证据扩展到当前样本与选定通道之外。对于 AIS 覆盖不足的新纳入地区，可将本文已经使用的 SAR 暗船检测指标同步扩展，用以补充 AIS 未能观测到的船舶活动。

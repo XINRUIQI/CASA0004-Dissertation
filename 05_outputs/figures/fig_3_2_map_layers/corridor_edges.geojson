@@ -1,0 +1,343 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "edge_id": "E01",
+        "aoi_id": "P002",
+        "aoi_label": "Fujairah",
+        "choke_id": "hormuz",
+        "choke_label": "Strait of Hormuz",
+        "weight": 1,
+        "edge_class": "static_corridor",
+        "in_gulf_inset": 1
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            56.25,
+            26.57
+          ],
+          [
+            56.356,
+            25.199
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "edge_id": "E02",
+        "aoi_id": "P003",
+        "aoi_label": "Ras Tanura",
+        "choke_id": "hormuz",
+        "choke_label": "Strait of Hormuz",
+        "weight": 1,
+        "edge_class": "static_corridor",
+        "in_gulf_inset": 1
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            56.25,
+            26.57
+          ],
+          [
+            50.157,
+            26.643
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "edge_id": "E03",
+        "aoi_id": "P007",
+        "aoi_label": "Jamnagar",
+        "choke_id": "hormuz",
+        "choke_label": "Strait of Hormuz",
+        "weight": 1,
+        "edge_class": "static_corridor",
+        "in_gulf_inset": 1
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            56.25,
+            26.57
+          ],
+          [
+            69.86,
+            22.345
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "edge_id": "E04",
+        "aoi_id": "P008",
+        "aoi_label": "Al Basrah Terminal",
+        "choke_id": "hormuz",
+        "choke_label": "Strait of Hormuz",
+        "weight": 1,
+        "edge_class": "static_corridor",
+        "in_gulf_inset": 1
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            56.25,
+            26.57
+          ],
+          [
+            48.81,
+            29.681
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "edge_id": "E05",
+        "aoi_id": "P010",
+        "aoi_label": "Kharg Island",
+        "choke_id": "hormuz",
+        "choke_label": "Strait of Hormuz",
+        "weight": 1,
+        "edge_class": "static_corridor",
+        "in_gulf_inset": 1
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            56.25,
+            26.57
+          ],
+          [
+            50.324,
+            29.231
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "edge_id": "E06",
+        "aoi_id": "P001",
+        "aoi_label": "Rotterdam",
+        "choke_id": "suez",
+        "choke_label": "Suez Canal",
+        "weight": 1,
+        "edge_class": "static_corridor",
+        "in_gulf_inset": 0
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            32.35,
+            30.42
+          ],
+          [
+            4.145,
+            51.95
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "edge_id": "E07",
+        "aoi_id": "P011",
+        "aoi_label": "Yanbu",
+        "choke_id": "suez",
+        "choke_label": "Suez Canal",
+        "weight": 1,
+        "edge_class": "static_corridor",
+        "in_gulf_inset": 0
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            32.35,
+            30.42
+          ],
+          [
+            38.229,
+            23.961
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "edge_id": "E08",
+        "aoi_id": "P004",
+        "aoi_label": "Jurong Island",
+        "choke_id": "malacca",
+        "choke_label": "Strait of Malacca",
+        "weight": 1,
+        "edge_class": "static_corridor",
+        "in_gulf_inset": 0
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            100.4,
+            2.5
+          ],
+          [
+            103.708,
+            1.274
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "edge_id": "E09",
+        "aoi_id": "P006",
+        "aoi_label": "Ningbo-Zhoushan",
+        "choke_id": "malacca",
+        "choke_label": "Strait of Malacca",
+        "weight": 1,
+        "edge_class": "static_corridor",
+        "in_gulf_inset": 0
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            100.4,
+            2.5
+          ],
+          [
+            121.982,
+            29.935
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "edge_id": "E10",
+        "aoi_id": "P009",
+        "aoi_label": "Ulsan",
+        "choke_id": "malacca",
+        "choke_label": "Strait of Malacca",
+        "weight": 1,
+        "edge_class": "static_corridor",
+        "in_gulf_inset": 0
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            100.4,
+            2.5
+          ],
+          [
+            129.343,
+            35.433
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "edge_id": "E11",
+        "aoi_id": "P011",
+        "aoi_label": "Yanbu",
+        "choke_id": "mandeb",
+        "choke_label": "Bab el-Mandeb",
+        "weight": 1,
+        "edge_class": "static_corridor",
+        "in_gulf_inset": 0
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            43.4,
+            12.6
+          ],
+          [
+            38.229,
+            23.961
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "edge_id": "E12",
+        "aoi_id": "P001",
+        "aoi_label": "Rotterdam",
+        "choke_id": "cape",
+        "choke_label": "Cape of Good Hope",
+        "weight": 1,
+        "edge_class": "static_corridor",
+        "in_gulf_inset": 0
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            18.47,
+            -34.36
+          ],
+          [
+            4.145,
+            51.95
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "edge_id": "E13",
+        "aoi_id": "P005",
+        "aoi_label": "Houston",
+        "choke_id": "panama",
+        "choke_label": "Panama Canal",
+        "weight": 1,
+        "edge_class": "static_corridor",
+        "in_gulf_inset": 0
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -79.55,
+            9.08
+          ],
+          [
+            -95.1,
+            29.736
+          ]
+        ]
+      }
+    }
+  ]
+}

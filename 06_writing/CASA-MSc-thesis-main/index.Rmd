@@ -1,27 +1,25 @@
 --- 
-title: CASA dissertation using Bookdown
+title: "A Modality-Aware Spatio-Temporal Fusion Framework for Brent Crude Oil Forecasting Using Financial Time Series, Satellite Imagery and Maritime Networks"
 
 author: 
 - |
-    | Andrew MacLachlan
+    | [XINRUI QI]
     |    
-    | CASA0010, MSc Smart Cities Dissertation 
+    | CASA0004, MSc Dissertation 
     |  
-    | Supervisor: Dr Andrew MacLachlan
+    | Supervisor: [Beatrice Taylor]
     |
-    | Repository: https://andrewmaclachlan.github.io/CASA0005repo/
-    |  
     | This dissertation is submitted in part requirement for the 
-    | MSc (Or MRes) in the Centre for Advanced Spatial Analysis, 
+    | MSc in the Centre for Advanced Spatial Analysis, 
     | Bartlett Faculty of the Built Environment, UCL
     |
-    | Word count:  
+    | Word count:  10800??
 
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 output: bookdown::gitbook
 documentclass: book
-classoption: oneside #openany or #twosides #if two then need to change headers and check margins.
+classoption: oneside
 geometry: "left=4cm, right=3cm, top=2.5cm, bottom=2.5cm"
 fontsize: 12pt
 linestretch: 1.5
@@ -29,7 +27,7 @@ bibliography: [book.bib, packages.bib, test.bib]
 biblio-style: apa
 link-citations: yes
 github-repo: andrewmaclachlan/CASA-MSc-thesis
-description: "This dissertation is submitted in part requirement for the MSc (Or MRes) in the Centre for Advanced Spatial Analysis, Bartlett Faculty of the Built Environment, UCL "
+description: "This dissertation is submitted in part requirement for the MSc in the Centre for Advanced Spatial Analysis, Bartlett Faculty of the Built Environment, UCL"
 always_allow_html: yes
 ---
 
@@ -37,8 +35,18 @@ always_allow_html: yes
 \pagenumbering{roman}
 ```
 
-```{r include=FALSE}
+```{r setup, include=FALSE}
 library(knitr)
+if (!requireNamespace("here", quietly = TRUE)) {
+  install.packages("here", repos = "https://cloud.r-project.org")
+}
+library(here)
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  fig.align = "center"
+)
 ```
 
 `r if (knitr:::is_html_output()) '
@@ -47,5 +55,7 @@ library(knitr)
 `r if (knitr:::is_latex_output()) '
 # Abstract {.unlisted .unnumbered}
 '`
-Some abstract text
 
+Brent crude is one of the principal benchmarks for internationally traded oil and a key reference price in the global energy market. Its short-term movements affect energy costs, inflation, trade balances and fiscal revenues, and therefore influence decisions made by firms and governments. Using weekly data from 2019 to 2025, this study examines whether satellite remote-sensing and shipping data provide incremental value beyond financial time series for one-week-ahead Brent price forecasting. It also compares flat feature fusion with modality-specific encoding followed by fusion. Flat models combine all selected inputs in a single feature table, whereas deep models encode each data source separately before fusing the resulting representations. For both model families, the study compares a financial-time-series-only specification with alternatives that add remote sensing, shipping or both.
+
+The models are evaluated against a no-change benchmark that sets next week’s price equal to this week’s price. The results show that no flat model outperforms this benchmark, although shipping data provide limited evidence of incremental predictive information. Deep models combining financial time series and shipping data achieve a small improvement over the benchmark. Remote-sensing data provide no clear additional benefit. The advantage of deep models over flat models is most evident when shipping data are included. This study further uses modality gates to show which data sources the best-performing deep model relies on most. Overall, predictive value depends more on how multimodal data are used—especially how modalities are encoded and fused—than on simply adding more data.

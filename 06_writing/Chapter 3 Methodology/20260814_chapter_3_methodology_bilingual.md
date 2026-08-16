@@ -96,23 +96,23 @@ The modelling window covers 2019–2025 and provides a common weekly index of 36
 
 ## 3.3 地理范围与监测站点
 
-Because the prediction target is the global Brent benchmark rather than a local physical cargo price at a single terminal, the study does not use one specific study region. Spatial information instead comes from eleven oil-infrastructure monitoring sites and six maritime chokepoints. Together they cover major supply, transit, refining and demand locations in the international oil system. Figure 3.3 places these sites and chokepoints on a world map. Full site names, coordinates, patch sizes and graph edge definitions are in Appendix A.
+Because the prediction target is the global Brent benchmark rather than a local physical cargo price at a single terminal, the study does not use one specific study region. Spatial information instead comes from eleven oil-infrastructure monitoring sites and six maritime chokepoints. Rather than constituting a spatially exhaustive or geographically balanced sample, these locations were purposively selected to span different functional positions in the international oil system, including supply, transit, refining, demand and market access. Figure 3.3 places these sites and chokepoints on a world map. Full site names, coordinates, functional roles, patch sizes and graph edge definitions are in Appendix A.
 
-由于预测对象是全球 Brent 基准，而非单一码头的本地实物货价，本研究不采用一块特定的地理研究区。空间信息来自十一个石油基础设施监测站点与六个航运咽喉。它们共同覆盖国际石油体系中的主要供给、中转、炼化与需求区位。图 3.3 在世界地图上标出这些站点与咽喉。完整站名、坐标、裁剪范围与图边定义见附录 A。
+由于预测对象是全球 Brent 基准，而非单一码头的本地实物货价，本研究不采用一块特定的地理研究区。空间信息来自十一个石油基础设施监测站点与六个航运咽喉。这些位置并不构成对全球石油体系的完整或地理均衡抽样，而是通过目的性选取，覆盖供给、中转、炼化、需求与市场接入等不同功能环节。图 3.3 在世界地图上标出这些站点与咽喉。完整站名、坐标、裁剪范围与图边定义见附录 A。
 
 The eleven sites comprise ports, refineries and export terminals selected purposively for their strategic roles and observability in the available satellite products.Flat remote-sensing features are summarised within a circular buffer of 5 km radius around each site. Deep image patches are centred on the same sites but vary in size by facility type and local spatial constraints. The sizes are generally larger for ports, intermediate for refineries and smaller for terminals.
 
 这十一个站点包括港口、炼油厂和出口码头，并根据其战略作用以及在现有卫星产品中的可观测性进行目的性选取。Flat 路径的遥感特征在以各站点为中心、半径 5 km 的圆形缓冲区内进行汇总。Deep 路径的影像块同样以这些站点为中心，但其大小会根据设施类型和当地空间条件进行调整。总体而言，港口使用较大的影像块，炼油厂居中，码头较小。
 
-The shipping graph augments the eleven sites with six maritime chokepoints: the Strait of Hormuz, the Suez Canal, the Strait of Malacca, Bab el-Mandeb, the Panama Canal and the Cape of Good Hope. The resulting weekly graph contains seventeen nodes and two forms of connection. Dynamic links between the eleven AOIs are directed origin–destination pairs, weighted by the number of voyages counted in each week from Global Fishing Watch (GFW) port-visit sequences. Fixed links are undirected. Each site is connected to the chokepoint or chokepoints on its main documented oil-trade corridor. These links are defined in advance rather than inferred from weekly vessel movements or geographic proximity. Complete edge definitions are reported in Appendix A.4, and graph encoding is described in Section 3.5.2.
+The shipping graph augments the eleven sites with six maritime chokepoints: the Strait of Hormuz, the Suez Canal, the Strait of Malacca, Bab el-Mandeb, the Panama Canal and the Cape of Good Hope. The resulting weekly graph contains seventeen nodes and two forms of connection. Dynamic links between the eleven AOIs are directed origin–destination pairs, weighted by the number of voyages counted in each week from Global Fishing Watch (GFW) port-visit sequences. Fixed links are undirected. Each site is connected to the chokepoint or chokepoints on its main documented oil-trade corridor. These links are defined in advance rather than inferred from weekly vessel movements or geographic proximity. Complete edge definitions are reported in Appendix A, and graph encoding is described in Section 3.5.2.
 
 航运图在十一个站点之外加入六个航运咽喉：霍尔木兹海峡、苏伊士运河、马六甲海峡、曼德海峡、巴拿马运河与好望角。由此形成包含十七个节点、两类连接的周度图。十一个 AOI 之间的动态边为有向的起点–终点对，权重取各周内由 Global Fishing Watch 港口访问序列统计到的航次数，因而随周变化。固定边为无向。每个站点与其主要石油贸易走廊上的一个或多个咽喉相连。这些连接预先设定，而不是根据周度船舶移动或地理邻近关系推断。完整边定义见附录 A.4，图编码方法见第 3.5.2 节。
 
 Figure 3.3
 
-**Figure 3.3 — Spatial coverage of the 11 oil-infrastructure AOIs, six maritime chokepoints and fixed AOI–chokepoint corridor links used in the shipping graph.**
+**Figure 3.3 — Spatial coverage of the 11 oil-infrastructure AOIs and six maritime chokepoints. Markers indicate AOI centre coordinates rather than the full spatial extent of each port or industrial complex. The Persian Gulf panel is an enlarged view of the same sites.**
 
-**图 3.3 — 研究的空间覆盖：11 个石油基础设施 AOI、6 个航运咽喉，以及航运图中使用的固定 AOI–咽喉走廊连接。**
+**图 3.3 — 研究的空间覆盖：11 个石油基础设施 AOI 与 6 个航运咽喉。图中标记为各 AOI 中心坐标，不表示港口或产业园区的完整空间范围。波斯湾面板为同一批站点的放大视图。**
 
 ## 3.4 Data sources and preparation
 
@@ -164,21 +164,24 @@ For the remote-sensing block, the Flat and Deep pathways extract inputs from the
 
 对于遥感数据块，Flat和Deep两条路径从相同的十一个 AOI 提取遥感输入，但空间范围、产品与表征不同。Flat 路径使用 Sentinel-2 光学指数与 VIIRS 夜光，Deep 路径使用由 Sentinel-2 影像块得到的冻结 Prithvi-EO-2.0 嵌入，且无单独的 VIIRS 输入流。
 
-The shipping block covers activity at the eleven AOIs and six chokepoints. IMF PortWatch supplies tanker-flow measures at ports and chokepoints. Global Fishing Watch supplies measures of vessel presence and activity duration. These variables serve as proxies for physical shipping activity, tanker movements and congestion. In the Flat pathway, PortWatch and GFW enter as weekly tabular features. In the Deep pathway, the 17-node graph uses PortWatch flows, GFW AIS vessel-presence and activity measures, and GFW SAR-derived dark-vessel detections as node attributes, while dynamic AOI–AOI voyage links are constructed from GFW port-visit sequences. Full variable definitions are reported in Appendix A.1.
+The shipping block covers activity at the eleven AOIs and six chokepoints. IMF PortWatch supplies tanker-flow measures at ports and chokepoints. Global Fishing Watch supplies measures of vessel presence and activity duration. These variables serve as proxies for physical shipping activity, tanker movements and congestion. In the Flat pathway, PortWatch and GFW enter as weekly tabular features. In the Deep pathway, the 17-node graph uses PortWatch flows, GFW AIS vessel-presence and activity measures, and GFW SAR-derived dark-vessel detections as node attributes, while dynamic AOI–AOI voyage links are constructed from GFW port-visit sequences. Full variable definitions are reported in Appendix A.
 
 航运数据块覆盖十一个 AOI 和六个航运咽喉的活动。IMF PortWatch 提供港口和咽喉的油轮流量指标。Global Fishing Watch 提供船舶存在情况和活动时长指标。这些变量用于表征实物航运活动、油轮移动和拥堵情况。在 Flat 路径中，PortWatch 和 GFW 数据以周度表格特征的形式输入模型。在 Deep 路径中，17 节点图将 PortWatch 流量、GFW 的 AIS 船舶存在与活动指标，以及 GFW 基于 SAR 的暗船检测作为节点属性；AOI 之间的动态航次边则由 GFW 港口访问序列构建。完整变量定义见附录 A.1。
 
-### 3.4.2 Temporal alignment
+### 3.4.2 Spatial aggregation and temporal alignment
 
 
 
-### 3.4.2 时间对齐
+### 3.4.2 空间聚合与时间对齐
+
+Spatially referenced data are first aggregated to the monitoring locations used in the models. Remote-sensing observations are aggregated from pixels to AOI–month products. PortWatch and GFW series are aggregated from vessel events or traffic counts to AOIs and chokepoints. The identity of each site or node is retained before the series enter the models.
+带有空间参照的数据首先聚合到模型所使用的监测位置。遥感观测由像元聚合为 AOI–月度产品。PortWatch 与 GFW 序列由船舶事件或交通计数聚合到 AOI 与咽喉。各站点或节点的身份在进入模型前予以保留。
 
 All series are aligned to a common Friday-ending weekly calendar. Daily observations are converted using end-of-week values, weekly means or weekly sums as appropriate, while monthly series are carried forward only after their assumed availability dates. Monthly remote-sensing products are aligned to their conservative availability dates, with the most recent eligible composite carried forward to avoid look-ahead bias.
 
 所有时间序列均对齐至统一的、以周五为周末的周度日历。对于日度数据，根据变量性质分别采用周末值、周均值或周总和进行周度聚合；对于月度数据，则仅在其假定的可获得日期之后向前填充。月度遥感产品按照较为保守的可获得日期进行对齐，并仅向前延用最近一期已符合可用条件的合成数据，以避免前视偏差。
 
-Publication timing is approximated using source- and product-specific fixed lag buffers rather than observation-level release timestamps. Exact aggregation rules, lag constants and implementation scripts are reported in Appendix A.3. One-week buffers are applied to EIA fundamentals and PortWatch flows, while monthly macroeconomic series, remote-sensing products and individual GFW AIS and SAR products receive longer buffers.
+Publication timing is approximated using source- and product-specific fixed lag buffers rather than observation-level release timestamps. Exact aggregation rules, lag constants and implementation scripts are reported in Appendix A. One-week buffers are applied to EIA fundamentals and PortWatch flows, while monthly macroeconomic series, remote-sensing products and individual GFW AIS and SAR products receive longer buffers.
 
 发布时间通过按来源和产品设定的固定滞后缓冲近似，而不是逐条采用观测值的实际发布时间戳。具体聚合规则、滞后常数与实现脚本见附录 A.3。EIA 基本面与 PortWatch 流量施加一周缓冲，月度宏观序列、遥感产品以及 GFW 的各 AIS 与 SAR 产品则使用更长的缓冲。
 
@@ -188,10 +191,9 @@ Publication timing is approximated using source- and product-specific fixed lag 
 
 ### 3.4.3 数据质量与缺失值
 
-Monthly optical composites are cloud-filtered before the indices are constructed, and cloud-quality indicators are not used as predictors. On the weekly calendar, mean coverage across the four optical indices is approximately 97 per cent, while VIIRS night-time-light anomalies are fully observed. Site-level coverage and counts of independent monthly composites are reported in Appendix A.5.
+Monthly optical composites are cloud-filtered before the indices are constructed, and cloud-quality indicators are not used as predictors. On the weekly calendar, mean coverage across the four optical indices is approximately 97 per cent, while VIIRS night-time-light anomalies are fully observed. Site-level coverage and counts of independent monthly composites are reported in Appendix A.
 
 月度光学合成影像在构建指数前进行云筛选，云质量指标不作为预测变量。在周度日历上，四项光学指数的平均覆盖率约为 97%，VIIRS 夜间灯光距平则完全可用。站点级覆盖率与独立月度合成数量见附录 A.5。
-
 
 After temporal alignment, the remaining gaps occur almost entirely before each series’ first valid observation. These leading gaps are set to zero for remote-sensing variables and filled with the training-fold median for each shipping-count variable.Deep finance inputs contain no missing values after merging. Missing remote-sensing embeddings and shipping-graph values are set to zero after scaling. All imputation and scaling parameters are estimated separately within each training window.
 
@@ -221,9 +223,9 @@ Flat 模型采用早期特征级融合。对每个信息集，所有可用数值
 
 ### 3.5.2 Deep 模型
 
-Deep models encode each modality separately and fuse the resulting representations for S2–S4.
+Deep models encode each modality separately, retaining its temporal and, where applicable, site or network organisation before fusing the resulting representations for S2–S4.
 
-Deep 模型对每个模态分别编码，并在 S2–S4 上融合所得表征。
+Deep 模型分别编码各模态，在融合 S2–S4 的模态表征之前，保留各模态的时间结构，并在适用时保留其站点或网络组织。
 
 The finance encoder applies a causal temporal convolutional network (TCN; Bai, Kolter and Koltun, 2018) to the four-week financial sequence retained across S1–S4. It produces one finance representation per forecast origin using only current and earlier positions at each convolutional layer.
 
@@ -233,11 +235,11 @@ The remote-sensing encoder receives monthly embeddings for the 11 AOIs, extracte
 
 遥感编码器接收 11 个 AOI 的月度嵌入，这些嵌入由冻结的 Prithvi-EO-2.0-300M 编码器从 Sentinel-2 地表反射率和谐化影像块中提取。影像块按照该 HLS 预训练编码器的六波段约定进行适配，波段映射、标准化与重采样方法见附录 A。时间注意力先汇总每个 AOI 的四周嵌入，随后站点注意力将 11 个 AOI 汇总为一个遥感表征。
 
-The shipping encoder applies a graph attention network with temporal encoding (GAT; Veličković et al., 2018) to the weekly 17-node graph over the four-week lookback, producing one shipping representation per forecast origin. The graph is constructed as described in Section 3.3. For message passing, the directed voyage links and undirected corridor links are combined in a symmetrised adjacency matrix, so the encoder does not retain edge direction or type. Symmetrised voyage counts are used as a prior in the attention calculation. Adjacency and edge-weighting details are reported in Appendix A.4.3.
+The shipping encoder applies a graph attention network with temporal encoding (GAT; Veličković et al., 2018) to the weekly 17-node graph over the four-week lookback, producing one shipping representation per forecast origin. The graph is constructed as described in Section 3.3 and represents transport-network connectivity rather than adjacency based on geographical proximity. For message passing, the directed voyage links and undirected corridor links are combined in a symmetrised adjacency matrix, so the encoder does not retain edge direction or type. Symmetrised voyage counts are used as a prior in the attention calculation. Adjacency and edge-weighting details are reported in Appendix A.
 
 航运编码器将带时间编码的图注意力网络（GAT；Veličković et al., 2018）应用于四周回看窗口内的周度 17 节点图，为每个预测起点生成一个航运表征。图的构建如第 3.3 节所述。进入消息传递时，有向航次边与无向走廊边合并为一张对称化邻接，因此编码器不再保留边的方向与类型。对称化后的航次流量作为先验进入注意力计算。邻接关系与边权细节见附录 A.4.3。
 
-Fusion is applied only to Deep models for S2–S4, while S1 passes its finance representation directly to the regression head. Three mechanisms are compared. Gated fusion is designated as the main design because it provides forecast-origin-specific modality weights for the subsequent interpretability analysis. These weights are non-negative and sum to one at each forecast origin. Encoder concatenation and cross-attention are used only as alternatives. The resulting representation is trained by mean squared error to predict the one-week-ahead log return. Fixed fusion settings are reported in Appendix C.4.2–C.4.3.
+Fusion is applied only to Deep models for S2–S4, while S1 passes its finance representation directly to the regression head. Three mechanisms are compared. Gated fusion is designated as the main design because it provides forecast-origin-specific modality weights for the subsequent interpretability analysis. These weights are non-negative and sum to one at each forecast origin. Encoder concatenation and cross-attention are used only as alternatives. The resulting representation is trained by mean squared error to predict the one-week-ahead log return. Fixed fusion settings are reported in Appendix C.
 
 融合仅用于 S2–S4，S1 的金融表征则直接进入回归头。研究比较了三种机制。作为主要设计的门控融合在每个预测起点分配总和为 1 的非负模态权重。编码器拼接与交叉注意力为备选。所得表征以均方误差训练，用于预测提前一周的对数收益。固定融合设置见附录 C.4.2–C.4.3。
 
@@ -315,11 +317,9 @@ RMSE improvement vs M0m​(%)=100×(1−RMSEM0​RMSEm​​).
 
 Here, P_{t+1} is the observed price and \hat{P}_{m,t+1\mid t} is the price forecast produced by model m at forecast origin t. A positive value indicates a lower RMSE than M0, zero indicates equal RMSE, and a negative value indicates worse performance.
 
-
-
 ### 3.7.2 Model Interpretation and Robustness Checks
 
-Model interpretability concerns identifying where a model’s predictive ability comes from, including which data sources and features contribute more or less to its predictions. For Deep alternative-data models with positive RMSE improvement relative to M0, SHapley Additive exPlanations (SHAP) values are calculated to quantify each input’s contribution (Lundberg and Lee, 2017). 
+Model interpretability concerns identifying where a model’s predictive ability comes from, including which data sources and features contribute more or less to its predictions. For the main Deep specification with positive RMSE improvement relative to M0, SHapley Additive exPlanations (SHAP) values are calculated to quantify each input’s contribution (Lundberg and Lee, 2017). 
 Absolute SHAP values are aggregated by data source and, where applicable, spatial site or node. Results are reported for the full sample, by year, and within predefined ±8-week event windows. For gated models, weekly modality weights are also reported to describe how the model allocates weight across financial, remote-sensing and shipping representations. SHAP and gate weights describe model attribution and internal allocation rather than causal importance.Robustness is assessed by rerunning the prespecified Deep models with random seeds and comparing their RMSE.
 
 【备注：3.7.3 Model interpretation整段需要重写。

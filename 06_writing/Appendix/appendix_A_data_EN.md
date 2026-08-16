@@ -7,10 +7,9 @@
 > the model-facing dictionary, the site lists, the publication lags and the
 > shipping-graph edge construction.
 
-Information sets: **M0** random walk (`brent_price` only) · **M1**
-finance (31) · **M2** M1 + remote sensing (55) · **M3** M1 + shipping full (164)
-· **M4** M1+M2+M3 (250). Flat flattens each column over a 4-week lookback
-(lag 0–3); Deep keeps modality structure inside encoders.
+These column counts are the data blocks assembled into information sets
+S1–S4 (Table 3.1). M0 is the no-change benchmark and has no predictor
+matrix of its own.
 
 ---
 
@@ -18,23 +17,62 @@ finance (31) · **M2** M1 + remote sensing (55) · **M3** M1 + shipping full (16
 
 ### A.1.1 M1 — Finance / macro (31)
 
-**Prices & derived (5)**: `brent_price`, `wti_price`, `brent_log_return`,
-`wti_log_return`, `brent_wti_spread` (EIA spot; log returns = ln(Pₜ/Pₜ₋₁)).
+M1 is the finance–macro block shared by every information set except M0.
+Daily series enter as the Friday last value. Log returns are ln(Pₜ/Pₜ₋₁)
+and are not multiplied by 100. Publication lags are in A.3.
 
-**EIA WPSR fundamentals (12, +1 w)**:
-`crude_stocks_excl_spr`, `cushing_stocks`, `crude_production`, `crude_imports`,
-`crude_exports`, `refinery_crude_input`, `refinery_utilisation`,
-`gasoline_supplied`, `distillate_supplied`, `jet_fuel_supplied`,
-`crude_stocks_change`, `cushing_stocks_change`.
+**Prices & derived (5)**
 
-**Macro-financial (5)**: `vix` (FRED VIXCLS), `dollar_index`
-(DTWEXBGS), `treasury_10y` (DGS10), `fed_funds_rate` (DFF),
-`sp500_log_return` (^GSPC).
+| Variable | Meaning | Source |
+| --- | --- | --- |
+| `brent_price` | Brent spot (USD/bbl) | EIA |
+| `wti_price` | WTI Cushing spot (USD/bbl) | EIA |
+| `brent_log_return` | Brent weekly log return | derived |
+| `wti_log_return` | WTI weekly log return | derived |
+| `brent_wti_spread` | Brent − WTI (USD/bbl) | derived |
 
-**Derived market/macro (9)**: `ovx`, `gpr`, `gold_return`,
-`global_econ_activity` (Kilian REA), `nonoil_industrial_commodity`
-(IMF PINDUINDEXM), `brent_f1_spot_log_basis`, `brent_roll_week` (dummy),
-`cadusd_log_return`, `dgs10_change`.
+**EIA WPSR fundamentals (12)**
+
+| Variable | Meaning | Unit |
+| --- | --- | --- |
+| `crude_stocks_excl_spr` | commercial crude stocks excl. SPR | thousand barrels |
+| `cushing_stocks` | Cushing crude stocks | thousand barrels |
+| `crude_production` | U.S. crude production | thousand bbl/d |
+| `crude_imports` | crude imports | thousand bbl/d |
+| `crude_exports` | crude exports | thousand bbl/d |
+| `refinery_crude_input` | refinery crude input | thousand bbl/d |
+| `refinery_utilisation` | refinery utilisation | % |
+| `gasoline_supplied` | gasoline product supplied | thousand bbl/d |
+| `distillate_supplied` | distillate product supplied | thousand bbl/d |
+| `jet_fuel_supplied` | jet-fuel product supplied | thousand bbl/d |
+| `crude_stocks_change` | weekly change in commercial stocks | thousand barrels |
+| `cushing_stocks_change` | weekly change in Cushing stocks | thousand barrels |
+
+**Macro-financial (5)**
+
+| Variable | Meaning | Source |
+| --- | --- | --- |
+| `vix` | CBOE equity-volatility index | FRED VIXCLS |
+| `dollar_index` | broad nominal USD index | FRED DTWEXBGS |
+| `treasury_10y` | 10-year Treasury yield | FRED DGS10 |
+| `fed_funds_rate` | effective federal funds rate | FRED DFF |
+| `sp500_log_return` | S&P 500 weekly log return | Yahoo ^GSPC |
+
+**Derived market/macro (9)**
+
+| Variable | Meaning | Source |
+| --- | --- | --- |
+| `ovx` | CBOE crude-oil volatility index | Yahoo ^OVX |
+| `gpr` | geopolitical-risk index (weekly mean of daily GPRD) | Caldara–Iacoviello |
+| `gold_return` | gold weekly log return | FRED / Yahoo GC=F |
+| `global_econ_activity` | Kilian real economic activity (REA) | Dallas Fed IGREA |
+| `nonoil_industrial_commodity` | non-fuel industrial materials price index | IMF PINDUINDEXM (FRED) |
+| `brent_f1_spot_log_basis` | front-month futures − spot log basis | Yahoo BZ=F vs EIA spot |
+| `brent_roll_week` | front-month roll-week dummy {0,1} | calendar-derived |
+| `cadusd_log_return` | CAD/USD weekly log return | Yahoo CADUSD=X |
+| `dgs10_change` | weekly change in `treasury_10y` | derived |
+
+`brent_f1_spot_log_basis` = ln(BZ=F) − ln(`brent_price`); the futures leg is not back-adjusted, so `brent_roll_week` flags the calendar week of the roll.
 
 ### A.1.2 M2 — Remote sensing (55 = 5 indices × 11 AOI)
 
@@ -81,17 +119,31 @@ The Deep arm does **not** use the flat 164-column table; it builds a 17-node
 graph (`m3_graph17_tensors.npz`). Node feature spaces differ by type
 (heterogeneous).
 
-**AOI node features (11 per AOI node)**:
-`pw_portcalls_tanker`, `pw_portcalls_cargo`, `pw_import_tanker`,
-`pw_export_tanker`, `gfw_n_visits`, `gfw_dwell_hrs_mean`, `gfw_dwell_hrs_median`,
-`gfw_self_loops`, `sar_detections_total`, `sar_detections_dark`, `sar_dark_share`.
+**AOI node features (11 per node)**
 
-**Chokepoint node features (20 per node = GFW 8 + PortWatch 9 + SAR 3)**:
-GFW `{total_hours, total_vessels, cargo_hours, bunker_hours,
-other_hours, other_share, total_hours_mom_pct, mean_presence_hours_per_vessel}`;
-PortWatch `{n_tanker, n_total, capacity_tanker, capacity, tanker_share,
-tanker_cap_share, avg_tanker_size, n_tanker_wow_pct, capacity_tanker_4w_ma}`;
-SAR `{detections_total, detections_dark, dark_share}`.
+| Variable | Meaning | Source |
+| --- | --- | --- |
+| `pw_portcalls_tanker` | tanker port calls (weekly sum) | PortWatch |
+| `pw_portcalls_cargo` | cargo port calls | PortWatch |
+| `pw_import_tanker` | tanker import tonnage | PortWatch |
+| `pw_export_tanker` | tanker export tonnage | PortWatch |
+| `gfw_n_visits` | port-visit count | GFW AIS |
+| `gfw_dwell_hrs_mean` | mean dwell hours | GFW AIS |
+| `gfw_dwell_hrs_median` | median dwell hours | GFW AIS |
+| `gfw_self_loops` | same-AOI repeat calls | GFW AIS |
+| `sar_detections_total` | SAR detections | GFW SAR |
+| `sar_detections_dark` | unmatched (dark) detections | GFW SAR |
+| `sar_dark_share` | dark / total | GFW SAR |
+
+Dwell hours keep only `durationHrs` ≤ 720 h (30 days); longer stays are set to missing.
+
+**Chokepoint node features (20 per node)** — same families as A.1.3, attached to the six chokepoint nodes rather than flattened.
+
+| Block | Features |
+| --- | --- |
+| GFW (8) | `total_hours`, `total_vessels`, `cargo_hours`, `bunker_hours`, `other_hours`, `other_share`, `total_hours_mom_pct`, `mean_presence_hours_per_vessel` |
+| PortWatch (9) | `n_tanker`, `n_total`, `capacity_tanker`, `capacity`, `tanker_share`, `tanker_cap_share`, `avg_tanker_size`, `n_tanker_wow_pct`, `capacity_tanker_4w_ma` |
+| SAR (3) | `detections_total`, `detections_dark`, `dark_share` |
 
 The Deep RS branch uses frozen **Prithvi-EO-2.0 embeddings** (1024-d per
 AOI-month) rather than the M2 indices; VIIRS is Flat-only.
@@ -102,9 +154,11 @@ AOI-month) rather than the M2 indices; VIIRS is Flat-only.
 
 ### A.2.1 11 oil-infrastructure AOIs
 
-Fixed node order P001–P011 (graph AOI index 0–10). 5 km analysis buffer;
-AOI-differentiated Sentinel-2 patch sizes. Source:
-`aoi_oil_infrastructure_sites.md`.
+Fixed node order P001–P011 (graph AOI index 0–10). Flat remote-sensing
+features use a circular buffer of 5 km radius at every site. Deep Sentinel-2
+patches are square and site-specific: 6.4 km for ports, 5.12 km for
+refineries, and 1.6–3.2 km for terminals after visual coverage checks.
+Source: `aoi_oil_infrastructure.csv` and the Channel A data dictionary.
 
 The Chokepoint column defines the fixed corridor edges of the shipping graph:
 thirteen undirected AOI–chokepoint links of unit weight, specified ex ante and
@@ -112,19 +166,21 @@ covering all eleven sites. No chokepoint–chokepoint links are used. Dynamic
 AOI–AOI edges are weekly voyage counts and are defined separately
 (`build_m3_graph17.py`, `CHOKE_AOI`).
 
-| ID | Site | Country | Type | Role | Chokepoint | (lon, lat) |
-| --- | --- | --- | --- | --- | --- | --- |
-| P001 | Rotterdam | Netherlands | port | pricing / import | Suez · Cape | 4.145, 51.950 |
-| P002 | Fujairah | UAE | terminal | transit / storage | Hormuz | 56.356, 25.199 |
-| P003 | Ras Tanura | Saudi Arabia | terminal | export | Hormuz | 50.157, 26.643 |
-| P004 | Jurong Island | Singapore | refinery | transit / refining | Malacca | 103.708, 1.274 |
-| P005 | Houston | USA | port | import / refining | Panama | −95.100, 29.736 |
-| P006 | Ningbo-Zhoushan | China | port | import | Malacca | 121.982, 29.935 |
-| P007 | Jamnagar | India | refinery | refining | Hormuz | 69.860, 22.345 |
-| P008 | Basra | Iraq | terminal | export | Hormuz | 48.810, 29.681 |
-| P009 | Ulsan | South Korea | refinery | refining | Malacca | 129.343, 35.433 |
-| P010 | Kharg Island | Iran | terminal | export | Hormuz | 50.324, 29.231 |
-| P011 | Yanbu | Saudi Arabia | terminal | export | Suez · Mandeb | 38.229, 23.961 |
+| Site ID | Site name | Country/region | Facility type | Functional role | Latitude | Longitude | Flat buffer | Deep patch size | Chokepoint |
+| --- | --- | --- | --- | --- | ---: | ---: | --- | --- | --- |
+| P001 | Rotterdam | Netherlands / Europe | port | pricing / import | 51.950 | 4.145 | 5 km | 6.4 km | Suez · Cape |
+| P002 | Fujairah | UAE / Middle East | terminal | transit / storage | 25.199 | 56.356 | 5 km | 3.2 km | Hormuz |
+| P003 | Ras Tanura | Saudi Arabia / Middle East | terminal | export | 26.643 | 50.157 | 5 km | 2.56 km | Hormuz |
+| P004 | Jurong Island | Singapore / Asia | refinery | transit / refining | 1.274 | 103.708 | 5 km | 5.12 km | Malacca |
+| P005 | Houston | USA / North America | port | import / refining | 29.736 | −95.100 | 5 km | 6.4 km | Panama |
+| P006 | Ningbo-Zhoushan | China / East Asia | port | import | 29.935 | 121.982 | 5 km | 6.4 km | Malacca |
+| P007 | Jamnagar | India / South Asia | refinery | refining | 22.345 | 69.860 | 5 km | 5.12 km | Hormuz |
+| P008 | Al Basrah Terminal | Iraq / Middle East | terminal | export | 29.681 | 48.810 | 5 km | 1.6 km | Hormuz |
+| P009 | Ulsan | South Korea / East Asia | refinery | refining | 35.433 | 129.343 | 5 km | 5.12 km | Malacca |
+| P010 | Kharg Island | Iran / Middle East | terminal | export | 29.231 | 50.324 | 5 km | 3.2 km | Hormuz |
+| P011 | Yanbu | Saudi Arabia / Middle East | terminal | export | 23.961 | 38.229 | 5 km | 3.2 km | Suez · Mandeb |
+
+Flat buffer is a circular radius. Deep patch size is the side length of a square image chip centred on the same coordinate.
 
 ### A.2.2 6 maritime chokepoints
 
@@ -268,7 +324,7 @@ fully observed at all eleven sites.
 | Houston | 100.0% | 2019-01-04 | 100% | 100% |
 | Rotterdam | 100.0% | 2019-01-04 | 100% | 100% |
 | Jamnagar | 100.0% | 2019-01-04 | 100% | 100% |
-| Basra, Fujairah, Kharg, Ras Tanura, Yanbu | 100.0% | 2019-01-04 | 100% | 100% |
+| Al Basrah Terminal, Fujairah, Kharg, Ras Tanura, Yanbu | 100.0% | 2019-01-04 | 100% | 100% |
 | Ulsan | 93.4% | 2019-06-21 | 100% | 100% |
 | Ningbo-Zhoushan | 89.9% | 2019-09-20 | 100% | 100% |
 | Jurong Island | 83.8% | 2020-02-21 | 98.4% | 100% |

@@ -1,0 +1,302 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "P001",
+        "graph_index": 0,
+        "map_label": "Rotterdam",
+        "site_name": "Port of Rotterdam",
+        "site_type": "port",
+        "functional_role": "pricing / import",
+        "country": "Netherlands",
+        "region": "Europe",
+        "lon": 4.145,
+        "lat": 51.95,
+        "flat_buffer_km": 5.0,
+        "deep_patch_km": 6.4,
+        "chokepoints": "suez · cape",
+        "in_gulf_inset": 0,
+        "node_class": "aoi"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.145,
+          51.95
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "P002",
+        "graph_index": 1,
+        "map_label": "Fujairah",
+        "site_name": "Fujairah Oil Terminal",
+        "site_type": "terminal",
+        "functional_role": "transit / storage",
+        "country": "United Arab Emirates",
+        "region": "Middle East",
+        "lon": 56.356,
+        "lat": 25.199,
+        "flat_buffer_km": 5.0,
+        "deep_patch_km": 3.2,
+        "chokepoints": "hormuz",
+        "in_gulf_inset": 1,
+        "node_class": "aoi"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          56.356,
+          25.199
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "P003",
+        "graph_index": 2,
+        "map_label": "Ras Tanura",
+        "site_name": "Ras Tanura Terminal",
+        "site_type": "terminal",
+        "functional_role": "export",
+        "country": "Saudi Arabia",
+        "region": "Middle East",
+        "lon": 50.157,
+        "lat": 26.643,
+        "flat_buffer_km": 5.0,
+        "deep_patch_km": 2.56,
+        "chokepoints": "hormuz",
+        "in_gulf_inset": 1,
+        "node_class": "aoi"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          50.157,
+          26.643
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "P004",
+        "graph_index": 3,
+        "map_label": "Jurong Island",
+        "site_name": "Singapore Jurong Island",
+        "site_type": "refinery",
+        "functional_role": "transit / refining",
+        "country": "Singapore",
+        "region": "Asia",
+        "lon": 103.708,
+        "lat": 1.274,
+        "flat_buffer_km": 5.0,
+        "deep_patch_km": 5.12,
+        "chokepoints": "malacca",
+        "in_gulf_inset": 0,
+        "node_class": "aoi"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          103.708,
+          1.274
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "P005",
+        "graph_index": 4,
+        "map_label": "Houston",
+        "site_name": "Houston Ship Channel",
+        "site_type": "port",
+        "functional_role": "import / refining",
+        "country": "United States",
+        "region": "North America",
+        "lon": -95.1,
+        "lat": 29.736,
+        "flat_buffer_km": 5.0,
+        "deep_patch_km": 6.4,
+        "chokepoints": "panama",
+        "in_gulf_inset": 0,
+        "node_class": "aoi"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -95.1,
+          29.736
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "P006",
+        "graph_index": 5,
+        "map_label": "Ningbo-Zhoushan",
+        "site_name": "Ningbo-Zhoushan Port",
+        "site_type": "port",
+        "functional_role": "import",
+        "country": "China",
+        "region": "East Asia",
+        "lon": 121.982,
+        "lat": 29.935,
+        "flat_buffer_km": 5.0,
+        "deep_patch_km": 6.4,
+        "chokepoints": "malacca",
+        "in_gulf_inset": 0,
+        "node_class": "aoi"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.982,
+          29.935
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "P007",
+        "graph_index": 6,
+        "map_label": "Jamnagar",
+        "site_name": "Jamnagar Refinery",
+        "site_type": "refinery",
+        "functional_role": "refining",
+        "country": "India",
+        "region": "South Asia",
+        "lon": 69.86,
+        "lat": 22.345,
+        "flat_buffer_km": 5.0,
+        "deep_patch_km": 5.12,
+        "chokepoints": "hormuz",
+        "in_gulf_inset": 0,
+        "node_class": "aoi"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          69.86,
+          22.345
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "P008",
+        "graph_index": 7,
+        "map_label": "Al Basrah Terminal",
+        "site_name": "Basra Oil Terminal",
+        "site_type": "terminal",
+        "functional_role": "export",
+        "country": "Iraq",
+        "region": "Middle East",
+        "lon": 48.81,
+        "lat": 29.681,
+        "flat_buffer_km": 5.0,
+        "deep_patch_km": 1.6,
+        "chokepoints": "hormuz",
+        "in_gulf_inset": 1,
+        "node_class": "aoi"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          48.81,
+          29.681
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "P009",
+        "graph_index": 8,
+        "map_label": "Ulsan",
+        "site_name": "Ulsan Refinery",
+        "site_type": "refinery",
+        "functional_role": "refining",
+        "country": "South Korea",
+        "region": "East Asia",
+        "lon": 129.343,
+        "lat": 35.433,
+        "flat_buffer_km": 5.0,
+        "deep_patch_km": 5.12,
+        "chokepoints": "malacca",
+        "in_gulf_inset": 0,
+        "node_class": "aoi"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          129.343,
+          35.433
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "P010",
+        "graph_index": 9,
+        "map_label": "Kharg Island",
+        "site_name": "Kharg Island Terminal",
+        "site_type": "terminal",
+        "functional_role": "export",
+        "country": "Iran",
+        "region": "Middle East",
+        "lon": 50.324,
+        "lat": 29.231,
+        "flat_buffer_km": 5.0,
+        "deep_patch_km": 3.2,
+        "chokepoints": "hormuz",
+        "in_gulf_inset": 1,
+        "node_class": "aoi"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          50.324,
+          29.231
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "P011",
+        "graph_index": 10,
+        "map_label": "Yanbu",
+        "site_name": "Yanbu Export Terminal",
+        "site_type": "terminal",
+        "functional_role": "export",
+        "country": "Saudi Arabia",
+        "region": "Middle East",
+        "lon": 38.229,
+        "lat": 23.961,
+        "flat_buffer_km": 5.0,
+        "deep_patch_km": 3.2,
+        "chokepoints": "suez · mandeb",
+        "in_gulf_inset": 0,
+        "node_class": "aoi"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          38.229,
+          23.961
+        ]
+      }
+    }
+  ]
+}

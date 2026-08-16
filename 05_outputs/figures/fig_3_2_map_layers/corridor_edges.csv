@@ -1,0 +1,14 @@
+edge_id,aoi_id,aoi_label,choke_id,choke_label,weight,in_gulf_inset
+E01,P002,Fujairah,hormuz,Strait of Hormuz,1,1
+E02,P003,Ras Tanura,hormuz,Strait of Hormuz,1,1
+E03,P007,Jamnagar,hormuz,Strait of Hormuz,1,1
+E04,P008,Al Basrah Terminal,hormuz,Strait of Hormuz,1,1
+E05,P010,Kharg Island,hormuz,Strait of Hormuz,1,1
+E06,P001,Rotterdam,suez,Suez Canal,1,0
+E07,P011,Yanbu,suez,Suez Canal,1,0
+E08,P004,Jurong Island,malacca,Strait of Malacca,1,0
+E09,P006,Ningbo-Zhoushan,malacca,Strait of Malacca,1,0
+E10,P009,Ulsan,malacca,Strait of Malacca,1,0
+E11,P011,Yanbu,mandeb,Bab el-Mandeb,1,0
+E12,P001,Rotterdam,cape,Cape of Good Hope,1,0
+E13,P005,Houston,panama,Panama Canal,1,0

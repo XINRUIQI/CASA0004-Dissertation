@@ -1,0 +1,12 @@
+site_id,graph_index,map_label,site_name,site_type,functional_role,country,region,lon,lat,flat_buffer_km,deep_patch_km,chokepoints,in_gulf_inset
+P001,0,Rotterdam,Port of Rotterdam,port,pricing / import,Netherlands,Europe,4.145,51.95,5.0,6.4,suez · cape,0
+P002,1,Fujairah,Fujairah Oil Terminal,terminal,transit / storage,United Arab Emirates,Middle East,56.356,25.199,5.0,3.2,hormuz,1
+P003,2,Ras Tanura,Ras Tanura Terminal,terminal,export,Saudi Arabia,Middle East,50.157,26.643,5.0,2.56,hormuz,1
+P004,3,Jurong Island,Singapore Jurong Island,refinery,transit / refining,Singapore,Asia,103.708,1.274,5.0,5.12,malacca,0
+P005,4,Houston,Houston Ship Channel,port,import / refining,United States,North America,-95.1,29.736,5.0,6.4,panama,0
+P006,5,Ningbo-Zhoushan,Ningbo-Zhoushan Port,port,import,China,East Asia,121.982,29.935,5.0,6.4,malacca,0
+P007,6,Jamnagar,Jamnagar Refinery,refinery,refining,India,South Asia,69.86,22.345,5.0,5.12,hormuz,0
+P008,7,Al Basrah Terminal,Basra Oil Terminal,terminal,export,Iraq,Middle East,48.81,29.681,5.0,1.6,hormuz,1
+P009,8,Ulsan,Ulsan Refinery,refinery,refining,South Korea,East Asia,129.343,35.433,5.0,5.12,malacca,0
+P010,9,Kharg Island,Kharg Island Terminal,terminal,export,Iran,Middle East,50.324,29.231,5.0,3.2,hormuz,1
+P011,10,Yanbu,Yanbu Export Terminal,terminal,export,Saudi Arabia,Middle East,38.229,23.961,5.0,3.2,suez · mandeb,0

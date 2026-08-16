@@ -1,9 +1,9 @@
 """
 Chapter 3 figures: study-site map and expanding-window evaluation design.
 
-Figure 3.3 needs Natural Earth 110m vectors under
-03_data/raw/00_spatial_anchors/naturalearth/ (ne_110m_land, optional
-ne_110m_admin_0_boundary_lines_land).
+Figure 3.3 needs Natural Earth vectors under
+03_data/raw/00_spatial_anchors/naturalearth/: ne_110m_land for the world
+panel and ne_10m_land for the Persian Gulf inset.
 
     python 04_code/scripts/figures/make_method_figures.py [--only 3.2 3.3 3.4]
 """
@@ -43,9 +43,9 @@ AOI = {
     "P003": ("Ras Tanura", "terminal", 50.157, 26.643),
     "P004": ("Jurong Island", "refinery", 103.708, 1.274),
     "P005": ("Houston", "port", -95.100, 29.736),
-    "P006": ("Ningbo-Zhoushan", "port", 121.982, 29.935),
+    "P006": ("Ningbo-\nZhoushan", "port", 121.982, 29.935),
     "P007": ("Jamnagar", "refinery", 69.860, 22.345),
-    "P008": ("Basra", "terminal", 48.810, 29.681),
+    "P008": ("Al Basrah Terminal", "terminal", 48.810, 29.681),
     "P009": ("Ulsan", "refinery", 129.343, 35.433),
     "P010": ("Kharg Island", "terminal", 50.324, 29.231),
     "P011": ("Yanbu", "terminal", 38.229, 23.961),
@@ -61,24 +61,14 @@ CHOKE = {
     "cape": ("Cape of Good Hope", 18.47, -34.36),
 }
 
-# Appendix A.4.2 static AOI <-> chokepoint edges (13 undirected).
-EDGES = {
-    "hormuz": ["P002", "P003", "P007", "P008", "P010"],
-    "suez": ["P001", "P011"],
-    "malacca": ["P004", "P006", "P009"],
-    "mandeb": ["P011"],
-    "cape": ["P001"],
-    "panama": ["P005"],
-}
-
 # Label offsets in degrees: id -> (dx, dy, ha, va) for the world panel.
 LABEL_OFF = {
     "P001": (0, 3.4, "center", "bottom"),
     "P004": (2.6, -3.4, "left", "top"),
     "P005": (-3.0, 1.8, "right", "bottom"),
-    "P006": (3.0, 1.4, "left", "bottom"),
+    "P006": (-1.6, -2.2, "right", "top"),
     "P007": (0.5, -3.6, "center", "top"),
-    "P009": (3.0, 1.6, "left", "bottom"),
+    "P009": (3.2, 2.2, "left", "bottom"),
     "P011": (-3.0, -1.6, "right", "top"),
     "suez": (-3.2, 2.6, "right", "bottom"),
     "malacca": (-3.0, -3.0, "right", "top"),
@@ -91,7 +81,7 @@ LABEL_OFF = {
 INSET_OFF = {
     "P002": (0.45, -0.35, "left", "top"),
     "P003": (-0.45, -0.30, "right", "top"),
-    "P008": (-0.45, 0.30, "right", "bottom"),
+    "P008": (-0.55, 0.42, "right", "bottom"),
     "P010": (0.40, 0.25, "left", "bottom"),
     "hormuz": (0.45, 0.35, "left", "bottom"),
 }
@@ -105,7 +95,6 @@ C = {
     "border": "#DCD7CE",
     "aoi": "#2E5A88",
     "choke": "#D1622B",
-    "edge": "#8FA8C8",
     "train": "#8FA8C8",
     "warm": "#C9C4BB",
     "val": "#E7A33E",
@@ -136,29 +125,61 @@ def save(fig, name: str) -> None:
 # --------------------------------------------------------------------------
 # Figure 3.3 - study sites
 # --------------------------------------------------------------------------
-def _basemap(ax, bounds) -> None:
+def _basemap(ax, bounds, land_shp: Path, *, coast_lw: float = 0.4,
+             draw_borders: bool = True) -> None:
     import geopandas as gpd
 
-    land = gpd.read_file(NE_DIR / "ne_110m_land.shp")
-    land.plot(ax=ax, facecolor=C["land"], edgecolor=C["coast"], linewidth=0.4,
-              zorder=0)
-    borders = NE_DIR / "ne_110m_admin_0_boundary_lines_land.shp"
-    if borders.exists():
-        gpd.read_file(borders).plot(ax=ax, color=C["border"], linewidth=0.35,
-                                    zorder=1)
     lon0, lat0, lon1, lat1 = bounds
+    pad = 2.0
+    land = gpd.read_file(
+        land_shp, bbox=(lon0 - pad, lat0 - pad, lon1 + pad, lat1 + pad))
+    land.plot(ax=ax, facecolor=C["land"], edgecolor=C["coast"],
+              linewidth=coast_lw, zorder=0)
+    borders = NE_DIR / "ne_110m_admin_0_boundary_lines_land.shp"
+    if draw_borders and borders.exists():
+        gpd.read_file(
+            borders, bbox=(lon0 - pad, lat0 - pad, lon1 + pad, lat1 + pad)
+        ).plot(ax=ax, color=C["border"], linewidth=0.35, zorder=1)
     ax.set_xlim(lon0, lon1)
     ax.set_ylim(lat0, lat1)
     ax.set_aspect(1 / math.cos(math.radians((lat0 + lat1) / 2)))
 
 
-def _draw_edges(ax) -> None:
-    for cp, sites in EDGES.items():
-        _, clon, clat = CHOKE[cp]
-        for s in sites:
-            _, _, slon, slat = AOI[s]
-            ax.plot([clon, slon], [clat, slat], color=C["edge"], linewidth=0.8,
-                    alpha=0.85, zorder=2, solid_capstyle="round")
+def _inset_scalebar(ax, lon: float, lat: float, length_km: int = 200) -> None:
+    """Short geographic scale bar at inset latitude (Plate Carrée)."""
+    km_per_deg = 111.32 * math.cos(math.radians(lat))
+    dlon = length_km / km_per_deg
+    tick = 0.12
+    color = C["grey"]
+    ax.plot([lon, lon + dlon], [lat, lat], color=color, linewidth=1.5,
+            solid_capstyle="butt", zorder=7, clip_on=True)
+    for x in (lon, lon + dlon):
+        ax.plot([x, x], [lat - tick, lat + tick], color=color,
+                linewidth=1.15, solid_capstyle="butt", zorder=7, clip_on=True)
+    ax.text(lon + dlon / 2, lat + 0.22, f"{length_km} km", ha="center",
+            va="bottom", fontsize=6.0, color=color, zorder=7)
+
+
+def _style_zoom_indicator(indicator) -> None:
+    """Inset connectors as thin dashed guides, not route-like solid lines."""
+    ls = (0, (2.4, 2.2))
+    color = "#B4B4B4"
+    lw = 0.4
+    if isinstance(indicator, tuple):
+        rect, connectors = indicator
+        artists = [rect, *connectors]
+    else:
+        artists = [indicator.rectangle, *list(indicator.connectors)]
+    for a in artists:
+        if a is None:
+            continue
+        a.set_linestyle(ls)
+        a.set_linewidth(lw)
+        a.set_alpha(0.8)
+        if hasattr(a, "set_edgecolor"):
+            a.set_edgecolor(color)
+        if hasattr(a, "set_color"):
+            a.set_color(color)
 
 
 def _draw_nodes(ax, offsets, label_sites=True, fontsize=7.5, size=42) -> None:
@@ -180,29 +201,35 @@ def _draw_nodes(ax, offsets, label_sites=True, fontsize=7.5, size=42) -> None:
 
 
 def fig33_site_map() -> None:
-    if not (NE_DIR / "ne_110m_land.shp").exists():
+    land_110 = NE_DIR / "ne_110m_land.shp"
+    land_10 = NE_DIR / "ne_10m_land.shp"
+    if not land_110.exists():
         raise FileNotFoundError(
             f"Natural Earth 110m land not found under {NE_DIR}. "
             "Download ne_110m_land.zip from naciscdn.org and unzip it there.")
+    if not land_10.exists():
+        raise FileNotFoundError(
+            f"Natural Earth 10m land not found under {NE_DIR}. "
+            "Download ne_10m_land.zip from naciscdn.org and unzip it there.")
 
-    fig, ax = plt.subplots(figsize=(9.6, 5.2))
-    _basemap(ax, (-135, -48, 152, 68))
-    _draw_edges(ax)
+    fig, ax = plt.subplots(figsize=(9.6, 5.35))
+    _basemap(ax, (-135, -48, 152, 68), land_110)
     _draw_nodes(ax, LABEL_OFF)
 
-    # Persian Gulf inset (four AOIs plus Hormuz sit within ~8 degrees).
-    lon0, lat0, lon1, lat1 = INSET_BOUNDS
     axi = ax.inset_axes([0.035, 0.035, 0.29, 0.33])
-    _basemap(axi, INSET_BOUNDS)
-    _draw_edges(axi)
-    _draw_nodes(axi, INSET_OFF, fontsize=6.8, size=34)
+    _basemap(axi, INSET_BOUNDS, land_10, coast_lw=0.55, draw_borders=False)
+    _draw_nodes(axi, INSET_OFF, fontsize=6.6, size=34)
+    # 200 km ≈ 15% of inset width at ~23°N; 500 km would crowd the panel.
+    _inset_scalebar(axi, lon=47.85, lat=23.05, length_km=200)
     axi.set_xticks([])
     axi.set_yticks([])
     for sp in axi.spines.values():
-        sp.set_edgecolor("#777777")
-        sp.set_linewidth(0.8)
-    axi.set_title("Persian Gulf (inset)", fontsize=7.5, pad=2.5)
-    ax.indicate_inset_zoom(axi, edgecolor="#777777", linewidth=0.8, alpha=0.9)
+        sp.set_edgecolor("#9A9A9A")
+        sp.set_linewidth(0.6)
+    axi.set_title("Persian Gulf — enlarged view", fontsize=7.5, pad=2.5)
+    _style_zoom_indicator(
+        ax.indicate_inset_zoom(axi, edgecolor="#B4B4B4", linewidth=0.4,
+                               alpha=0.8))
 
     handles = [
         Line2D([], [], marker="o", linestyle="", color=C["aoi"],
@@ -213,8 +240,6 @@ def fig33_site_map() -> None:
                markeredgecolor="white", markersize=7, label="AOI - refinery"),
         Line2D([], [], marker="D", linestyle="", color=C["choke"],
                markeredgecolor="white", markersize=7, label="Maritime chokepoint"),
-        Line2D([], [], color=C["edge"], linewidth=1.4,
-               label="Static AOI-chokepoint edge"),
     ]
     ax.legend(handles=handles, loc="lower right", ncol=1,
               bbox_to_anchor=(1.0, 0.02))
@@ -229,9 +254,14 @@ def fig33_site_map() -> None:
     for sp in ax.spines.values():
         sp.set_edgecolor("#AAAAAA")
         sp.set_linewidth(0.7)
-    ax.set_title("Eleven oil-infrastructure AOIs and six maritime chokepoints\n"
-                 "Edges show the static AOI-chokepoint links in the 17-node "
-                 "shipping graph", loc="left")
+    ax.set_title("Eleven oil-infrastructure AOIs and six maritime chokepoints",
+                 loc="left")
+    ax.text(
+        0.0, -0.10,
+        "Markers indicate AOI centre coordinates rather than the full spatial "
+        "extent of each port or industrial complex.",
+        transform=ax.transAxes, ha="left", va="top", fontsize=7.2,
+        color="#555555")
     save(fig, "fig_3_3_study_sites_map")
 
 

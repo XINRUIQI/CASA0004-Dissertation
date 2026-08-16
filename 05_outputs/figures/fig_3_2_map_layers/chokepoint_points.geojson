@@ -1,0 +1,137 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "choke_id": "hormuz",
+        "graph_index": 11,
+        "map_label": "Strait of Hormuz",
+        "name_zh": "霍尔木兹海峡",
+        "lon": 56.25,
+        "lat": 26.57,
+        "n_corridor_edges": 5,
+        "linked_aois": "P002 · P003 · P007 · P008 · P010",
+        "in_gulf_inset": 1,
+        "node_class": "chokepoint"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          56.25,
+          26.57
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "choke_id": "suez",
+        "graph_index": 12,
+        "map_label": "Suez Canal",
+        "name_zh": "苏伊士运河",
+        "lon": 32.35,
+        "lat": 30.42,
+        "n_corridor_edges": 2,
+        "linked_aois": "P001 · P011",
+        "in_gulf_inset": 0,
+        "node_class": "chokepoint"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          32.35,
+          30.42
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "choke_id": "malacca",
+        "graph_index": 13,
+        "map_label": "Strait of Malacca",
+        "name_zh": "马六甲海峡",
+        "lon": 100.4,
+        "lat": 2.5,
+        "n_corridor_edges": 3,
+        "linked_aois": "P004 · P006 · P009",
+        "in_gulf_inset": 0,
+        "node_class": "chokepoint"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          100.4,
+          2.5
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "choke_id": "mandeb",
+        "graph_index": 14,
+        "map_label": "Bab el-Mandeb",
+        "name_zh": "曼德海峡",
+        "lon": 43.4,
+        "lat": 12.6,
+        "n_corridor_edges": 1,
+        "linked_aois": "P011",
+        "in_gulf_inset": 0,
+        "node_class": "chokepoint"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          43.4,
+          12.6
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "choke_id": "panama",
+        "graph_index": 15,
+        "map_label": "Panama Canal",
+        "name_zh": "巴拿马运河",
+        "lon": -79.55,
+        "lat": 9.08,
+        "n_corridor_edges": 1,
+        "linked_aois": "P005",
+        "in_gulf_inset": 0,
+        "node_class": "chokepoint"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.55,
+          9.08
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "choke_id": "cape",
+        "graph_index": 16,
+        "map_label": "Cape of Good Hope",
+        "name_zh": "好望角",
+        "lon": 18.47,
+        "lat": -34.36,
+        "n_corridor_edges": 1,
+        "linked_aois": "P001",
+        "in_gulf_inset": 0,
+        "node_class": "chokepoint"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.47,
+          -34.36
+        ]
+      }
+    }
+  ]
+}

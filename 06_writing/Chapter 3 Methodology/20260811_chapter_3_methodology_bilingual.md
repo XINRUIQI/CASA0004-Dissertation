@@ -113,9 +113,9 @@ The shipping graph augments the eleven sites with six maritime chokepoints: the 
 
 Figure 3.3
 
-**Figure 3.3 — Spatial coverage of the 11 oil-infrastructure AOIs, six maritime chokepoints and fixed AOI–chokepoint corridor links used in the shipping graph.**
+**Figure 3.3 — Spatial coverage of the 11 oil-infrastructure AOIs and six maritime chokepoints.**
 
-**图 3.3 — 研究的空间覆盖：11 个石油基础设施 AOI、6 个航运咽喉，以及航运图中使用的固定 AOI–咽喉走廊连接。**
+**图 3.3 — 研究的空间覆盖：11 个石油基础设施 AOI 与 6 个航运咽喉。**
 
 [^cape]: The Cape of Good Hope is included as a major oil-trade route rather than a narrow chokepoint in the sense of the EIA World Oil Transit Chokepoints report.
 

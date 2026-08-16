@@ -1,13 +1,13 @@
 """
-Chapter 4 and Appendix B figures.
+Chapter 4 and Appendix B figures — legacy set.
 
-Reads only committed result CSVs under 05_outputs/ and writes PNG + PDF to
-05_outputs/figures/. No model re-fitting.
+Current Chapter 4 figures (price/returns, SHAP modality, node map,
+heatmap, seed robustness) are in make_chapter4_figures.py.
 
-File names follow the figure numbers used in the dissertation, which run in
-order of first mention in Chapter 4.
+This file keeps the earlier skill-bar / attention / DM-HLN charts.
 
-    python 04_code/scripts/figures/make_result_figures.py [--only 4.1 4.3]
+    python 04_code/scripts/figures/make_result_figures.py --legacy
+    python 04_code/scripts/figures/make_result_figures.py --only 4.2 B.1
 """
 
 from __future__ import annotations
@@ -566,14 +566,18 @@ def fig7_cw() -> None:
     save(fig, "fig_4_3_incremental_tests")
 
 
-# Keyed by final figure number, in order of first mention in Chapter 4.
+# Appendix B plus retired Chapter 4 charts (skill bars, DM-HLN, attention).
+# Current Chapter 4 figures: make_chapter4_figures.py
+LEGACY = {
+    "skill_bars": fig1_skill_bars,
+    "subperiod": fig3_subperiod,
+    "event_gates": fig4_events,
+    "node_attention": fig5_node_attention,
+    "B.1": fig6_gate_band,
+    "B.2": figB2_rs_site_attention,
+    "incremental_tests": fig7_cw,
+}
 FIGURES = {
-    "4.1": fig1_skill_bars,
-    "4.2": fig2_slope,
-    "4.3": fig7_cw,
-    "4.4": fig3_subperiod,
-    "4.5": fig4_events,
-    "4.6": fig5_node_attention,
     "B.1": fig6_gate_band,
     "B.2": figB2_rs_site_attention,
 }
@@ -581,13 +585,21 @@ FIGURES = {
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--only", nargs="*", choices=sorted(FIGURES), default=None)
+    ap.add_argument("--only", nargs="*", default=None)
+    ap.add_argument("--legacy", action="store_true",
+                    help="Regenerate retired Chapter 4 charts (skill bars, etc.)")
     args = ap.parse_args()
-
-    keys = args.only or sorted(FIGURES)
+    pool = {**FIGURES, **LEGACY} if args.legacy else FIGURES
+    if args.only:
+        unknown = [k for k in args.only if k not in pool]
+        if unknown:
+            ap.error(f"unknown figure(s): {unknown}; choose from {sorted(pool)}")
+        keys = args.only
+    else:
+        keys = sorted(pool)
     for k in keys:
-        print(f"[{k}] {FIGURES[k].__name__}")
-        FIGURES[k]()
+        print(f"[{k}] {pool[k].__name__}")
+        pool[k]()
     print(f"\nOutput: {OUT_DIR}")
 
 

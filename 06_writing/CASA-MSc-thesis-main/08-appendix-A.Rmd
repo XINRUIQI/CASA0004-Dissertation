@@ -1,0 +1,341 @@
+
+```{=latex}
+\appendix
+```
+
+# Appendix A — Data: variable dictionary, AOI/chokepoint lists, lags, graph edges {-}
+
+> Merged weekly matrix `weekly_feature_matrix.csv` = 365 weeks × 263 columns
+> (2019-01-04 → 2025-12-26): 31 M1 + 55 M2 + 164 M3 + 11 masks + 2 targets.
+> Per-variable literature/industry sourcing is in the modality data dictionaries
+> (`03_data/processed/M{1,2,3}/*_data_dictionary.md`); this appendix consolidates
+> the model-facing dictionary, the site lists, the publication lags and the
+> shipping-graph edge construction.
+
+These column counts are the data blocks assembled into information sets
+S1–S4 (Table \@ref(tab:info-sets)). M0 is the no-change benchmark and has no predictor
+matrix of its own.
+
+---
+
+## A.1 Variable dictionary (M1–M4)
+
+### A.1.1 M1 — Finance / macro (31)
+
+M1 is the finance–macro block shared by every information set except M0.
+Daily series enter as the Friday last value. Log returns are ln(Pₜ/Pₜ₋₁)
+and are not multiplied by 100. Publication lags are in A.3.
+
+**Prices & derived (5)**
+
+| Variable | Meaning | Source |
+| --- | --- | --- |
+| `brent_price` | Brent spot (USD/bbl) | EIA |
+| `wti_price` | WTI Cushing spot (USD/bbl) | EIA |
+| `brent_log_return` | Brent weekly log return | derived |
+| `wti_log_return` | WTI weekly log return | derived |
+| `brent_wti_spread` | Brent − WTI (USD/bbl) | derived |
+
+**EIA WPSR fundamentals (12)**
+
+| Variable | Meaning | Unit |
+| --- | --- | --- |
+| `crude_stocks_excl_spr` | commercial crude stocks excl. SPR | thousand barrels |
+| `cushing_stocks` | Cushing crude stocks | thousand barrels |
+| `crude_production` | U.S. crude production | thousand bbl/d |
+| `crude_imports` | crude imports | thousand bbl/d |
+| `crude_exports` | crude exports | thousand bbl/d |
+| `refinery_crude_input` | refinery crude input | thousand bbl/d |
+| `refinery_utilisation` | refinery utilisation | % |
+| `gasoline_supplied` | gasoline product supplied | thousand bbl/d |
+| `distillate_supplied` | distillate product supplied | thousand bbl/d |
+| `jet_fuel_supplied` | jet-fuel product supplied | thousand bbl/d |
+| `crude_stocks_change` | weekly change in commercial stocks | thousand barrels |
+| `cushing_stocks_change` | weekly change in Cushing stocks | thousand barrels |
+
+**Macro-financial (5)**
+
+| Variable | Meaning | Source |
+| --- | --- | --- |
+| `vix` | CBOE equity-volatility index | FRED VIXCLS |
+| `dollar_index` | broad nominal USD index | FRED DTWEXBGS |
+| `treasury_10y` | 10-year Treasury yield | FRED DGS10 |
+| `fed_funds_rate` | effective federal funds rate | FRED DFF |
+| `sp500_log_return` | S&P 500 weekly log return | Yahoo ^GSPC |
+
+**Derived market/macro (9)**
+
+| Variable | Meaning | Source |
+| --- | --- | --- |
+| `ovx` | CBOE crude-oil volatility index | Yahoo ^OVX |
+| `gpr` | geopolitical-risk index (weekly mean of daily GPRD) | Caldara–Iacoviello |
+| `gold_return` | gold weekly log return | FRED / Yahoo GC=F |
+| `global_econ_activity` | Kilian real economic activity (REA) | Dallas Fed IGREA |
+| `nonoil_industrial_commodity` | non-fuel industrial materials price index | IMF PINDUINDEXM (FRED) |
+| `brent_f1_spot_log_basis` | front-month futures − spot log basis | Yahoo BZ=F vs EIA spot |
+| `brent_roll_week` | front-month roll-week dummy {0,1} | calendar-derived |
+| `cadusd_log_return` | CAD/USD weekly log return | Yahoo CADUSD=X |
+| `dgs10_change` | weekly change in `treasury_10y` | derived |
+
+`brent_f1_spot_log_basis` = ln(BZ=F) − ln(`brent_price`); the futures leg is not back-adjusted, so `brent_roll_week` flags the calendar week of the roll.
+
+### A.1.2 M2 — Remote sensing (55 = 5 indices × 11 AOI)
+
+Naming `{index}_anom_{AOI}`; `anom` = within-site deseasonalised z-score
+(expanding, past-only). Raw `level` and staleness/mask columns are not modelled.
+
+| Index | Meaning | Formula | Source |
+| --- | --- | --- | --- |
+| `NDVI` | vegetation greenness | (B8−B4)/(B8+B4) | Sentinel-2 SR |
+| `NDWI` | surface water/moisture | (B3−B8)/(B3+B8) | Sentinel-2 SR |
+| `NDBI` | built-up | (B11−B8)/(B11+B8) | Sentinel-2 SR |
+| `BSI` | bare soil / storage yards | ((B11+B4)−(B8+B2))/((B11+B4)+(B8+B2)) | Sentinel-2 SR |
+| `NTL` | night-time light activity | VIIRS DNB `avg_rad` | VIIRS DNB |
+
+> Literature arm (C1) = `NTL_anom` of Fujairah / RasTanura / Rotterdam / Houston
+> (4 cols).
+
+### A.1.3 M3 — Shipping, flat full tier (164 = GFW 49 + PortWatch 64 + SAR 51)
+
+Naming `gfw_{cp}_{stat}` and `pw_{cp}_{stat}` over 6 chokepoints, plus
+cross-chokepoint aggregates and PortWatch port export/import volumes, plus
+`sar_{region}_{total,dark,share}` from the same GFW SAR weekly table used as
+Deep node attributes. Main model = full 164 (the hand-picked 38-col *core*
+tier and the AIS-only 113-col block remain robustness arms; see Appendix B /
+`m3_data_dictionary.md` §11).
+
+| Family | Meaning |
+| --- | --- |
+| `gfw_{cp}_total_hours` / `total_vessels` / `cargo_hours` | GFW vessel-presence hours / distinct vessels / cargo hours |
+| `gfw_{cp}_bunker_hours` / `other_hours` / `other_share` | bunker / other-vessel presence & share |
+| `gfw_{cp}_total_hours_mom_pct` / `mean_presence_hours_per_vessel` | month-over-month %; per-vessel congestion proxy |
+| `gfw_all_total_hours_sum` / `gfw_all_activity_zmean` | cross-chokepoint aggregate (sum / leak-free z-mean) |
+| `pw_{cp}_n_tanker` / `n_total` / `capacity_tanker` / `capacity` | PortWatch tanker / all-vessel transit count & capacity |
+| `pw_{cp}_tanker_share` / `tanker_cap_share` / `avg_tanker_size` | tanker shares; average tanker DWT |
+| `pw_{cp}_n_tanker_wow_pct` / `capacity_tanker_4w_ma` | week-over-week %; 4-week MA |
+| `pw_all_*` (n_tanker_sum, n_total_sum, tanker_share) | cross-chokepoint tanker aggregates |
+| `pw_tanker_exp_imp_net` / `_asym` / `_log_ratio` / `_4w_ma` | export−import net / asymmetry / log-ratio |
+| `pw_exp_hubs_export_vol` / `pw_imp_hubs_import_vol` (+ `_wow_pct`) | export/import hub tanker tonnage |
+| `sar_{region}_{total,dark,share}` | GFW SAR detections: total / unmatched (dark) / dark share; 17 regions × 3 |
+
+### A.1.4 Deep shipping graph node features
+
+The Deep arm does **not** use the flat 164-column table; it builds a 17-node
+graph (`m3_graph17_tensors.npz`). Node feature spaces differ by type
+(heterogeneous).
+
+**AOI node features (11 per node)**
+
+| Variable | Meaning | Source |
+| --- | --- | --- |
+| `pw_portcalls_tanker` | tanker port calls (weekly sum) | PortWatch |
+| `pw_portcalls_cargo` | cargo port calls | PortWatch |
+| `pw_import_tanker` | tanker import tonnage | PortWatch |
+| `pw_export_tanker` | tanker export tonnage | PortWatch |
+| `gfw_n_visits` | port-visit count | GFW AIS |
+| `gfw_dwell_hrs_mean` | mean dwell hours | GFW AIS |
+| `gfw_dwell_hrs_median` | median dwell hours | GFW AIS |
+| `gfw_self_loops` | same-AOI repeat calls | GFW AIS |
+| `sar_detections_total` | SAR detections | GFW SAR |
+| `sar_detections_dark` | unmatched (dark) detections | GFW SAR |
+| `sar_dark_share` | dark / total | GFW SAR |
+
+Dwell hours keep only `durationHrs` ≤ 720 h (30 days); longer stays are set to missing.
+
+**Chokepoint node features (20 per node)** — same families as A.1.3, attached to the six chokepoint nodes rather than flattened.
+
+| Block | Features |
+| --- | --- |
+| GFW (8) | `total_hours`, `total_vessels`, `cargo_hours`, `bunker_hours`, `other_hours`, `other_share`, `total_hours_mom_pct`, `mean_presence_hours_per_vessel` |
+| PortWatch (9) | `n_tanker`, `n_total`, `capacity_tanker`, `capacity`, `tanker_share`, `tanker_cap_share`, `avg_tanker_size`, `n_tanker_wow_pct`, `capacity_tanker_4w_ma` |
+| SAR (3) | `detections_total`, `detections_dark`, `dark_share` |
+
+The Deep RS branch uses frozen **Prithvi-EO-2.0 embeddings** (1024-d per
+AOI-month) rather than the M2 indices; VIIRS is Flat-only.
+
+---
+
+## A.2 AOI and chokepoint node lists
+
+### A.2.1 11 oil-infrastructure AOIs
+
+Fixed node order P001–P011 (graph AOI index 0–10). Flat remote-sensing
+features use a circular buffer of 5 km radius at every site. Deep Sentinel-2
+patches are square and site-specific: 6.4 km for ports, 5.12 km for
+refineries, and 1.6–3.2 km for terminals after visual coverage checks.
+Source: `aoi_oil_infrastructure.csv` and the Channel A data dictionary.
+
+The Chokepoint column defines the fixed corridor edges of the shipping graph:
+thirteen undirected AOI–chokepoint links of unit weight, specified ex ante and
+covering all eleven sites. No chokepoint–chokepoint links are used. Dynamic
+AOI–AOI edges are weekly voyage counts and are defined separately
+(`build_m3_graph17.py`, `CHOKE_AOI`).
+
+| Site ID | Site name | Country/region | Facility type | Functional role | Latitude | Longitude | Flat buffer | Deep patch size | Chokepoint |
+| --- | --- | --- | --- | --- | ---: | ---: | --- | --- | --- |
+| P001 | Rotterdam | Netherlands / Europe | port | pricing / import | 51.950 | 4.145 | 5 km | 6.4 km | Suez · Cape |
+| P002 | Fujairah | UAE / Middle East | terminal | transit / storage | 25.199 | 56.356 | 5 km | 3.2 km | Hormuz |
+| P003 | Ras Tanura | Saudi Arabia / Middle East | terminal | export | 26.643 | 50.157 | 5 km | 2.56 km | Hormuz |
+| P004 | Jurong Island | Singapore / Asia | refinery | transit / refining | 1.274 | 103.708 | 5 km | 5.12 km | Malacca |
+| P005 | Houston | USA / North America | port | import / refining | 29.736 | −95.100 | 5 km | 6.4 km | Panama |
+| P006 | Ningbo-Zhoushan | China / East Asia | port | import | 29.935 | 121.982 | 5 km | 6.4 km | Malacca |
+| P007 | Jamnagar | India / South Asia | refinery | refining | 22.345 | 69.860 | 5 km | 5.12 km | Hormuz |
+| P008 | Al Basrah Terminal | Iraq / Middle East | terminal | export | 29.681 | 48.810 | 5 km | 1.6 km | Hormuz |
+| P009 | Ulsan | South Korea / East Asia | refinery | refining | 35.433 | 129.343 | 5 km | 5.12 km | Malacca |
+| P010 | Kharg Island | Iran / Middle East | terminal | export | 29.231 | 50.324 | 5 km | 3.2 km | Hormuz |
+| P011 | Yanbu | Saudi Arabia / Middle East | terminal | export | 23.961 | 38.229 | 5 km | 3.2 km | Suez · Mandeb |
+
+Flat buffer is a circular radius. Deep patch size is the side length of a square image chip centred on the same coordinate.
+
+### A.2.2 6 maritime chokepoints
+
+Fixed node order (graph index 11–16), from EIA World Oil Transit Chokepoints.
+
+| Short code | Chokepoint |
+| --- | --- |
+| `hormuz` | Strait of Hormuz |
+| `suez` | Suez Canal |
+| `malacca` | Strait of Malacca |
+| `mandeb` | Bab el-Mandeb |
+| `panama` | Panama Canal |
+| `cape` | Cape of Good Hope |
+
+---
+
+## A.3 Publication-lag table
+
+Every predictor enters the weekly (Friday-ending) matrix only after its
+conservative real-time availability. Lags are fixed as constants at the top of
+each builder. Flat and Deep share the same sources but differ for shipping.
+
+### A.3.1 Flat arm
+
+| Source | freq → weekly | Lag | Constant · script |
+| --- | --- | --- | --- |
+| Daily finance (Brent/WTI/VIX/DXY/DGS10/DFF/S&P/gold/OVX/CAD) | daily → Fri last | **0** | `daily_to_weekly_last` · `build_m1_weekly.py` |
+| EIA WPSR fundamentals | weekly → Fri | **+1 w** | `EIA_LAG_WEEKS=1` · `build_m1_weekly.py` |
+| GPR | daily → weekly mean | **+1 w** | `GPR_LAG_WEEKS=1` · `build_m1_weekly.py` |
+| Monthly macro (REA, non-oil commodity) | month-end ffill | **+5 w** | `MONTHLY_LAG_WEEKS=5` · `build_m1_weekly.py` |
+| Sentinel-2 indices + VIIRS (M2) | monthly as-of | **month-end + 15 d** | `PUB_LAG_DAYS=15` · `build_m2_weekly.py` |
+| PortWatch chokepoint/port flows | daily → Fri sum | **+1 w** | `PW_LAG_WEEKS=1` · `aggregate_shipping_to_weekly.py` |
+| GFW monthly presence (flat M3, 49 of 164 cols) | month-end ffill | **+4 w** | `GFW_LAG_WEEKS=4` · `aggregate_shipping_to_weekly.py` |
+| GFW SAR dark-vessel (flat M3, 51 of 164 cols) | month-end ffill | **+4 w** | `SAR_LAG_WEEKS=4` · `build_m3_graph_weekly.py` / `build_feature_matrix.py` |
+
+> Merge check: EIA already lagged at source, merge re-shift = 0
+> (`EIA_WPSR_LAG_WEEKS=0`, `build_feature_matrix.py`).
+
+### A.3.2 Deep arm (17-node graph)
+
+Finance and RS identical to A.3.1 (Deep RS = Channel-A Prithvi embeddings, also
+month-end + 15 d). Only the shipping graph differs.
+
+| Graph stream | Role | Lag | Constant · script |
+| --- | --- | --- | --- |
+| PortWatch node counts | node features | **+1 w** | `PW_LAG_WEEKS=1` · `build_m3_graph_weekly.py` |
+| GFW events / voyages (O-D) | edges + node features | **+2 w** | `GFW_EVENT_LAG_WEEKS=2` · `build_m3_graph_weekly.py` |
+| GFW SAR dark-vessel | node features | **+4 w** | `SAR_LAG_WEEKS=4` · `build_m3_graph_weekly.py` |
+| GFW monthly presence (chokepoint node features) | node features | **+4 w** | `GFW_LAG_WEEKS=4` (inherited) · `build_m3_graph17.py` |
+| EMODnet density (optional cross-check, not in model) | — | **+8 w** | `EMODNET_LAG_WEEKS=8` · `build_emodnet_weekly.py` |
+
+### A.3.3 Why GFW is +4 w (Flat) but +2 w (Deep)
+
+Different GFW products, not the same stream lagged differently. **Flat +4 w** =
+monthly vessel-presence columns (`gfw_{cp}_*`, 49 of the 164): a calendar month
+is only complete at month end + a conservative ~1-month availability buffer
+(project-level conservatism, **not** an official 4-week release rule). **Deep
++2 w** = near-real-time AIS event/voyage O-D stream (~96 h) with a conservative
+two-week buffer. The two are not interchangeable.
+
+### A.3.4 Lag robustness
+
+GFW monthly presence testable at lag ∈ {1, 4, 8} w; `MONTHLY_LAG_WEEKS` at
+{3, 5, 7} w; all exposed as CLI flags (`--gfw-lag`, `--eia-lag`, …) so the whole
+matrix can be rebuilt without code edits. Results in Appendix B.3.8.
+
+---
+
+## A.4 Shipping graph edge definition
+
+The Deep shipping branch encodes a **weekly 17-node heterogeneous graph**
+(11 AOIs + 6 chokepoints, fixed order). Combined adjacency is (T, 17, 17),
+averaging ~65.8 edges/week. Sources: `build_m3_graph17.py`,
+`m3_data_dictionary.md` §12, `shipping_encoder.py`.
+
+### A.4.1 Dynamic O-D voyage edges (AOI→AOI)
+
+Directed AOI→AOI edges from GFW voyage counts; edge weight = `n_voyages` for
+that week's directed lane (`from ≠ to`; self-loops removed to a node feature).
+Different every week; 96 lanes, 106 992 voyages total (top lanes e.g.
+Ningbo↔Singapore, Fujairah↔Singapore, Singapore↔Rotterdam). Directionality
+verified (`P006→P004 ≠ P004→P006`). Lag +2 w.
+
+### A.4.2 Static AOI↔chokepoint edges
+
+Fixed undirected corridor links (13 undirected edges), specified in advance from
+each site's main documented oil-trade corridor rather than inferred from weekly
+vessel movements or geographic proximity. Present every week
+(`aoi_oil_infrastructure_sites.md` §4; `CHOKE_AOI` in `build_m3_graph17.py`).
+Every AOI carries at least one corridor link: P007 (Jamnagar) is a demand-side
+refinery rather than a Gulf export terminal, but its crude slate is dominated by
+Persian Gulf loadings, so it is attached to Hormuz on the import side.
+
+| Chokepoint | Linked AOIs |
+| --- | --- |
+| `hormuz` | P002, P003, P007, P008, P010 |
+| `suez` | P001, P011 |
+| `malacca` | P004, P006, P009 |
+| `mandeb` | P011 |
+| `cape` | P001 |
+| `panama` | P005 |
+
+### A.4.3 Adjacency handling & edge-weight transform
+
+- **Combine**: dynamic O-D block (11×11) placed in the AOI sub-block; static
+  AOI↔chokepoint edges broadcast over all weeks → combined (T, 17, 17).
+- **Symmetrise + self-loop**: for message passing the adjacency is symmetrised
+  and self-looped (dense 17×17 boolean mask; dense is simpler than sparse for
+  this tiny dynamic graph).
+- **Edge-weight transform (attention prior)**: `log1p` of the symmetrised O-D
+  flow is **added to the GAT attention logits**, scaled by a **learned gain
+  `edge_scale`**, then softmax; it is not a multiplier on the attention weights
+  and is not used as an edge feature in message passing. Busy lanes therefore
+  receive a higher prior, and the model can down-weight it if unhelpful.
+- **Encoder**: type-specific projection (`F_aoi=11`, `F_choke=20` → `d_model=64`)
+  + node-type embedding → 2-layer dense multi-head GAT (heads = 4) → causal TCN
+  (lookback L) → node-attention pooling → 32-d `z_ship` (~42k params). Node-
+  attention weights feed RQ3 (which port/chokepoint the branch weights).
+  Encoder details in Appendix C.
+
+---
+
+## A.5 Flat remote-sensing coverage
+
+Section 3.4.3 reports coverage after as-of alignment onto the 365-week calendar
+(4 January 2019 to 26 December 2025). That weekly-calendar rate counts a month
+once for every subsequent Friday that still uses it, so it is not a count of
+independent site–month composites. The table below separates the two.
+
+Over 2019–2025, monthly Sentinel-2 composites (the `level` series, before
+anomaly construction) are complete at ten of the eleven sites. Jurong Island
+has 98.4 per cent monthly completeness at that stage. After within-site anomaly
+construction (`MIN_HIST=12`) and as-of alignment, weekly-calendar coverage of
+the four optical-index anomalies is 100 per cent at eight sites, 93.4 per cent
+at Ulsan, 89.9 per cent at Ningbo-Zhoushan and 83.8 per cent at Jurong Island.
+The cross-site mean is about 97 per cent. VIIRS night-time-light anomalies are
+fully observed at all eleven sites.
+
+| Site | Weekly-calendar S2 anomaly coverage | First Friday with S2 anomaly | Monthly S2 composite completeness (`level`) | Weekly NTL anomaly |
+| --- | ---: | --- | ---: | ---: |
+| Houston | 100.0% | 2019-01-04 | 100% | 100% |
+| Rotterdam | 100.0% | 2019-01-04 | 100% | 100% |
+| Jamnagar | 100.0% | 2019-01-04 | 100% | 100% |
+| Al Basrah Terminal, Fujairah, Kharg, Ras Tanura, Yanbu | 100.0% | 2019-01-04 | 100% | 100% |
+| Ulsan | 93.4% | 2019-06-21 | 100% | 100% |
+| Ningbo-Zhoushan | 89.9% | 2019-09-20 | 100% | 100% |
+| Jurong Island | 83.8% | 2020-02-21 | 98.4% | 100% |
+
+The shortfall at Ulsan and Ningbo-Zhoushan is the expanding 12-month history
+required to define an anomaly, not missing monthly composites. Jurong Island
+combines that warm-up with residual cloud gaps. Deep Prithvi embeddings use a
+separate monthly patch audit (963 usable site–months) documented in the Channel A
+data dictionary.

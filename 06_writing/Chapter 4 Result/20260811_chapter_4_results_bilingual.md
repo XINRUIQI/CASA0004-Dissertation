@@ -78,7 +78,7 @@ With shipping included, gated S3 records the lowest RMSE among the gated models 
 
 On the reported seed-42 run, cross-attention has a higher RMSE than gated fusion at S2, at 4.396 compared with 4.253, but lower RMSEs at S3 and S4. Cross-attention records RMSEs of 4.110 and 4.144 at S3 and S4, corresponding to RMSE improvements of 1.00% and 0.19%. These results are therefore reported as descriptive secondary comparisons rather than evidence that cross-attention is superior.  
 
-在报告的随机种子 42 结果中，交叉注意力在 S2 上的 RMSE 高于门控融合，分别为 4.396 和 4.253，但在 S3 和 S4 上取得了更低的 RMSE。交叉注意力在 S3 和 S4 上的 RMSE 分别为 4.110 和 4.144，对应的正 分别为 1.00% 和 0.19%。然而，门控融合与交叉注意力之间的比较均未通过 Holm 校正。交叉注意力在 S3 和 S4 上相对于 M0 的正 也均不显著。因此，这些结果仅作为描述性的次要比较报告，而不构成交叉注意力更优的证据。
+在报告的随机种子 42 结果中，交叉注意力在 S2 上的 RMSE 高于门控融合，分别为 4.396 和 4.253，但在 S3 和 S4 上取得了更低的 RMSE。交叉注意力在 S3 和 S4 上的 RMSE 分别为 4.110 和 4.144，对应的正改善分别为 1.00% 和 0.19%。因此，这些结果仅作为描述性的次要比较报告，而不构成交叉注意力更优的证据。
 
 For RQ1, the within-learner comparisons show that shipping reduces RMSE relative to M0 only in the main Deep pathway. In the Flat family, XGBoost S3 is slightly below S1 but still worse than M0, and Ridge S3 is worse than S1. Remote sensing provides no improvement either alone or when added to shipping.
 

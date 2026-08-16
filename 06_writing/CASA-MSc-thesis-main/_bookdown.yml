@@ -10,7 +10,9 @@ rmd_files:
 - 05-discussion.Rmd
 - 06-conclusion.Rmd
 - 07-references.Rmd
-- 08-appendix.Rmd
+- 08-appendix-A.Rmd
+- 09-appendix-B.Rmd
+- 10-appendix-C.Rmd
 language:
   ui:
     chapter_name: "Chapter "

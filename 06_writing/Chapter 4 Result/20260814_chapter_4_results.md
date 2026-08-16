@@ -2,9 +2,9 @@
 
 # 第 4 章 — 结果
 
-## 4.2 Flat-model results
+## 4.1 Flat-model results
 
-## 4.2 Flat 模型结果
+## 4.1 Flat 模型结果
 
 Table 4.1 reports the out-of-sample performance of the Flat Ridge and XGBoost models across feature sets S1–S4, with M0 shown for comparison. All eight Flat models have higher RMSE than M0 and therefore record negative RMSE improvement.
 
@@ -38,11 +38,11 @@ The Flat results therefore provide no evidence of improvement relative to the no
 
 因此，Flat 结果未提供相对不变基准有所改善的证据。遥感数据在 Ridge 和 XGBoost 中均使预测表现下降。航运数据相对于 S1 略微改善了 XGBoost，但明显降低了 Ridge 的表现，而且两种情况下都不足以优于 M0。
 
-## 4.3 Deep-model results
+## 4.2 Deep-model results
 
 
 
-## 4.3 Deep 模型结果
+## 4.2 Deep 模型结果
 
 Table 4.2 reports Deep-model performance across S1–S4. Gated fusion is the prespecified main specification, while cross-attention is reported as a secondary comparison. No cross-attention result is reported for S1 because only the finance encoder is active.
 
@@ -67,19 +67,19 @@ The gated S1 and S2 models record similar RMSE of 4.250 and 4.253, both higher t
 
 门控 S1 与 S2 模型的 RMSE 均高于 M0，分别为 4.250 和 4.253。两种融合方法均未能在 S2 上相对于仅金融的 Deep 模型降低 RMSE。加入航运数据后，门控融合的 S3 在各门控模型中取得最低 RMSE，为 4.146，相比 M0 改善了 0.15%。门控融合的 S4 的 RMSE 上升至 4.180，比 M0 高 0.67%，表明在 S3 的基础上进一步加入遥感数据并未带来额外改善。
 
-On the reported seed-42 run, cross-attention has a higher RMSE than gated fusion at S2, at 4.396 compared with 4.253, but lower RMSEs at S3 and S4. Cross-attention records RMSEs of 4.110 and 4.144 at S3 and S4, corresponding to RMSE improvements of 1.00% and 0.19%. However, none of the comparisons between gated fusion and cross-attention passes the Holm correction. The positive improvements of cross-attention over M0 at S3 and S4 are also not statistically significant. These results are therefore reported only as descriptive secondary comparisons and do not provide evidence that cross-attention is superior.
+On the reported seed-42 run, cross-attention has a higher RMSE than gated fusion at S2, at 4.396 compared with 4.253, but lower RMSEs at S3 and S4. Cross-attention records RMSEs of 4.110 and 4.144 at S3 and S4, corresponding to RMSE improvements of 1.00% and 0.19%. These results are therefore reported only as descriptive secondary comparisons and do not provide evidence that cross-attention is superior.
 
-在报告的随机种子 42 结果中，交叉注意力在 S2 上的 RMSE 高于门控融合，分别为 4.396 和 4.253，但在 S3 和 S4 上取得了更低的 RMSE。交叉注意力在 S3 和 S4 上的 RMSE 分别为 4.110 和 4.144，对应的正改善分别为 1.00% 和 0.19%。然而，门控融合与交叉注意力之间的比较均未通过 Holm 校正。交叉注意力在 S3 和 S4 上相对于 M0 的正 也均不显著。因此，这些结果仅作为描述性的次要比较报告，而不构成交叉注意力更优的证据。
+在报告的随机种子 42 结果中，交叉注意力在 S2 上的 RMSE 高于门控融合，分别为 4.396 和 4.253，但在 S3 和 S4 上取得了更低的 RMSE。交叉注意力在 S3 和 S4 上的 RMSE 分别为 4.110 和 4.144，对应的正改善分别为 1.00% 和 0.19%。因此，这些结果仅作为描述性的次要比较报告，而不构成交叉注意力更优的证据。
 
 Overall, the Deep family performs better than the Flat family, although most Deep specifications still do not outperform M0. For RQ1, shipping provides the clearest improvement. S3 achieves the best performance under both gated fusion and cross-attention, and both models outperform M0 in the reported run. Remote sensing provides little additional value. It does not improve the finance-only model at S2 and weakens the gated model when added to shipping at S4.
 
 总体来看，Deep 模型族的表现优于 Flat 模型族，但大多数 Deep 设定仍未超过 M0。对于 RQ1，航运数据带来的改善最为明显。S3 在门控融合和交叉注意力下均取得各自最好的表现，并且在报告的运行结果中都优于 M0。相比之下，遥感数据带来的额外价值较小。在 S2 中，遥感数据未能改善仅使用金融数据的模型；在 S4 中，将遥感数据加入航运数据后，门控模型的表现反而下降。
 
-## 4.4 Flat versus Deep
+## 4.3 Flat versus Deep
 
 
 
-## 4.4 Flat 与 Deep 的配对比较
+## 4.3 Flat 与 Deep 的配对比较
 
 Table 4.3 compares the main Deep model with both Flat models within each feature set. The feature-set category, forecast dates and evaluation sample are held constant. The main Deep pathway uses the finance-only Deep model at S1 and gated fusion at S2–S4. 
 
@@ -118,7 +118,7 @@ Overall, this comparisons show that the main Deep pathway records lower RMSE tha
 
 总体来看，比较结果表明，主要 Deep 路径在全部四个特征集上的 RMSE 均低于两种 Flat 学习器。对于 RQ2，这一结果一致表明，在使用匹配信息集时，模态感知的表征级建模优于扁平特征融合。不过，由于 Deep 与 Flat 路径在模型架构和数据表征上也存在差异，因此这一改善不能完全归因于表征级融合本身。尽管如此，这一比较表明，异质数据的组织和表征方式可能会影响不同信息在模型中的保留与利用程度，并说明在处理不同类型的数据时，保留其各自的数据结构和特征可能具有研究价值。
 
-## 4.5 Interpretability
+## 4.4 Interpretability
 
 Following the eligibility rule in Section 3.7.2, interpretation is reported for gated Deep model on S3. Table 4.4 combines period-specific forecast performance, modality-gate weights and absolute SHAP attribution for the 257 forecast origins.
 
@@ -167,11 +167,9 @@ For RQ3, the model relies predominantly on financial information across all mark
 
 对于 RQ3，模型在不同市场条件下均主要依赖金融信息。航运数据的整体贡献明显较小，并呈现出阶段性特征，在部分市场和贸易扰动时期相对更加重要，尤其是在 2023–2024 年以及红海事件窗口内。航运信息的地域重点也会随时间在不同主要港口和咽喉之间变化，而不会长期集中于单一地点。总体而言，金融数据构成模型预测的核心信息来源，而航运数据则作为补充信息源，其重要性会在特定市场条件下上升。
 
-## 4.6 Robustness
+## 4.5 Robustness
 
-
-
-## 4.6 稳健性
+## 4.5 稳健性
 
 **Table 4.5 — Random-seed robustness of all Deep specifications** *(improvement vs M0, %)*
 

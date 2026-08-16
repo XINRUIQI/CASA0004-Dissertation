@@ -1,0 +1,7 @@
+choke_id,graph_index,map_label,name_zh,lon,lat,n_corridor_edges,linked_aois,in_gulf_inset
+hormuz,11,Strait of Hormuz,霍尔木兹海峡,56.25,26.57,5,P002 · P003 · P007 · P008 · P010,1
+suez,12,Suez Canal,苏伊士运河,32.35,30.42,2,P001 · P011,0
+malacca,13,Strait of Malacca,马六甲海峡,100.4,2.5,3,P004 · P006 · P009,0
+mandeb,14,Bab el-Mandeb,曼德海峡,43.4,12.6,1,P011,0
+panama,15,Panama Canal,巴拿马运河,-79.55,9.08,1,P005,0
+cape,16,Cape of Good Hope,好望角,18.47,-34.36,1,P001,0
