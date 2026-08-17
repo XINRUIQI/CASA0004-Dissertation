@@ -33,9 +33,16 @@ I would like to thank my supervisor and those who supported this dissertation.
 | Term | Definition |
 | ---- | ---------- |
 | AIS | Automatic Identification System |
-| AOI | Area of interest |
+| AOI | Area of Interest |
 | EIA | U.S. Energy Information Administration |
+| GAT | Graph Attention Network |
 | GFW | Global Fishing Watch |
-| RMSE | Root mean squared error |
+| IMF | International Monetary Fund |
+| RMSE | Root Mean Squared Error |
+| SAR | Synthetic Aperture Radar |
 | SHAP | SHapley Additive exPlanations |
+| TCN | Temporal Convolutional Network |
+| VIIRS | Visible Infrared Imaging Radiometer Suite |
 | WTI | West Texas Intermediate |
+| XAttn | Cross-attention |
+| XGBoost | Extreme Gradient Boosting |

@@ -37,14 +37,25 @@ Flat lookback. Sensitivity is reported in Appendix B.
 
 主设定锁定为回看 4 周、潜在维 32，与 Flat 回看一致。敏感性见附录 B。
 
-### C.2.1 Encoders / 编码器
+### C.2.1 Encoders, fusion and regression head / 编码器、融合与回归头
+
+The shared fused latent size is 32. The shipping encoder uses a wider internal
+width (`d_model=64`); only the pooled branch output is projected to 32-d before
+fusion. Both the finance and shipping TCN stacks reuse the same causal
+`TemporalTCN` (kernel 3).
+
+融合后的共享潜在维为 32。航运编码器内部宽为 64，仅在池化后投影到 32 维再进入融合。
+金融与航运 TCN 复用同一因果 `TemporalTCN`（kernel 3）。
 
 
-| Encoder / 编码器  | Settings / 设定                                                    | Output / 输出 |
-| -------------- | ---------------------------------------------------------------- | ----------- |
-| Finance TCN    | 2 layers, kernel 3, causal, dropout 0.1                          | 32-d        |
-| Remote sensing | frozen Prithvi embeddings (1024-d), temporal then site attention | 32-d        |
-| Shipping GAT   | 17 nodes, 2 GAT layers, 4 heads, then 2-layer TCN                | 32-d        |
+| Component / 组件 | Settings / 设定 | Output / 输出 |
+| --- | --- | --- |
+| Finance TCN | internal `d_model=32` (equal to output); 2 layers, kernel 3, causal, dropout 0.1; branch head Linear(32, 32)+ReLU | 32-d |
+| Remote sensing | frozen Prithvi embeddings (1024-d), temporal then site attention | 32-d |
+| Shipping GAT | 17 nodes; type-specific projection to internal `d_model=64` (≠ fused 32-d); 2 GAT layers, 4 heads, LeakyReLU slope 0.2; 2-layer TCN (kernel 3); branch head Linear(64, 64) → ReLU → Dropout(0.1) → Linear(64, 32) | 32-d |
+| Gated fusion (main) / 门控融合（主设定） | Linear(n×32, 32) → ReLU → Linear(32, n) → softmax | 32-d |
+| Cross-attention (alternative) / 交叉注意力（备选） | finance as query, `n_heads=4`, `token_dim=64` (matches shipping internal width), γ=0.1 | 32-d |
+| Regression head / 回归头 | Linear(32, 32) → ReLU → Dropout(0.1) → Linear(32, 1) | scalar |
 
 
 

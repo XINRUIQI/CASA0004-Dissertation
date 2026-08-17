@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999998 (TeX Live 2026) (preloaded format=xelatex 2026.8.16)  17 AUG 2026 20:43
+This is XeTeX, Version 3.141592653-2.6-0.999998 (TeX Live 2026) (preloaded format=xelatex 2026.8.16)  17 AUG 2026 23:06
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1338,45 +1338,45 @@ LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
 ]
 Chapter 1.
 LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/m/n' will be
-(Font)              scaled to size 17.28pt on input line 228.
+(Font)              scaled to size 17.28pt on input line 235.
 LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/b/n' will be
-(Font)              scaled to size 17.28pt on input line 228.
+(Font)              scaled to size 17.28pt on input line 235.
 [11
 
 ]
-Underfull \hbox (badness 2213) in paragraph at lines 234--235
+Underfull \hbox (badness 2213) in paragraph at lines 241--242
 []\TU/TimesNewRoman(0)/m/n/12 Recent years have shown the costs of unexpected oil-price movements. The
  []
 
 
-Underfull \hbox (badness 1448) in paragraph at lines 236--237
+Underfull \hbox (badness 1448) in paragraph at lines 243--244
 \TU/TimesNewRoman(0)/m/n/12 specified competitor. It must also be evaluated directly against the no-change
  []
 
 
-Underfull \hbox (badness 1194) in paragraph at lines 238--239
+Underfull \hbox (badness 1194) in paragraph at lines 245--246
 \TU/TimesNewRoman(0)/m/n/12 of the oil system. Financial, macroeconomic and oil-market variables describe
  []
 
 [12]
-Underfull \hbox (badness 1087) in paragraph at lines 242--243
+Underfull \hbox (badness 1087) in paragraph at lines 249--250
 \TU/TimesNewRoman(0)/m/n/12 and shipping data improve one-week-ahead Brent price forecasts when they are
  []
 
 
-Underfull \hbox (badness 1005) in paragraph at lines 246--247
+Underfull \hbox (badness 1005) in paragraph at lines 253--254
 \TU/TimesNewRoman(0)/m/n/12 Representation-level fusion encodes each modality separately and then combines
  []
 
 [13] [14]
 Chapter 2.
 
-Underfull \hbox (badness 1960) in paragraph at lines 258--259
+Underfull \hbox (badness 1960) in paragraph at lines 265--266
 \TU/TimesNewRoman(0)/m/n/12 This chapter reviews the main bodies of literature that support the study. It
  []
 
 
-Underfull \hbox (badness 1320) in paragraph at lines 264--265
+Underfull \hbox (badness 1320) in paragraph at lines 271--272
 \TU/TimesNewRoman(0)/m/n/12 consistently, particularly in real-time and out-of-sample evaluations. They also
  []
 
@@ -1384,96 +1384,96 @@ Underfull \hbox (badness 1320) in paragraph at lines 264--265
 
 ]
 LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/m/it' will be
-(Font)              scaled to size 12.0pt on input line 268.
+(Font)              scaled to size 12.0pt on input line 275.
 
-Underfull \hbox (badness 1158) in paragraph at lines 268--269
+Underfull \hbox (badness 1158) in paragraph at lines 275--276
 \TU/TimesNewRoman(0)/m/n/12 and Zehir ([]2026[]) compare econometric and tree-based models for Brent returns
  []
 
 
-Underfull \hbox (badness 1939) in paragraph at lines 270--271
+Underfull \hbox (badness 1939) in paragraph at lines 277--278
 []\TU/TimesNewRoman(0)/m/n/12 Deep-learning studies focus more directly on learning temporal representations.
  []
 
 [16]
-Underfull \hbox (badness 1072) in paragraph at lines 272--273
+Underfull \hbox (badness 1072) in paragraph at lines 279--280
 \TU/TimesNewRoman(0)/m/n/12 data, nonlinearities and temporal interactions. However, the literature does not
  []
 
 
-Underfull \hbox (badness 3460) in paragraph at lines 278--279
+Underfull \hbox (badness 3460) in paragraph at lines 285--286
 []\TU/TimesNewRoman(0)/m/n/12 Adland, Jia and Strandenes ([]2017[]) compare AIS-based estimates of seaborne
  []
 
 [17]
-Underfull \hbox (badness 1389) in paragraph at lines 292--293
+Underfull \hbox (badness 1389) in paragraph at lines 299--300
 []\TU/TimesNewRoman(0)/m/n/12 Ouyang \TU/TimesNewRoman(0)/m/it/12 et al. \TU/TimesNewRoman(0)/m/n/12 ([]2022[]) construct a crude-oil transportation network and use an
  []
 
 [18]
-Underfull \hbox (badness 3250) in paragraph at lines 298--299
+Underfull \hbox (badness 3250) in paragraph at lines 305--306
 \TU/TimesNewRoman(0)/m/n/12 activity and maritime locations. Satellite observations may therefore contain
  []
 
 
-Underfull \hbox (badness 1009) in paragraph at lines 298--299
+Underfull \hbox (badness 1009) in paragraph at lines 305--306
 \TU/TimesNewRoman(0)/m/n/12 information about oil demand, storage, port activity and trade. However, their
  []
 
 Missing character: There is no ₂ (U+2082) in font Times New Roman/OT:script=latn;language=dflt;mapping=tex-text;!
 Missing character: There is no ₂ (U+2082) in font Times New Roman/OT:script=latn;language=dflt;mapping=tex-text;!
 [19]
-Underfull \hbox (badness 2229) in paragraph at lines 306--307
+Underfull \hbox (badness 2229) in paragraph at lines 313--314
 \TU/TimesNewRoman(0)/m/n/12 on whether remote-sensing indicators or satellite-image representations improve
  []
 
 [20]
-Underfull \hbox (badness 10000) in paragraph at lines 312--313
+Underfull \hbox (badness 10000) in paragraph at lines 319--320
 []\TU/TimesNewRoman(0)/m/n/12 Baltrušaitis, Ahuja and Morency ([]2019[]) identify representation, translation,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 314--315
+Underfull \hbox (badness 10000) in paragraph at lines 321--322
 []\TU/TimesNewRoman(0)/m/n/12 The two approaches retain different amounts of modality-specific structure.
  []
 
 
-Underfull \hbox (badness 2980) in paragraph at lines 314--315
+Underfull \hbox (badness 2980) in paragraph at lines 321--322
 \TU/TimesNewRoman(0)/m/n/12 Feature-level fusion is compatible with conventional regression and tree-based
  []
 
 
-Underfull \hbox (badness 1874) in paragraph at lines 314--315
+Underfull \hbox (badness 1874) in paragraph at lines 321--322
 \TU/TimesNewRoman(0)/m/n/12 combines modality-specific representations through input-dependent gates. The
  []
 
 
-Underfull \hbox (badness 1454) in paragraph at lines 316--317
+Underfull \hbox (badness 1454) in paragraph at lines 323--324
 \TU/TimesNewRoman(0)/m/n/12 observations. Prithvi-EO-2.0 ([]Szwarcman \TU/TimesNewRoman(0)/m/it/12 et al.\TU/TimesNewRoman(0)/m/n/12 , 2026[]) is pretrained on global
  []
 
 
-Underfull \hbox (badness 1442) in paragraph at lines 316--317
+Underfull \hbox (badness 1442) in paragraph at lines 323--324
 \TU/TimesNewRoman(0)/m/n/12 multitemporal Earth-observation imagery and incorporates temporal and location
  []
 
 
-Underfull \hbox (badness 2035) in paragraph at lines 316--317
+Underfull \hbox (badness 2035) in paragraph at lines 323--324
 \TU/TimesNewRoman(0)/m/n/12 information. CROMA ([]Fuller, Millard and Green, 2023[]) separately processes
  []
 
 
-Underfull \hbox (badness 1142) in paragraph at lines 316--317
+Underfull \hbox (badness 1142) in paragraph at lines 323--324
 \TU/TimesNewRoman(0)/m/n/12 demonstrate that pretrained encoders can preserve spatial, spectral and temporal
  []
 
 [21]
-Underfull \hbox (badness 1087) in paragraph at lines 320--321
+Underfull \hbox (badness 1087) in paragraph at lines 327--328
 []\TU/TimesNewRoman(0)/m/n/12 Some multimodal architectures provide internal quantities that can be inspected.
  []
 
 
-Underfull \hbox (badness 1762) in paragraph at lines 322--323
+Underfull \hbox (badness 1762) in paragraph at lines 329--330
 []\TU/TimesNewRoman(0)/m/n/12 Existing multimodal research provides methods for preserving temporal, spatial
  []
 
@@ -1482,7 +1482,7 @@ Chapter 3.
 [25
 
 ]
-Underfull \hbox (badness 1297) in paragraph at lines 386--387
+Underfull \hbox (badness 1297) in paragraph at lines 393--394
 []\TU/TimesNewRoman(0)/m/n/12 Within each model family, comparisons across S1–S4 use the same forecasting
  []
 
@@ -1491,40 +1491,40 @@ File: ../../05_outputs/figures/fig_3_1_research_design.png Graphic file (type bm
 <../../05_outputs/figures/fig_3_1_research_design.png>
 [27]
 LaTeX Font Info:    Font shape `TU/TimesNewRoman(1)/m/n' will be
-(Font)              scaled to size 12.0pt on input line 406.
+(Font)              scaled to size 12.0pt on input line 413.
 LaTeX Font Info:    Font shape `TU/TimesNewRoman(1)/m/n' will be
-(Font)              scaled to size 8.4pt on input line 406.
+(Font)              scaled to size 8.4pt on input line 413.
 LaTeX Font Info:    Font shape `TU/TimesNewRoman(1)/m/n' will be
-(Font)              scaled to size 6.0pt on input line 406.
+(Font)              scaled to size 6.0pt on input line 413.
 File: figures/fig_3_2_price_returns.png Graphic file (type bmp)
 <figures/fig_3_2_price_returns.png>
 [28] [29]
 File: ../../05_outputs/figures/fig_3_3_study_sites_map2.pdf Graphic file (type pdf)
 <use ../../05_outputs/figures/fig_3_3_study_sites_map2.pdf>
 LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/b/n' will be
-(Font)              scaled to size 14.4pt on input line 449.
+(Font)              scaled to size 14.4pt on input line 456.
 [30]
-Overfull \hbox (23.28204pt too wide) in paragraph at lines 487--488
+Overfull \hbox (23.28204pt too wide) in paragraph at lines 494--495
 []|\TU/TimesNewRoman(1)/m/n/12 Prithvi-EO-2.0; 
  []
 
 
-Overfull \hbox (1.97736pt too wide) in paragraph at lines 488--489
+Overfull \hbox (1.97736pt too wide) in paragraph at lines 495--496
 \TU/TimesNewRoman(1)/m/n/12 PortWatch; 
  []
 
 
-Overfull \hbox (1.97736pt too wide) in paragraph at lines 489--490
+Overfull \hbox (1.97736pt too wide) in paragraph at lines 496--497
 \TU/TimesNewRoman(1)/m/n/12 PortWatch; 
  []
 
 [31]
-Underfull \hbox (badness 1178) in paragraph at lines 492--493
+Underfull \hbox (badness 1178) in paragraph at lines 499--500
 \TU/TimesNewRoman(1)/m/n/12 Caldara–Iacoviello geopolitical risk (GPR) index. These series are observed at
  []
 
 
-Underfull \hbox (badness 2735) in paragraph at lines 492--493
+Underfull \hbox (badness 2735) in paragraph at lines 499--500
 \TU/TimesNewRoman(1)/m/n/12 different native frequencies and include crude prices and spreads, inventories,
  []
 
@@ -1532,12 +1532,12 @@ Underfull \hbox (badness 2735) in paragraph at lines 492--493
 File: figures/fig_3_4_worked_example_jurong.pdf Graphic file (type pdf)
 <use figures/fig_3_4_worked_example_jurong.pdf>
 [33]
-Underfull \hbox (badness 1354) in paragraph at lines 515--516
+Underfull \hbox (badness 1354) in paragraph at lines 522--523
 []\TU/TimesNewRoman(1)/m/n/12 Publication timing is approximated using source- and product-specific fixed lag
  []
 
 [34]
-Underfull \hbox (badness 5592) in paragraph at lines 535--536
+Underfull \hbox (badness 5592) in paragraph at lines 542--543
 []\TU/TimesNewRoman(1)/m/n/12 The remote-sensing encoder receives monthly embeddings for the 11 AOIs,
  []
 
@@ -1545,14 +1545,14 @@ Underfull \hbox (badness 5592) in paragraph at lines 535--536
 File: ../../05_outputs/figures/fig_3_5_edge_classes.pdf Graphic file (type pdf)
 <use ../../05_outputs/figures/fig_3_5_edge_classes.pdf>
 
-Underfull \hbox (badness 1117) in paragraph at lines 550--551
+Underfull \hbox (badness 1117) in paragraph at lines 557--558
 []\TU/TimesNewRoman(1)/m/n/12 Fusion is applied only to Deep models for S2–S4, while S1 passes its finance
  []
 
 File: ../../05_outputs/figures/Old/fig_3_5_deep_architecture.pdf Graphic file (type pdf)
 <use ../../05_outputs/figures/Old/fig_3_5_deep_architecture.pdf>
 [36] [37] [38]
-Underfull \hbox (badness 2213) in paragraph at lines 569--570
+Underfull \hbox (badness 2213) in paragraph at lines 576--577
 []\TU/TimesNewRoman(1)/m/n/12 A one-week-ahead forecast is produced at every forecast origin $[]$, using only
  []
 
@@ -1561,139 +1561,139 @@ File: ../../05_outputs/figures/Old/fig_3_2_expanding_window.pdf Graphic file (ty
 File: ../../05_outputs/figures/Old/fig_3_4_forecast_origin.pdf Graphic file (type pdf)
 <use ../../05_outputs/figures/Old/fig_3_4_forecast_origin.pdf>
 
-Underfull \hbox (badness 3514) in paragraph at lines 593--594
+Underfull \hbox (badness 3514) in paragraph at lines 600--601
 \TU/TimesNewRoman(1)/m/n/12 Flat models re-select Ridge and XGBoost hyperparameters at each scheduled
  []
 
 
-Underfull \hbox (badness 1237) in paragraph at lines 593--594
+Underfull \hbox (badness 1237) in paragraph at lines 600--601
 \TU/TimesNewRoman(1)/m/n/12 models instead use a configuration fixed before evaluation, including the latent
  []
 
 [39] [40]
-Underfull \hbox (badness 4254) in paragraph at lines 624--625
+Underfull \hbox (badness 4254) in paragraph at lines 631--632
 \TU/TimesNewRoman(1)/m/n/12 Model interpretability concerns identifying where a model’s predictive ability
  []
 
 
-Underfull \hbox (badness 1132) in paragraph at lines 624--625
+Underfull \hbox (badness 1132) in paragraph at lines 631--632
 \TU/TimesNewRoman(1)/m/n/12 comes from, including which data sources and features contribute more or less
  []
 
 
-Underfull \hbox (badness 2368) in paragraph at lines 624--625
+Underfull \hbox (badness 2368) in paragraph at lines 631--632
 \TU/TimesNewRoman(1)/m/n/12 specifications, SHapley Additive exPlanations (SHAP) values are calculated to
  []
 
 [41]
-Underfull \hbox (badness 5771) in paragraph at lines 632--633
+Underfull \hbox (badness 5771) in paragraph at lines 639--640
 \TU/TimesNewRoman(1)/m/n/12 is available on GitHub: []$[][][][][] [] [] [] [][][][][][] [] [][][] [] [][][][][][][][] [] [][][][][][][][] [][] [][][][][][][][][][][][]$[].
  []
 
 
-Underfull \hbox (badness 1924) in paragraph at lines 632--633
+Underfull \hbox (badness 1924) in paragraph at lines 639--640
 \TU/TimesNewRoman(1)/m/n/12 Package versions, random seeds and installation commands are documented in
  []
 
 [42]
 Chapter 4.
 
-Overfull \hbox (10.83595pt too wide) in paragraph at lines 655--656
+Overfull \hbox (10.83595pt too wide) in paragraph at lines 662--663
 []\TU/TimesNewRoman(1)/m/n/12 RMSE  
  []
 
 
-Overfull \hbox (10.83595pt too wide) in paragraph at lines 669--670
+Overfull \hbox (10.83595pt too wide) in paragraph at lines 676--677
 []\TU/TimesNewRoman(1)/m/n/12 RMSE  
  []
 
 
-Overfull \hbox (15.99281pt too wide) in paragraph at lines 677--677
+Overfull \hbox (15.99281pt too wide) in paragraph at lines 684--684
 []|\TU/TimesNewRoman(1)/m/n/12 Benchmark|  
  []
 
 
-Overfull \hbox (5.15822pt too wide) in paragraph at lines 677--677
+Overfull \hbox (5.15822pt too wide) in paragraph at lines 684--684
 []|\TU/TimesNewRoman(1)/m/n/12 4.152|  
  []
 
 
-Overfull \hbox (15.16293pt too wide) in paragraph at lines 678--678
+Overfull \hbox (15.16293pt too wide) in paragraph at lines 685--685
 []|\TU/TimesNewRoman(1)/m/n/12 M1-Flat-Ridge|  
  []
 
 
-Overfull \hbox (5.15822pt too wide) in paragraph at lines 678--678
+Overfull \hbox (5.15822pt too wide) in paragraph at lines 685--685
 []|\TU/TimesNewRoman(1)/m/n/12 4.256|  
  []
 
 
-Overfull \hbox (11.83481pt too wide) in paragraph at lines 679--679
+Overfull \hbox (11.83481pt too wide) in paragraph at lines 686--686
 []|\TU/TimesNewRoman(1)/m/n/12 M1-Flat-XGB|  
  []
 
 
-Overfull \hbox (5.15822pt too wide) in paragraph at lines 679--679
+Overfull \hbox (5.15822pt too wide) in paragraph at lines 686--686
 []|\TU/TimesNewRoman(1)/m/n/12 4.368|  
  []
 
 
-Overfull \hbox (15.16293pt too wide) in paragraph at lines 680--680
+Overfull \hbox (15.16293pt too wide) in paragraph at lines 687--687
 []|\TU/TimesNewRoman(1)/m/n/12 M2-Flat-Ridge|  
  []
 
 
-Overfull \hbox (5.15822pt too wide) in paragraph at lines 680--680
+Overfull \hbox (5.15822pt too wide) in paragraph at lines 687--687
 []|\TU/TimesNewRoman(1)/m/n/12 4.414|  
  []
 
 
-Overfull \hbox (11.83481pt too wide) in paragraph at lines 681--681
+Overfull \hbox (11.83481pt too wide) in paragraph at lines 688--688
 []|\TU/TimesNewRoman(1)/m/n/12 M2-Flat-XGB|  
  []
 
 
-Overfull \hbox (5.15822pt too wide) in paragraph at lines 681--681
+Overfull \hbox (5.15822pt too wide) in paragraph at lines 688--688
 []|\TU/TimesNewRoman(1)/m/n/12 4.440|  
  []
 
 
-Overfull \hbox (15.16293pt too wide) in paragraph at lines 682--682
+Overfull \hbox (15.16293pt too wide) in paragraph at lines 689--689
 []|\TU/TimesNewRoman(1)/m/n/12 M3-Flat-Ridge|  
  []
 
 
-Overfull \hbox (5.15822pt too wide) in paragraph at lines 682--682
+Overfull \hbox (5.15822pt too wide) in paragraph at lines 689--689
 []|\TU/TimesNewRoman(1)/m/n/12 4.553|  
  []
 
 
-Overfull \hbox (11.83481pt too wide) in paragraph at lines 683--683
+Overfull \hbox (11.83481pt too wide) in paragraph at lines 690--690
 []|\TU/TimesNewRoman(1)/m/n/12 M3-Flat-XGB|  
  []
 
 
-Overfull \hbox (5.15822pt too wide) in paragraph at lines 683--683
+Overfull \hbox (5.15822pt too wide) in paragraph at lines 690--690
 []|\TU/TimesNewRoman(1)/m/n/12 4.357|  
  []
 
 
-Overfull \hbox (15.16293pt too wide) in paragraph at lines 684--684
+Overfull \hbox (15.16293pt too wide) in paragraph at lines 691--691
 []|\TU/TimesNewRoman(1)/m/n/12 M4-Flat-Ridge|  
  []
 
 
-Overfull \hbox (5.15822pt too wide) in paragraph at lines 684--684
+Overfull \hbox (5.15822pt too wide) in paragraph at lines 691--691
 []|\TU/TimesNewRoman(1)/m/n/12 4.539|  
  []
 
 
-Overfull \hbox (11.83481pt too wide) in paragraph at lines 685--685
+Overfull \hbox (11.83481pt too wide) in paragraph at lines 692--692
 []|\TU/TimesNewRoman(1)/m/n/12 M4-Flat-XGB|  
  []
 
 
-Overfull \hbox (5.15822pt too wide) in paragraph at lines 685--685
+Overfull \hbox (5.15822pt too wide) in paragraph at lines 692--692
 []|\TU/TimesNewRoman(1)/m/n/12 4.412|  
  []
 
@@ -1702,169 +1702,169 @@ File: ../../05_outputs/figures/fig_4_1_flat_rmse_improvement.pdf Graphic file (t
 [43
 
 ]
-Underfull \hbox (badness 1430) in paragraph at lines 707--708
+Underfull \hbox (badness 1430) in paragraph at lines 714--715
 \TU/TimesNewRoman(1)/m/n/12 Table []4.2[] reports Deep-model performance across S1–S4. Gated fusion is the
  []
 
 
-Underfull \hbox (badness 2884) in paragraph at lines 707--708
+Underfull \hbox (badness 2884) in paragraph at lines 714--715
 \TU/TimesNewRoman(1)/m/n/12 prespecified main specification, while cross-attention (XAttn) is reported as a
  []
 
 [44]
-Overfull \hbox (10.83595pt too wide) in paragraph at lines 724--725
+Overfull \hbox (10.83595pt too wide) in paragraph at lines 731--732
 []\TU/TimesNewRoman(1)/m/n/12 RMSE  
  []
 
 
-Overfull \hbox (10.83595pt too wide) in paragraph at lines 738--739
+Overfull \hbox (10.83595pt too wide) in paragraph at lines 745--746
 []\TU/TimesNewRoman(1)/m/n/12 RMSE  
  []
 
 
-Overfull \hbox (15.99281pt too wide) in paragraph at lines 746--746
+Overfull \hbox (15.99281pt too wide) in paragraph at lines 753--753
 []|\TU/TimesNewRoman(1)/m/n/12 Benchmark|  
  []
 
 
-Overfull \hbox (5.15822pt too wide) in paragraph at lines 746--746
+Overfull \hbox (5.15822pt too wide) in paragraph at lines 753--753
 []|\TU/TimesNewRoman(1)/m/n/12 4.152|  
  []
 
 
-Overfull \hbox (5.15822pt too wide) in paragraph at lines 747--747
+Overfull \hbox (5.15822pt too wide) in paragraph at lines 754--754
 []|\TU/TimesNewRoman(1)/m/n/12 4.250|  
  []
 
 
-Overfull \hbox (21.8016pt too wide) in paragraph at lines 748--748
+Overfull \hbox (21.8016pt too wide) in paragraph at lines 755--755
 []|\TU/TimesNewRoman(1)/m/n/12 M2-Deep-Gated|  
  []
 
 
-Overfull \hbox (5.15822pt too wide) in paragraph at lines 748--748
+Overfull \hbox (5.15822pt too wide) in paragraph at lines 755--755
 []|\TU/TimesNewRoman(1)/m/n/12 4.253|  
  []
 
 
-Overfull \hbox (23.14926pt too wide) in paragraph at lines 749--749
+Overfull \hbox (23.14926pt too wide) in paragraph at lines 756--756
 []|\TU/TimesNewRoman(1)/m/n/12 M2-Deep-XAttn|  
  []
 
 
-Overfull \hbox (5.15822pt too wide) in paragraph at lines 749--749
+Overfull \hbox (5.15822pt too wide) in paragraph at lines 756--756
 []|\TU/TimesNewRoman(1)/m/n/12 4.396|  
  []
 
 
-Overfull \hbox (21.8016pt too wide) in paragraph at lines 750--750
+Overfull \hbox (21.8016pt too wide) in paragraph at lines 757--757
 []|\TU/TimesNewRoman(1)/m/n/12 M3-Deep-Gated|  
  []
 
 
-Overfull \hbox (5.15822pt too wide) in paragraph at lines 750--750
+Overfull \hbox (5.15822pt too wide) in paragraph at lines 757--757
 []|\TU/TimesNewRoman(1)/m/n/12 4.146|  
  []
 
 
-Overfull \hbox (23.14926pt too wide) in paragraph at lines 751--751
+Overfull \hbox (23.14926pt too wide) in paragraph at lines 758--758
 []|\TU/TimesNewRoman(1)/m/n/12 M3-Deep-XAttn|  
  []
 
 
-Overfull \hbox (4.7129pt too wide) in paragraph at lines 751--751
+Overfull \hbox (4.7129pt too wide) in paragraph at lines 758--758
 []|\TU/TimesNewRoman(1)/m/n/12 4.110|  
  []
 
 
-Overfull \hbox (21.8016pt too wide) in paragraph at lines 752--752
+Overfull \hbox (21.8016pt too wide) in paragraph at lines 759--759
 []|\TU/TimesNewRoman(1)/m/n/12 M4-Deep-Gated|  
  []
 
 
-Overfull \hbox (5.15822pt too wide) in paragraph at lines 752--752
+Overfull \hbox (5.15822pt too wide) in paragraph at lines 759--759
 []|\TU/TimesNewRoman(1)/m/n/12 4.180|  
  []
 
 
-Overfull \hbox (23.14926pt too wide) in paragraph at lines 753--753
+Overfull \hbox (23.14926pt too wide) in paragraph at lines 760--760
 []|\TU/TimesNewRoman(1)/m/n/12 M4-Deep-XAttn|  
  []
 
 
-Overfull \hbox (5.15822pt too wide) in paragraph at lines 753--753
+Overfull \hbox (5.15822pt too wide) in paragraph at lines 760--760
 []|\TU/TimesNewRoman(1)/m/n/12 4.144|  
  []
 
 File: ../../05_outputs/figures/fig_4_2_deep_rmse_improvement.pdf Graphic file (type pdf)
 <use ../../05_outputs/figures/fig_4_2_deep_rmse_improvement.pdf>
 [45] [46]
-Underfull \hbox (badness 1728) in paragraph at lines 773--774
+Underfull \hbox (badness 1728) in paragraph at lines 780--781
 \TU/TimesNewRoman(1)/m/n/12 improvement. S3 achieves the best performance under both gated fusion and
  []
 
 
-Overfull \hbox (7.64838pt too wide) in paragraph at lines 822--822
+Overfull \hbox (7.64838pt too wide) in paragraph at lines 829--829
 []|\TU/TimesNewRoman(1)/m/n/12 M1–Flat–XGB|  
  []
 
 
-Overfull \hbox (10.9765pt too wide) in paragraph at lines 823--823
+Overfull \hbox (10.9765pt too wide) in paragraph at lines 830--830
 []|\TU/TimesNewRoman(1)/m/n/12 M2–Flat–Ridge|  
  []
 
 
-Overfull \hbox (17.61517pt too wide) in paragraph at lines 823--823
+Overfull \hbox (17.61517pt too wide) in paragraph at lines 830--830
 []|\TU/TimesNewRoman(1)/m/n/12 M2–Deep–Gated|  
  []
 
 
-Overfull \hbox (7.64838pt too wide) in paragraph at lines 824--824
+Overfull \hbox (7.64838pt too wide) in paragraph at lines 831--831
 []|\TU/TimesNewRoman(1)/m/n/12 M2–Flat–XGB|  
  []
 
 
-Overfull \hbox (17.61517pt too wide) in paragraph at lines 824--824
+Overfull \hbox (17.61517pt too wide) in paragraph at lines 831--831
 []|\TU/TimesNewRoman(1)/m/n/12 M2–Deep–Gated|  
  []
 
 
-Overfull \hbox (10.9765pt too wide) in paragraph at lines 825--825
+Overfull \hbox (10.9765pt too wide) in paragraph at lines 832--832
 []|\TU/TimesNewRoman(1)/m/n/12 M3–Flat–Ridge|  
  []
 
 
-Overfull \hbox (17.61517pt too wide) in paragraph at lines 825--825
+Overfull \hbox (17.61517pt too wide) in paragraph at lines 832--832
 []|\TU/TimesNewRoman(1)/m/n/12 M3–Deep–Gated|  
  []
 
 
-Overfull \hbox (7.64838pt too wide) in paragraph at lines 826--826
+Overfull \hbox (7.64838pt too wide) in paragraph at lines 833--833
 []|\TU/TimesNewRoman(1)/m/n/12 M3–Flat–XGB|  
  []
 
 
-Overfull \hbox (17.61517pt too wide) in paragraph at lines 826--826
+Overfull \hbox (17.61517pt too wide) in paragraph at lines 833--833
 []|\TU/TimesNewRoman(1)/m/n/12 M3–Deep–Gated|  
  []
 
 
-Overfull \hbox (10.9765pt too wide) in paragraph at lines 827--827
+Overfull \hbox (10.9765pt too wide) in paragraph at lines 834--834
 []|\TU/TimesNewRoman(1)/m/n/12 M4–Flat–Ridge|  
  []
 
 
-Overfull \hbox (17.61517pt too wide) in paragraph at lines 827--827
+Overfull \hbox (17.61517pt too wide) in paragraph at lines 834--834
 []|\TU/TimesNewRoman(1)/m/n/12 M4–Deep–Gated|  
  []
 
 
-Overfull \hbox (7.64838pt too wide) in paragraph at lines 828--828
+Overfull \hbox (7.64838pt too wide) in paragraph at lines 835--835
 []|\TU/TimesNewRoman(1)/m/n/12 M4–Flat–XGB|  
  []
 
 
-Overfull \hbox (17.61517pt too wide) in paragraph at lines 828--828
+Overfull \hbox (17.61517pt too wide) in paragraph at lines 835--835
 []|\TU/TimesNewRoman(1)/m/n/12 M4–Deep–Gated|  
  []
 
@@ -1872,122 +1872,122 @@ Overfull \hbox (17.61517pt too wide) in paragraph at lines 828--828
 File: ../../05_outputs/figures/fig_4_3_flat_vs_deep_slope.pdf Graphic file (type pdf)
 <use ../../05_outputs/figures/fig_4_3_flat_vs_deep_slope.pdf>
 [48]
-Underfull \hbox (badness 1248) in paragraph at lines 848--849
+Underfull \hbox (badness 1248) in paragraph at lines 855--856
 \TU/TimesNewRoman(1)/m/n/12 Following the eligibility rule in Section []3.7.2[], interpretation is reported for the
  []
 
 
-Overfull \hbox (14.86235pt too wide) in paragraph at lines 866--867
+Overfull \hbox (14.86235pt too wide) in paragraph at lines 873--874
 []\TU/TimesNewRoman(1)/m/n/12 RMSE  
  []
 
 
-Overfull \hbox (14.86235pt too wide) in paragraph at lines 886--887
+Overfull \hbox (14.86235pt too wide) in paragraph at lines 893--894
 []\TU/TimesNewRoman(1)/m/n/12 RMSE  
  []
 
 
-Overfull \hbox (7.3037pt too wide) in paragraph at lines 902--902
+Overfull \hbox (7.3037pt too wide) in paragraph at lines 909--909
 []|\TU/TimesNewRoman(1)/m/n/12 257|  
  []
 
 
-Overfull \hbox (9.18462pt too wide) in paragraph at lines 902--902
+Overfull \hbox (9.18462pt too wide) in paragraph at lines 909--909
 []|\TU/TimesNewRoman(1)/m/n/12 4.146|  
  []
 
 
-Overfull \hbox (1.3037pt too wide) in paragraph at lines 903--903
+Overfull \hbox (1.3037pt too wide) in paragraph at lines 910--910
 []|\TU/TimesNewRoman(1)/m/n/12 50|  
  []
 
 
-Overfull \hbox (9.18462pt too wide) in paragraph at lines 903--903
+Overfull \hbox (9.18462pt too wide) in paragraph at lines 910--910
 []|\TU/TimesNewRoman(1)/m/n/12 3.014|  
  []
 
 
-Overfull \hbox (1.3037pt too wide) in paragraph at lines 904--904
-[]|\TU/TimesNewRoman(1)/m/n/12 52|  
- []
-
-
-Overfull \hbox (9.18462pt too wide) in paragraph at lines 904--904
-[]|\TU/TimesNewRoman(1)/m/n/12 6.613|  
- []
-
-
-Overfull \hbox (1.3037pt too wide) in paragraph at lines 905--905
-[]|\TU/TimesNewRoman(1)/m/n/12 52|  
- []
-
-
-Overfull \hbox (9.18462pt too wide) in paragraph at lines 905--905
-[]|\TU/TimesNewRoman(1)/m/n/12 3.790|  
- []
-
-
-Overfull \hbox (1.3037pt too wide) in paragraph at lines 906--906
-[]|\TU/TimesNewRoman(1)/m/n/12 52|  
- []
-
-
-Overfull \hbox (9.18462pt too wide) in paragraph at lines 906--906
-[]|\TU/TimesNewRoman(1)/m/n/12 3.083|  
- []
-
-
-Overfull \hbox (1.3037pt too wide) in paragraph at lines 907--907
-[]|\TU/TimesNewRoman(1)/m/n/12 51|  
- []
-
-
-Overfull \hbox (9.18462pt too wide) in paragraph at lines 907--907
-[]|\TU/TimesNewRoman(1)/m/n/12 2.960|  
- []
-
-
-Overfull \hbox (26.81879pt too wide) in paragraph at lines 908--908
-[]|\TU/TimesNewRoman(1)/m/n/12 Russia–Ukraine|  
- []
-
-
-Overfull \hbox (1.3037pt too wide) in paragraph at lines 908--908
-[]|\TU/TimesNewRoman(1)/m/n/12 16|  
- []
-
-
-Overfull \hbox (9.18462pt too wide) in paragraph at lines 908--908
-[]|\TU/TimesNewRoman(1)/m/n/12 8.822|  
- []
-
-
-Overfull \hbox (1.3037pt too wide) in paragraph at lines 909--909
-[]|\TU/TimesNewRoman(1)/m/n/12 16|  
- []
-
-
-Overfull \hbox (9.18462pt too wide) in paragraph at lines 909--909
-[]|\TU/TimesNewRoman(1)/m/n/12 5.059|  
- []
-
-
-Overfull \hbox (1.3037pt too wide) in paragraph at lines 910--910
-[]|\TU/TimesNewRoman(1)/m/n/12 16|  
- []
-
-
-Overfull \hbox (9.18462pt too wide) in paragraph at lines 910--910
-[]|\TU/TimesNewRoman(1)/m/n/12 4.358|  
- []
-
-
 Overfull \hbox (1.3037pt too wide) in paragraph at lines 911--911
-[]|\TU/TimesNewRoman(1)/m/n/12 16|  
+[]|\TU/TimesNewRoman(1)/m/n/12 52|  
  []
 
 
 Overfull \hbox (9.18462pt too wide) in paragraph at lines 911--911
+[]|\TU/TimesNewRoman(1)/m/n/12 6.613|  
+ []
+
+
+Overfull \hbox (1.3037pt too wide) in paragraph at lines 912--912
+[]|\TU/TimesNewRoman(1)/m/n/12 52|  
+ []
+
+
+Overfull \hbox (9.18462pt too wide) in paragraph at lines 912--912
+[]|\TU/TimesNewRoman(1)/m/n/12 3.790|  
+ []
+
+
+Overfull \hbox (1.3037pt too wide) in paragraph at lines 913--913
+[]|\TU/TimesNewRoman(1)/m/n/12 52|  
+ []
+
+
+Overfull \hbox (9.18462pt too wide) in paragraph at lines 913--913
+[]|\TU/TimesNewRoman(1)/m/n/12 3.083|  
+ []
+
+
+Overfull \hbox (1.3037pt too wide) in paragraph at lines 914--914
+[]|\TU/TimesNewRoman(1)/m/n/12 51|  
+ []
+
+
+Overfull \hbox (9.18462pt too wide) in paragraph at lines 914--914
+[]|\TU/TimesNewRoman(1)/m/n/12 2.960|  
+ []
+
+
+Overfull \hbox (26.81879pt too wide) in paragraph at lines 915--915
+[]|\TU/TimesNewRoman(1)/m/n/12 Russia–Ukraine|  
+ []
+
+
+Overfull \hbox (1.3037pt too wide) in paragraph at lines 915--915
+[]|\TU/TimesNewRoman(1)/m/n/12 16|  
+ []
+
+
+Overfull \hbox (9.18462pt too wide) in paragraph at lines 915--915
+[]|\TU/TimesNewRoman(1)/m/n/12 8.822|  
+ []
+
+
+Overfull \hbox (1.3037pt too wide) in paragraph at lines 916--916
+[]|\TU/TimesNewRoman(1)/m/n/12 16|  
+ []
+
+
+Overfull \hbox (9.18462pt too wide) in paragraph at lines 916--916
+[]|\TU/TimesNewRoman(1)/m/n/12 5.059|  
+ []
+
+
+Overfull \hbox (1.3037pt too wide) in paragraph at lines 917--917
+[]|\TU/TimesNewRoman(1)/m/n/12 16|  
+ []
+
+
+Overfull \hbox (9.18462pt too wide) in paragraph at lines 917--917
+[]|\TU/TimesNewRoman(1)/m/n/12 4.358|  
+ []
+
+
+Overfull \hbox (1.3037pt too wide) in paragraph at lines 918--918
+[]|\TU/TimesNewRoman(1)/m/n/12 16|  
+ []
+
+
+Overfull \hbox (9.18462pt too wide) in paragraph at lines 918--918
 []|\TU/TimesNewRoman(1)/m/n/12 3.265|  
  []
 
@@ -1995,7 +1995,7 @@ Overfull \hbox (9.18462pt too wide) in paragraph at lines 911--911
 File: ../05_outputs/figures/fig_4_3_shap_modality.png Graphic file (type bmp)
 <../05_outputs/figures/fig_4_3_shap_modality.png>
 [50]
-Underfull \hbox (badness 1331) in paragraph at lines 929--930
+Underfull \hbox (badness 1331) in paragraph at lines 936--937
 \TU/TimesNewRoman(1)/m/n/12 highest-ranked individual features are financial inputs, led by crude production,
  []
 
@@ -2004,259 +2004,259 @@ File: ../../05_outputs/figures/fig_4_4_node_shap_map.pdf Graphic file (type pdf)
 File: ../../05_outputs/figures/fig_4_5_node_shap_heatmap.pdf Graphic file (type pdf)
 <use ../../05_outputs/figures/fig_4_5_node_shap_heatmap.pdf>
 
-Underfull \hbox (badness 1270) in paragraph at lines 953--954
+Underfull \hbox (badness 1270) in paragraph at lines 960--961
 \TU/TimesNewRoman(1)/m/n/12 conditions. Shipping provides a much smaller and more episodic contribution,
  []
 
 
-Overfull \hbox (5.2088pt too wide) in paragraph at lines 997--997
+Overfull \hbox (5.2088pt too wide) in paragraph at lines 1004--1004
 []|\TU/TimesNewRoman(1)/m/n/12 M2-Deep-Gated|  
  []
 
 
-Overfull \hbox (10.54669pt too wide) in paragraph at lines 998--998
+Overfull \hbox (10.54669pt too wide) in paragraph at lines 1005--1005
 []|\TU/TimesNewRoman(1)/m/n/12 M2-Deep-Concat|  
  []
 
 
-Overfull \hbox (6.55646pt too wide) in paragraph at lines 999--999
+Overfull \hbox (6.55646pt too wide) in paragraph at lines 1006--1006
 []|\TU/TimesNewRoman(1)/m/n/12 M2-Deep-XAttn|  
  []
 
 
-Overfull \hbox (5.2088pt too wide) in paragraph at lines 1000--1000
+Overfull \hbox (5.2088pt too wide) in paragraph at lines 1007--1007
 []|\TU/TimesNewRoman(1)/m/n/12 M3-Deep-Gated|  
  []
 
 
-Overfull \hbox (10.54669pt too wide) in paragraph at lines 1001--1001
+Overfull \hbox (10.54669pt too wide) in paragraph at lines 1008--1008
 []|\TU/TimesNewRoman(1)/m/n/12 M3-Deep-Concat|  
  []
 
 
-Overfull \hbox (6.55646pt too wide) in paragraph at lines 1002--1002
+Overfull \hbox (6.55646pt too wide) in paragraph at lines 1009--1009
 []|\TU/TimesNewRoman(1)/m/n/12 M3-Deep-XAttn|  
  []
 
 
-Overfull \hbox (5.2088pt too wide) in paragraph at lines 1003--1003
+Overfull \hbox (5.2088pt too wide) in paragraph at lines 1010--1010
 []|\TU/TimesNewRoman(1)/m/n/12 M4-Deep-Gated|  
  []
 
 
-Overfull \hbox (10.54669pt too wide) in paragraph at lines 1004--1004
+Overfull \hbox (10.54669pt too wide) in paragraph at lines 1011--1011
 []|\TU/TimesNewRoman(1)/m/n/12 M4-Deep-Concat|  
  []
 
 
-Overfull \hbox (6.55646pt too wide) in paragraph at lines 1005--1005
+Overfull \hbox (6.55646pt too wide) in paragraph at lines 1012--1012
 []|\TU/TimesNewRoman(1)/m/n/12 M4-Deep-XAttn|  
  []
 
 [51] [52] [53] [54]
 Chapter 5.
 
-Underfull \hbox (badness 2591) in paragraph at lines 1020--1021
+Underfull \hbox (badness 2591) in paragraph at lines 1027--1028
 \TU/TimesNewRoman(1)/m/n/12 results show the same ordering across the multimodal specifications, with S3
  []
 
 [55
 
 ]
-Underfull \hbox (badness 1769) in paragraph at lines 1030--1031
+Underfull \hbox (badness 1769) in paragraph at lines 1037--1038
 \TU/TimesNewRoman(1)/m/n/12 space, whereas multimodal models retain separate representations before fusion
  []
 
 [56]
-Underfull \hbox (badness 1303) in paragraph at lines 1032--1033
+Underfull \hbox (badness 1303) in paragraph at lines 1039--1040
 []\TU/TimesNewRoman(1)/m/n/12 However, the comparisons in this study evaluate complete modelling pathways,
  []
 
 [57]
-Underfull \hbox (badness 2376) in paragraph at lines 1048--1049
+Underfull \hbox (badness 2376) in paragraph at lines 1055--1056
 \TU/TimesNewRoman(1)/m/n/12 fiscal management, but it does not necessarily improve one-week-ahead Brent
  []
 
 [58]
-Underfull \hbox (badness 1132) in paragraph at lines 1054--1055
+Underfull \hbox (badness 1132) in paragraph at lines 1061--1062
 []\TU/TimesNewRoman(1)/m/n/12 The study applies a range of methods to reduce information leakage, including
  []
 
 
-Underfull \hbox (badness 3907) in paragraph at lines 1054--1055
+Underfull \hbox (badness 3907) in paragraph at lines 1061--1062
 \TU/TimesNewRoman(1)/m/n/12 publication lags and as-of alignment, but limitations in data availability and
  []
 
 
-Underfull \hbox (badness 1975) in paragraph at lines 1054--1055
+Underfull \hbox (badness 1975) in paragraph at lines 1061--1062
 \TU/TimesNewRoman(1)/m/n/12 additional assumptions. The observed model performance therefore cannot be
  []
 
 [59] [60]
-Underfull \hbox (badness 1314) in paragraph at lines 1066--1067
+Underfull \hbox (badness 1314) in paragraph at lines 1073--1074
 \TU/TimesNewRoman(1)/m/n/12 information improves the timing and focus of energy-security monitoring, trade
  []
 
 [61]
 Chapter 6.
 
-Underfull \hbox (badness 1817) in paragraph at lines 1070--1071
+Underfull \hbox (badness 1817) in paragraph at lines 1077--1078
 \TU/TimesNewRoman(1)/m/n/12 no-change benchmark, separating incremental contribution from overall forecast
  []
 
 
-Underfull \hbox (badness 3354) in paragraph at lines 1072--1073
+Underfull \hbox (badness 3354) in paragraph at lines 1079--1080
 \TU/TimesNewRoman(1)/m/n/12 finance-plus-shipping model achieved a small improvement. Across matched
  []
 
 
-Underfull \hbox (badness 1783) in paragraph at lines 1072--1073
+Underfull \hbox (badness 1783) in paragraph at lines 1079--1080
 \TU/TimesNewRoman(1)/m/n/12 shipping made a smaller contribution that varied across disruption periods and
  []
 
 
-Underfull \hbox (badness 1983) in paragraph at lines 1074--1075
+Underfull \hbox (badness 1983) in paragraph at lines 1081--1082
 \TU/TimesNewRoman(1)/m/n/12 monitoring, trade planning and inflation-sensitive budgeting, financial and EIA
  []
 
 [62
 
 ] [63]
-Underfull \hbox (badness 10000) in paragraph at lines 1095--1096
+Underfull \hbox (badness 10000) in paragraph at lines 1102--1103
 [][] [] [][][][][][] [] [][][][] [] [][] [] [][] [] [][][] [][] [][][][] [][] [][] [][] [][][][][][] [][] [][][][][][][] [][] [][][][][][][][][][] [][] [][][][][] [][] [][][][][] [][] [][] [][] [][][][] [][]
  []
 
 
-Underfull \hbox (badness 3724) in paragraph at lines 1098--1099
+Underfull \hbox (badness 3724) in paragraph at lines 1105--1106
 \TU/TimesNewRoman(1)/m/n/12 convolutional and recurrent networks for sequence modeling.” Available at:
  []
 
 [64
 
 ]
-Underfull \hbox (badness 1173) in paragraph at lines 1101--1102
+Underfull \hbox (badness 1173) in paragraph at lines 1108--1109
 \TU/TimesNewRoman(1)/m/n/12 A survey and taxonomy,” \TU/TimesNewRoman(0)/m/it/12 IEEE Transactions on Pattern Analysis and Machine
  []
 
 
-Underfull \hbox (badness 2042) in paragraph at lines 1107--1108
+Underfull \hbox (badness 2042) in paragraph at lines 1114--1115
 \TU/TimesNewRoman(1)/m/n/12 Paper Series 3198. Frankfurt am Main: European Central Bank. Available
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1107--1108
+Underfull \hbox (badness 10000) in paragraph at lines 1114--1115
 \TU/TimesNewRoman(1)/m/n/12 at: []$[][][][][] [] [] [] [][][] [] [][][] [] [][][][][][] [] [][] [] [][][] [] [][][] [] [][][][][][] [] [][][] [] [][][][][][][][][][][][][][][][][] [] [][] [] [][][]$[]
  []
 
 
-Underfull \hbox (badness 1472) in paragraph at lines 1113--1114
+Underfull \hbox (badness 1472) in paragraph at lines 1120--1121
 \TU/TimesNewRoman(0)/m/it/12 Proceedings of the 22nd ACM SIGKDD international conference on knowledge
  []
 
 
-Underfull \hbox (badness 1939) in paragraph at lines 1116--1117
+Underfull \hbox (badness 1939) in paragraph at lines 1123--1124
 []\TU/TimesNewRoman(1)/m/n/12 Cong, Y. \TU/TimesNewRoman(0)/m/it/12 et al. \TU/TimesNewRoman(1)/m/n/12 (2022) “SatMAE: Pre-training transformers for temporal and
  []
 
 [65]
-Underfull \hbox (badness 5374) in paragraph at lines 1125--1126
+Underfull \hbox (badness 5374) in paragraph at lines 1132--1133
 []\TU/TimesNewRoman(1)/m/n/12 Fuller, A., Millard, K. and Green, J.R. (2023) “CROMA: Remote sensing
  []
 
 
-Underfull \hbox (badness 5274) in paragraph at lines 1125--1126
+Underfull \hbox (badness 5274) in paragraph at lines 1132--1133
 \TU/TimesNewRoman(1)/m/n/12 representations with contrastive radar-optical masked autoencoders,” \TU/TimesNewRoman(0)/m/it/12 Advances
  []
 
 
-Underfull \hbox (badness 2762) in paragraph at lines 1134--1135
+Underfull \hbox (badness 2762) in paragraph at lines 1141--1142
 []\TU/TimesNewRoman(1)/m/n/12 Hoerl, A.E. and Kennard, R.W. (1970) “Ridge regression: Biased estimation
  []
 
 
-Underfull \hbox (badness 1286) in paragraph at lines 1134--1135
+Underfull \hbox (badness 1286) in paragraph at lines 1141--1142
 \TU/TimesNewRoman(1)/m/n/12 for nonorthogonal problems,” \TU/TimesNewRoman(0)/m/it/12 Technometrics\TU/TimesNewRoman(1)/m/n/12 , 12(1), pp. 55–67. Available at:
  []
 
 
-Underfull \hbox (badness 1845) in paragraph at lines 1137--1138
+Underfull \hbox (badness 1845) in paragraph at lines 1144--1145
 []\TU/TimesNewRoman(1)/m/n/12 Jain, S. and Wallace, B.C. (2019) “Attention is not explanation,” \TU/TimesNewRoman(0)/m/it/12 Proceedings
  []
 
 
-Underfull \hbox (badness 2735) in paragraph at lines 1137--1138
+Underfull \hbox (badness 2735) in paragraph at lines 1144--1145
 \TU/TimesNewRoman(0)/m/it/12 of the 2019 conference of the north american chapter of the association for
  []
 
 
-Underfull \hbox (badness 4608) in paragraph at lines 1137--1138
+Underfull \hbox (badness 4608) in paragraph at lines 1144--1145
 \TU/TimesNewRoman(0)/m/it/12 computational linguistics: Human language technologies\TU/TimesNewRoman(1)/m/n/12 . Stroudsburg, PA:
  []
 
 
-Underfull \hbox (badness 5460) in paragraph at lines 1137--1138
+Underfull \hbox (badness 5460) in paragraph at lines 1144--1145
 \TU/TimesNewRoman(1)/m/n/12 Association for Computational Linguistics, pp. 3543–3556. Available at:
  []
 
 [66]
-Underfull \hbox (badness 2903) in paragraph at lines 1146--1147
+Underfull \hbox (badness 2903) in paragraph at lines 1153--1154
 []\TU/TimesNewRoman(1)/m/n/12 Liang, M. \TU/TimesNewRoman(0)/m/it/12 et al. \TU/TimesNewRoman(1)/m/n/12 (2022) “Fine-grained vessel traffic flow prediction with a
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1146--1147
+Underfull \hbox (badness 10000) in paragraph at lines 1153--1154
 \TU/TimesNewRoman(1)/m/n/12 spatio-temporal multigraph convolutional network,” \TU/TimesNewRoman(0)/m/it/12 IEEE Transactions on
  []
 
 
-Underfull \hbox (badness 2903) in paragraph at lines 1146--1147
+Underfull \hbox (badness 2903) in paragraph at lines 1153--1154
 \TU/TimesNewRoman(0)/m/it/12 Intelligent Transportation Systems\TU/TimesNewRoman(1)/m/n/12 , 23(12), pp. 23694–23707. Available at:
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1152--1153
+Underfull \hbox (badness 10000) in paragraph at lines 1159--1160
 \TU/TimesNewRoman(0)/m/it/12 Proceedings of the IEEE/CVF conference on computer vision and pattern
  []
 
 
-Underfull \hbox (badness 1968) in paragraph at lines 1152--1153
+Underfull \hbox (badness 1968) in paragraph at lines 1159--1160
 \TU/TimesNewRoman(0)/m/it/12 recognition (CVPR)\TU/TimesNewRoman(1)/m/n/12 . Piscataway, NJ: IEEE, pp. 18177–18186. Available at:
  []
 
 
-Underfull \hbox (badness 2875) in paragraph at lines 1155--1156
+Underfull \hbox (badness 2875) in paragraph at lines 1162--1163
 \TU/TimesNewRoman(1)/m/n/12 features: Mining the information in automatic identification system,” \TU/TimesNewRoman(0)/m/it/12 Journal
  []
 
 
-Underfull \hbox (badness 2189) in paragraph at lines 1155--1156
+Underfull \hbox (badness 2189) in paragraph at lines 1162--1163
 \TU/TimesNewRoman(0)/m/it/12 of Marine Science and Engineering\TU/TimesNewRoman(1)/m/n/12 , 10(10), p. 1559. Available at: []$[][][][][] []
  []
 
 [67]
-Underfull \hbox (badness 3780) in paragraph at lines 1161--1162
+Underfull \hbox (badness 3780) in paragraph at lines 1168--1169
 \TU/TimesNewRoman(0)/m/it/12 IEEE Transactions on Pattern Analysis and Machine Intelligence\TU/TimesNewRoman(1)/m/n/12 , 38(8), pp.
  []
 
 [68]
-Underfull \hbox (badness 2150) in paragraph at lines 1185--1186
+Underfull \hbox (badness 2150) in paragraph at lines 1192--1193
 \TU/TimesNewRoman(0)/m/it/12 on learning representations (ICLR 2018)\TU/TimesNewRoman(1)/m/n/12 . Vancouver, Canada. Available at:
  []
 
 
-Overfull \hbox (2.80542pt too wide) in paragraph at lines 1191--1192
+Overfull \hbox (2.80542pt too wide) in paragraph at lines 1198--1199
 []\TU/TimesNewRoman(1)/m/n/12 Wittner, M. (2020) “Global crude benchmarks: Brent sets the standard.” Intercontinental
  []
 
 [69] [70]
-Overfull \hbox (15.79764pt too wide) in paragraph at lines 1211--1211
+Overfull \hbox (15.79764pt too wide) in paragraph at lines 1218--1218
 |\TU/TimesNewRoman(0)/b/n/24.88 Appendix A — Data: variable dictionary,
  []
 
 LaTeX Font Info:    Font shape `TU/Menlo(0)/m/n' will be
-(Font)              scaled to size 9.85107pt on input line 1215.
+(Font)              scaled to size 9.85107pt on input line 1222.
 
-Overfull \hbox (59.57918pt too wide) in paragraph at lines 1215--1221
+Overfull \hbox (59.57918pt too wide) in paragraph at lines 1222--1228
 \TU/TimesNewRoman(1)/m/n/12 modality data dictionaries (\TU/Menlo(0)/m/n/12 03_-data/processed/M{1,2,3}/*_-data_-dictionary.md\TU/TimesNewRoman(1)/m/n/12 );
  []
 
@@ -2267,338 +2267,143 @@ Missing character: There is no ₁ (U+2081) in font Times New Roman/OT:script=la
 [71
 
 ] [72]
-Overfull \hbox (29.77156pt too wide) in paragraph at lines 1330--1330
+Overfull \hbox (29.77156pt too wide) in paragraph at lines 1337--1337
 []|\TU/Menlo(0)/m/n/12 nonoil_-industrial_-commodity|  
  []
 
 
-Overfull \hbox (6.04817pt too wide) in paragraph at lines 1331--1331
+Overfull \hbox (6.04817pt too wide) in paragraph at lines 1338--1338
 []|\TU/Menlo(0)/m/n/12 brent_-f1_-spot_-log_-basis|  
  []
 
 [73]
-Overfull \hbox (5.1971pt too wide) in paragraph at lines 1367--1367
+Overfull \hbox (5.1971pt too wide) in paragraph at lines 1374--1374
 []|\TU/TimesNewRoman(1)/m/n/12 (B11−B8)/(B11+B8)|  
  []
 
 
-Overfull \hbox (120.25179pt too wide) in paragraph at lines 1368--1368
+Overfull \hbox (120.25179pt too wide) in paragraph at lines 1375--1375
 []|\TU/TimesNewRoman(1)/m/n/12 ((B11+B4)−(B8+B2))/((B11+B4)+(B8+B2))|  
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1380--1386
+Underfull \hbox (badness 10000) in paragraph at lines 1387--1393
 \TU/TimesNewRoman(1)/m/n/12 Naming \TU/Menlo(0)/m/n/12 gfw_-{cp}_-{stat} \TU/TimesNewRoman(1)/m/n/12 and \TU/Menlo(0)/m/n/12 pw_-{cp}_-{stat} \TU/TimesNewRoman(1)/m/n/12 over 6 chokepoints, plus
  []
 
 
-Underfull \hbox (badness 6691) in paragraph at lines 1380--1386
+Underfull \hbox (badness 6691) in paragraph at lines 1387--1393
 \TU/TimesNewRoman(1)/m/n/12 cross-chokepoint aggregates and PortWatch port export/import volumes, plus
  []
 
 
-Underfull \hbox (badness 1019) in paragraph at lines 1380--1386
+Underfull \hbox (badness 1019) in paragraph at lines 1387--1393
 \TU/TimesNewRoman(1)/m/n/12 as Deep node attributes. Main model = full 164 (the hand-picked 38-col \TU/TimesNewRoman(0)/m/it/12 core
  []
 
 [74] [75] [76]
-Overfull \hbox (44.51714pt too wide) in paragraph at lines 1508--1509
+Overfull \hbox (44.51714pt too wide) in paragraph at lines 1515--1516
 []\TU/TimesNewRoman(1)/m/n/12 Country/region  
  []
 
 
-Overfull \hbox (7.85503pt too wide) in paragraph at lines 1510--1511
+Overfull \hbox (7.85503pt too wide) in paragraph at lines 1517--1518
 []\TU/TimesNewRoman(1)/m/n/12 Facility 
  []
 
 
-Overfull \hbox (22.52104pt too wide) in paragraph at lines 1512--1513
+Overfull \hbox (22.52104pt too wide) in paragraph at lines 1519--1520
 []\TU/TimesNewRoman(1)/m/n/12 Functional 
  []
 
 
-Overfull \hbox (1.59367pt too wide) in paragraph at lines 1514--1515
+Overfull \hbox (1.59367pt too wide) in paragraph at lines 1521--1522
  []\TU/TimesNewRoman(1)/m/n/12 Latitude
  []
 
 
-Overfull \hbox (10.93352pt too wide) in paragraph at lines 1516--1517
+Overfull \hbox (10.93352pt too wide) in paragraph at lines 1523--1524
  []\TU/TimesNewRoman(1)/m/n/12 Longitude
  []
 
 
-Overfull \hbox (27.19096pt too wide) in paragraph at lines 1522--1523
+Overfull \hbox (27.19096pt too wide) in paragraph at lines 1529--1530
 []\TU/TimesNewRoman(1)/m/n/12 Chokepoint  
  []
 
 
-Overfull \hbox (0.11235pt too wide) in alignment at lines 1501--1525
+Overfull \hbox (0.11235pt too wide) in alignment at lines 1508--1532
  [] [] [] [] [] [] [] [] [] [] 
  []
 
 
-Overfull \hbox (0.11235pt too wide) in alignment at lines 1525--1527
+Overfull \hbox (0.11235pt too wide) in alignment at lines 1532--1534
  [] [] [] [] [] [] [] [] [] [] 
  []
 
 
-Overfull \hbox (21.84721pt too wide) in paragraph at lines 1528--1528
+Overfull \hbox (21.84721pt too wide) in paragraph at lines 1535--1535
 []|\TU/TimesNewRoman(1)/m/n/12 Rotterdam|  
  []
 
 
-Overfull \hbox (29.17143pt too wide) in paragraph at lines 1528--1528
+Overfull \hbox (29.17143pt too wide) in paragraph at lines 1535--1535
 []|\TU/TimesNewRoman(1)/m/n/12 Netherlands 
  []
 
 
-Overfull \hbox (5.84526pt too wide) in paragraph at lines 1528--1528
+Overfull \hbox (5.84526pt too wide) in paragraph at lines 1535--1535
 \TU/TimesNewRoman(1)/m/n/12 Europe|  
  []
 
 
-Overfull \hbox (5.18315pt too wide) in paragraph at lines 1528--1528
+Overfull \hbox (5.18315pt too wide) in paragraph at lines 1535--1535
 []|\TU/TimesNewRoman(1)/m/n/12 pricing 
  []
 
 
-Overfull \hbox (3.19096pt too wide) in paragraph at lines 1528--1528
+Overfull \hbox (3.19096pt too wide) in paragraph at lines 1535--1535
 \TU/TimesNewRoman(1)/m/n/12 import|  
  []
 
 
-Overfull \hbox (11.18315pt too wide) in paragraph at lines 1529--1529
+Overfull \hbox (11.18315pt too wide) in paragraph at lines 1536--1536
 []|\TU/TimesNewRoman(1)/m/n/12 Fujairah|  
  []
 
 
-Overfull \hbox (5.85698pt too wide) in paragraph at lines 1529--1529
+Overfull \hbox (5.85698pt too wide) in paragraph at lines 1536--1536
 \TU/TimesNewRoman(1)/m/n/12 Middle 
  []
 
 
-Overfull \hbox (11.17729pt too wide) in paragraph at lines 1529--1529
+Overfull \hbox (11.17729pt too wide) in paragraph at lines 1536--1536
 []|\TU/TimesNewRoman(1)/m/n/12 terminal|  
  []
 
 
-Overfull \hbox (1.18706pt too wide) in paragraph at lines 1529--1529
+Overfull \hbox (1.18706pt too wide) in paragraph at lines 1536--1536
 []|\TU/TimesNewRoman(1)/m/n/12 transit 
  []
 
 
-Overfull \hbox (5.84526pt too wide) in paragraph at lines 1529--1529
+Overfull \hbox (5.84526pt too wide) in paragraph at lines 1536--1536
 \TU/TimesNewRoman(1)/m/n/12 storage|  
  []
 
 
-Overfull \hbox (10.51518pt too wide) in paragraph at lines 1529--1530
+Overfull \hbox (10.51518pt too wide) in paragraph at lines 1536--1537
 []|\TU/TimesNewRoman(1)/m/n/12 Hormuz|  
  []
 
 
-Overfull \hbox (4.33354pt too wide) in paragraph at lines 1530--1530
+Overfull \hbox (4.33354pt too wide) in paragraph at lines 1537--1537
 \TU/TimesNewRoman(1)/m/n/12 Tanura|  
  []
 
 
-Overfull \hbox (3.84135pt too wide) in paragraph at lines 1530--1530
+Overfull \hbox (3.84135pt too wide) in paragraph at lines 1537--1537
 \TU/TimesNewRoman(1)/m/n/12 Arabia 
- []
-
-
-Overfull \hbox (5.85698pt too wide) in paragraph at lines 1530--1530
-\TU/TimesNewRoman(1)/m/n/12 Middle 
- []
-
-
-Overfull \hbox (11.17729pt too wide) in paragraph at lines 1530--1530
-[]|\TU/TimesNewRoman(1)/m/n/12 terminal|  
- []
-
-
-Overfull \hbox (1.84917pt too wide) in paragraph at lines 1530--1530
-[]|\TU/TimesNewRoman(1)/m/n/12 export|  
- []
-
-
-Overfull \hbox (10.51518pt too wide) in paragraph at lines 1530--1531
-[]|\TU/TimesNewRoman(1)/m/n/12 Hormuz|  
- []
-
-
-Overfull \hbox (3.85893pt too wide) in paragraph at lines 1531--1531
-[]|\TU/TimesNewRoman(1)/m/n/12 Jurong 
- []
-
-
-Overfull \hbox (0.51909pt too wide) in paragraph at lines 1531--1531
-\TU/TimesNewRoman(1)/m/n/12 Island|  
- []
-
-
-Overfull \hbox (19.84917pt too wide) in paragraph at lines 1531--1531
-[]|\TU/TimesNewRoman(1)/m/n/12 Singapore 
- []
-
-
-Overfull \hbox (9.16753pt too wide) in paragraph at lines 1531--1531
-[]|\TU/TimesNewRoman(1)/m/n/12 refinery|  
- []
-
-
-Overfull \hbox (1.18706pt too wide) in paragraph at lines 1531--1531
-[]|\TU/TimesNewRoman(1)/m/n/12 transit 
- []
-
-
-Overfull \hbox (9.17924pt too wide) in paragraph at lines 1531--1531
-\TU/TimesNewRoman(1)/m/n/12 refining|  
- []
-
-
-Overfull \hbox (0.6093pt too wide) in paragraph at lines 1531--1531
- []|\TU/TimesNewRoman(1)/m/n/12 103.708|
- []
-
-
-Overfull \hbox (11.82768pt too wide) in paragraph at lines 1531--1532
-[]|\TU/TimesNewRoman(1)/m/n/12 Malacca|  
- []
-
-
-Overfull \hbox (11.86284pt too wide) in paragraph at lines 1532--1532
-[]|\TU/TimesNewRoman(1)/m/n/12 Houston|  
- []
-
-
-Overfull \hbox (12.50151pt too wide) in paragraph at lines 1532--1532
-\TU/TimesNewRoman(1)/m/n/12 America|  
- []
-
-
-Overfull \hbox (3.19096pt too wide) in paragraph at lines 1532--1532
-[]|\TU/TimesNewRoman(1)/m/n/12 import 
- []
-
-
-Overfull \hbox (9.17924pt too wide) in paragraph at lines 1532--1532
-\TU/TimesNewRoman(1)/m/n/12 refining|  
- []
-
-
-Overfull \hbox (1.37688pt too wide) in paragraph at lines 1532--1532
- []|\TU/TimesNewRoman(1)/m/n/12 −95.100|
- []
-
-
-Overfull \hbox (9.17924pt too wide) in paragraph at lines 1532--1533
-[]|\TU/TimesNewRoman(1)/m/n/12 Panama|  
- []
-
-
-Overfull \hbox (58.51518pt too wide) in paragraph at lines 1533--1533
-[]|\TU/TimesNewRoman(1)/m/n/12 Ningbo-Zhoushan|  
- []
-
-
-Overfull \hbox (3.19096pt too wide) in paragraph at lines 1533--1533
-[]|\TU/TimesNewRoman(1)/m/n/12 import|  
- []
-
-
-Overfull \hbox (0.6093pt too wide) in paragraph at lines 1533--1533
- []|\TU/TimesNewRoman(1)/m/n/12 121.982|
- []
-
-
-Overfull \hbox (11.82768pt too wide) in paragraph at lines 1533--1534
-[]|\TU/TimesNewRoman(1)/m/n/12 Malacca|  
- []
-
-
-Overfull \hbox (17.17143pt too wide) in paragraph at lines 1534--1534
-[]|\TU/TimesNewRoman(1)/m/n/12 Jamnagar|  
- []
-
-
-Overfull \hbox (9.16753pt too wide) in paragraph at lines 1534--1534
-[]|\TU/TimesNewRoman(1)/m/n/12 refinery|  
- []
-
-
-Overfull \hbox (9.17924pt too wide) in paragraph at lines 1534--1534
-[]|\TU/TimesNewRoman(1)/m/n/12 refining|  
- []
-
-
-Overfull \hbox (10.51518pt too wide) in paragraph at lines 1534--1535
-[]|\TU/TimesNewRoman(1)/m/n/12 Hormuz|  
- []
-
-
-Overfull \hbox (4.51518pt too wide) in paragraph at lines 1535--1535
-\TU/TimesNewRoman(1)/m/n/12 Basrah 
- []
-
-
-Overfull \hbox (14.3355pt too wide) in paragraph at lines 1535--1535
-\TU/TimesNewRoman(1)/m/n/12 Terminal|  
- []
-
-
-Overfull \hbox (5.85698pt too wide) in paragraph at lines 1535--1535
-\TU/TimesNewRoman(1)/m/n/12 Middle 
- []
-
-
-Overfull \hbox (11.17729pt too wide) in paragraph at lines 1535--1535
-[]|\TU/TimesNewRoman(1)/m/n/12 terminal|  
- []
-
-
-Overfull \hbox (1.84917pt too wide) in paragraph at lines 1535--1535
-[]|\TU/TimesNewRoman(1)/m/n/12 export|  
- []
-
-
-Overfull \hbox (10.51518pt too wide) in paragraph at lines 1535--1536
-[]|\TU/TimesNewRoman(1)/m/n/12 Hormuz|  
- []
-
-
-Overfull \hbox (0.50737pt too wide) in paragraph at lines 1536--1536
-\TU/TimesNewRoman(1)/m/n/12 Korea 
- []
-
-
-Overfull \hbox (9.16753pt too wide) in paragraph at lines 1536--1536
-[]|\TU/TimesNewRoman(1)/m/n/12 refinery|  
- []
-
-
-Overfull \hbox (9.17924pt too wide) in paragraph at lines 1536--1536
-[]|\TU/TimesNewRoman(1)/m/n/12 refining|  
- []
-
-
-Overfull \hbox (0.6093pt too wide) in paragraph at lines 1536--1536
- []|\TU/TimesNewRoman(1)/m/n/12 129.343|
- []
-
-
-Overfull \hbox (11.82768pt too wide) in paragraph at lines 1536--1537
-[]|\TU/TimesNewRoman(1)/m/n/12 Malacca|  
- []
-
-
-Overfull \hbox (0.9644pt too wide) in paragraph at lines 1537--1537
-[]|\TU/TimesNewRoman(1)/m/n/12 Kharg 
- []
-
-
-Overfull \hbox (0.51909pt too wide) in paragraph at lines 1537--1537
-\TU/TimesNewRoman(1)/m/n/12 Island|  
  []
 
 
@@ -2622,162 +2427,367 @@ Overfull \hbox (10.51518pt too wide) in paragraph at lines 1537--1538
  []
 
 
-Overfull \hbox (1.98393pt too wide) in paragraph at lines 1538--1538
-[]|\TU/TimesNewRoman(1)/m/n/12 Yanbu|  
+Overfull \hbox (3.85893pt too wide) in paragraph at lines 1538--1538
+[]|\TU/TimesNewRoman(1)/m/n/12 Jurong 
  []
 
 
-Overfull \hbox (3.84135pt too wide) in paragraph at lines 1538--1538
-\TU/TimesNewRoman(1)/m/n/12 Arabia 
+Overfull \hbox (0.51909pt too wide) in paragraph at lines 1538--1538
+\TU/TimesNewRoman(1)/m/n/12 Island|  
  []
 
 
-Overfull \hbox (5.85698pt too wide) in paragraph at lines 1538--1538
+Overfull \hbox (19.84917pt too wide) in paragraph at lines 1538--1538
+[]|\TU/TimesNewRoman(1)/m/n/12 Singapore 
+ []
+
+
+Overfull \hbox (9.16753pt too wide) in paragraph at lines 1538--1538
+[]|\TU/TimesNewRoman(1)/m/n/12 refinery|  
+ []
+
+
+Overfull \hbox (1.18706pt too wide) in paragraph at lines 1538--1538
+[]|\TU/TimesNewRoman(1)/m/n/12 transit 
+ []
+
+
+Overfull \hbox (9.17924pt too wide) in paragraph at lines 1538--1538
+\TU/TimesNewRoman(1)/m/n/12 refining|  
+ []
+
+
+Overfull \hbox (0.6093pt too wide) in paragraph at lines 1538--1538
+ []|\TU/TimesNewRoman(1)/m/n/12 103.708|
+ []
+
+
+Overfull \hbox (11.82768pt too wide) in paragraph at lines 1538--1539
+[]|\TU/TimesNewRoman(1)/m/n/12 Malacca|  
+ []
+
+
+Overfull \hbox (11.86284pt too wide) in paragraph at lines 1539--1539
+[]|\TU/TimesNewRoman(1)/m/n/12 Houston|  
+ []
+
+
+Overfull \hbox (12.50151pt too wide) in paragraph at lines 1539--1539
+\TU/TimesNewRoman(1)/m/n/12 America|  
+ []
+
+
+Overfull \hbox (3.19096pt too wide) in paragraph at lines 1539--1539
+[]|\TU/TimesNewRoman(1)/m/n/12 import 
+ []
+
+
+Overfull \hbox (9.17924pt too wide) in paragraph at lines 1539--1539
+\TU/TimesNewRoman(1)/m/n/12 refining|  
+ []
+
+
+Overfull \hbox (1.37688pt too wide) in paragraph at lines 1539--1539
+ []|\TU/TimesNewRoman(1)/m/n/12 −95.100|
+ []
+
+
+Overfull \hbox (9.17924pt too wide) in paragraph at lines 1539--1540
+[]|\TU/TimesNewRoman(1)/m/n/12 Panama|  
+ []
+
+
+Overfull \hbox (58.51518pt too wide) in paragraph at lines 1540--1540
+[]|\TU/TimesNewRoman(1)/m/n/12 Ningbo-Zhoushan|  
+ []
+
+
+Overfull \hbox (3.19096pt too wide) in paragraph at lines 1540--1540
+[]|\TU/TimesNewRoman(1)/m/n/12 import|  
+ []
+
+
+Overfull \hbox (0.6093pt too wide) in paragraph at lines 1540--1540
+ []|\TU/TimesNewRoman(1)/m/n/12 121.982|
+ []
+
+
+Overfull \hbox (11.82768pt too wide) in paragraph at lines 1540--1541
+[]|\TU/TimesNewRoman(1)/m/n/12 Malacca|  
+ []
+
+
+Overfull \hbox (17.17143pt too wide) in paragraph at lines 1541--1541
+[]|\TU/TimesNewRoman(1)/m/n/12 Jamnagar|  
+ []
+
+
+Overfull \hbox (9.16753pt too wide) in paragraph at lines 1541--1541
+[]|\TU/TimesNewRoman(1)/m/n/12 refinery|  
+ []
+
+
+Overfull \hbox (9.17924pt too wide) in paragraph at lines 1541--1541
+[]|\TU/TimesNewRoman(1)/m/n/12 refining|  
+ []
+
+
+Overfull \hbox (10.51518pt too wide) in paragraph at lines 1541--1542
+[]|\TU/TimesNewRoman(1)/m/n/12 Hormuz|  
+ []
+
+
+Overfull \hbox (4.51518pt too wide) in paragraph at lines 1542--1542
+\TU/TimesNewRoman(1)/m/n/12 Basrah 
+ []
+
+
+Overfull \hbox (14.3355pt too wide) in paragraph at lines 1542--1542
+\TU/TimesNewRoman(1)/m/n/12 Terminal|  
+ []
+
+
+Overfull \hbox (5.85698pt too wide) in paragraph at lines 1542--1542
 \TU/TimesNewRoman(1)/m/n/12 Middle 
  []
 
 
-Overfull \hbox (11.17729pt too wide) in paragraph at lines 1538--1538
+Overfull \hbox (11.17729pt too wide) in paragraph at lines 1542--1542
 []|\TU/TimesNewRoman(1)/m/n/12 terminal|  
  []
 
 
-Overfull \hbox (1.84917pt too wide) in paragraph at lines 1538--1538
+Overfull \hbox (1.84917pt too wide) in paragraph at lines 1542--1542
 []|\TU/TimesNewRoman(1)/m/n/12 export|  
  []
 
 
-Overfull \hbox (10.51518pt too wide) in paragraph at lines 1538--1539
+Overfull \hbox (10.51518pt too wide) in paragraph at lines 1542--1543
+[]|\TU/TimesNewRoman(1)/m/n/12 Hormuz|  
+ []
+
+
+Overfull \hbox (0.50737pt too wide) in paragraph at lines 1543--1543
+\TU/TimesNewRoman(1)/m/n/12 Korea 
+ []
+
+
+Overfull \hbox (9.16753pt too wide) in paragraph at lines 1543--1543
+[]|\TU/TimesNewRoman(1)/m/n/12 refinery|  
+ []
+
+
+Overfull \hbox (9.17924pt too wide) in paragraph at lines 1543--1543
+[]|\TU/TimesNewRoman(1)/m/n/12 refining|  
+ []
+
+
+Overfull \hbox (0.6093pt too wide) in paragraph at lines 1543--1543
+ []|\TU/TimesNewRoman(1)/m/n/12 129.343|
+ []
+
+
+Overfull \hbox (11.82768pt too wide) in paragraph at lines 1543--1544
+[]|\TU/TimesNewRoman(1)/m/n/12 Malacca|  
+ []
+
+
+Overfull \hbox (0.9644pt too wide) in paragraph at lines 1544--1544
+[]|\TU/TimesNewRoman(1)/m/n/12 Kharg 
+ []
+
+
+Overfull \hbox (0.51909pt too wide) in paragraph at lines 1544--1544
+\TU/TimesNewRoman(1)/m/n/12 Island|  
+ []
+
+
+Overfull \hbox (5.85698pt too wide) in paragraph at lines 1544--1544
+\TU/TimesNewRoman(1)/m/n/12 Middle 
+ []
+
+
+Overfull \hbox (11.17729pt too wide) in paragraph at lines 1544--1544
+[]|\TU/TimesNewRoman(1)/m/n/12 terminal|  
+ []
+
+
+Overfull \hbox (1.84917pt too wide) in paragraph at lines 1544--1544
+[]|\TU/TimesNewRoman(1)/m/n/12 export|  
+ []
+
+
+Overfull \hbox (10.51518pt too wide) in paragraph at lines 1544--1545
+[]|\TU/TimesNewRoman(1)/m/n/12 Hormuz|  
+ []
+
+
+Overfull \hbox (1.98393pt too wide) in paragraph at lines 1545--1545
+[]|\TU/TimesNewRoman(1)/m/n/12 Yanbu|  
+ []
+
+
+Overfull \hbox (3.84135pt too wide) in paragraph at lines 1545--1545
+\TU/TimesNewRoman(1)/m/n/12 Arabia 
+ []
+
+
+Overfull \hbox (5.85698pt too wide) in paragraph at lines 1545--1545
+\TU/TimesNewRoman(1)/m/n/12 Middle 
+ []
+
+
+Overfull \hbox (11.17729pt too wide) in paragraph at lines 1545--1545
+[]|\TU/TimesNewRoman(1)/m/n/12 terminal|  
+ []
+
+
+Overfull \hbox (1.84917pt too wide) in paragraph at lines 1545--1545
+[]|\TU/TimesNewRoman(1)/m/n/12 export|  
+ []
+
+
+Overfull \hbox (10.51518pt too wide) in paragraph at lines 1545--1546
 \TU/TimesNewRoman(1)/m/n/12 Mandeb|  
  []
 
 
-Overfull \hbox (0.11235pt too wide) in alignment at lines 1527--1539
+Overfull \hbox (0.11235pt too wide) in alignment at lines 1534--1546
  [] [] [] [] [] [] [] [] [] [] 
  []
 
 [77] [78] [79]
-Overfull \hbox (193.22444pt too wide) in paragraph at lines 1595--1595
+Overfull \hbox (193.22444pt too wide) in paragraph at lines 1602--1602
 \TU/TimesNewRoman(1)/m/n/12 (Brent/WTI/VIX/DXY/DGS10/DFF/S&P/gold/OVX/CAD)|  
  []
 
 
-Overfull \hbox (23.83553pt too wide) in paragraph at lines 1595--1596
+Overfull \hbox (23.83553pt too wide) in paragraph at lines 1602--1603
 []|\TU/Menlo(0)/m/n/12 daily_-to_-weekly_-last 
  []
 
 
-Overfull \hbox (11.97383pt too wide) in paragraph at lines 1595--1596
+Overfull \hbox (11.97383pt too wide) in paragraph at lines 1602--1603
 \TU/Menlo(0)/m/n/12 build_-m1_-weekly.py|  
  []
 
 
-Overfull \hbox (11.97383pt too wide) in paragraph at lines 1596--1597
+Overfull \hbox (11.97383pt too wide) in paragraph at lines 1603--1604
 \TU/Menlo(0)/m/n/12 build_-m1_-weekly.py|  
  []
 
 
-Overfull \hbox (11.97383pt too wide) in paragraph at lines 1597--1598
+Overfull \hbox (11.97383pt too wide) in paragraph at lines 1604--1605
 \TU/Menlo(0)/m/n/12 build_-m1_-weekly.py|  
  []
 
 
-Overfull \hbox (17.90468pt too wide) in paragraph at lines 1598--1599
+Overfull \hbox (17.90468pt too wide) in paragraph at lines 1605--1606
 []|\TU/Menlo(0)/m/n/12 MONTHLY_-LAG_-WEEKS=5 
  []
 
 
-Overfull \hbox (11.97383pt too wide) in paragraph at lines 1598--1599
+Overfull \hbox (11.97383pt too wide) in paragraph at lines 1605--1606
 \TU/Menlo(0)/m/n/12 build_-m1_-weekly.py|  
  []
 
 
-Overfull \hbox (11.97383pt too wide) in paragraph at lines 1599--1600
+Overfull \hbox (11.97383pt too wide) in paragraph at lines 1606--1607
 \TU/Menlo(0)/m/n/12 build_-m2_-weekly.py|  
  []
 
 
-Overfull \hbox (89.07484pt too wide) in paragraph at lines 1600--1601
+Overfull \hbox (89.07484pt too wide) in paragraph at lines 1607--1608
 \TU/Menlo(0)/m/n/12 aggregate_-shipping_-to_-weekly.py|  
  []
 
 
-Overfull \hbox (89.07484pt too wide) in paragraph at lines 1601--1602
+Overfull \hbox (89.07484pt too wide) in paragraph at lines 1608--1609
 \TU/Menlo(0)/m/n/12 aggregate_-shipping_-to_-weekly.py|  
  []
 
 
-Overfull \hbox (47.55891pt too wide) in paragraph at lines 1602--1603
+Overfull \hbox (47.55891pt too wide) in paragraph at lines 1609--1610
 \TU/Menlo(0)/m/n/12 build_-m3_-graph_-weekly.py 
  []
 
 
-Overfull \hbox (41.62807pt too wide) in paragraph at lines 1602--1603
+Overfull \hbox (41.62807pt too wide) in paragraph at lines 1609--1610
 \TU/Menlo(0)/m/n/12 build_-feature_-matrix.py|  
  []
 
 [80]
-Underfull \hbox (badness 3323) in paragraph at lines 1607--1609
+Underfull \hbox (badness 3323) in paragraph at lines 1614--1616
 []\TU/TimesNewRoman(1)/m/n/12 Merge check: EIA already lagged at source, merge re-shift = 0
  []
 
 
-Overfull \hbox (47.55891pt too wide) in paragraph at lines 1636--1637
+Overfull \hbox (47.55891pt too wide) in paragraph at lines 1643--1644
 \TU/Menlo(0)/m/n/12 build_-m3_-graph_-weekly.py|  
  []
 
 
-Overfull \hbox (29.76637pt too wide) in paragraph at lines 1637--1638
+Overfull \hbox (29.76637pt too wide) in paragraph at lines 1644--1645
 []|\TU/Menlo(0)/m/n/12 GFW_-EVENT_-LAG_-WEEKS=2 
  []
 
 
-Overfull \hbox (47.55891pt too wide) in paragraph at lines 1637--1638
+Overfull \hbox (47.55891pt too wide) in paragraph at lines 1644--1645
 \TU/Menlo(0)/m/n/12 build_-m3_-graph_-weekly.py|  
  []
 
 
-Overfull \hbox (47.55891pt too wide) in paragraph at lines 1638--1639
+Overfull \hbox (47.55891pt too wide) in paragraph at lines 1645--1646
 \TU/Menlo(0)/m/n/12 build_-m3_-graph_-weekly.py|  
  []
 
 
-Overfull \hbox (17.90468pt too wide) in paragraph at lines 1639--1640
+Overfull \hbox (17.90468pt too wide) in paragraph at lines 1646--1647
 \TU/Menlo(0)/m/n/12 build_-m3_-graph17.py|  
  []
 
 
-Overfull \hbox (17.90468pt too wide) in paragraph at lines 1640--1641
+Overfull \hbox (17.90468pt too wide) in paragraph at lines 1647--1648
 []|\TU/Menlo(0)/m/n/12 EMODNET_-LAG_-WEEKS=8 
  []
 
 
-Overfull \hbox (41.62807pt too wide) in paragraph at lines 1640--1641
+Overfull \hbox (41.62807pt too wide) in paragraph at lines 1647--1648
 \TU/Menlo(0)/m/n/12 build_-emodnet_-weekly.py|  
  []
 
 [81]
 Missing character: There is no ∈ (U+2208) in font Times New Roman/OT:script=latn;language=dflt;mapping=tex-text;!
 [82]
-Overfull \hbox (43.86792pt too wide) in paragraph at lines 1678--1685
+Overfull \hbox (43.86792pt too wide) in paragraph at lines 1685--1692
 \TU/TimesNewRoman(1)/m/n/12 movements or geographic proximity. Present every week (\TU/Menlo(0)/m/n/12 aoi_-oil_-infrastructure_-sites.md
  []
 
 [83]
 LaTeX Font Info:    Font shape `TU/Menlo(0)/b/n' will be
-(Font)              scaled to size 9.85107pt on input line 1717.
+(Font)              scaled to size 9.85107pt on input line 1724.
+
+Underfull \hbox (badness 1694) in paragraph at lines 1733--1737
+[]\TU/TimesNewRoman(1)/m/n/12 node-type embedding → 2-layer dense multi-head GAT (heads = 4,
+ []
+
+
+Underfull \hbox (badness 2913) in paragraph at lines 1733--1737
+\TU/TimesNewRoman(1)/m/n/12 LeakyReLU slope 0.2) → causal TCN (kernel 3; lookback L) →
+ []
+
 [84]
-Underfull \hbox (badness 1655) in paragraph at lines 1742--1750
+Underfull \hbox (badness 1655) in paragraph at lines 1749--1757
 \TU/TimesNewRoman(1)/m/n/12 construction) are complete at ten of the eleven sites. Jurong Island has 98.4
  []
 
 
-Overfull \hbox (26.12158pt too wide) in paragraph at lines 1779--1779
+Overfull \hbox (26.12158pt too wide) in paragraph at lines 1786--1786
 []|\TU/TimesNewRoman(1)/m/n/12 Ningbo-Zhoushan|  
  []
 
 [85] [86]
-Overfull \hbox (19.42194pt too wide) in paragraph at lines 1790--1790
+Overfull \hbox (19.42194pt too wide) in paragraph at lines 1797--1797
 |\TU/TimesNewRoman(0)/b/n/24.88 Appendix B — Extra results & robustness| 
  []
 
@@ -2787,16 +2797,16 @@ Overfull \hbox (19.42194pt too wide) in paragraph at lines 1790--1790
 File: ../../05_outputs/figures/fig_B_1_seed_robustness.pdf Graphic file (type pdf)
 <use ../../05_outputs/figures/fig_B_1_seed_robustness.pdf>
 LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/m/n' will be
-(Font)              scaled to size 8.4pt on input line 1844.
+(Font)              scaled to size 8.4pt on input line 1851.
 LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/m/n' will be
-(Font)              scaled to size 6.0pt on input line 1844.
+(Font)              scaled to size 6.0pt on input line 1851.
 [88]
-Overfull \hbox (5.44623pt too wide) in paragraph at lines 1894--1895
+Overfull \hbox (5.44623pt too wide) in paragraph at lines 1901--1902
  []\TU/TimesNewRoman(1)/m/n/12 Improvement
  []
 
 
-Overfull \hbox (5.44623pt too wide) in paragraph at lines 1898--1899
+Overfull \hbox (5.44623pt too wide) in paragraph at lines 1905--1906
  []\TU/TimesNewRoman(1)/m/n/12 Improvement
  []
 
@@ -2812,8 +2822,8 @@ L3 programming layer <2026-07-20>
  ) 
 Here is how much of TeX's memory you used:
  20651 strings out of 469828
- 387398 string characters out of 5468359
- 966805 words of memory out of 5000000
+ 387425 string characters out of 5468359
+ 966833 words of memory out of 5000000
  49276 multiletter control sequences out of 15000+600000
  634414 words of font info for 124 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191

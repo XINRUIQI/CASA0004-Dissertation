@@ -214,12 +214,19 @@ Term & Definition \\
 \bottomrule\noalign{}
 \endlastfoot
 AIS & Automatic Identification System \\
-AOI & Area of interest \\
+AOI & Area of Interest \\
 EIA & U.S. Energy Information Administration \\
+GAT & Graph Attention Network \\
 GFW & Global Fishing Watch \\
-RMSE & Root mean squared error \\
+IMF & International Monetary Fund \\
+RMSE & Root Mean Squared Error \\
+SAR & Synthetic Aperture Radar \\
 SHAP & SHapley Additive exPlanations \\
+TCN & Temporal Convolutional Network \\
+VIIRS & Visible Infrared Imaging Radiometer Suite \\
 WTI & West Texas Intermediate \\
+XAttn & Cross-attention \\
+XGBoost & Extreme Gradient Boosting \\
 \end{longtable}
 }
 
@@ -1723,10 +1730,10 @@ Chokepoint & Linked AOIs \\
   \begin{itemize}
   \tightlist
   \item
-    node-type embedding → 2-layer dense multi-head GAT (heads = 4) → causal TCN
-    (lookback L) → node-attention pooling → 32-d \texttt{z\_ship} (\textasciitilde42k params). Node-
-    attention weights feed RQ3 (which port/chokepoint the branch weights).
-    Encoder details in Appendix C.
+    node-type embedding → 2-layer dense multi-head GAT (heads = 4, LeakyReLU
+    slope 0.2) → causal TCN (kernel 3; lookback L) → node-attention pooling →
+    32-d \texttt{z\_ship} (\textasciitilde42k params). Node-attention weights feed RQ3 (which
+    port/chokepoint the branch weights). Encoder details in Appendix C.
   \end{itemize}
 \end{itemize}
 
@@ -1987,7 +1994,12 @@ XGBoost fixed & \texttt{subsample=0.8}, \texttt{colsample\_bytree=0.8}, \texttt{
 The main specification is locked to lookback 4 and latent size 32, matching the
 Flat lookback. Sensitivity is reported in Appendix B.
 
-\subsection{C.2.1 Encoders}\label{c.2.1-encoders}
+\subsection{C.2.1 Encoders, fusion and regression head}\label{c.2.1-encoders-fusion-and-regression-head}
+
+The shared fused latent size is 32. The shipping encoder uses a wider internal
+width (\texttt{d\_model=64}); only the pooled branch output is projected to 32-d before
+fusion. Both the finance and shipping TCN stacks reuse the same causal
+\texttt{TemporalTCN} (kernel 3).
 
 {\def\LTcaptype{none} % do not increment counter
 \begin{longtable}[]{@{}
@@ -1996,7 +2008,7 @@ Flat lookback. Sensitivity is reported in Appendix B.
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Encoder
+Component
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
 Settings
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
@@ -2006,9 +2018,12 @@ Output
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Finance TCN & 2 layers, kernel 3, causal, dropout 0.1 & 32-d \\
+Finance TCN & internal \texttt{d\_model=32} (equal to output); 2 layers, kernel 3, causal, dropout 0.1; branch head Linear(32, 32)+ReLU & 32-d \\
 Remote sensing & frozen Prithvi embeddings (1024-d), temporal then site attention & 32-d \\
-Shipping GAT & 17 nodes, 2 GAT layers, 4 heads, then 2-layer TCN & 32-d \\
+Shipping GAT & 17 nodes; type-specific projection to internal \texttt{d\_model=64} (≠ fused 32-d); 2 GAT layers, 4 heads, LeakyReLU slope 0.2; 2-layer TCN (kernel 3); branch head Linear(64, 64) → ReLU → Dropout(0.1) → Linear(64, 32) & 32-d \\
+Gated fusion (main) & Linear(n×32, 32) → ReLU → Linear(32, n) → softmax & 32-d \\
+Cross-attention (alternative) & finance as query, \texttt{n\_heads=4}, \texttt{token\_dim=64} (matches shipping internal width), γ=0.1 & 32-d \\
+Regression head & Linear(32, 32) → ReLU → Dropout(0.1) → Linear(32, 1) & scalar \\
 \end{longtable}
 }
 

@@ -303,10 +303,10 @@ Persian Gulf loadings, so it is attached to Hormuz on the import side.
   and is not used as an edge feature in message passing. Busy lanes therefore
   receive a higher prior, and the model can down-weight it if unhelpful.
 - **Encoder**: type-specific projection (`F_aoi=11`, `F_choke=20` → `d_model=64`)
-  + node-type embedding → 2-layer dense multi-head GAT (heads = 4) → causal TCN
-  (lookback L) → node-attention pooling → 32-d `z_ship` (~42k params). Node-
-  attention weights feed RQ3 (which port/chokepoint the branch weights).
-  Encoder details in Appendix C.
+  + node-type embedding → 2-layer dense multi-head GAT (heads = 4, LeakyReLU
+  slope 0.2) → causal TCN (kernel 3; lookback L) → node-attention pooling →
+  32-d `z_ship` (~42k params). Node-attention weights feed RQ3 (which
+  port/chokepoint the branch weights). Encoder details in Appendix C.
 
 ---
 

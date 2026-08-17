@@ -381,12 +381,19 @@ For message passing the adjacency is then symmetrised and self-looped
 dynamic graph). / 对称化只在编码器中进行。消息传递前对称化 + 自环。
 - **Edge-weight transform (attention prior)**: `log1p` of the symmetrised O-D  
 flow is **added to the GAT attention logits**, scaled by a **learned gain  
-`edge_scale**`, then softmax; it is not a multiplier on the attention weights  
+`edge_scale`**, then softmax; it is not a multiplier on the attention weights  
 and is not used as an edge feature in message passing. Busy lanes therefore  
 receive a higher prior, and the model can down-weight it if unhelpful. /  
 边权变换：对称化后的 O-D 流量取 `log1p`，乘以可学习增益后  
 **加到 GAT 注意力 logits 上**再 softmax；不是乘在注意力权重上，也不作为  
 边特征进入消息传递。
+- **Encoder**: type-specific projection (`F_aoi=11`, `F_choke=20` → `d_model=64`)
+  + node-type embedding → 2-layer dense multi-head GAT (heads = 4, LeakyReLU
+  slope 0.2) → causal TCN (kernel 3; lookback L) → node-attention pooling →
+  32-d `z_ship` (~42k params). Node-attention weights feed RQ3 (which
+  port/chokepoint the branch weights). Encoder details in Appendix C. /
+  编码器：类型专属投影至内部宽 64，再经 2 层 GAT 与因果 TCN（kernel 3）池化为
+  32 维 `z_ship`。完整设定见附录 C。
 
 ---
 
