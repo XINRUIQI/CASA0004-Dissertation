@@ -3,11 +3,13 @@ title: "A Modality-Aware Spatio-Temporal Fusion Framework for Brent Crude Oil Fo
 
 author: 
 - |
-    | [XINRUI QI]
+    | XINRUI QI
     |    
     | CASA0004, MSc Dissertation 
     |  
-    | Supervisor: [Beatrice Taylor]
+    | Supervisor: Beatrice Taylor
+    |
+    | Code repository: https://github.com/XINRUIQI/CASA0004-Dissertation
     |
     | This dissertation is submitted in part requirement for the 
     | MSc in the Centre for Advanced Spatial Analysis, 
@@ -23,17 +25,13 @@ classoption: oneside
 geometry: "left=4cm, right=3cm, top=2.5cm, bottom=2.5cm"
 fontsize: 12pt
 linestretch: 1.5
-bibliography: [book.bib, packages.bib, test.bib]
-biblio-style: apa
+bibliography: references.bib
+csl: harvard-cite-them-right.csl
 link-citations: yes
-github-repo: andrewmaclachlan/CASA-MSc-thesis
+github-repo: XINRUIQI/CASA0004-Dissertation
 description: "This dissertation is submitted in part requirement for the MSc in the Centre for Advanced Spatial Analysis, Bartlett Faculty of the Built Environment, UCL"
 always_allow_html: yes
 ---
-
-```{=latex}
-\pagenumbering{roman}
-```
 
 ```{r setup, include=FALSE}
 library(knitr)

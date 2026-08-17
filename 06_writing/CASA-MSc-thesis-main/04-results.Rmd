@@ -2,10 +2,6 @@
 
 ## Flat-model results {#results-flat}
 
-```{r price-returns, echo=FALSE, out.width="100%", fig.cap="Brent price (top) and weekly log returns (bottom). The grey background marks the evaluation period from January 2021, and coloured bands show the ±8-week event windows used in Table 4.4."}
-knitr::include_graphics(here::here("figures", "fig_4_1_price_returns.png"))
-```
-
 Table \@ref(tab:flat-perf) reports the out-of-sample performance of the Flat Ridge and XGBoost models across feature sets S1–S4, with M0 shown for comparison. All eight Flat models have higher RMSE than M0 and therefore record negative RMSE improvement.
 
 Table: (#tab:flat-perf) Flat out-of-sample performance ($n = 257$).
@@ -23,6 +19,12 @@ Table: (#tab:flat-perf) Flat out-of-sample performance ($n = 257$).
 |           |                                      | M4-Flat-XGB   | 4.412 | −6.3%                 |
 
 *Note:* Positive values indicate lower RMSE than M0.
+
+```{r flat-rmse, echo=FALSE, out.width="100%", fig.cap="Flat-model RMSE improvement relative to M0. The dashed line denotes zero improvement relative to M0. Positive values indicate lower RMSE than M0."}
+knitr::include_graphics(here::here("figures", "fig_4_1_flat_rmse_improvement.png"))
+```
+
+Figure \@ref(fig:flat-rmse) displays the same RMSE improvements as Table \@ref(tab:flat-perf). All eight points lie to the left of the M0 line.
 
 For Ridge, S1 has the lowest RMSE and S3 the highest; adding remote sensing, shipping, or both raises RMSE relative to S1. For XGBoost, S3 records a slightly lower RMSE than S1 (4.357 versus 4.368), while S2 and S4 remain higher than S1. No Flat model records a positive RMSE improvement relative to M0. Overall, the Flat family performs worse than the no-change benchmark across all information sets.
 
@@ -44,6 +46,14 @@ Table: (#tab:deep-perf) Deep out-of-sample performance (gated = main specificati
 |           |                                      | M3-Deep-XAttn | 4.110 | +1.00%                |
 | S4        | financial time series + RS + shipping | M4-Deep-Gated | 4.180 | −0.67%                |
 |           |                                      | M4-Deep-XAttn | 4.144 | +0.19%                |
+
+*Note:* XAttn denotes cross-attention. Positive values indicate lower RMSE than M0.
+
+```{r deep-rmse, echo=FALSE, out.width="100%", fig.cap="Deep-model RMSE improvement relative to M0. Filled markers denote the prespecified gated specification; hollow markers denote the secondary cross-attention comparison. The dashed line denotes zero improvement relative to M0. Positive values indicate lower RMSE than M0. S1 shows only the finance-only gated specification; no cross-attention result is available because only the finance encoder is active."}
+knitr::include_graphics(here::here("figures", "fig_4_2_deep_rmse_improvement.png"))
+```
+
+Figure \@ref(fig:deep-rmse) shows the same RMSE improvements as Table \@ref(tab:deep-perf). In S2, cross-attention is worse than gated fusion. In S3 both models cross M0, and cross-attention records the larger improvement. In S4 only cross-attention is slightly better than M0. Gated S3 is the only prespecified main specification with a positive improvement.
 
 The gated S1 and S2 models record similar RMSE of 4.250 and 4.253, both higher than that of M0. Adding remote sensing therefore provides no descriptive improvement. Neither reported fusion approach reduces RMSE relative to the finance-only Deep model at S2. With shipping included, gated S3 records the lowest RMSE among the gated models at 4.146, improving on M0 by 0.15%. Gated S4 rises to 4.180, 0.67% worse than M0, indicating that adding remote sensing to S3 does not provide a further improvement.
 
@@ -70,7 +80,7 @@ Table: (#tab:flat-deep) Matched Flat–Deep comparisons by feature set ($n = 257
 
 *Note:* Positive values indicate a lower Deep RMSE than the matched Flat model.
 
-```{r flat-deep-slope, echo=FALSE, out.width="90%", fig.cap="Change in out-of-sample price RMSE from flat XGBoost to gated Deep models. The vertical axis is reversed, so upward slopes indicate lower RMSE. All results use the common 257-week evaluation sample. The dashed line marks the M0 no-change benchmark. S1 is included as a modelling-path reference, while the modality-matched comparisons relevant to RQ2 are S2–S4."}
+```{r flat-deep-slope, echo=FALSE, out.width="90%", fig.cap="Change in out-of-sample price RMSE from flat XGBoost to gated Deep models. All results use the common 257-week evaluation sample. The dashed line marks the M0 no-change benchmark. S1 is included as a modelling-path reference, while the modality-matched comparisons relevant to RQ2 are S2–S4."}
 knitr::include_graphics(here::here("figures", "fig_4_2_flat_vs_deep_slope.png"))
 ```
 
@@ -109,13 +119,15 @@ The main-run gate allocates average weights of 55.8% to finance and 44.2% to shi
 
 At the input-group level, EIA variables provide the largest full-sample contribution at 43.6%, followed by financial and macroeconomic variables at 31.4%. All twenty highest-ranked individual features are financial inputs, led by crude production, Cushing stocks and the federal funds rate. No shipping subgroup contributes more than 2.0% in any reported period, although PortWatch and SAR become modestly more prominent during the Red Sea window.
 
-Within the shipping representation, the highest full-sample node shares belong to Jurong, Hormuz, Suez, the Cape route and Bab el-Mandeb. Jurong and Hormuz lead the rankings from 2021 to 2023, while Suez, Bab el-Mandeb and the Cape route occupy the first three positions in 2024. During the Red Sea window, attribution is distributed across several locations, with no individual node accounting for more than 12% of shipping attribution.
+Within the shipping representation, the highest full-sample node shares belong to Jurong, Hormuz, Suez, the Cape route and Bab el-Mandeb. Jurong and Hormuz lead the rankings from 2021 to 2023, while Suez, Bab el-Mandeb and the Cape route occupy the first three positions in 2024. Figure \@ref(fig:node-shap-map) shows this shift for 2022 and 2024, the two calendar years with the largest node-share reallocation. Figure \@ref(fig:node-shap-heatmap) tracks the same within-shipping shares through time. During the ±8-week Red Sea window, the largest trailing six-week mean of any node’s within-shipping share was 14.0% (Suez). These shares are normalised within the shipping modality and do not represent each node’s share of total-model attribution.
 
-```{r node-shap-map, echo=FALSE, out.width="100%", fig.cap="Node-level shipping SHAP shares for the full sample and 2024. Marker area is proportional to the share of shipping attribution (locked scale of 18%)."}
+```{r node-shap-map, echo=FALSE, out.width="100%", fig.cap="Node-level shipping SHAP shares for 2022 and 2024, the two calendar years with the largest geographic reallocation of shipping attribution. Halo size scales with the share of shipping attribution (locked scale of 18%). Other nodes are shown as fixed-size grey dots."}
 knitr::include_graphics(here::here("figures", "fig_4_4_node_shap_map.png"))
 ```
 
-```{r node-shap-heatmap, echo=FALSE, out.width="100%", fig.cap="Weekly shipping-node SHAP shares (six-week rolling) across the 17 nodes and 257 forecast origins. Vertical lines mark event windows."}
+(ref:node-shap-heatmap-cap) Trailing six-week mean of each node’s share of absolute SHAP within the shipping modality, gated Deep S3. Chokepoint nodes appear above AOI nodes; within each group, nodes are ordered by full-sample within-shipping share (high to low). These shares are normalised within the shipping modality and do not represent each node’s share of total-model attribution. The colour scale is locked at 18%, matching Figure \@ref(fig:node-shap-map). Grey bands mark ±8-week event windows: Russia–Ukraine (24 February 2022), EU oil ban (1 June 2022), OPEC+ (2 April 2023) and Red Sea (19 November 2023). During the Red Sea window, the largest smoothed within-shipping node share was 14.0% (Suez). Light-grey cells at the start of the sample are undefined trailing means (fewer than six weeks of history).
+
+```{r node-shap-heatmap, echo=FALSE, out.width="100%", fig.cap="(ref:node-shap-heatmap-cap)"}
 knitr::include_graphics(here::here("figures", "fig_4_5_node_shap_heatmap.png"))
 ```
 
@@ -140,10 +152,6 @@ Table: (#tab:seed-robust) Random-seed robustness of all Deep specifications (imp
 |     | M4-Deep-Concat | −8.30%               | −3.79% ± 3.95        | 0/3           |
 |     | M4-Deep-XAttn  | +0.19%               | −1.90% ± 2.75        | 1/3           |
 
-*Note:* The main-run column is the seed-42 result reported in Tables \@ref(tab:deep-perf)–\@ref(tab:period-attr). S1 has no fusion operator. XAttn denotes cross-attention.
+*Note:* The main-run column is the seed-42 result reported in Tables \@ref(tab:deep-perf)–\@ref(tab:period-attr). S1 has no fusion operator. XAttn denotes cross-attention. Individual seeds are shown in Appendix B (Figure \@ref(fig:seed-robustness)).
 
-```{r seed-robustness, echo=FALSE, out.width="100%", fig.cap="Random-seed robustness of Deep specifications: individual seeds and means relative to M0. The main seed-42 run is marked with a diamond."}
-knitr::include_graphics(here::here("figures", "fig_4_6_seed_robustness.png"))
-```
-
-Figure \@ref(fig:seed-robustness) shows the individual seeds together with their three-seed means. None of the models achieves a positive mean RMSE improvement relative to M0 across runs, and only five of the thirty individual runs are positive. No S2 fusion is positive in any seed. S3 concatenation has the best mean result, but it is still negative at −0.27%, while the main gated S3 model records −0.51%. Across seeds the S3 order reverses: concatenation (−0.27%) remains closest to M0, ahead of gated (−0.51%) and cross-attention (−3.01%). Gated S3 also outperforms S1 in only one of the three matched runs. The positive improvements observed in the main run are therefore sensitive to random initialisation. Gated fusion remains the main specification because it supplies modality weights for RQ3, not because it is the more accurate operator. Overall, although the Deep models do not consistently outperform M0, some specifications, particularly S3, show predictive potential and merit further investigation. The better-performing Deep specifications remain broadly close to M0 rather than demonstrating a consistent forecasting advantage.
+None of the models achieves a positive mean RMSE improvement relative to M0 across runs, and only five of the thirty individual runs are positive. No S2 fusion is positive in any seed. S3 concatenation has the best mean result, but it is still negative at −0.27%, while the main gated S3 model records −0.51%. Across seeds the S3 order reverses: concatenation (−0.27%) remains closest to M0, ahead of gated (−0.51%) and cross-attention (−3.01%). Gated S3 also outperforms S1 in only one of the three matched runs. The positive improvements observed in the main run are therefore sensitive to random initialisation. Gated fusion remains the main specification because it supplies modality weights for RQ3, not because it is the more accurate operator. Overall, although the Deep models do not consistently outperform M0, some specifications, particularly S3, show predictive potential and merit further investigation. The better-performing Deep specifications remain broadly close to M0 rather than demonstrating a consistent forecasting advantage.

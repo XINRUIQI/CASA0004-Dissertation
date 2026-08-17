@@ -1,11 +1,13 @@
 """
-Preview figures for Chapter 3 (not yet numbered in the thesis).
+Chapter 3 figures: Flat vs Deep pipeline and the Jurong worked example.
 
   1. Flat vs Deep data pipeline  — same three blocks, two ingest paths
-  2. Worked example              — Jurong Island at Friday 14 Mar 2025
-                                   (same origin as Figure 3.7)
+  2. Worked example (Figure 3.4) — Jurong Island at Friday 14 Mar 2025
+                                   three panels; no ingest-architecture boxes
 
-Colours match Figures 3.1 / 3.5 / 3.6 / 3.7.
+P004 Deep patch is the locked refinery spec (5.12 km / 512 px), not the
+snapped GeoTIFF bounds. Voyage counts are read from the lagged graph table
+at the origin week (GFW voyage as-of = week ending 28 Feb).
 
     python 04_code/scripts/figures/make_pipeline_example_figures.py
     python 04_code/scripts/figures/make_pipeline_example_figures.py --only pipeline
@@ -15,6 +17,7 @@ Colours match Figures 3.1 / 3.5 / 3.6 / 3.7.
 from __future__ import annotations
 
 import argparse
+import shutil
 from pathlib import Path
 
 import matplotlib as mpl
@@ -31,13 +34,19 @@ from matplotlib.patches import (
 
 ROOT = Path(__file__).resolve().parents[3]
 OUT_DIR = ROOT / "05_outputs" / "figures"
+THESIS_FIG = ROOT / "06_writing" / "CASA-MSc-thesis-main" / "figures"
 PATCH_TIF = (
     ROOT / "03_data" / "raw" / "02_sentinel2" / "Channel A" / "s2_patches"
     / "S2_P004_Jurong_2025_01.tif"
 )
-EMB_NPY = ROOT / "03_data" / "processed" / "M2" / "outputs" / "s2_prithvi_emb_meanpool.npy"
-EMB_IDX = ROOT / "03_data" / "processed" / "M2" / "outputs" / "s2_prithvi_emb_index.csv"
+PATCH_MANIFEST = PATCH_TIF.parent / "S2_patches_manifest_ALL.csv"
+FEATURE_MATRIX = (
+    ROOT / "03_data" / "processed" / "merge" / "outputs" / "weekly_feature_matrix.csv"
+)
 EDGE_CSV = ROOT / "03_data" / "processed" / "M3" / "outputs" / "m3_graph_edges_weekly.csv"
+NODES_CSV = ROOT / "03_data" / "processed" / "M3" / "outputs" / "m3_graph_nodes_weekly.csv"
+
+ORIGIN_WEEK = "2025-03-14"
 
 C = {
     "fin": "#2E5A88",
@@ -71,12 +80,22 @@ mpl.rcParams.update({
 })
 
 
-def save(fig, name: str) -> None:
+def save(fig, name: str, *aliases: str, pad: float = 0.16,
+         thesis: bool = False, bbox: str | None = "tight") -> None:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
+    kw = {"bbox_inches": bbox}
+    if bbox == "tight":
+        kw["pad_inches"] = pad
     for ext in ("png", "pdf"):
-        fig.savefig(OUT_DIR / f"{name}.{ext}", pad_inches=0.16)
+        dest = OUT_DIR / f"{name}.{ext}"
+        fig.savefig(dest, **kw)
+        for alias in aliases:
+            shutil.copy2(dest, OUT_DIR / f"{alias}.{ext}")
+        if thesis and THESIS_FIG.exists():
+            shutil.copy2(dest, THESIS_FIG / f"{name}.{ext}")
     plt.close(fig)
-    print(f"  saved {name}.png / .pdf")
+    extra = f"  (+ {', '.join(aliases)})" if aliases else ""
+    print(f"  saved {name}.png / .pdf{extra}")
 
 
 def box(ax, x0, y0, x1, y1, *, face=C["box"], edge=C["line"], lw=1.0,
@@ -102,6 +121,19 @@ def text(ax, x, y, s, *, size=8, color=C["ink"], weight="normal",
          ha="center", va="center", z=5, style="normal"):
     ax.text(x, y, s, fontsize=size, color=color, fontweight=weight,
             ha=ha, va=va, zorder=z, linespacing=1.32, style=style)
+
+
+def panel_header(ax, letter: str, title: str, subtitle: str) -> None:
+    """Shared (A)/(B)/(C) header: bold title, muted subtitle, left-aligned."""
+    ax.set_xlim(0, 1)
+    ax.set_ylim(0, 1)
+    ax.axis("off")
+    ax.text(0.0, 0.88, f"({letter})  {title}", transform=ax.transAxes,
+            fontsize=10.0, fontweight="bold", color=C["ink"], ha="left",
+            va="top")
+    ax.text(0.0, 0.08, subtitle, transform=ax.transAxes, fontsize=8.0,
+            color=C["muted"], ha="left", va="bottom", style="italic",
+            linespacing=1.28)
 
 
 # --------------------------------------------------------------------------
@@ -288,19 +320,34 @@ def fig_pipeline() -> None:
 
 
 # --------------------------------------------------------------------------
-# 2. Worked example — Jurong Island
+# 2. Worked example — Jurong Island (Figure 3.4)
 # --------------------------------------------------------------------------
-def _rgb_patch() -> tuple[np.ndarray, float]:
-    """True-colour preview from B4, B3, B2. Returns (H, W, 3) in 0–1 and side km."""
+def _fmt_signed(v: float) -> str:
+    return f"+{v:.2f}" if v >= 0 else f"−{abs(v):.2f}"
+
+
+def _p004_jan_meta() -> dict:
+    """Locked Channel A spec from the export manifest, not GeoTIFF bounds."""
+    man = pd.read_csv(PATCH_MANIFEST)
+    row = man[(man["site_id"] == "P004") & (man["month"] == "2025_01")].iloc[0]
+    half = int(row["patch_half_m"])
+    return {
+        "flat_buffer_km": 5.0,  # aoi_oil_infrastructure.csv; Channel B circle
+        "patch_half_m": half,
+        "patch_km": 2.0 * half / 1000.0,
+        "patch_px": int(row["patch_px"]),
+        "n_scenes": int(row["n_scenes"]),
+        "cloud_pct": int(round(float(row["mean_cloud"]))),
+    }
+
+
+def _rgb_patch() -> np.ndarray:
+    """True-colour preview from B4, B3, B2. Returns (H, W, 3) in 0–1."""
     import rasterio
 
     with rasterio.open(PATCH_TIF) as ds:
-        # bands: B2, B3, B4, B8A, B11, B12  → RGB = B4, B3, B2
         rgb = ds.read([3, 2, 1]).astype(np.float32)
-        side_m = float(ds.bounds.right - ds.bounds.left)
-    side_km = side_m / 1000.0
     rgb = np.moveaxis(rgb, 0, -1)
-    # Sentinel-2 SR is scaled ~0–10000; stretch on finite nonzero pixels.
     mask = rgb > 0
     out = np.zeros_like(rgb)
     for i in range(3):
@@ -312,10 +359,11 @@ def _rgb_patch() -> tuple[np.ndarray, float]:
         if hi <= lo:
             hi = lo + 1.0
         out[..., i] = np.clip((band - lo) / (hi - lo), 0, 1)
-    return out, side_km
+    return out
 
 
 def _voyage_week(week: str) -> pd.DataFrame:
+    """Voyages from the lagged graph table (week = forecast origin)."""
     names = {
         "P001": "Rotterdam", "P002": "Fujairah", "P003": "Ras Tanura",
         "P004": "Jurong", "P005": "Houston", "P006": "Ningbo",
@@ -331,47 +379,108 @@ def _voyage_week(week: str) -> pd.DataFrame:
     return sub.sort_values("n_voyages", ascending=False)
 
 
-def _jurong_embedding() -> np.ndarray:
-    idx = pd.read_csv(EMB_IDX)
-    row = idx[(idx["site_id"] == "P004") & (idx["month"] == "2025_01")].iloc[0]
-    emb = np.load(EMB_NPY)
-    return emb[int(row["emb_row"])]
+def _jurong_flat_scalars(week: str) -> tuple[float, list[tuple[str, str]]]:
+    fm = pd.read_csv(FEATURE_MATRIX)
+    fm["week_ending_friday"] = pd.to_datetime(fm["week_ending_friday"])
+    row = fm[fm["week_ending_friday"] == pd.Timestamp(week)].iloc[0]
+    pairs = [
+        ("NDVI anomaly", "NDVI_anom_Jurong"),
+        ("NDWI anomaly", "NDWI_anom_Jurong"),
+        ("NDBI anomaly", "NDBI_anom_Jurong"),
+        ("BSI anomaly", "BSI_anom_Jurong"),
+        ("NTL anomaly", "NTL_anom_Jurong"),
+    ]
+    return float(row["brent_price"]), [
+        (lab, _fmt_signed(float(row[col]))) for lab, col in pairs
+    ]
+
+
+def _jurong_portwatch(week: str) -> int:
+    df = pd.read_csv(NODES_CSV)
+    row = df[(df["site_id"] == "P004") & (df["week_ending_friday"] == week)].iloc[0]
+    return int(row["pw_portcalls_tanker"])
+
+
+def _draw_embedding_vector(ax, x0, y0, x1, y1) -> None:
+    """Schematic 1024-d vector; dimensions have no temporal order."""
+    labels = [r"$e_1$", r"$e_2$", r"$e_3$", r"$e_4$", r"$e_5$",
+              None, r"$e_{1024}$"]
+    n = len(labels)
+    gap = 0.010
+    box_w = (x1 - x0 - gap * (n - 1)) / n
+    h = y1 - y0
+    for i, lab in enumerate(labels):
+        x = x0 + i * (box_w + gap)
+        if lab is None:
+            text(ax, x + box_w / 2, y0 + h / 2, "…", size=11, color=C["rs"])
+            continue
+        ax.add_patch(Rectangle(
+            (x, y0), box_w, h, facecolor="white", edgecolor=C["rs"],
+            linewidth=0.95, zorder=4))
+        ax.text(x + box_w / 2, y0 + h / 2, lab, ha="center", va="center",
+                fontsize=8.0, color=C["rs"], zorder=5)
 
 
 def fig_example() -> None:
-    rgb, side_km = _rgb_patch()
-    emb = _jurong_embedding()
-    voy = _voyage_week("2025-02-28")  # GFW voyage lag +2 w relative to 14 Mar
+    meta = _p004_jan_meta()
+    rgb = _rgb_patch()
+    # Lagged graph table at the origin; GFW voyage as-of is week ending 28 Feb.
+    voy = _voyage_week(ORIGIN_WEEK)
+    _, scalars = _jurong_flat_scalars(ORIGIN_WEEK)
+    pw_calls = _jurong_portwatch(ORIGIN_WEEK)
+    patch_km = meta["patch_km"]
+    buf_km = meta["flat_buffer_km"]
 
-    fig = plt.figure(figsize=(11.4, 8.70))
+    fig = plt.figure(figsize=(11.6, 8.05), facecolor="white")
     gs = fig.add_gridspec(
-        3, 2, height_ratios=[1.08, 1.05, 0.78], width_ratios=[1.08, 1.16],
-        hspace=0.28, wspace=0.12,
-        left=0.045, right=0.985, top=0.865, bottom=0.042)
-    ax_map = fig.add_subplot(gs[0:2, 0])
-    ax_rs = fig.add_subplot(gs[0, 1])
-    ax_ship = fig.add_subplot(gs[1, 1])
-    ax_c = fig.add_subplot(gs[2, :])
+        5, 2,
+        height_ratios=[0.34, 0.22, 1.22, 0.22, 1.22],
+        width_ratios=[1.06, 1.14],
+        hspace=0.07, wspace=0.14,
+        left=0.045, right=0.975, top=0.94, bottom=0.04)
+    ax_top = fig.add_subplot(gs[0, :])
+    ax_a_h = fig.add_subplot(gs[1, 0])
+    ax_map = fig.add_subplot(gs[2:, 0])
+    ax_b_h = fig.add_subplot(gs[1, 1])
+    ax_rs = fig.add_subplot(gs[2, 1])
+    ax_c_h = fig.add_subplot(gs[3, 1])
+    ax_ship = fig.add_subplot(gs[4, 1])
+    ax_top.axis("off")
     ax_rs.axis("off")
     ax_ship.axis("off")
-    ax_c.axis("off")
 
-    fig.suptitle(
-        "Worked example  ·  Jurong Island (P004) at Friday 14 March 2025",
-        x=0.045, ha="left", fontsize=11.2, color=C["ink"], fontweight="bold")
-    fig.text(
-        0.045, 0.892,
-        "Same origin as Figure 3.7.  Brent $71.94/bbl.  "
-        "Values are the latest eligible observations under the locked lags, "
-        "not the calendar week of the origin.",
-        fontsize=7.4, color=C["muted"], ha="left", style="italic")
+    ax_top.text(
+        0.0, 0.82,
+        "Figure 3.4   Worked example  ·  Jurong Island (P004), forecast origin 14 March 2025",
+        transform=ax_top.transAxes, fontsize=11.2, color=C["ink"],
+        fontweight="bold", ha="left", va="top")
+    ax_top.text(
+        0.0, 0.22,
+        "Latest eligible observations under the source-specific availability lags.",
+        transform=ax_top.transAxes, fontsize=8.0, color=C["muted"],
+        ha="left", va="top", style="italic")
 
-    # ---- map: patch + two footprints ----
-    half = side_km / 2.0
-    canvas = 5.85
-    ax_map.set_xlim(-canvas, canvas)
-    ax_map.set_ylim(-canvas - 0.15, canvas)
-    ax_map.set_aspect("equal")
+    panel_header(
+        ax_a_h, "a",
+        "Spatial supports  ·  January 2025 Sentinel-2 composite",
+        "Under the locked-lag rule, the February 2025 composite was not yet eligible at this forecast origin.")
+    panel_header(
+        ax_b_h, "b",
+        "Remote-sensing representations",
+        "January inputs were eligible from 15 February and carried across the four-week input window.")
+    panel_header(
+        ax_c_h, "c",
+        "Shipping graph inputs around Jurong",
+        "GFW voyage edges: week ending 28 February\n"
+        "PortWatch tanker calls: week ending 7 March.")
+
+    # ---- map: patch + two footprints (locked spec, not snapped raster) ----
+    half = patch_km / 2.0
+    # Extra bottom pad so the in-axes legend sits below the 5 km circle.
+    frame = 7.15
+    ax_map.set_xlim(-frame, frame)
+    ax_map.set_ylim(-frame, frame)
+    ax_map.set_aspect("equal", adjustable="box", anchor="C")
     ax_map.set_xticks([])
     ax_map.set_yticks([])
     for sp in ax_map.spines.values():
@@ -381,170 +490,141 @@ def fig_example() -> None:
     ax_map.imshow(rgb, origin="upper", extent=(-half, half, -half, half),
                   zorder=1, interpolation="nearest")
 
-    circ = Circle((0, 0), 5.0, fill=False, edgecolor=C["flat"],
-                  linewidth=1.7, linestyle=(0, (5, 2.2)), zorder=4)
-    ax_map.add_patch(circ)
+    ax_map.add_patch(Circle(
+        (0, 0), buf_km, fill=False, edgecolor=C["flat"],
+        linewidth=1.7, linestyle=(0, (5, 2.2)), zorder=4))
     ax_map.add_patch(Rectangle(
-        (-half, -half), side_km, side_km, fill=False, edgecolor=C["rs"],
+        (-half, -half), patch_km, patch_km, fill=False, edgecolor=C["rs"],
         linewidth=1.7, zorder=4))
     ax_map.scatter([0], [0], s=28, color=C["ink"], zorder=5,
                    edgecolor="white", linewidth=0.6)
 
-    ax_map.plot([-5.35, -4.35], [-5.45, -5.45], color=C["ink"], lw=1.6,
+    bar_y = -frame + 0.48
+    ax_map.plot([-6.05, -5.05], [bar_y, bar_y], color=C["ink"], lw=1.6,
                 solid_capstyle="butt", zorder=6)
-    ax_map.text(-4.85, -5.58, "1 km", ha="center", va="top", fontsize=6.8,
-                color=C["ink"])
+    ax_map.text(-5.55, bar_y - 0.16, "1 km", ha="center", va="top",
+                fontsize=8.0, color=C["ink"])
 
-    ax_map.set_title(
-        "(A)  Two spatial supports on the January 2025 composite",
-        loc="left", fontsize=9.0, color=C["ink"], pad=4)
-    ax_map.text(
-        0.0, 1.012,
-        "True-colour Sentinel-2 (B4–B3–B2).  "
-        "February is not yet eligible at this origin.",
-        transform=ax_map.transAxes, fontsize=6.6, color=C["muted"],
-        ha="left", va="bottom")
-
-    ax_map.legend(handles=[
-        Line2D([], [], color=C["flat"], lw=1.8, linestyle=(0, (5, 2.2)),
-               label="Flat  ·  5 km radius buffer"),
-        Line2D([], [], color=C["rs"], lw=1.8,
-               label=f"Deep  ·  {side_km:.2f} km square patch"),
-        Line2D([], [], marker="o", linestyle="", color=C["ink"],
-               markeredgecolor="white", markersize=5.5,
-               label="AOI centre  ·  1.274°N, 103.708°E"),
-    ], loc="lower right", fontsize=6.6, frameon=True, framealpha=0.94,
-       edgecolor="#E4E0D8", fancybox=False, borderpad=0.40,
-       handlelength=1.6)
+    # Data-coordinate legend: equal-aspect shrinks the axes box, so an
+    # axes-fraction legend would land in the white gap below the square.
+    ax_map.legend(
+        handles=[
+            Line2D([], [], color=C["flat"], lw=1.8, linestyle=(0, (5, 2.2)),
+                   label=f"Flat  ·  {buf_km:.0f} km radius buffer"),
+            Line2D([], [], color=C["rs"], lw=1.8,
+                   label=f"Deep  ·  {patch_km:.2f} km square patch"),
+            Line2D([], [], marker="o", linestyle="", color=C["ink"],
+                   markeredgecolor="white", markersize=6.0,
+                   label="AOI centre"),
+        ],
+        loc="lower right",
+        bbox_to_anchor=(frame - 0.18, -frame + 0.16),
+        bbox_transform=ax_map.transData,
+        fontsize=8.0, frameon=True, framealpha=0.96,
+        facecolor="white", edgecolor="#E4E0D8", fancybox=False,
+        borderpad=0.38, labelspacing=0.28, handlelength=1.55,
+        handletextpad=0.45, borderaxespad=0.0)
 
     # ---- (B) remote sensing numbers ----
     ax_rs.set_xlim(0, 1)
     ax_rs.set_ylim(0, 1)
     box(ax_rs, 0.00, 0.00, 1.00, 1.00, face=C["rs_bg"], edge=C["rs"],
         lw=1.15, radius=0.018, z=1)
-    text(ax_rs, 0.035, 0.90, "(B)  Remote sensing at this origin",
-         size=9.0, weight="bold", color=C["rs"], ha="left")
-    text(ax_rs, 0.035, 0.78,
-         "Eligible product: January composite (available from 15 Feb).  "
-         "Carried forward through the four-week window.",
-         size=6.6, color=C["muted"], ha="left")
 
-    # mini table
-    rows = [
-        ("NDVI anomaly", "+0.56"),
-        ("NDWI anomaly", "−0.40"),
-        ("NDBI anomaly", "−0.93"),
-        ("BSI anomaly", "−0.76"),
-        ("NTL anomaly", "+0.36"),
-    ]
-    text(ax_rs, 0.035, 0.64, "Flat  ·  five scalars from the 5 km buffer",
-         size=7.1, color=C["flat"], weight="bold", ha="left")
-    y0 = 0.54
-    for i, (lab, val) in enumerate(rows):
-        y = y0 - i * 0.075
-        text(ax_rs, 0.05, y, lab, size=6.7, color=C["ink"], ha="left")
-        text(ax_rs, 0.46, y, val, size=6.7, color=C["ink"], ha="right",
+    x_flat = 0.035
+    text(ax_rs, x_flat, 0.925, "Flat",
+         size=9.0, color=C["flat"], weight="bold", ha="left")
+    text(ax_rs, x_flat, 0.835, "Sentinel-2 + VIIRS scalar anomalies",
+         size=8.0, color=C["muted"], ha="left")
+    text(ax_rs, x_flat, 0.755,
+         f"{buf_km:.0f} km buffer  ·  five site-level scalars",
+         size=8.0, color=C["muted"], ha="left")
+    y0 = 0.64
+    for i, (lab, val) in enumerate(scalars):
+        y = y0 - i * 0.105
+        text(ax_rs, x_flat, y, lab, size=8.2, color=C["ink"], ha="left")
+        text(ax_rs, 0.46, y, val, size=8.2, color=C["ink"], ha="right",
              weight="bold")
 
-    text(ax_rs, 0.55, 0.64, "Deep  ·  frozen 1024-d embedding",
-         size=7.1, color=C["rs"], weight="bold", ha="left")
-    text(ax_rs, 0.55, 0.545,
-         "Prithvi-EO-2.0-300M  ·  mean-pool\n"
-         f"{rgb.shape[0]} px chip  ·  1 scene  ·  37% cloud",
-         size=6.4, color=C["muted"], ha="left")
+    x_deep = 0.52
+    text(ax_rs, x_deep, 0.925, "Deep",
+         size=9.0, color=C["rs"], weight="bold", ha="left")
+    text(ax_rs, x_deep, 0.835, "Sentinel-2 representation",
+         size=8.0, color=C["muted"], ha="left")
+    text(ax_rs, x_deep, 0.74,
+         "Sentinel-2 patch  →  resize to 224 × 224",
+         size=8.0, color=C["muted"], ha="left")
+    text(ax_rs, x_deep, 0.655,
+         "→  frozen Prithvi  →  mean pooling",
+         size=8.0, color=C["muted"], ha="left")
+    text(ax_rs, x_deep, 0.57,
+         "→  1024-d embedding",
+         size=8.0, color=C["muted"], ha="left")
+    _draw_embedding_vector(ax_rs, x_deep, 0.10, 0.96, 0.44)
 
-    # sparkline of first 48 dims
-    sl = emb[:48]
-    xs = np.linspace(0.55, 0.96, len(sl))
-    ys = 0.18 + 0.22 * (sl - sl.min()) / (sl.max() - sl.min() + 1e-9)
-    ax_rs.plot(xs, ys, color=C["rs"], lw=0.95, zorder=4)
-    ax_rs.fill_between(xs, 0.18, ys, color=C["rs"], alpha=0.18, zorder=3)
-    text(ax_rs, 0.755, 0.10, "first 48 of 1 024 dimensions  (not a forecast)",
-         size=6.2, color=C["muted"])
-
-    # ---- (C) shipping neighborhood ----
+    # ---- (C) shipping graph inputs: dynamic edges / static edge / node attr ----
     ax_ship.set_xlim(0, 1)
     ax_ship.set_ylim(0, 1)
     box(ax_ship, 0.00, 0.00, 1.00, 1.00, face=C["ship_bg"], edge=C["ship"],
         lw=1.15, radius=0.018, z=1)
-    text(ax_ship, 0.035, 0.91, "(C)  Shipping neighbourhood  ·  lag +2 weeks",
-         size=9.0, weight="bold", color=C["ship"], ha="left")
-    text(ax_ship, 0.035, 0.795,
-         "Latest eligible voyage week: 28 Feb 2025.  "
-         "16 directed lanes  ·  255 voyages involving Jurong.",
-         size=6.6, color=C["muted"], ha="left")
+    box(ax_ship, 0.018, 0.04, 0.545, 0.96, face="#FFFCFB", edge="#E8D8CE",
+        lw=0.7, radius=0.014, z=2)
+    box(ax_ship, 0.56, 0.52, 0.982, 0.96, face="#FFFCFB", edge="#E8D8CE",
+        lw=0.7, radius=0.014, z=2)
+    box(ax_ship, 0.56, 0.04, 0.982, 0.48, face="#FFFCFB", edge="#E8D8CE",
+        lw=0.7, radius=0.014, z=2)
 
-    # Ranked lane table — less collision-prone than a labelled star.
-    text(ax_ship, 0.05, 0.68, "Busiest directed lanes",
-         size=7.0, color=C["ship"], weight="bold", ha="left")
-    text(ax_ship, 0.05, 0.60, "Origin → destination",
-         size=6.2, color=C["muted"], ha="left")
-    text(ax_ship, 0.50, 0.60, "Voyages",
-         size=6.2, color=C["muted"], ha="right")
-    ax_ship.plot([0.05, 0.50], [0.565, 0.565], color="#E0D0C6", lw=0.6)
-    top_lanes = voy.head(6)
+    n_lanes = len(voy)
+    n_voy = int(voy["n_voyages"].sum())
+    x_l = 0.04
+    text(ax_ship, x_l, 0.90, "Dynamic GFW voyage edges",
+         size=9.0, color=C["ship"], weight="bold", ha="left")
+    text(ax_ship, x_l, 0.80,
+         f"{n_lanes} directed lanes  ·  {n_voy} voyages",
+         size=8.0, color=C["muted"], ha="left")
+    text(ax_ship, x_l, 0.72, "busiest four shown",
+         size=8.0, color=C["muted"], ha="left")
+
+    text(ax_ship, x_l, 0.61, "Origin → destination",
+         size=8.0, color=C["muted"], ha="left")
+    text(ax_ship, 0.52, 0.61, "Voyages",
+         size=8.0, color=C["muted"], ha="right")
+    ax_ship.plot([x_l, 0.52], [0.565, 0.565], color="#E0D0C6", lw=0.6, zorder=4)
+    n_show = 4
+    top_lanes = voy.head(n_show)
     for i, (_, r) in enumerate(top_lanes.iterrows()):
-        y = 0.50 - i * 0.068
-        text(ax_ship, 0.05, y, f"{r.from_n}  →  {r.to_n}",
-             size=6.6, color=C["ink"], ha="left")
-        text(ax_ship, 0.50, y, f"{int(r.n_voyages)}",
-             size=6.6, color=C["ink"], ha="right", weight="bold")
-    n_rest = len(voy) - 6
-    rest_v = int(voy.iloc[6:]["n_voyages"].sum()) if n_rest else 0
-    if n_rest:
-        text(ax_ship, 0.05, 0.50 - 6 * 0.068,
-             f"+ {n_rest} other lanes  ({rest_v} voyages)",
-             size=6.2, color=C["muted"], ha="left")
+        y = 0.48 - i * 0.10
+        text(ax_ship, x_l, y, f"{r.from_n}  →  {r.to_n}",
+             size=8.2, color=C["ink"], ha="left")
+        text(ax_ship, 0.52, y, f"{int(r.n_voyages)}",
+             size=8.2, color=C["ink"], ha="right", weight="bold")
 
-    # Malacca corridor, kept as a place rather than a voyage count.
-    mx, my = 0.78, 0.48
-    ax_ship.scatter([0.64], [my], s=86, color=C["ship"], zorder=6,
+    x_r = 0.585
+    text(ax_ship, x_r, 0.90, "Fixed corridor edge",
+         size=9.0, color=C["ship"], weight="bold", ha="left")
+    dot_x, dia_x, y_n = 0.70, 0.86, 0.70
+    ax_ship.scatter([dot_x], [y_n], s=92, color=C["ship"], zorder=6,
                     edgecolor="white", linewidth=0.7)
-    ax_ship.text(0.64, my - 0.09, "Jurong", fontsize=6.6, color=C["ship"],
-                 ha="center", va="top", fontweight="bold")
-    ax_ship.plot([0.685, 0.735], [my, my], color="#8FA8C8", lw=1.8, zorder=3)
-    ax_ship.scatter([mx], [my], s=74, color=C["choke"], marker="D",
+    ax_ship.plot([dot_x + 0.028, dia_x - 0.028], [y_n, y_n],
+                 color="#8FA8C8", lw=1.9, zorder=3)
+    ax_ship.scatter([dia_x], [y_n], s=80, color=C["choke"], marker="D",
                     zorder=6, edgecolor="white", linewidth=0.6)
-    ax_ship.text(mx, my + 0.09, "Malacca", fontsize=7.0, color="#8A3D16",
-                 ha="center", va="bottom", fontweight="bold")
-    ax_ship.text(mx, my - 0.09, "fixed corridor\nevery week",
-                 fontsize=6.0, color=C["muted"], ha="center", va="top")
-    text(ax_ship, 0.71, 0.18,
-         "PortWatch lag +1 w: 524 tanker\ncalls in week t−1 (7 Mar).",
-         size=6.4, color=C["ink"])
+    text(ax_ship, dot_x, y_n - 0.08, "Jurong",
+         size=7.8, color=C["ship"], weight="bold")
+    text(ax_ship, dia_x, y_n - 0.08, "Malacca",
+         size=7.8, color="#8A3D16", weight="bold")
 
-    # ---- (D) how each family ingests Jurong ----
-    ax_c.set_xlim(0, 1)
-    ax_c.set_ylim(0, 1)
-    box(ax_c, 0.00, 0.06, 0.492, 0.96, face=C["flat_bg"], edge=C["flat"],
-        lw=1.2, radius=0.012, z=1)
-    box(ax_c, 0.508, 0.06, 1.00, 0.96, face=C["deep_bg"], edge=C["deep"],
-        lw=1.2, radius=0.012, z=1)
-    text(ax_c, 0.246, 0.84, "(D)  Flat ingest  ·  Jurong becomes columns",
-         size=8.2, weight="bold", color=C["flat"])
-    text(ax_c, 0.246, 0.58,
-         "The five anomalies sit among ~260 weekly features.\n"
-         "Because the January composite is carried forward,\n"
-         "the four lookback weeks are identical for this site.\n"
-         "Shipping series are prefixed columns, not neighbours.",
-         size=6.8, color=C["ink"])
-    text(ax_c, 0.246, 0.22,
-         "Ridge / XGBoost never see a patch or a graph.",
-         size=6.6, color=C["muted"], style="italic")
+    text(ax_ship, x_r, 0.40, "Selected node attribute",
+         size=9.0, color=C["ship"], weight="bold", ha="left")
+    text(ax_ship, x_r, 0.26, "Jurong",
+         size=8.5, color=C["ink"], ha="left")
+    text(ax_ship, x_r, 0.14,
+         f"PortWatch tanker calls  ·  {pw_calls}",
+         size=8.5, color=C["ink"], ha="left")
 
-    text(ax_c, 0.754, 0.84, "(D)  Deep ingest  ·  Jurong stays a place",
-         size=8.2, weight="bold", color=C["deep"])
-    text(ax_c, 0.754, 0.58,
-         "The 1024-d vector is one of 11 AOI tokens.\n"
-         "Temporal then site attention can up-weight Jurong.\n"
-         "On the graph it is 1 of 17 nodes, tied to Malacca\n"
-         "and to the directed lanes in (C).",
-         size=6.8, color=C["ink"])
-    text(ax_c, 0.754, 0.22,
-         "Gated fusion later mixes z_rs and z_ship with finance.",
-         size=6.6, color=C["muted"], style="italic")
-
-    save(fig, "fig_preview_worked_example_jurong")
+    save(fig, "fig_3_4_worked_example_jurong",
+         "fig_preview_worked_example_jurong",
+         pad=0.36, thesis=True, bbox="tight")
 
 
 FIGURES = {

@@ -65,13 +65,61 @@
 % Set default figure placement to htbp
 \def\fps@figure{htbp}
 \makeatother
+% definitions for citeproc citations
+\NewDocumentCommand\citeproctext{}{}
+\NewDocumentCommand\citeproc{mm}{%
+  \begingroup\def\citeproctext{#2}\cite{#1}\endgroup}
+\makeatletter
+ % allow citations to break across lines
+ \let\@cite@ofmt\@firstofone
+ % avoid brackets around text for \cite:
+ \def\@biblabel#1{}
+ \def\@cite#1#2{{#1\if@tempswa , #2\fi}}
+\makeatother
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newenvironment{CSLReferences}[2] % #1 hanging-indent, #2 entry-spacing
+ {\begin{list}{}{%
+  \setlength{\itemindent}{0pt}
+  \setlength{\leftmargin}{0pt}
+  \setlength{\parsep}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1
+   \setlength{\leftmargin}{\cslhangindent}
+   \setlength{\itemindent}{-1\cslhangindent}
+  \fi
+  % set entry spacing
+  \setlength{\itemsep}{#2\baselineskip}}}
+ {\end{list}}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{\hfill\break\parbox[t]{\linewidth}{\strut\ignorespaces#1\strut}}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-\usepackage[style=apa,]{biblatex}
-\addbibresource{book.bib}
-\addbibresource{packages.bib}
-\addbibresource{test.bib}
+\usepackage{fontspec}
+\setmainfont{Times New Roman}[
+  Ligatures = TeX
+]
+\setsansfont{Helvetica}[
+  Scale = MatchLowercase
+]
+\setmonofont{Menlo}[
+  Scale = MatchLowercase
+]
+
+\usepackage{titlesec}
+\titleformat{\chapter}[hang]
+  {\normalfont\huge\bfseries}
+  {\chaptertitlename~\thechapter}
+  {1em}
+  {}
+\titlespacing*{\chapter}{0pt}{50pt}{40pt}
+
 \usepackage[none]{hyphenat}
 \pagestyle{plain}
 \raggedbottom
@@ -87,6 +135,23 @@
 \fancyfoot[CO, CE] {\thepage}
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrulewidth}{0pt}
+
+% Handbook: Arabic numerals from the cover through the last appendix, with
+% no roman front matter and no restart at Chapter 1.
+\AtBeginDocument{\pagenumbering{arabic}}
+\makeatletter
+\renewenvironment{titlepage}{%
+  \if@twocolumn
+    \@restonecoltrue\onecolumn
+  \else
+    \@restonecolfalse\newpage
+  \fi
+  \thispagestyle{plain}%
+  \setcounter{page}{\@ne}%
+}{%
+  \if@restonecol\twocolumn \else \newpage \fi
+}
+\makeatother
 \usepackage{bookmark}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same}
@@ -100,32 +165,30 @@
   pdfcreator={LaTeX via pandoc}}
 
 \title{A Modality-Aware Spatio-Temporal Fusion Framework for Brent Crude Oil Forecasting Using Financial Time Series, Satellite Imagery and Maritime Networks}
-\author{{[}XINRUI QI{]}\\
+\author{XINRUI QI\\
 \strut \\
 CASA0004, MSc Dissertation\\
 \strut \\
-Supervisor: {[}Beatrice Taylor{]}\\
+Supervisor: Beatrice Taylor\\
+\strut \\
+Code repository: \url{https://github.com/XINRUIQI/CASA0004-Dissertation}\\
 \strut \\
 This dissertation is submitted in part requirement for the\\
 MSc in the Centre for Advanced Spatial Analysis,\\
 Bartlett Faculty of the Built Environment, UCL\\
 \strut \\
 Word count: 10800??}
-\date{2026-08-16}
+\date{2026-08-17}
 
 \begin{document}
 \maketitle
 
 \setstretch{1.5}
-\pagenumbering{roman}
-
 \chapter*{Abstract}\label{abstract}
 
 Brent crude is one of the principal benchmarks for internationally traded oil and a key reference price in the global energy market. Its short-term movements affect energy costs, inflation, trade balances and fiscal revenues, and therefore influence decisions made by firms and governments. Using weekly data from 2019 to 2025, this study examines whether satellite remote-sensing and shipping data provide incremental value beyond financial time series for one-week-ahead Brent price forecasting. It also compares flat feature fusion with modality-specific encoding followed by fusion. Flat models combine all selected inputs in a single feature table, whereas deep models encode each data source separately before fusing the resulting representations. For both model families, the study compares a financial-time-series-only specification with alternatives that add remote sensing, shipping or both.
 
 The models are evaluated against a no-change benchmark that sets next week's price equal to this week's price. The results show that no flat model outperforms this benchmark, although shipping data provide limited evidence of incremental predictive information. Deep models combining financial time series and shipping data achieve a small improvement over the benchmark. Remote-sensing data provide no clear additional benefit. The advantage of deep models over flat models is most evident when shipping data are included. This study further uses modality gates to show which data sources the best-performing deep model relies on most. Overall, predictive value depends more on how multimodal data are used---especially how modalities are encoded and fused---than on simply adding more data.
-
-\pagenumbering{roman}
 
 \chapter*{Declaration}\label{declaration}
 
@@ -162,13 +225,11 @@ WTI & West Texas Intermediate \\
 
 \chapter{Introduction}\label{intro}
 
-\pagenumbering{arabic}
-
 \section{Importance and background}\label{intro-background}
 
 Crude oil occupies a central place in the global economy and energy system. Oil-price movements affect inflation, trade balances, fiscal revenues in producer countries and the operating costs of energy-intensive industries. These effects spread through financial markets, economic activity and supply chains. They therefore shape the risk management, hedging, budgeting and planning decisions of governments, firms and investors.
 
-Crude oil is not a homogeneous commodity: individual grades differ in density, sulphur content, production location and transport accessibility, and their prices are commonly expressed relative to a small number of benchmarks. Among the most widely used benchmarks are Brent, West Texas Intermediate (WTI) and Dubai/Oman (U.S. Energy Information Administration, 2014). Brent is a benchmark complex rooted in light, low-sulphur, waterborne crude oils from the North Sea. It is widely used as a reference for internationally traded crude. WTI is a US crude benchmark, with pricing centred on Cushing, Oklahoma, while Dubai/Oman is commonly used to price Middle Eastern crude exported to Asian markets (Wittner, 2020). Although Brent and WTI respond to many of the same global market conditions, differences in regional supply, inventory levels and transport constraints can cause their prices to diverge. This dissertation forecasts Brent because its role as an international waterborne benchmark aligns more closely with the ports, shipping routes and maritime chokepoints represented in the spatial data. WTI is nevertheless retained as a financial predictor and as a component of the Brent--WTI spread. No fixed volatility ranking between Brent and WTI is assumed. Whether shipping activity contains incremental predictive information for Brent is tested empirically in this dissertation.
+Crude oil is not a homogeneous commodity: individual grades differ in density, sulphur content, production location and transport accessibility, and their prices are commonly expressed relative to a small number of benchmarks. Among the most widely used benchmarks are Brent, West Texas Intermediate (WTI) and Dubai/Oman (\citeproc{ref-eia2014}{U.S. Energy Information Administration, 2014}). Brent is a benchmark complex rooted in light, low-sulphur, waterborne crude oils from the North Sea. It is widely used as a reference for internationally traded crude. WTI is a US crude benchmark, with pricing centred on Cushing, Oklahoma, while Dubai/Oman is commonly used to price Middle Eastern crude exported to Asian markets (\citeproc{ref-wittner2020}{Wittner, 2020}). Although Brent and WTI respond to many of the same global market conditions, differences in regional supply, inventory levels and transport constraints can cause their prices to diverge. This dissertation forecasts Brent because its role as an international waterborne benchmark aligns more closely with the ports, shipping routes and maritime chokepoints represented in the spatial data. WTI is nevertheless retained as a financial predictor and as a component of the Brent--WTI spread. No fixed volatility ranking between Brent and WTI is assumed. Whether shipping activity contains incremental predictive information for Brent is tested empirically in this dissertation.
 
 Recent years have shown the costs of unexpected oil-price movements. The COVID-19 period brought an abrupt collapse in demand and an uneven recovery. The 2022 energy crisis then produced major supply and price shocks, followed by only partial normalisation amid continued geopolitical and macroeconomic uncertainty. More recent geopolitical disruptions have further shown how quickly oil prices and seaborne trade can respond when key maritime chokepoints are disrupted or bypassed. Governments monitor such shocks for inflation control, fiscal planning, energy security and trade policy. A better short-term oil-price model would help them gauge risk and timing. Although they cannot replace market judgement, such forecasts could support decision-making when physical flows and prices move together.
 
@@ -198,15 +259,15 @@ This chapter reviews the main bodies of literature that support the study. It fi
 
 \section{Crude-oil price drivers and forecasting benchmarks}\label{lit-benchmarks}
 
-Research on oil-price movements shows that similar price changes can arise from economically different sources. Kilian (2009) distinguishes among shocks to global crude-oil production, shocks to aggregate demand for industrial commodities and demand shocks specific to the oil market. Oil prices respond differently to these shocks, and each shock has a different relationship with global economic activity and oil production. This distinction provides an economic basis for using variables related to supply, demand, market expectations and macroeconomic conditions in oil-price forecasting.
+Research on oil-price movements shows that similar price changes can arise from economically different sources. Kilian (\citeproc{ref-kilian2009}{2009}) distinguishes among shocks to global crude-oil production, shocks to aggregate demand for industrial commodities and demand shocks specific to the oil market. Oil prices respond differently to these shocks, and each shock has a different relationship with global economic activity and oil production. This distinction provides an economic basis for using variables related to supply, demand, market expectations and macroeconomic conditions in oil-price forecasting.
 
-A separate literature examines whether these economic relationships produce accurate forecasts. Alquist, Kilian and Vigfusson (2013) compare a wide range of forecasting models with the no-change forecast, which sets the future spot price equal to the current price. Many alternative models fail to outperform this simple benchmark consistently, particularly in real-time and out-of-sample evaluations. They also distinguish economic predictability from practical forecastability. A variable may have an economic relationship with future oil prices without reducing forecast errors in a finite out-of-sample period. Baumeister and Kilian (2015) find that combining forecasts from several econometric models can produce more stable results across periods and forecast horizons than relying on a single model. These studies establish the no-change forecast as an important benchmark and show that model performance can vary substantially across evaluation periods.
+A separate literature examines whether these economic relationships produce accurate forecasts. Alquist, Kilian and Vigfusson (\citeproc{ref-alquist2013}{2013}) compare a wide range of forecasting models with the no-change forecast, which sets the future spot price equal to the current price. Many alternative models fail to outperform this simple benchmark consistently, particularly in real-time and out-of-sample evaluations. They also distinguish economic predictability from practical forecastability. A variable may have an economic relationship with future oil prices without reducing forecast errors in a finite out-of-sample period. Baumeister and Kilian (\citeproc{ref-baumeister2015}{2015}) find that combining forecasts from several econometric models can produce more stable results across periods and forecast horizons than relying on a single model. These studies establish the no-change forecast as an important benchmark and show that model performance can vary substantially across evaluation periods.
 
 \section{Machine learning in crude-oil price forecasting}\label{lit-ml}
 
-Machine learning has expanded the range of methods used in oil-price forecasting. These methods can process large predictor sets and capture nonlinear relationships and interactions. Costa et al.~(2021) evaluate 23 methods using 315 macroeconomic and financial variables. They find that no single method performs best at every forecast horizon. Machine-learning methods are competitive at short horizons, but econometric, market-based and combined forecasts also perform strongly in some settings. Yılmaz and Zehir (2026) compare econometric and tree-based models for Brent returns using macro-financial and geopolitical variables. Light Gradient Boosting Machine (LightGBM) produces the most consistent results across their reported settings, but the broader comparison again shows that performance depends on the forecast horizon, predictor set and evaluation design.
+Machine learning has expanded the range of methods used in oil-price forecasting. These methods can process large predictor sets and capture nonlinear relationships and interactions. Costa \emph{et al.} (\citeproc{ref-costa2021}{2021}) evaluate 23 methods using 315 macroeconomic and financial variables. They find that no single method performs best at every forecast horizon. Machine-learning methods are competitive at short horizons, but econometric, market-based and combined forecasts also perform strongly in some settings. Yılmaz and Zehir (\citeproc{ref-yilmaz2026}{2026}) compare econometric and tree-based models for Brent returns using macro-financial and geopolitical variables. Light Gradient Boosting Machine (LightGBM) produces the most consistent results across their reported settings, but the broader comparison again shows that performance depends on the forecast horizon, predictor set and evaluation design.
 
-Deep-learning studies focus more directly on learning temporal representations. Foroutan and Lahmiri (2024) compare a range of methods for next-day WTI and Brent spot-price forecasting and report strong performance from temporal convolutional networks and LightGBM. Simsek et al.~(2024) combine Long Short-Term Memory (LSTM) feature extraction with XGBoost for WTI price prediction. Graph-based methods have also been introduced. Zhao, Xue and Cheng (2023), for example, model time-varying relationships among economic and financial variables and use a spatial--temporal graph neural network to forecast WTI futures. Their graph represents statistical relationships among predictors rather than a physical transportation network.
+Deep-learning studies focus more directly on learning temporal representations. Foroutan and Lahmiri (\citeproc{ref-foroutan2024}{2024}) compare a range of methods for next-day WTI and Brent spot-price forecasting and report strong performance from temporal convolutional networks and LightGBM. Simsek \emph{et al.} (\citeproc{ref-simsek2024}{2024}) combine Long Short-Term Memory (LSTM) feature extraction with XGBoost for WTI price prediction. Graph-based methods have also been introduced. Zhao, Xue and Cheng (\citeproc{ref-zhao2023}{2023}), for example, model time-varying relationships among economic and financial variables and use a spatial--temporal graph neural network to forecast WTI futures. Their graph represents statistical relationships among predictors rather than a physical transportation network.
 
 Overall, machine learning provides greater flexibility for modelling high-dimensional data, nonlinearities and temporal interactions. However, the literature does not establish that one class of models consistently dominates conventional econometric or market-based approaches. Reported performance depends strongly on the target, horizon, sample, information set and benchmark. These findings support the use of a common rolling out-of-sample design and a no-change benchmark when comparing different data sources and model architectures.
 
@@ -214,13 +275,13 @@ Overall, machine learning provides greater flexibility for modelling high-dimens
 
 A large share of international crude-oil trade is transported by sea. Shipping activity can therefore provide information about physical oil flows, regional supply conditions, congestion and disruptions at ports or major chokepoints. Automatic Identification System (AIS) data record vessel identities, positions and movements. Although they do not directly record cargo quantities, processed AIS observations can be used to estimate tanker movements and maritime trade.
 
-Adland, Jia and Strandenes (2017) compare AIS-based estimates of seaborne crude-oil exports with customs statistics and find that aggregate estimates are broadly consistent with official data. Yan et al.~(2020) combine tanker trajectories with vessel characteristics and draught information to estimate voyage-level oil flows. Their estimates for major oil-importing and oil-exporting countries are strongly correlated with Joint Organisations Data Initiative statistics. These studies provide evidence that vessel movements can serve as proxies for the physical transportation of crude oil.
+Adland, Jia and Strandenes (\citeproc{ref-adland2017}{2017}) compare AIS-based estimates of seaborne crude-oil exports with customs statistics and find that aggregate estimates are broadly consistent with official data. Yan \emph{et al.} (\citeproc{ref-yan2020}{2020}) combine tanker trajectories with vessel characteristics and draught information to estimate voyage-level oil flows. Their estimates for major oil-importing and oil-exporting countries are strongly correlated with Joint Organisations Data Initiative statistics. These studies provide evidence that vessel movements can serve as proxies for the physical transportation of crude oil.
 
-AIS-based indicators can also improve the timeliness of trade measurement. Arslanalp, Marini and Tumbarello (2019) construct high-frequency trade indicators from vessel movements and port calls. IMF PortWatch extends this approach by combining information on vessel activity, ports, chokepoints, ship characteristics and estimated carrying capacity to produce daily indicators of maritime trade (Arslanalp et al., 2026). Compared with conventional trade statistics, these data can describe changes in maritime activity with shorter reporting delays.
+AIS-based indicators can also improve the timeliness of trade measurement. Arslanalp, Marini and Tumbarello (\citeproc{ref-arslanalp2019}{2019}) construct high-frequency trade indicators from vessel movements and port calls. IMF PortWatch extends this approach by combining information on vessel activity, ports, chokepoints, ship characteristics and estimated carrying capacity to produce daily indicators of maritime trade (\citeproc{ref-arslanalp2026}{Arslanalp \emph{et al.}, 2026}). Compared with conventional trade statistics, these data can describe changes in maritime activity with shorter reporting delays.
 
-However, the relationship between shipping activity and future oil prices is not necessarily one-directional. Mi et al.~(2022) identify relationships between oil-price changes and tanker port-call frequency, docking time, gross tonnage and the number of tankers at ports in major crude-exporting countries. Mi et al.~(2023) also find nonlinear and regionally heterogeneous relationships between oil prices and tanker port calls. In both studies, shipping activity responds to oil prices. Their results therefore show that contemporaneous associations do not establish that vessel activity leads future price movements.
+However, the relationship between shipping activity and future oil prices is not necessarily one-directional. Mi \emph{et al.} (\citeproc{ref-mi2022}{2022}) identify relationships between oil-price changes and tanker port-call frequency, docking time, gross tonnage and the number of tankers at ports in major crude-exporting countries. Mi \emph{et al.} (\citeproc{ref-mi2023}{2023}) also find nonlinear and regionally heterogeneous relationships between oil prices and tanker port calls. In both studies, shipping activity responds to oil prices. Their results therefore show that contemporaneous associations do not establish that vessel activity leads future price movements.
 
-AIS-based measures are also indirect and incomplete. Cargo type and quantity must often be inferred from vessel characteristics, routes or draught, and some vessel activity is not observed in public tracking systems. Paolo et al.~(2024) show that a meaningful share of transport- and energy-vessel activity is absent from public vessel-position data. These limitations do not make AIS data unusable, but they mean that shipping variables should be treated as noisy proxies for physical trade rather than direct measurements of oil supply.
+AIS-based measures are also indirect and incomplete. Cargo type and quantity must often be inferred from vessel characteristics, routes or draught, and some vessel activity is not observed in public tracking systems. Paolo \emph{et al.} (\citeproc{ref-paolo2024}{2024}) show that a meaningful share of transport- and energy-vessel activity is absent from public vessel-position data. These limitations do not make AIS data unusable, but they mean that shipping variables should be treated as noisy proxies for physical trade rather than direct measurements of oil supply.
 
 The existing literature establishes that shipping data can measure changes in maritime trade and crude-oil transportation. However, direct evidence that these data improve short-term Brent price forecasts remains limited.
 
@@ -228,7 +289,7 @@ The existing literature establishes that shipping data can measure changes in ma
 
 Maritime-network studies provide a way to preserve relationships among locations. Aggregate indicators summarise port calls, vessel counts or chokepoint traffic, whereas network models represent ports or regions as nodes and vessel movements as links. This representation retains connections between locations and allows activity at one part of the network to be modelled in relation to activity elsewhere.
 
-Ouyang et al.~(2022) construct a crude-oil transportation network and use an LSTM--GCN model to forecast weekly traffic at network nodes. Liang et al.~(2022) use a spatiotemporal multigraph convolutional network for vessel-traffic forecasting, while Zhao et al.~(2022) use a dynamic graph neural network to predict regional vessel inflows, outflows and traffic volumes. These studies show that maritime activity is relational and changes over time. Preserving this structure may therefore provide information that is lost when shipping activity is reduced to a small set of aggregate indicators.
+Ouyang \emph{et al.} (\citeproc{ref-ouyang2022}{2022}) construct a crude-oil transportation network and use an LSTM--GCN model to forecast weekly traffic at network nodes. Liang \emph{et al.} (\citeproc{ref-liang2022}{2022}) use a spatiotemporal multigraph convolutional network for vessel-traffic forecasting, while Zhao \emph{et al.} (\citeproc{ref-zhao2022}{2022}) use a dynamic graph neural network to predict regional vessel inflows, outflows and traffic volumes. These studies show that maritime activity is relational and changes over time. Preserving this structure may therefore provide information that is lost when shipping activity is reduced to a small set of aggregate indicators.
 
 The literature shows that network representations can capture relationships between ports and routes. However, these methods have mainly been used to forecast shipping activity itself. There is limited direct evidence on whether graph-based representations of maritime networks improve oil-price forecasts.
 
@@ -236,9 +297,9 @@ The literature shows that network representations can capture relationships betw
 
 Remote sensing provides repeated observations of oil-related infrastructure, industrial activity and maritime locations. Satellite observations may therefore contain information about oil demand, storage, port activity and trade. However, their economic meaning depends on the physical signal being measured and the mechanism connecting that signal to the oil market.
 
-Several studies connect satellite observations with oil-market conditions. Hao and Wang (2023) use cloud-cover observations above floating-roof oil tanks in major US storage areas. Because the roofs rise and fall with the volume of oil stored, their shadows in clear-sky satellite imagery can be used to estimate inventories before official EIA releases. Cloud cover obscures the tanks and therefore reduces the satellite-based inventory information available to market participants. The authors argue that the resulting information uncertainty may encourage firms to hold larger precautionary inventories. Consistent with this proposed channel, they find that greater cloud cover is followed by higher inventories and lower WTI returns in the following week. They interpret this as an information effect rather than a direct weather effect on oil supply or demand. Bricongne et al.~(2026) use satellite observations of tropospheric NO₂, a short-lived pollutant emitted primarily by fossil-fuel combustion, to nowcast national oil demand. They find that daily NO₂ data improve nowcasting accuracy relative to models using conventional predictors, showing that satellite observations can provide timely information about changes in oil consumption.
+Several studies connect satellite observations with oil-market conditions. Hao and Wang (\citeproc{ref-hao2023}{2023}) use cloud-cover observations above floating-roof oil tanks in major US storage areas. Because the roofs rise and fall with the volume of oil stored, their shadows in clear-sky satellite imagery can be used to estimate inventories before official EIA releases. Cloud cover obscures the tanks and therefore reduces the satellite-based inventory information available to market participants. The authors argue that the resulting information uncertainty may encourage firms to hold larger precautionary inventories. Consistent with this proposed channel, they find that greater cloud cover is followed by higher inventories and lower WTI returns in the following week. They interpret this as an information effect rather than a direct weather effect on oil supply or demand. Bricongne \emph{et al.} (\citeproc{ref-bricongne2026}{2026}) use satellite observations of tropospheric NO₂, a short-lived pollutant emitted primarily by fossil-fuel combustion, to nowcast national oil demand. They find that daily NO₂ data improve nowcasting accuracy relative to models using conventional predictors, showing that satellite observations can provide timely information about changes in oil consumption.
 
-Other studies use satellite imagery to measure oil-related infrastructure and trade. Wang et al.~(2019) estimate the dimensions and structural capacity of oil tanks from high-resolution imagery. Jung (2026) combines radar observations, night-time lights and port characteristics to nowcast port-level maritime trade. Polinov, Bookman and Levin (2022) also identify a relationship between night-time lights and shipping activity in anchorage areas. Together, these studies show that remote sensing can capture physical and economic activity connected to oil storage and maritime trade.
+Other studies use satellite imagery to measure oil-related infrastructure and trade. Wang \emph{et al.} (\citeproc{ref-wang2019}{2019}) estimate the dimensions and structural capacity of oil tanks from high-resolution imagery. Jung (\citeproc{ref-jung2026}{2026}) combines radar observations, night-time lights and port characteristics to nowcast port-level maritime trade. Polinov, Bookman and Levin (\citeproc{ref-polinov2022}{2022}) also identify a relationship between night-time lights and shipping activity in anchorage areas. Together, these studies show that remote sensing can capture physical and economic activity connected to oil storage and maritime trade.
 
 However, remote-sensing variables remain indirect measures of oil-market conditions. A signal that measures storage capacity does not necessarily reflect current inventories, while port activity does not directly measure future oil prices. Short-term changes may also reflect cloud cover, observation conditions or irregular data availability. Evidence obtained from one sensor or target therefore cannot automatically be applied to another.
 
@@ -248,15 +309,15 @@ Existing studies demonstrate that satellite observations contain information rel
 
 Multimodal learning refers to methods that process and combine information from two or more types of data. Each type of data is treated as a modality, and the purpose of multimodal learning is to use their complementary information while accounting for differences in structure, scale and availability.
 
-Baltrušaitis, Ahuja and Morency (2019) identify representation, translation, alignment, fusion and co-learning as five core challenges in multimodal machine learning. This dissertation focuses on fusion, specifically the distinction between feature-level and representation-level fusion. Feature-level fusion places observed or engineered variables from all modalities in a common feature table before modelling. Representation-level fusion processes each modality separately before combining the resulting representations.
+Baltrušaitis, Ahuja and Morency (\citeproc{ref-baltrusaitis2019}{2019}) identify representation, translation, alignment, fusion and co-learning as five core challenges in multimodal machine learning. This dissertation focuses on fusion, specifically the distinction between feature-level and representation-level fusion. Feature-level fusion places observed or engineered variables from all modalities in a common feature table before modelling. Representation-level fusion processes each modality separately before combining the resulting representations.
 
-The two approaches retain different amounts of modality-specific structure. Feature-level fusion is compatible with conventional regression and tree-based models, but it may reduce temporal, spatial and network data to a common tabular format. Representation-level fusion can maintain separate processing streams for different data sources. Arevalo et al.~(2017) propose a gated multimodal unit that combines modality-specific representations through input-dependent gates. The contribution of each modality can therefore change across observations. Gohari et al.~(2024) apply a related modality-aware approach to financial forecasting by combining textual reports and numerical economic series. Their results show that separate representations and cross-modal interactions can improve performance in a financial time-series setting.
+The two approaches retain different amounts of modality-specific structure. Feature-level fusion is compatible with conventional regression and tree-based models, but it may reduce temporal, spatial and network data to a common tabular format. Representation-level fusion can maintain separate processing streams for different data sources. Arevalo \emph{et al.} (\citeproc{ref-arevalo2017}{2017}) propose a gated multimodal unit that combines modality-specific representations through input-dependent gates. The contribution of each modality can therefore change across observations. Gohari \emph{et al.} (\citeproc{ref-gohari2024}{2024}) apply a related modality-aware approach to financial forecasting by combining textual reports and numerical economic series. Their results show that separate representations and cross-modal interactions can improve performance in a financial time-series setting.
 
-Representation learning is also important for satellite imagery. For example, SatMAE (Cong et al., 2022) learns representations from temporal and multispectral satellite observations. Prithvi-EO-2.0 (Szwarcman et al., 2026) is pretrained on global multitemporal Earth-observation imagery and incorporates temporal and location information. CROMA (Fuller, Millard and Green, 2023) separately processes optical and radar observations before producing a joint representation. These models demonstrate that pretrained encoders can preserve spatial, spectral and temporal information that may not be captured by manually engineered satellite indicators. However, their evaluations mainly concern remote-sensing tasks such as classification, segmentation and disaster mapping rather than commodity-price forecasting.
+Representation learning is also important for satellite imagery. For example, SatMAE (\citeproc{ref-cong2022}{Cong \emph{et al.}, 2022}) learns representations from temporal and multispectral satellite observations. Prithvi-EO-2.0 (\citeproc{ref-szwarcman2026}{{Szwarcman \emph{et al.}}, 2026}) is pretrained on global multitemporal Earth-observation imagery and incorporates temporal and location information. CROMA (\citeproc{ref-fuller2023}{Fuller, Millard and Green, 2023}) separately processes optical and radar observations before producing a joint representation. These models demonstrate that pretrained encoders can preserve spatial, spectral and temporal information that may not be captured by manually engineered satellite indicators. However, their evaluations mainly concern remote-sensing tasks such as classification, segmentation and disaster mapping rather than commodity-price forecasting.
 
-Multimodal data also create alignment and missing-data problems. Financial data, shipping observations and satellite imagery may be recorded at different frequencies and become available at different times. An entire modality may be missing for some observations, or individual observations within a modality may be irregular or delayed. Ma et al.~(2022) show that multimodal models can be sensitive to missing modalities, while Neverova et al.~(2016) propose ModDrop, which randomly drops one or more entire modalities during training to improve robustness when modalities are missing at test time. Time-series methods such as GRU-D (Che et al., 2018) and Multi-Time Attention Networks (Shukla and Marlin, 2021) explicitly represent missingness and irregular observation times. These studies show that adding more modalities does not automatically resolve differences in data availability and timing.
+Multimodal data also create alignment and missing-data problems. Financial data, shipping observations and satellite imagery may be recorded at different frequencies and become available at different times. An entire modality may be missing for some observations, or individual observations within a modality may be irregular or delayed. Ma \emph{et al.} (\citeproc{ref-ma2022}{2022}) show that multimodal models can be sensitive to missing modalities, while Neverova \emph{et al.} (\citeproc{ref-neverova2016}{2016}) propose ModDrop, which randomly drops one or more entire modalities during training to improve robustness when modalities are missing at test time. Time-series methods such as GRU-D (\citeproc{ref-che2018}{Che \emph{et al.}, 2018}) and Multi-Time Attention Networks (\citeproc{ref-shukla2021}{Shukla and Marlin, 2021}) explicitly represent missingness and irregular observation times. These studies show that adding more modalities does not automatically resolve differences in data availability and timing.
 
-Some multimodal architectures provide internal quantities that can be inspected. Modality gates can indicate how strongly the fitted model weights different data sources, while attention mechanisms can show how weights are distributed across inputs or representations. These quantities can help describe model behaviour, but they should not be treated as direct causal explanations. Jain and Wallace (2019) show that different attention patterns can sometimes produce similar predictions. Gates and attention weights therefore indicate how a model processes information, not how the underlying economic system is causally determined.
+Some multimodal architectures provide internal quantities that can be inspected. Modality gates can indicate how strongly the fitted model weights different data sources, while attention mechanisms can show how weights are distributed across inputs or representations. These quantities can help describe model behaviour, but they should not be treated as direct causal explanations. Jain and Wallace (\citeproc{ref-jain2019}{2019}) show that different attention patterns can sometimes produce similar predictions. Gates and attention weights therefore indicate how a model processes information, not how the underlying economic system is causally determined.
 
 Existing multimodal research provides methods for preserving temporal, spatial and network structures before fusion. However, there is limited direct evidence on whether such methods outperform flat feature fusion in oil-price forecasting when both approaches use the same underlying information.
 
@@ -355,7 +416,16 @@ and reconstruct the price forecast as
 
 Log returns are used to reduce the strong persistence in the price level and to express the forecasting task in terms of proportional weekly changes. RMSE and the percentage improvement in RMSE over M0 are computed from the reconstructed price forecasts. Under this mapping, the no-change benchmark \(\hat{P}_{t+1|t}=P_t\) is exactly the same as forecasting a zero return \(\hat{r}_{t+1|t}=0\).
 
-The modelling window covers 2019--2025 and provides a common weekly index of 365 observations (4 January 2019 to 26 December 2025). The training and evaluation samples are separated in time on an expanding window, rather than by random assignment, to prevent future information from leaking into model fitting. The full validation protocol is in Section \ref{method-validation}.
+The modelling window covers 2019--2025 and provides a common weekly index of 365 observations (4 January 2019 to 26 December 2025). The training and evaluation samples are separated in time on an expanding window, rather than by random assignment, to prevent future information from leaking into model fitting. Figure \ref{fig:price-returns} shows the Brent price and the weekly log returns over this window. The full validation protocol is in Section \ref{method-validation}.
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{figures/fig_3_2_price_returns} 
+
+}
+
+\caption{Brent price (top) and weekly log returns (bottom), 4 January 2019 to 26 December 2025. The grey band marks the evaluation sample (from January 2021).}\label{fig:price-returns}
+\end{figure}
 
 \section{Geographic scope and monitoring sites}\label{method-geography}
 
@@ -363,26 +433,15 @@ Because the prediction target is the global Brent benchmark rather than a local 
 
 The eleven sites comprise ports, refineries and export terminals selected purposively for their strategic roles and observability in the available satellite products. Flat remote-sensing features are summarised within a circular buffer of 5 km radius around each site. Deep image patches are centred on the same sites but vary in size by facility type and local spatial constraints. The sizes are generally larger for ports, intermediate for refineries and smaller for terminals.
 
-The shipping graph augments the eleven sites with six maritime chokepoints: the Strait of Hormuz, the Suez Canal, the Strait of Malacca, Bab el-Mandeb, the Panama Canal and the Cape of Good Hope. The resulting weekly graph contains seventeen nodes and two forms of connection. Dynamic links between the eleven AOIs are directed origin--destination pairs, weighted by the number of voyages counted in each week from Global Fishing Watch (GFW) port-visit sequences. Fixed links are undirected. Each site is connected to the chokepoint or chokepoints on its main documented oil-trade corridor. These links are defined in advance rather than inferred from weekly vessel movements or geographic proximity. Complete edge definitions are reported in Appendix A, and graph encoding is described in Section \ref{method-deep}.
+The shipping graph augments the eleven sites with six maritime chokepoints: the Strait of Hormuz, the Suez Canal, the Strait of Malacca, Bab el-Mandeb, the Panama Canal and the Cape of Good Hope. The resulting weekly graph contains seventeen nodes and two forms of connection. Dynamic links between the eleven AOIs are directed origin--destination pairs, weighted by the number of voyages counted in each week from Global Fishing Watch (GFW) port-visit sequences. Fixed links are undirected. Each site is connected to the chokepoint or chokepoints on its main documented oil-trade corridor. These links are defined in advance rather than inferred from weekly vessel movements or geographic proximity. Complete edge definitions are reported in Appendix A, and graph encoding is described in Section \ref{method-deep}. The two edge classes are illustrated in Figure \ref{fig:edge-classes}.
 
 \begin{figure}
 
-{\centering \includegraphics[width=1\linewidth]{../../05_outputs/figures/fig_3_2_study_sites_map2} 
+{\centering \includegraphics[width=1\linewidth]{../../05_outputs/figures/fig_3_3_study_sites_map2} 
 
 }
 
 \caption{Spatial coverage of the 11 oil-infrastructure AOIs and six maritime chokepoints. Markers indicate AOI centre coordinates rather than the full spatial extent of each port or industrial complex. The Persian Gulf panel is an enlarged view of the same sites.}\label{fig:study-sites}
-\end{figure}
-
-Figure \ref{fig:edge-classes} illustrates the two edge classes used in the shipping graph.
-
-\begin{figure}
-
-{\centering \includegraphics[width=1\linewidth]{../../05_outputs/figures/fig_3_6_edge_classes} 
-
-}
-
-\caption{Shipping-graph edge classes: directed week-varying voyage links (left) and undirected fixed corridor links (right). The GAT encoder uses a symmetrised adjacency.}\label{fig:edge-classes}
 \end{figure}
 
 \section{Data sources and preparation}\label{method-data}
@@ -436,6 +495,17 @@ For the remote-sensing block, the Flat and Deep pathways extract inputs from the
 
 The shipping block covers activity at the eleven AOIs and six chokepoints. IMF PortWatch supplies tanker-flow measures at ports and chokepoints. Global Fishing Watch supplies measures of vessel presence and activity duration. These variables serve as proxies for physical shipping activity, tanker movements and congestion. In the Flat pathway, PortWatch and GFW enter as weekly tabular features. In the Deep pathway, the 17-node graph uses PortWatch flows, GFW AIS vessel-presence and activity measures, and GFW SAR-derived dark-vessel detections as node attributes, while dynamic AOI--AOI voyage links are constructed from GFW port-visit sequences. Full variable definitions are reported in Appendix A.
 
+Figure \ref{fig:worked-example} works through one Friday origin at Jurong Island. It shows the two remote-sensing spatial supports, the values available at that date, and the shipping neighbourhood after product-specific lags.
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{figures/fig_3_4_worked_example_jurong} 
+
+}
+
+\caption{Worked example at Jurong Island (P004), 14 March 2025. (a) True-colour Sentinel-2 (B4–B3–B2) for January 2025, the latest eligible composite at this origin; February is not yet available. Flat uses a 5 km radius buffer; Deep uses the locked 5.12 km square patch (512 px at 10 m), bilinearly resized to 224×224. Cloud cover on the January scene is 37\%. (b) Selected Flat anomalies at P004, carried forward through the four-week lookback, and the frozen 1024-d Prithvi mean-pooled embedding. (c) Latest eligible GFW voyage edges are the week ending 28 February 2025 (16 directed lanes; four busiest shown). The Jurong–Malacca link is a fixed corridor, present every week. PortWatch tanker calls (520) refer to the week ending 7 March (+1 week lag). Before message passing, voyage and corridor edges are combined and symmetrised.}\label{fig:worked-example}
+\end{figure}
+
 \subsection{Spatial aggregation and temporal alignment}\label{method-alignment}
 
 Spatially referenced data are first aggregated to the monitoring locations used in the models. Remote-sensing observations are aggregated from pixels to AOI--month products. PortWatch and GFW series are aggregated from vessel events or traffic counts to AOIs and chokepoints. The identity of each site or node is retained before the series enter the models.
@@ -443,17 +513,6 @@ Spatially referenced data are first aggregated to the monitoring locations used 
 All series are aligned to a common Friday-ending weekly calendar. Daily observations are converted using end-of-week values, weekly means or weekly sums as appropriate, while monthly series are carried forward only after their assumed availability dates. Monthly remote-sensing products are aligned to their conservative availability dates, with the most recent eligible composite carried forward to avoid look-ahead bias.
 
 Publication timing is approximated using source- and product-specific fixed lag buffers rather than observation-level release timestamps. Exact aggregation rules, lag constants and implementation scripts are reported in Appendix A. One-week buffers are applied to EIA fundamentals and PortWatch flows, while monthly macroeconomic series, remote-sensing products and individual GFW AIS and SAR products receive longer buffers.
-
-Figure \ref{fig:asof-alignment} illustrates as-of alignment at a Friday forecast origin.
-
-\begin{figure}
-
-{\centering \includegraphics[width=1\linewidth]{../../05_outputs/figures/fig_3_7_asof_alignment} 
-
-}
-
-\caption{As-of alignment at a Friday forecast origin: financial series with zero lag, EIA/PortWatch with a one-week buffer, and monthly remote-sensing products carried forward after conservative availability dates.}\label{fig:asof-alignment}
-\end{figure}
 
 \subsection{Data quality and missing values}\label{method-missing}
 
@@ -465,17 +524,28 @@ After temporal alignment, the remaining gaps occur almost entirely before each s
 
 \subsection{Flat models}\label{method-flat}
 
-Flat models implement early feature-level fusion. For each information set, all available numeric features are concatenated into a weekly feature table, and the most recent four weeks are flattened into a single row for each forecast origin. Ridge applies L2 regularisation (Hoerl and Kennard, 1970) and serves as a transparent linear comparator. XGBoost is a non-linear gradient-boosted tree ensemble (Chen and Guestrin, 2016) that captures nonlinearities and interactions not represented by Ridge. Because both learners operate on the same flattened table, neither preserves modality-specific structure. Both predict the one-week-ahead log return and then reconstruct the corresponding price forecast. Hyperparameter selection follows the time-ordered procedure described in Section \ref{method-validation}, with exact search grids reported in Appendix C.
+Flat models implement early feature-level fusion. For each information set, all available numeric features are concatenated into a weekly feature table, and the most recent four weeks are flattened into a single row for each forecast origin. Ridge applies L2 regularisation (\citeproc{ref-hoerl1970}{Hoerl and Kennard, 1970}) and serves as a transparent linear comparator. XGBoost is a non-linear gradient-boosted tree ensemble (\citeproc{ref-chen2016}{Chen and Guestrin, 2016}) that captures nonlinearities and interactions not represented by Ridge. Because both learners operate on the same flattened table, neither preserves modality-specific structure. Both predict the one-week-ahead log return and then reconstruct the corresponding price forecast. Hyperparameter selection follows the time-ordered procedure described in Section \ref{method-validation}, with exact search grids reported in Appendix C.
 
 \subsection{Deep models}\label{method-deep}
 
 Deep models encode each modality separately, retaining its temporal and, where applicable, site or network organisation before fusing the resulting representations for S2--S4.
 
-The finance encoder applies a causal temporal convolutional network (TCN; Bai, Kolter and Koltun, 2018) to the four-week financial sequence retained across S1--S4. It produces one finance representation per forecast origin using only current and earlier positions at each convolutional layer.
+The finance encoder applies a causal temporal convolutional network (TCN) (\citeproc{ref-bai2018}{Bai, Kolter and Koltun, 2018}) to the four-week financial sequence retained across S1--S4. It produces one finance representation per forecast origin using only current and earlier positions at each convolutional layer.
 
 The remote-sensing encoder receives monthly embeddings for the 11 AOIs, extracted from Sentinel-2 Surface Reflectance Harmonized patches using a frozen Prithvi-EO-2.0-300M encoder. The patches are adapted to the six-band convention of the HLS-pretrained encoder, with band mapping, standardisation and resampling documented in Appendix A. Temporal attention combines the four-week embeddings for each AOI. Site attention then combines the 11 AOIs into one remote-sensing representation.
 
-The shipping encoder applies a graph attention network with temporal encoding (GAT; Veličković et al., 2018) to the weekly 17-node graph over the four-week lookback, producing one shipping representation per forecast origin. The graph is constructed as described in Section \ref{method-geography} and represents transport-network connectivity rather than adjacency based on geographical proximity. For message passing, the directed voyage links and undirected corridor links are combined in a symmetrised adjacency matrix, so the encoder does not retain edge direction or type. Symmetrised voyage counts are used as a prior in the attention calculation. Adjacency and edge-weighting details are reported in Appendix A.
+The shipping encoder applies a graph attention network with temporal encoding (GAT) (\citeproc{ref-velickovic2018}{Veličković \emph{et al.}, 2018}) to the weekly 17-node graph over the four-week lookback, producing one shipping representation per forecast origin. The graph is constructed as described in Section \ref{method-geography} and represents transport-network connectivity rather than adjacency based on geographical proximity. For message passing, the directed voyage links and undirected corridor links are combined in a symmetrised adjacency matrix, so the encoder does not retain edge direction or type. Symmetrised voyage counts are used as a prior in the attention calculation. Adjacency and edge-weighting details are reported in Appendix A.
+
+Figure \ref{fig:edge-classes} shows the two edge classes.
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{../../05_outputs/figures/fig_3_5_edge_classes} 
+
+}
+
+\caption{Two edge classes in the 17-node shipping graph, on the same geographic frame as Figure 3.3. (a) Dynamic voyage edges (directed and weighted) for the median-density week ending 1 July 2022 (43 lanes). Line width is proportional to the square root of the weekly voyage count (reference 100 voyages; the sample maximum on any directed lane in a single week is 87). Opposite directions on the same lane are drawn as offset opposite curves. (b) Fixed corridor edges (undirected and unweighted): thirteen AOI–chokepoint links, identical every week. Lines are origin–destination graph edges, not AIS tracks. Before message passing, the two edge classes are combined and symmetrised, and self-loops are added. Edge direction and edge-class labels are not retained in the GAT; symmetrised voyage counts are retained as attention priors.}\label{fig:edge-classes}
+\end{figure}
 
 Fusion is applied only to Deep models for S2--S4, while S1 passes its finance representation directly to the regression head. Three mechanisms are compared. Gated fusion is designated as the main design because it provides forecast-origin-specific modality weights for the subsequent interpretability analysis. These weights are non-negative and sum to one at each forecast origin. Encoder concatenation and cross-attention are used only as alternatives. The resulting representation is trained by mean squared error to predict the one-week-ahead log return. Encoder and training settings are reported in Appendix C.
 
@@ -551,7 +621,7 @@ Here, \(P_{t+1}\) is the observed price and \(\hat{P}_{m,t+1\mid t}\) is the pri
 
 \subsection{Model interpretation and robustness checks}\label{method-interp}
 
-Model interpretability concerns identifying where a model's predictive ability comes from, including which data sources and features contribute more or less to its predictions. RQ3 is restricted to Deep specifications that record a positive RMSE improvement relative to M0 under the predefined eligibility rule. For these specifications, SHapley Additive exPlanations (SHAP) values are calculated to quantify each input's contribution (Lundberg and Lee, 2017). Absolute SHAP values are aggregated by data source and, where applicable, spatial site or node. Results are reported for the full sample, by year, and within predefined ±8-week event windows. For gated models, weekly modality weights are also reported to describe how the model allocates weight across financial, remote-sensing and shipping representations. SHAP and gate weights describe model attribution and internal allocation rather than causal importance.
+Model interpretability concerns identifying where a model's predictive ability comes from, including which data sources and features contribute more or less to its predictions. RQ3 is restricted to Deep specifications that record a positive RMSE improvement relative to M0 under the predefined eligibility rule. For these specifications, SHapley Additive exPlanations (SHAP) values are calculated to quantify each input's contribution (\citeproc{ref-lundberg2017}{Lundberg and Lee, 2017}). Absolute SHAP values are aggregated by data source and, where applicable, spatial site or node. Results are reported for the full sample, by year, and within predefined ±8-week event windows. For gated models, weekly modality weights are also reported to describe how the model allocates weight across financial, remote-sensing and shipping representations. SHAP and gate weights describe model attribution and internal allocation rather than causal importance.
 
 Robustness is assessed separately by rerunning the prespecified Deep models with multiple random seeds and comparing their RMSE. These checks evaluate whether reported improvements are stable across initialisation rather than selecting or revising the main specification.
 
@@ -559,20 +629,11 @@ Robustness is assessed separately by rerunning the prespecified Deep models with
 
 The study uses only secondary, aggregate data and does not involve human participants. It received approval through UCL's low-risk ethics process. All datasets were used in accordance with their published licences and terms of use, including the Copernicus open licence for Sentinel-2, the open distribution terms for VIIRS night-time lights, and the research-use terms of IMF PortWatch and Global Fishing Watch. Remote-sensing and vessel-activity variables are analysed only at the aggregate site or chokepoint level; no attempt is made to identify individual vessels, operators or persons.
 
-Analysis was conducted in Python, and the code required to reproduce the analysis is available on GitHub: {[}repository link{]}. Package versions, random seeds and installation commands are documented in the repository README. Search grids and locked training settings are reported in Appendix C.
+Analysis was conducted in Python, and the code required to reproduce the analysis is available on GitHub: \url{https://github.com/XINRUIQI/CASA0004-Dissertation}. Package versions, random seeds and installation commands are documented in the repository README. Search grids and locked training settings are reported in Appendix C. A research log of supervisory meetings is in Appendix D.
 
 \chapter{Results}\label{results}
 
 \section{Flat-model results}\label{results-flat}
-
-\begin{figure}
-
-{\centering \includegraphics[width=1\linewidth]{../../05_outputs/figures/fig_4_1_price_returns} 
-
-}
-
-\caption{Brent price (top) and weekly log returns (bottom). The grey background marks the evaluation period from January 2021, and coloured bands show the ±8-week event windows used in Table 4.4.}\label{fig:price-returns}
-\end{figure}
 
 Table \ref{tab:flat-perf} reports the out-of-sample performance of the Flat Ridge and XGBoost models across feature sets S1--S4, with M0 shown for comparison. All eight Flat models have higher RMSE than M0 and therefore record negative RMSE improvement.
 
@@ -625,6 +686,17 @@ S4 & financial time series + RS + shipping & M4-Flat-Ridge & 4.539 & −9.3\% \\
 \end{longtable}
 
 \emph{Note:} Positive values indicate lower RMSE than M0.
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{../../05_outputs/figures/fig_4_1_flat_rmse_improvement} 
+
+}
+
+\caption{Flat-model RMSE improvement relative to M0. The dashed line denotes zero improvement relative to M0. Positive values indicate lower RMSE than M0.}\label{fig:flat-rmse}
+\end{figure}
+
+Figure \ref{fig:flat-rmse} displays the same RMSE improvements as Table \ref{tab:flat-perf}. All eight points lie to the left of the M0 line.
 
 For Ridge, S1 has the lowest RMSE and S3 the highest; adding remote sensing, shipping, or both raises RMSE relative to S1. For XGBoost, S3 records a slightly lower RMSE than S1 (4.357 versus 4.368), while S2 and S4 remain higher than S1. No Flat model records a positive RMSE improvement relative to M0. Overall, the Flat family performs worse than the no-change benchmark across all information sets.
 
@@ -680,6 +752,19 @@ S3 & financial time series + shipping & M3-Deep-Gated & 4.146 & +0.15\% \\
 S4 & financial time series + RS + shipping & M4-Deep-Gated & 4.180 & −0.67\% \\
 & & M4-Deep-XAttn & 4.144 & +0.19\% \\
 \end{longtable}
+
+\emph{Note:} XAttn denotes cross-attention. Positive values indicate lower RMSE than M0.
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{../../05_outputs/figures/fig_4_2_deep_rmse_improvement} 
+
+}
+
+\caption{Deep-model RMSE improvement relative to M0. Filled markers denote the prespecified gated specification; hollow markers denote the secondary cross-attention comparison. The dashed line denotes zero improvement relative to M0. Positive values indicate lower RMSE than M0. S1 shows only the finance-only gated specification; no cross-attention result is available because only the finance encoder is active.}\label{fig:deep-rmse}
+\end{figure}
+
+Figure \ref{fig:deep-rmse} shows the same RMSE improvements as Table \ref{tab:deep-perf}. In S2, cross-attention is worse than gated fusion. In S3 both models cross M0, and cross-attention records the larger improvement. In S4 only cross-attention is slightly better than M0. Gated S3 is the only prespecified main specification with a positive improvement.
 
 The gated S1 and S2 models record similar RMSE of 4.250 and 4.253, both higher than that of M0. Adding remote sensing therefore provides no descriptive improvement. Neither reported fusion approach reduces RMSE relative to the finance-only Deep model at S2. With shipping included, gated S3 records the lowest RMSE among the gated models at 4.146, improving on M0 by 0.15\%. Gated S4 rises to 4.180, 0.67\% worse than M0, indicating that adding remote sensing to S3 does not provide a further improvement.
 
@@ -747,11 +832,11 @@ S4 & M4--Flat--XGB & 4.412 & M4--Deep--Gated & 4.180 & +5.26\% \\
 
 \begin{figure}
 
-{\centering \includegraphics[width=0.9\linewidth]{../../05_outputs/figures/fig_4_2_flat_vs_deep_slope} 
+{\centering \includegraphics[width=0.9\linewidth]{../../05_outputs/figures/fig_4_3_flat_vs_deep_slope} 
 
 }
 
-\caption{Change in out-of-sample price RMSE from flat XGBoost to gated Deep models. The vertical axis is reversed, so upward slopes indicate lower RMSE. All results use the common 257-week evaluation sample. The dashed line marks the M0 no-change benchmark. S1 is included as a modelling-path reference, while the modality-matched comparisons relevant to RQ2 are S2–S4.}\label{fig:flat-deep-slope}
+\caption{Change in out-of-sample price RMSE from flat XGBoost to gated Deep models. All results use the common 257-week evaluation sample. The dashed line marks the M0 no-change benchmark. S1 is included as a modelling-path reference, while the modality-matched comparisons relevant to RQ2 are S2–S4.}\label{fig:flat-deep-slope}
 \end{figure}
 
 Across all four feature sets, the main Deep model records lower RMSE than both Ridge and XGBoost. The reduction ranges from 0.15\% against Ridge at S1 to 8.95\% against Ridge at S3. At S1 and S2, the main Deep models improve on both Flat learners but remain worse than M0. S3 is the only feature set which has lower RMSE than M0. Although the main Deep S4 model improves substantially over both Flat models, it remains worse than M0 and does not improve on the main Deep S3 model.
@@ -830,7 +915,7 @@ Red Sea & 16 & 3.265 & +2.55\% & 0.489 & 0.511 & 94.1\% & 5.9\% \\
 
 \begin{figure}
 
-{\centering \includegraphics[width=1\linewidth]{../../05_outputs/figures/fig_4_3_shap_modality} 
+{\centering \includegraphics[width=1\linewidth]{../05_outputs/figures/fig_4_3_shap_modality} 
 
 }
 
@@ -843,7 +928,7 @@ The main-run gate allocates average weights of 55.8\% to finance and 44.2\% to s
 
 At the input-group level, EIA variables provide the largest full-sample contribution at 43.6\%, followed by financial and macroeconomic variables at 31.4\%. All twenty highest-ranked individual features are financial inputs, led by crude production, Cushing stocks and the federal funds rate. No shipping subgroup contributes more than 2.0\% in any reported period, although PortWatch and SAR become modestly more prominent during the Red Sea window.
 
-Within the shipping representation, the highest full-sample node shares belong to Jurong, Hormuz, Suez, the Cape route and Bab el-Mandeb. Jurong and Hormuz lead the rankings from 2021 to 2023, while Suez, Bab el-Mandeb and the Cape route occupy the first three positions in 2024. During the Red Sea window, attribution is distributed across several locations, with no individual node accounting for more than 12\% of shipping attribution.
+Within the shipping representation, the highest full-sample node shares belong to Jurong, Hormuz, Suez, the Cape route and Bab el-Mandeb. Jurong and Hormuz lead the rankings from 2021 to 2023, while Suez, Bab el-Mandeb and the Cape route occupy the first three positions in 2024. Figure \ref{fig:node-shap-map} shows this shift for 2022 and 2024, the two calendar years with the largest node-share reallocation. Figure \ref{fig:node-shap-heatmap} tracks the same within-shipping shares through time. During the ±8-week Red Sea window, the largest trailing six-week mean of any node's within-shipping share was 14.0\% (Suez). These shares are normalised within the shipping modality and do not represent each node's share of total-model attribution.
 
 \begin{figure}
 
@@ -851,8 +936,10 @@ Within the shipping representation, the highest full-sample node shares belong t
 
 }
 
-\caption{Node-level shipping SHAP shares for the full sample and 2024. Marker area is proportional to the share of shipping attribution (locked scale of 18\%).}\label{fig:node-shap-map}
+\caption{Node-level shipping SHAP shares for 2022 and 2024, the two calendar years with the largest geographic reallocation of shipping attribution. Halo size scales with the share of shipping attribution (locked scale of 18\%). Other nodes are shown as fixed-size grey dots.}\label{fig:node-shap-map}
 \end{figure}
+
+
 
 \begin{figure}
 
@@ -860,7 +947,7 @@ Within the shipping representation, the highest full-sample node shares belong t
 
 }
 
-\caption{Weekly shipping-node SHAP shares (six-week rolling) across the 17 nodes and 257 forecast origins. Vertical lines mark event windows.}\label{fig:node-shap-heatmap}
+\caption{Trailing six-week mean of each node's share of absolute SHAP within the shipping modality, gated Deep S3. Chokepoint nodes appear above AOI nodes; within each group, nodes are ordered by full-sample within-shipping share (high to low). These shares are normalised within the shipping modality and do not represent each node's share of total-model attribution. The colour scale is locked at 18\%, matching Figure \ref{fig:node-shap-map}. Grey bands mark ±8-week event windows: Russia--Ukraine (24 February 2022), EU oil ban (1 June 2022), OPEC+ (2 April 2023) and Red Sea (19 November 2023). During the Red Sea window, the largest smoothed within-shipping node share was 14.0\% (Suez). Light-grey cells at the start of the sample are undefined trailing means (fewer than six weeks of history).}\label{fig:node-shap-heatmap}
 \end{figure}
 
 For RQ3, the model relies predominantly on financial information across all market conditions. Shipping provides a much smaller and more episodic contribution, becoming relatively more important in some periods of market and trade disruption, particularly in 2023--2024 and during the Red Sea event window. Its geographic focus also shifts over time across major ports and chokepoints rather than remaining concentrated in one location. Overall, the results suggest that financial data provide the model's core predictive information, while shipping data act as a supplementary source whose importance increases under particular market conditions.
@@ -918,18 +1005,9 @@ S4 & M4-Deep-Gated & −0.68\% & −0.91\% ± 0.26 & 0/3 \\
 & M4-Deep-XAttn & +0.19\% & −1.90\% ± 2.75 & 1/3 \\
 \end{longtable}
 
-\emph{Note:} The main-run column is the seed-42 result reported in Tables \ref{tab:deep-perf}--\ref{tab:period-attr}. S1 has no fusion operator. XAttn denotes cross-attention.
+\emph{Note:} The main-run column is the seed-42 result reported in Tables \ref{tab:deep-perf}--\ref{tab:period-attr}. S1 has no fusion operator. XAttn denotes cross-attention. Individual seeds are shown in Appendix B (Figure \ref{fig:seed-robustness}).
 
-\begin{figure}
-
-{\centering \includegraphics[width=1\linewidth]{../../05_outputs/figures/fig_4_6_seed_robustness} 
-
-}
-
-\caption{Random-seed robustness of Deep specifications: individual seeds and means relative to M0. The main seed-42 run is marked with a diamond.}\label{fig:seed-robustness}
-\end{figure}
-
-None of the models achieves a positive mean RMSE improvement relative to M0 across runs, and only five of the thirty individual runs are positive. S3 concatenation has the best mean result, but it is still negative at −0.27\%, while the main gated S3 model records −0.51\%. Gated S3 also outperforms S1 in only one of the three matched runs, and all S2 runs remain worse than M0. The positive improvements observed in the main run are therefore sensitive to random initialisation. Overall, although the Deep models do not consistently outperform M0, some specifications, particularly S3, show predictive potential and merit further investigation. The better-performing Deep specifications remain broadly close to M0 rather than demonstrating a consistent forecasting advantage.
+None of the models achieves a positive mean RMSE improvement relative to M0 across runs, and only five of the thirty individual runs are positive. No S2 fusion is positive in any seed. S3 concatenation has the best mean result, but it is still negative at −0.27\%, while the main gated S3 model records −0.51\%. Across seeds the S3 order reverses: concatenation (−0.27\%) remains closest to M0, ahead of gated (−0.51\%) and cross-attention (−3.01\%). Gated S3 also outperforms S1 in only one of the three matched runs. The positive improvements observed in the main run are therefore sensitive to random initialisation. Gated fusion remains the main specification because it supplies modality weights for RQ3, not because it is the more accurate operator. Overall, although the Deep models do not consistently outperform M0, some specifications, particularly S3, show predictive potential and merit further investigation. The better-performing Deep specifications remain broadly close to M0 rather than demonstrating a consistent forecasting advantage.
 
 \chapter{Discussion}\label{discussion}
 
@@ -937,19 +1015,19 @@ None of the models achieves a positive mean RMSE improvement relative to M0 acro
 
 RQ1 asked whether remote sensing and shipping add out-of-sample value beyond financial time series. The answer depends on the modelling pathway.
 
-Within the Flat family, no model outperforms the no-change benchmark, consistent with the short-horizon oil-forecasting literature that treats the no-change forecast as a demanding reference (Alquist, Kilian and Vigfusson, 2013). Relative to the finance-only S1 specification, remote sensing increases forecast error for both Ridge and XGBoost, while shipping increases error for Ridge but slightly reduces it for XGBoost. The latter result shows that shipping is not uniformly detrimental within the Flat pathway, but the improvement remains insufficient to outperform M0. Overall, simply adding spatial features to Flat models does not produce additional predictive value.
+Within the Flat family, no model outperforms the no-change benchmark, consistent with the short-horizon oil-forecasting literature that treats the no-change forecast as a demanding reference (\citeproc{ref-alquist2013}{Alquist, Kilian and Vigfusson, 2013}). Relative to the finance-only S1 specification, remote sensing increases forecast error for both Ridge and XGBoost, while shipping increases error for Ridge but slightly reduces it for XGBoost. The latter result shows that shipping is not uniformly detrimental within the Flat pathway, but the improvement remains insufficient to outperform M0. Overall, simply adding spatial features to Flat models does not produce additional predictive value.
 
 Under the Deep pathway, adding remote sensing to finance in S2 does not improve forecast accuracy over either S1 or M0. By contrast, adding shipping to finance in S3 produces a small positive RMSE improvement relative to M0, making S3 the best-performing specification in the main gated pathway. Extending S3 with remote sensing in S4 does not further reduce forecast error. The secondary cross-attention results show the same ordering across the multimodal specifications, with S3 performing best, followed by S4 and S2. Shipping is therefore the more informative spatial source in this design, while remote sensing contributes little to predictive accuracy. The improvement is notable because the other main modelling specifications fail to beat M0, although the gain remains limited.
 
 Observations of activity across multiple ports and chokepoints appear to be more useful for short-term forecasting than the selected remote-sensing measures from individual sites. The limited value of remote sensing may be due to a mismatch in scale: the satellite data are monthly and local, while Brent is constructed at a weekly frequency.
 
-These findings refine the AIS and satellite literature reviewed in Chapter \ref{literature}. Existing studies often demonstrate that ships and satellites contain information about trade or physical activity (Adland, Jia and Strandenes, 2017; Yan et al., 2020; Hao and Wang, 2023), but less often ask whether those signals improve one-week-ahead Brent forecasts relative to both a financial baseline and M0. The present results distinguish informational content from predictive value. The ability to measure trade or industrial activity does not necessarily produce a forecast improvement against a demanding weekly benchmark.
+These findings refine the AIS and satellite literature reviewed in Chapter \ref{literature}. Existing studies often demonstrate that ships and satellites contain information about trade or physical activity (\citeproc{ref-adland2017}{Adland, Jia and Strandenes, 2017}; \citeproc{ref-yan2020}{Yan \emph{et al.}, 2020}; \citeproc{ref-hao2023}{Hao and Wang, 2023}), but less often ask whether those signals improve one-week-ahead Brent forecasts relative to both a financial baseline and M0. The present results distinguish informational content from predictive value. The ability to measure trade or industrial activity does not necessarily produce a forecast improvement against a demanding weekly benchmark.
 
 \section{RQ2 --- Does representation-level fusion beat flat fusion?}\label{discussion-rq2}
 
 RQ2 asked whether representation-level Deep modelling outperforms flat feature fusion under the same information sets and evaluation protocol. Across the matched multimodal sets S2--S4, the main Deep pathway records lower RMSE than the Flat learners. The largest differences appear in S3 and S4, both of which include shipping data. The results therefore show that the Deep pathway outperforms early feature concatenation under the current framework. However, outperforming the Flat models does not necessarily mean outperforming the no-change benchmark.
 
-Early-fusion approaches combine heterogeneous predictors within a single feature space, whereas multimodal models retain separate representations before fusion (Arevalo et al., 2017; Gohari et al., 2024). This study extends the comparison to weekly Brent forecasting. The larger Deep advantage in S3 and S4 provides further support for the value of representation-level modelling. From a spatial perspective, representation-level modelling may be particularly useful for observations distributed across networks of ports and chokepoints. Spatial relationships among shipping nodes can provide additional structural information. By contrast, treating these observations as independent tabular features does not explicitly preserve these relationships.
+Early-fusion approaches combine heterogeneous predictors within a single feature space, whereas multimodal models retain separate representations before fusion (\citeproc{ref-arevalo2017}{Arevalo \emph{et al.}, 2017}; \citeproc{ref-gohari2024}{Gohari \emph{et al.}, 2024}). This study extends the comparison to weekly Brent forecasting. The larger Deep advantage in S3 and S4 provides further support for the value of representation-level modelling. From a spatial perspective, representation-level modelling may be particularly useful for observations distributed across networks of ports and chokepoints. Spatial relationships among shipping nodes can provide additional structural information. By contrast, treating these observations as independent tabular features does not explicitly preserve these relationships.
 
 However, the comparisons in this study evaluate complete modelling pathways, including their encoders and fusion strategies. They therefore support the overall Deep approach but do not identify the preservation of network structure or any individual fusion operator as the cause of its better performance.
 
@@ -997,7 +1075,138 @@ The main contribution is a clearer standard for deciding when alternative spatia
 
 Future research should test the transferability of these findings using longer real-time histories, broader transport networks and stricter like-for-like model comparisons, alongside economic and policy evaluation. Rather than identifying a universally superior model or data source, this study shows that the predictive value of alternative data depends on alignment with the target, how the data are represented and whether improvements hold against credible benchmarks.
 
+\chapter*{References}\label{references}
+
+\protect\phantomsection\label{refs}
+\begin{CSLReferences}{0}{1}
+\bibitem[\citeproctext]{ref-adland2017}
+Adland, R., Jia, H. and Strandenes, S.P. (2017) {``Are {AIS}-based trade volume estimates reliable? The case of crude oil exports,''} \emph{Maritime Policy \& Management}, 44(5), pp. 657--665. Available at: \url{https://doi.org/10.1080/03088839.2017.1309470}.
+
+\bibitem[\citeproctext]{ref-alquist2013}
+Alquist, R., Kilian, L. and Vigfusson, R.J. (2013) {``Forecasting the price of oil,''} in G. Elliott and A. Timmermann (eds.) \emph{Handbook of economic forecasting}. Amsterdam: Elsevier, pp. 427--507. Available at: \url{https://doi.org/10.1016/B978-0-444-53683-9.00008-6}.
+
+\bibitem[\citeproctext]{ref-arevalo2017}
+Arevalo, J. \emph{et al.} (2017) {``Gated multimodal units for information fusion,''} \emph{{ICLR} 2017 workshop track}. Toulon, France. Available at: \url{https://openreview.net/forum?id=S12_nquOe} (Accessed: July 1, 2026).
+
+\bibitem[\citeproctext]{ref-arslanalp2026}
+Arslanalp, S. \emph{et al.} (2026) \emph{Nowcasting country-level trade estimates using {IMF} {PortWatch}}. IMF Working Paper WP/26/99. Washington, DC: International Monetary Fund. Available at: \url{https://doi.org/10.5089/9798229046893.001}.
+
+\bibitem[\citeproctext]{ref-arslanalp2019}
+Arslanalp, S., Marini, M. and Tumbarello, P. (2019) \emph{Big data on vessel traffic: Nowcasting trade flows in real time}. IMF Working Paper WP/19/275. Washington, DC: International Monetary Fund. Available at: \url{https://www.imf.org/en/publications/wp/issues/2019/12/13/big-data-on-vessel-traffic-nowcasting-trade-flows-in-real-time-48837} (Accessed: July 1, 2026).
+
+\bibitem[\citeproctext]{ref-bai2018}
+Bai, S., Kolter, J.Z. and Koltun, V. (2018) {``An empirical evaluation of generic convolutional and recurrent networks for sequence modeling.''} Available at: \url{https://arxiv.org/abs/1803.01271} (Accessed: August 3, 2026).
+
+\bibitem[\citeproctext]{ref-baltrusaitis2019}
+Baltrušaitis, T., Ahuja, C. and Morency, L.-P. (2019) {``Multimodal machine learning: A survey and taxonomy,''} \emph{IEEE Transactions on Pattern Analysis and Machine Intelligence}, 41(2), pp. 423--443. Available at: \url{https://doi.org/10.1109/TPAMI.2018.2798607}.
+
+\bibitem[\citeproctext]{ref-baumeister2015}
+Baumeister, C. and Kilian, L. (2015) {``Forecasting the real price of oil in a changing world: A forecast combination approach,''} \emph{Journal of Business \& Economic Statistics}, 33(3), pp. 338--351. Available at: \url{https://doi.org/10.1080/07350015.2014.949342}.
+
+\bibitem[\citeproctext]{ref-bricongne2026}
+Bricongne, J.-C. \emph{et al.} (2026) \emph{Can satellites predict oil demand?} ECB Working Paper Series 3198. Frankfurt am Main: European Central Bank. Available at: \url{https://www.ecb.europa.eu/pub/pdf/scpwps/ecb.wp3198~e3858c52a3.en.pdf} (Accessed: July 1, 2026).
+
+\bibitem[\citeproctext]{ref-che2018}
+Che, Z. \emph{et al.} (2018) {``Recurrent neural networks for multivariate time series with missing values,''} \emph{Scientific Reports}, 8, p. 6085. Available at: \url{https://doi.org/10.1038/s41598-018-24271-9}.
+
+\bibitem[\citeproctext]{ref-chen2016}
+Chen, T. and Guestrin, C. (2016) {``{XGBoost}: A scalable tree boosting system,''} \emph{Proceedings of the 22nd {ACM} {SIGKDD} international conference on knowledge discovery and data mining}. New York, NY: Association for Computing Machinery, pp. 785--794. Available at: \url{https://doi.org/10.1145/2939672.2939785}.
+
+\bibitem[\citeproctext]{ref-cong2022}
+Cong, Y. \emph{et al.} (2022) {``{SatMAE}: Pre-training transformers for temporal and multi-spectral satellite imagery,''} \emph{Advances in neural information processing systems}. Red Hook, NY: Curran Associates, pp. 197--211.
+
+\bibitem[\citeproctext]{ref-costa2021}
+Costa, A.B.R. \emph{et al.} (2021) {``Machine learning and oil price point and density forecasting,''} \emph{Energy Economics}, 102, p. 105494. Available at: \url{https://doi.org/10.1016/j.eneco.2021.105494}.
+
+\bibitem[\citeproctext]{ref-foroutan2024}
+Foroutan, P. and Lahmiri, S. (2024) {``Deep learning systems for forecasting the prices of crude oil and precious metals,''} \emph{Financial Innovation}, 10, p. 111. Available at: \url{https://doi.org/10.1186/s40854-024-00637-z}.
+
+\bibitem[\citeproctext]{ref-fuller2023}
+Fuller, A., Millard, K. and Green, J.R. (2023) {``{CROMA}: Remote sensing representations with contrastive radar-optical masked autoencoders,''} \emph{Advances in neural information processing systems}. Red Hook, NY: Curran Associates, pp. 5506--5538.
+
+\bibitem[\citeproctext]{ref-gohari2024}
+Gohari, H.E. \emph{et al.} (2024) {``Modality-aware transformer for financial time series forecasting,''} \emph{Proceedings of the 5th {ACM} international conference on {AI} in finance ({ICAIF} '24)}. New York, NY: Association for Computing Machinery, pp. 677--685. Available at: \url{https://doi.org/10.1145/3677052.3698654}.
+
+\bibitem[\citeproctext]{ref-hao2023}
+Hao, X. and Wang, Y. (2023) {``Cloud cover and expected oil returns,''} \emph{Humanities and Social Sciences Communications}, 10, p. 605. Available at: \url{https://doi.org/10.1057/s41599-023-02128-5}.
+
+\bibitem[\citeproctext]{ref-hoerl1970}
+Hoerl, A.E. and Kennard, R.W. (1970) {``Ridge regression: Biased estimation for nonorthogonal problems,''} \emph{Technometrics}, 12(1), pp. 55--67. Available at: \url{https://doi.org/10.1080/00401706.1970.10488634}.
+
+\bibitem[\citeproctext]{ref-jain2019}
+Jain, S. and Wallace, B.C. (2019) {``Attention is not explanation,''} \emph{Proceedings of the 2019 conference of the north american chapter of the association for computational linguistics: Human language technologies}. Stroudsburg, PA: Association for Computational Linguistics, pp. 3543--3556. Available at: \url{https://doi.org/10.18653/v1/N19-1357}.
+
+\bibitem[\citeproctext]{ref-jung2026}
+Jung, Y. (2026) {``Watching trade from space: Nowcasting and spatial extrapolation of port-level maritime trade using satellite imagery.''} Available at: \url{https://arxiv.org/abs/2604.15444} (Accessed: July 1, 2026).
+
+\bibitem[\citeproctext]{ref-kilian2009}
+Kilian, L. (2009) {``Not all oil price shocks are alike: Disentangling demand and supply shocks in the crude oil market,''} \emph{American Economic Review}, 99(3), pp. 1053--1069. Available at: \url{https://doi.org/10.1257/aer.99.3.1053}.
+
+\bibitem[\citeproctext]{ref-liang2022}
+Liang, M. \emph{et al.} (2022) {``Fine-grained vessel traffic flow prediction with a spatio-temporal multigraph convolutional network,''} \emph{IEEE Transactions on Intelligent Transportation Systems}, 23(12), pp. 23694--23707. Available at: \url{https://doi.org/10.1109/TITS.2022.3199160}.
+
+\bibitem[\citeproctext]{ref-lundberg2017}
+Lundberg, S.M. and Lee, S.-I. (2017) {``A unified approach to interpreting model predictions,''} \emph{Advances in neural information processing systems}. Red Hook, NY: Curran Associates, pp. 4765--4774. Available at: \url{https://papers.nips.cc/paper/7062-a-unified-approach-to-interpreting-model-predictions} (Accessed: July 1, 2026).
+
+\bibitem[\citeproctext]{ref-ma2022}
+Ma, M. \emph{et al.} (2022) {``Are multimodal transformers robust to missing modality?''} \emph{Proceedings of the {IEEE}/{CVF} conference on computer vision and pattern recognition ({CVPR})}. Piscataway, NJ: IEEE, pp. 18177--18186. Available at: \url{https://doi.org/10.1109/CVPR52688.2022.01764}.
+
+\bibitem[\citeproctext]{ref-mi2022}
+Mi, J.J. \emph{et al.} (2022) {``The impact of the crude oil price on tankers' port-call features: Mining the information in automatic identification system,''} \emph{Journal of Marine Science and Engineering}, 10(10), p. 1559. Available at: \url{https://doi.org/10.3390/jmse10101559}.
+
+\bibitem[\citeproctext]{ref-mi2023}
+Mi, J.J. \emph{et al.} (2023) {``The nonlinear relationship between oil prices and the number of tankers' port calls: Evidence from {AIS} data,''} \emph{Procedia Computer Science}, 221, pp. 870--877. Available at: \url{https://doi.org/10.1016/j.procs.2023.08.063}.
+
+\bibitem[\citeproctext]{ref-neverova2016}
+Neverova, N. \emph{et al.} (2016) {``{ModDrop}: Adaptive multi-modal gesture recognition,''} \emph{IEEE Transactions on Pattern Analysis and Machine Intelligence}, 38(8), pp. 1692--1706. Available at: \url{https://doi.org/10.1109/TPAMI.2015.2461544}.
+
+\bibitem[\citeproctext]{ref-ouyang2022}
+Ouyang, Q. \emph{et al.} (2022) {``Long short-term memory and graph convolution network for forecasting the crude oil traffic flow,''} \emph{IEEE Access}, 10, pp. 18922--18932. Available at: \url{https://doi.org/10.1109/ACCESS.2022.3150852}.
+
+\bibitem[\citeproctext]{ref-paolo2024}
+Paolo, F.S. \emph{et al.} (2024) {``Satellite mapping reveals extensive industrial activity at sea,''} \emph{Nature}, 625, pp. 85--91. Available at: \url{https://doi.org/10.1038/s41586-023-06825-8}.
+
+\bibitem[\citeproctext]{ref-polinov2022}
+Polinov, S., Bookman, R. and Levin, N. (2022) {``A global assessment of night lights as an indicator for shipping activity in anchorage areas,''} \emph{Remote Sensing}, 14(5), p. 1079. Available at: \url{https://doi.org/10.3390/rs14051079}.
+
+\bibitem[\citeproctext]{ref-shukla2021}
+Shukla, S.N. and Marlin, B.M. (2021) {``Multi-time attention networks for irregularly sampled time series,''} \emph{International conference on learning representations ({ICLR} 2021)}. Available at: \url{https://openreview.net/forum?id=4c0J6lwQ4} (Accessed: July 1, 2026).
+
+\bibitem[\citeproctext]{ref-simsek2024}
+Simsek, A.I. \emph{et al.} (2024) {``A novel approach to predict {WTI} crude spot oil price: {LSTM}-based feature extraction with {Xgboost} regressor,''} \emph{Energy}, 309, p. 133102. Available at: \url{https://doi.org/10.1016/j.energy.2024.133102}.
+
+\bibitem[\citeproctext]{ref-szwarcman2026}
+{Szwarcman, D. \emph{et al.}} (2026) {``Prithvi-{EO}-2.0: A versatile multitemporal foundation model for earth observation applications,''} \emph{IEEE Transactions on Geoscience and Remote Sensing}, 64, p. 4400120. Available at: \url{https://doi.org/10.1109/TGRS.2025.3642610}.
+
+\bibitem[\citeproctext]{ref-eia2014}
+U.S. Energy Information Administration (2014) {``Benchmarks play an important role in pricing crude oil.''} \emph{Today in Energy}. Available at: \url{https://www.eia.gov/todayinenergy/detail.php?id=18571} (Accessed: August 11, 2026).
+
+\bibitem[\citeproctext]{ref-velickovic2018}
+Veličković, P. \emph{et al.} (2018) {``Graph attention networks,''} \emph{International conference on learning representations ({ICLR} 2018)}. Vancouver, Canada. Available at: \url{https://openreview.net/forum?id=rJXMpikCZ} (Accessed: August 3, 2026).
+
+\bibitem[\citeproctext]{ref-wang2019}
+Wang, T. \emph{et al.} (2019) {``Estimating the volume of oil tanks based on high-resolution remote sensing images,''} \emph{Remote Sensing}, 11(7), p. 793. Available at: \url{https://doi.org/10.3390/rs11070793}.
+
+\bibitem[\citeproctext]{ref-wittner2020}
+Wittner, M. (2020) {``Global crude benchmarks: {Brent} sets the standard.''} Intercontinental Exchange. Available at: \url{https://www.ice.com/global-crude-benchmarks-brent-sets-the-standard} (Accessed: August 11, 2026).
+
+\bibitem[\citeproctext]{ref-yan2020}
+Yan, Z. \emph{et al.} (2020) {``Analysis of global marine oil trade based on automatic identification system ({AIS}) data,''} \emph{Journal of Transport Geography}, 83, p. 102637. Available at: \url{https://doi.org/10.1016/j.jtrangeo.2020.102637}.
+
+\bibitem[\citeproctext]{ref-yilmaz2026}
+Yılmaz, T.E. and Zehir, C. (2026) {``Strategic risk based forecasting of {Brent} crude oil prices: A comparative analysis of econometric and machine learning models,''} \emph{Entropy}, 28(5), p. 539. Available at: \url{https://doi.org/10.3390/e28050539}.
+
+\bibitem[\citeproctext]{ref-zhao2022}
+Zhao, C. \emph{et al.} (2022) {``Spatiotemporal dynamic network for regional maritime vessel flow prediction amid {COVID}-19,''} \emph{Transport Policy}, 129, pp. 78--89. Available at: \url{https://doi.org/10.1016/j.tranpol.2022.09.029}.
+
+\bibitem[\citeproctext]{ref-zhao2023}
+Zhao, G., Xue, M. and Cheng, L. (2023) {``A new hybrid model for multi-step {WTI} futures price forecasting based on self-attention mechanism and spatial--temporal graph neural network,''} \emph{Resources Policy}, 85, p. 103956. Available at: \url{https://doi.org/10.1016/j.resourpol.2023.103956}.
+
+\end{CSLReferences}
+
 \appendix
+% Appendix TOC: chapter-level entries only (Appendix A/B/C/D), no A.1 / A.1.1 etc.
+\addtocontents{toc}{\protect\setcounter{tocdepth}{0}}
 
 \chapter*{Appendix A --- Data: variable dictionary, AOI/chokepoint lists, lags, graph edges}\label{appendix-a-data-variable-dictionary-aoichokepoint-lists-lags-graph-edges}
 \addcontentsline{toc}{chapter}{Appendix A --- Data: variable dictionary, AOI/chokepoint lists, lags, graph edges}
@@ -1608,44 +1817,23 @@ S4 (finance + RS + shipping) & −8.30 & −0.68 & +0.19 \\
 
 On this seed, M0 is cleared only where shipping is present. S2 never beats M0.
 Concatenation clears M0 in no set. The three positive cells are descriptive
-orderings on one seed. Seed-averaged results are in B.2.
+orderings on one seed. Seed-averaged results are in Table \ref{tab:seed-robust};
+individual seeds are in Figure \ref{fig:seed-robustness}.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\section{B.2 Deep multi-seed}\label{b.2-deep-multi-seed}
+\section{B.2 Random-seed robustness}\label{b.2-random-seed-robustness}
 
-Seeds 42, 1 and 2 for all ten Deep specifications. The seed-42 column is the same
-run as Table 4.2 and B.1. Improvement versus M0 (\%). S1 has no fusion operator.
+Three random seeds (42, 1 and 2) for every Deep specification in Table \ref{tab:seed-robust}. The main seed-42 run is marked with a diamond. Means remain negative for all specifications; only five of thirty individual runs are positive.
 
-{\def\LTcaptype{none} % do not increment counter
-\begin{longtable}[]{@{}llrrrlr@{}}
-\toprule\noalign{}
-Set & Model & Seed 42 & Seed 1 & Seed 2 & Mean ± SD & Positive runs \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-S1 & Deep & −2.36 & −0.95 & +0.30 & −1.00\% ± 1.33 & 1/3 \\
-S2 & Concat & −2.01 & −2.42 & −0.94 & −1.79\% ± 0.77 & 0/3 \\
-S2 & Gated & −2.43 & −1.96 & −5.07 & −3.15\% ± 1.67 & 0/3 \\
-S2 & Cross-attention & −5.87 & −0.50 & −4.33 & −3.57\% ± 2.77 & 0/3 \\
-S3 & Concat & −0.22 & −0.64 & +0.07 & −0.27\% ± 0.35 & 1/3 \\
-S3 & \textbf{Gated (main)} & +0.15 & −1.39 & −0.29 & −0.51\% ± 0.80 & 1/3 \\
-S3 & Cross-attention & +1.00 & −2.87 & −7.14 & −3.01\% ± 4.07 & 1/3 \\
-S4 & Concat & −8.30 & −2.09 & −0.98 & −3.79\% ± 3.95 & 0/3 \\
-S4 & Gated & −0.68 & −0.86 & −1.19 & −0.91\% ± 0.26 & 0/3 \\
-S4 & Cross-attention & +0.19 & −0.87 & −5.01 & −1.90\% ± 2.75 & 1/3 \\
-\end{longtable}
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{../../05_outputs/figures/fig_B_1_seed_robustness} 
+
 }
 
-Every mean is below M0. Five of thirty runs are positive. No S2 fusion is
-positive in any seed. S4 concatenation has the weakest mean (−3.79\%). The
-positive Chapter 4 figures for gated S3 (+0.15\%) and cross-attention S3
-(+1.00\%) are seed-42 outcomes. Each S3 fusion is positive in exactly one of
-three seeds. Across seeds the S3 order reverses: concatenation (−0.27\%) \textgreater{}
-gated (−0.51\%) \textgreater{} cross-attention (−3.01\%). Gated remains the main
-specification because it supplies modality weights for RQ3, not because it is
-the more accurate operator.
+\caption{Random-seed robustness of Deep specifications: individual seeds and means relative to M0. The main seed-42 run is marked with a diamond.}\label{fig:seed-robustness}
+\end{figure}
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
@@ -1761,7 +1949,7 @@ reason Flat models with spatial features fail to clear M0.
 
 This appendix records the locked hyperparameter grids and training settings used
 for the reported results. Software versions, installation commands and scripts
-are in the GitHub repository.
+are in the GitHub repository: \url{https://github.com/XINRUIQI/CASA0004-Dissertation}.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
@@ -1850,6 +2038,47 @@ After early stopping, the checkpoint with the lowest inner-validation loss is
 kept for the subsequent forecast block. The model is not refit on the combined
 training and validation sample.
 
-\printbibliography
+\chapter*{Appendix D --- Research log}\label{appendix-d-research-log}
+\addcontentsline{toc}{chapter}{Appendix D --- Research log}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Date
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Task
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+10 April 2026 & \textbf{Meeting 0.} Preliminary discussion with the supervisor on the research direction. Self-proposed topic: oil-price forecasting using spatial and shipping indicators. \\
+29 April 2026 & Ethics review approved. \\
+6 May 2026 & \textbf{Meeting 1.} Confirmed the dissertation direction as oil-price forecasting with spatial indicators. Discussed the difficulty of obtaining open shipping data, agreed to compile a dataset inventory, and planned an initial literature review. \\
+22 May 2026 & Collected literature, ranked and classified it, and read it by category and importance. Completed the first blocks of the dataset inventory from the literature (market and financial data; official reports). Dropped paid ICE/CME sources and monthly STEO from the near-term design. \\
+25 May 2026 & Selected variables from the literature. Bulk data acquisition and first pipelines: EIA, GDELT, OGIM/GOGET, PortWatch, GFW, EMODnet, and Sentinel-2/VIIRS for eight oil-infrastructure sites. Adopted a Friday-ending weekly calendar. \\
+27 May 2026 & \textbf{Meeting 2.} Reviewed the dataset inventory. Agreed to reframe the question as whether remote sensing and shipping improve on financial data alone; to use a progressive four-model comparison (finance; finance + remote sensing; finance + shipping; all three); to drop text data from the main design; and to select a small, literature-justified variable set rather than adding further features. \\
+1 June 2026 & Rewrote the research plan after Meeting 2: narrowed the question, adopted the four-model comparison, and dropped text data. \\
+5 June 2026 & Began a structured literature review and selected finance, remote-sensing and shipping variable subsets from the literature. Built the first modelling pipeline. \\
+16 June 2026 & Completed the finance-variable literature set and a first end-to-end modelling pipeline. Preliminary results showed a strong persistence benchmark, class imbalance on direction, and overfitting in deep models trained on price levels. \\
+17 June 2026 & \textbf{Meeting 3.} Reviewed the first model results. Agreed to add a no-change Model 0 (\(\hat{p}_{t+1}=p_t\)), to compare all models on a common 2019--2026 window with a four-week lag, to document every variable, to simplify remote-sensing features, and to begin a thematic literature review. \\
+22 June 2026 & Rebuilt a leakage-safe weekly feature matrix with publication lags and as-of remote-sensing alignment. Narrowed the sole target to next-week Brent price, trained on log return, and implemented Model 0. \\
+30 June 2026 & Locked the contribution as application, integration and systematic comparison of representation-level versus flat fusion, not a new fusion operator. Completed Flat Model 0--Model 4 (Ridge and XGBoost) under a common expanding-window protocol. \\
+3 July 2026 & Streamlined the finance block from the literature; built the 17-node shipping graph; ran modality-aware Deep models (finance TCN, frozen Prithvi remote-sensing encoder, shipping GAT, gated fusion). First evidence that structured shipping encoding can improve on flat fusion, though beating Model 0 remained difficult. \\
+4 July 2026 & Started writing the literature review. \\
+8 July 2026 & \textbf{Meeting 4.} Reviewed Flat and Deep results against Model 0. Agreed to stop major model redesign, keep Model 0 central, and present three result blocks (Flat versus Model 0; Deep versus Model 0; Flat versus Deep). Interpretability was restricted to models that beat Model 0. \\
+15 July 2026 & Finished Chapters 1--2 and drafted the dissertation outline. \\
+16 July 2026 & Received written feedback from Beatrice Taylor on structure and the literature review. \\
+20 July 2026 & Revised Chapter 2 from the feedback, adjusted the structure, and continued writing Chapter 3. \\
+29 July 2026 & \textbf{Meeting 5.} Last formal meeting before submission. Discussed sentence-level clarity; policy as broader geopolitical and trade context rather than one named statute; a world map of monitoring sites and chokepoints as the study-area figure; the balance between a readable narrative and a replicable method; and the Flat/Deep remote-sensing mismatch, which should be stated in the text. \\
+1 August 2026 & Completed the first full draft. \\
+3 August 2026 & Received written comments from Beatrice Taylor on narrative, methods clarity and presentation. \\
+11 August 2026 & Revised the full draft; rebuilt the figure set (study-site map, worked example, RMSE comparisons, SHAP map and heatmap); aligned Bookdown numbering and Harvard references. \\
+17 August 2026 & Finalised remaining figures. \\
+\end{longtable}
+}
 
 \end{document}

@@ -224,7 +224,6 @@ def fig2_slope() -> None:
     ax.set_ylabel("Out-of-sample RMSE (USD per barrel)")
     ax.set_title("Deep lowers RMSE in every matched information set;\n"
                  "only M3 (with shipping) also clears M0", loc="left")
-    ax.invert_yaxis()
     ax.grid(axis="x", visible=False)
     save(fig, "fig_4_2_flat_vs_deep_slope")
 

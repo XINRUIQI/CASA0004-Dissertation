@@ -1,6 +1,8 @@
 
 ```{=latex}
 \appendix
+% Appendix TOC: chapter-level entries only (Appendix A/B/C/D), no A.1 / A.1.1 etc.
+\addtocontents{toc}{\protect\setcounter{tocdepth}{0}}
 ```
 
 # Appendix A — Data: variable dictionary, AOI/chokepoint lists, lags, graph edges {-}
@@ -264,7 +266,7 @@ averaging ~65.8 edges/week. Sources: `build_m3_graph17.py`,
 ### A.4.1 Dynamic O-D voyage edges (AOI→AOI)
 
 Directed AOI→AOI edges from GFW voyage counts; edge weight = `n_voyages` for
-that week's directed lane (`from ≠ to`; self-loops removed to a node feature).
+that week’s directed lane (`from ≠ to`; self-loops removed to a node feature).
 Different every week; 96 lanes, 106 992 voyages total (top lanes e.g.
 Ningbo↔Singapore, Fujairah↔Singapore, Singapore↔Rotterdam). Directionality
 verified (`P006→P004 ≠ P004→P006`). Lag +2 w.
@@ -272,7 +274,7 @@ verified (`P006→P004 ≠ P004→P006`). Lag +2 w.
 ### A.4.2 Static AOI↔chokepoint edges
 
 Fixed undirected corridor links (13 undirected edges), specified in advance from
-each site's main documented oil-trade corridor rather than inferred from weekly
+each site’s main documented oil-trade corridor rather than inferred from weekly
 vessel movements or geographic proximity. Present every week
 (`aoi_oil_infrastructure_sites.md` §4; `CHOKE_AOI` in `build_m3_graph17.py`).
 Every AOI carries at least one corridor link: P007 (Jamnagar) is a demand-side

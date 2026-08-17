@@ -13,6 +13,7 @@ rmd_files:
 - 08-appendix-A.Rmd
 - 09-appendix-B.Rmd
 - 10-appendix-C.Rmd
+- 11-appendix-D.Rmd
 language:
   ui:
     chapter_name: "Chapter "

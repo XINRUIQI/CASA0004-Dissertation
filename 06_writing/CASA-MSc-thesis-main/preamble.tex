@@ -1,3 +1,22 @@
+\usepackage{fontspec}
+\setmainfont{Times New Roman}[
+  Ligatures = TeX
+]
+\setsansfont{Helvetica}[
+  Scale = MatchLowercase
+]
+\setmonofont{Menlo}[
+  Scale = MatchLowercase
+]
+
+\usepackage{titlesec}
+\titleformat{\chapter}[hang]
+  {\normalfont\huge\bfseries}
+  {\chaptertitlename~\thechapter}
+  {1em}
+  {}
+\titlespacing*{\chapter}{0pt}{50pt}{40pt}
+
 \usepackage[none]{hyphenat}
 \pagestyle{plain}
 \raggedbottom
@@ -13,3 +32,20 @@
 \fancyfoot[CO, CE] {\thepage}
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrulewidth}{0pt}
+
+% Handbook: Arabic numerals from the cover through the last appendix, with
+% no roman front matter and no restart at Chapter 1.
+\AtBeginDocument{\pagenumbering{arabic}}
+\makeatletter
+\renewenvironment{titlepage}{%
+  \if@twocolumn
+    \@restonecoltrue\onecolumn
+  \else
+    \@restonecolfalse\newpage
+  \fi
+  \thispagestyle{plain}%
+  \setcounter{page}{\@ne}%
+}{%
+  \if@restonecol\twocolumn \else \newpage \fi
+}
+\makeatother

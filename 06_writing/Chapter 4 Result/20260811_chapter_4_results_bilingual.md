@@ -113,9 +113,9 @@ Table 4.3 compares the main Deep pathway with both Flat learners within each fea
 
 Figure 4.2
 
-**Figure 4.2 — Change in out-of-sample price RMSE from flat XGBoost to gated Deep models. The vertical axis is reversed, so upward slopes indicate lower RMSE. All results use the common 257-week evaluation sample. The dashed line marks the M0 no-change benchmark. S1 is included as a modelling-path reference, while the modality-matched comparisons relevant to RQ2 are S2–S4.**
+**Figure 4.2 — Change in out-of-sample price RMSE from flat XGBoost to gated Deep models. All results use the common 257-week evaluation sample. The dashed line marks the M0 no-change benchmark. S1 is included as a modelling-path reference, while the modality-matched comparisons relevant to RQ2 are S2–S4.**
 
-**图 4.2 — 扁平 XGBoost 到门控 Deep 模型的样本外价格 RMSE 变化。纵轴反向，向上表示 RMSE 下降。全部结果使用共同的 257 周评价样本。虚线为 M0 无变化基准。S1 作为建模路径参照，与 RQ2 相关的模态匹配比较为 S2–S4。**
+**图 4.2 — 扁平 XGBoost 到门控 Deep 模型的样本外价格 RMSE 变化。全部结果使用共同的 257 周评价样本。虚线为 M0 无变化基准。S1 作为建模路径参照，与 RQ2 相关的模态匹配比较为 S2–S4。**
 
 Across all four feature sets, the main Deep model records lower RMSE than both Ridge and XGBoost. The reduction ranges from 0.15% against Ridge at S1 to 8.95% against Ridge at S3. The difference at S1 is therefore negligible, while larger reductions appear once alternative data are included.
 
@@ -170,9 +170,9 @@ At the input-group level, EIA variables provide the largest full-sample contribu
 
 在输入组层面，EIA 变量的完整样本贡献最大，为 43.6%，其次是金融与宏观变量的 31.4%。排名前二十的单项特征均为金融输入，其中原油产量、Cushing 库存和联邦基金利率排名最高。所有报告时期内，单个航运子组的贡献均未超过 2.0%，但 PortWatch 和 SAR 在红海窗口中相对更加突出。
 
-Within the shipping representation, the highest full-sample node shares belong to Jurong, Hormuz, Suez, the Cape route and Bab el-Mandeb. Jurong and Hormuz lead the rankings from 2021 to 2023, while Suez, Bab el-Mandeb and the Cape route occupy the first three positions in 2024. During the Red Sea window, attribution is distributed across several locations, with no individual node accounting for more than 12% of shipping attribution. These conditional node shares do not represent their contribution to total model attribution.
+Within the shipping representation, the highest full-sample node shares belong to Jurong, Hormuz, Suez, the Cape route and Bab el-Mandeb. Jurong and Hormuz lead the rankings from 2021 to 2023, while Suez, Bab el-Mandeb and the Cape route occupy the first three positions in 2024. Figure 4.4 shows this shift for 2022 and 2024, the two calendar years with the largest node-share reallocation. Figure 4.5 tracks the same within-shipping shares through time. During the ±8-week Red Sea window, the largest trailing six-week mean of any node's within-shipping share was 14.0% (Suez). These shares are normalised within the shipping modality and do not represent each node's share of total-model attribution.
 
-在航运表示内部，完整样本节点份额最高的是裕廊、霍尔木兹、苏伊士、好望角航线和曼德海峡。2021 至 2023 年主要由裕廊和霍尔木兹领先，而 2024 年排名前三的节点转为苏伊士、曼德海峡和好望角航线。在红海窗口内，归因分布于多个地点，没有任何单一节点占航运归因的 12%以上。这些条件节点份额不代表其占模型总归因的比例。
+在航运表示内部，完整样本节点份额最高的是裕廊、霍尔木兹、苏伊士、好望角航线和曼德海峡。2021 至 2023 年主要由裕廊和霍尔木兹领先，而 2024 年排名前三的节点转为苏伊士、曼德海峡和好望角航线。图 4.4 用节点份额差异最大的两个日历年——2022 与 2024——展示这一转移。图 4.5 按周给出同一套航运内部份额。在 ±8 周红海窗口内，六周向后滚动均值的最大节点份额为 14.0%（苏伊士）。这些份额在航运模态内部归一化，并不代表各节点占全模型归因的比例。
 
 For RQ3, the gated Deep S3 model relies predominantly on financial information across all reported periods. Shipping attribution remains small but varies over time, while its internal geographic focus changes across years rather than remaining concentrated on a single chokepoint.
 

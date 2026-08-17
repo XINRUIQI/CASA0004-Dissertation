@@ -159,7 +159,7 @@ Third, forecasting studies often use different evaluation settings, and analyses
 
 第三，现有预测研究通常采用不同的评价设定，而且模型依赖分析很少与预测改善直接结合。已发表研究使用不同的预测目标、预测期、样本、信息集和评价基准，因此其报告结果并不总能直接比较。此外，分析特征重要性、模态门控或注意力权重的研究，通常将这些结果与样本外预测表现分开报告。因此，现有文献仍无法清楚说明，模型对某一数据来源的依赖是否对应其相对于共同基准的实际预测改善。
 
-This dissertation addresses these gaps through a shared rolling-origin out-of-sample framework for one-week-ahead Brent price forecasting. It first compares financial time-series data with information sets that add remote-sensing data, shipping data or both. It then compares flat feature fusion with modality-aware representation-level fusion using matched underlying data. All models are evaluated against the same no-change benchmark in terms of forecast accuracy. Model interpretation are used to describe model reliance across prediction dates and geographic locations. These analyses describe model behaviour rather than causal relationships.
+This dissertation addresses these gaps through a shared rolling-origin out-of-sample framework for one-week-ahead Brent price forecasting. It first compares financial time-series data with information sets that add remote-sensing data, shipping data or both. It then compares flat feature fusion with modality-aware representation-level fusion using matched underlying data. All models are evaluated against the same no-change benchmark in terms of forecast accuracy. Model interpretations are used to describe model reliance across prediction dates and geographic locations. These analyses describe model behaviour rather than causal relationships.
 
 本文通过一套共享的滚动起点样本外框架回应这些研究空白。研究首先比较金融时序数据，以及分别加入航运数据、遥感数据或二者的信息集。随后，在使用匹配底层数据的情况下，比较扁平特征融合与模态感知的表示级融合。所有模型均使用相同的不变预测基准进行评价，并通过正式统计检验判断预测表现的差异。模态级解释用于描述表现较好的模型在不同市场条件下依赖哪些数据来源。相关结果仅用于解释模型行为，不作为因果关系的证据。
 
