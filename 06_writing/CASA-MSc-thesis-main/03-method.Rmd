@@ -131,7 +131,7 @@ The shipping encoder applies a graph attention network with temporal encoding (G
 
 Figure \@ref(fig:edge-classes) shows the two edge classes.
 
-```{r edge-classes, echo=FALSE, out.width="100%", fig.cap="Two edge classes in the 17-node shipping graph, on the same geographic frame as Figure 3.3. (a) Dynamic voyage edges (directed and weighted) for the median-density week ending 1 July 2022 (43 lanes). Line width is proportional to the square root of the weekly voyage count (reference 100 voyages; the sample maximum on any directed lane in a single week is 87). Opposite directions on the same lane are drawn as offset opposite curves. (b) Fixed corridor edges (undirected and unweighted): thirteen AOI–chokepoint links, identical every week. Lines are origin–destination graph edges, not AIS tracks. Before message passing, the two edge classes are combined and symmetrised, and self-loops are added. Edge direction and edge-class labels are not retained in the GAT; symmetrised voyage counts are retained as attention priors."}
+```{r edge-classes, echo=FALSE, out.width="100%", fig.cap="Two edge classes in the 17-node shipping graph, on the same geographic frame as Figure 3.3. (a) Dynamic voyage edges, week ending 28 February 2025 (directed and weighted; 48 lanes). Line width is proportional to the square root of the weekly voyage count (reference 100 voyages; the sample maximum on any directed lane in a single week is 87). Opposite directions on the same lane are drawn as offset opposite curves. (b) Fixed corridor edges (undirected and unweighted): thirteen AOI–chokepoint links, identical every week. Lines are origin–destination graph edges, not AIS tracks. Before message passing, the two edge classes are combined and symmetrised, and self-loops are added. Edge direction and edge-class labels are not retained in the GAT; symmetrised voyage counts are retained as attention priors."}
 knitr::include_graphics(here::here("figures", "fig_3_5_edge_classes.png"))
 ```
 
@@ -151,14 +151,14 @@ With a four-week input window and a one-week forecast horizon, the 365 weekly ob
 
 A one-week-ahead forecast is produced at every forecast origin $t$, using only information available by that date. Each model is first estimated at the start of the evaluation period and re-estimated every 13 forecast origins as the training window expands. Between re-estimations, the fitted model and preprocessing parameters remain fixed, while the input window is updated at every forecast origin. This produces 20 estimation blocks: the first 19 contain 13 forecast origins each, and the final block contains 10. At each re-estimation, the training sample includes only observations whose following week’s target price is already known. Target prices that become available later are added at the next scheduled re-estimation. All preprocessing parameters calculated from the data are estimated using only the corresponding training sample.
 
-Figure \@ref(fig:expanding-window) presents the full schedule, while Figure \@ref(fig:forecast-origin) illustrates a single re-estimation origin.
+Figure \@ref(fig:expanding-window) presents the expanding-window schedule. Figure \@ref(fig:testing-block) shows the testing sample within one estimation block: the fitted model is held fixed, while the four-week input and one-week-ahead target advance one week at a time.
 
-```{r expanding-window, echo=FALSE, out.width="100%", fig.cap="Expanding-window estimation and evaluation schedule: initial estimation sample, re-estimation blocks and the 257 scored forecast origins."}
-knitr::include_graphics(here::here("figures", "fig_3_2_expanding_window.png"))
+```{r expanding-window, echo=FALSE, out.width="100%", fig.cap="Expanding-window estimation and evaluation schedule: expanding training set, 52-week inner validation, 13-week testing blocks (final block 10 weeks) and 257 scored forecast origins."}
+knitr::include_graphics(here::here("figures", "fig_3_7_expanding_window.png"))
 ```
 
-```{r forecast-origin, echo=FALSE, out.width="100%", fig.cap="A re-estimation origin showing the training fold, inner-validation weeks, four-week input window and one-week-ahead target. Between re-estimations, only the as-of input window advances."}
-knitr::include_graphics(here::here("figures", "fig_3_4_forecast_origin.png"))
+```{r testing-block, echo=FALSE, out.width="100%", fig.cap="Testing sample within one estimation block (the first block shown). The fitted model is held fixed; $t$ is the last of the four input weeks, and the model predicts week $t+1$."}
+knitr::include_graphics(here::here("figures", "fig_3_8_testing_block_origins.png"))
 ```
 
 ### Model and hyperparameter selection {#method-hyperparams}

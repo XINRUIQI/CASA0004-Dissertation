@@ -23,6 +23,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from matplotlib import patheffects as pe
+from matplotlib.lines import Line2D
+from matplotlib.offsetbox import AnnotationBbox, DrawingArea, HPacker, TextArea
 from matplotlib.patches import FancyBboxPatch, Polygon, Rectangle
 from matplotlib.patches import Patch
 
@@ -32,6 +34,8 @@ EDGE_CSV = (ROOT / "03_data" / "processed" / "M3" / "outputs"
             / "m3_graph_edges_weekly.csv")
 NE_DIR = ROOT / "03_data" / "raw" / "00_spatial_anchors" / "naturalearth"
 
+# Same Friday as the latest eligible GFW week in Figure 3.4 (origin 14 Mar 2025).
+VOYAGE_WEEK = pd.Timestamp("2025-02-28")
 # As-of origin: a Friday in mid-March so the previous month's composite is
 # complete but not yet eligible (month-end + 15 d), and the current month is
 # still open. Appendix A.3: PUB_LAG_DAYS = 15, EIA/PortWatch +1 week.
@@ -183,23 +187,11 @@ def _load_voyage_edges() -> pd.DataFrame:
     return pos
 
 
-def _median_density_week(pos: pd.DataFrame) -> tuple[pd.DataFrame, pd.Timestamp, int]:
-    """Week whose directed-lane count is closest to the sample median.
-
-    Ties: closest weekly voyage total to the sample-median total, then earliest
-    Friday. No site is favoured.
-    """
-    n_lanes = pos.groupby("week_ending_friday").size()
-    tot = pos.groupby("week_ending_friday")["n_voyages"].sum()
-    med_n = float(n_lanes.median())
-    med_tot = float(tot.median())
-    delta_n = (n_lanes - med_n).abs()
-    cands = n_lanes.index[delta_n == delta_n.min()]
-    tot_c = tot.loc[cands]
-    delta_t = (tot_c - med_tot).abs()
-    week = tot_c.index[int(delta_t.to_numpy().argmin())]
+def _edges_for_week(pos: pd.DataFrame, week: pd.Timestamp) -> pd.DataFrame:
     sub = pos[pos["week_ending_friday"] == week].copy()
-    return sub, week, int(round(med_n))
+    if sub.empty:
+        raise ValueError(f"No voyage edges for week ending {week.date()}")
+    return sub
 
 
 def _aoi_xy(sid: str) -> np.ndarray:
@@ -469,38 +461,56 @@ def _add_gulf_inset(ax, land_10: Path, *, voyage=None, corridor=False):
     return axi
 
 
+def _legend_symbol(marker=None, *, color, line=False) -> DrawingArea:
+    da = DrawingArea(16, 12, 0, 0)
+    if line:
+        da.add_artist(Line2D([1, 15], [6, 6], color=color, lw=2.30,
+                             solid_capstyle="round"))
+    else:
+        da.add_artist(Line2D([8], [6], marker=marker, color=color,
+                             markeredgecolor="white", markeredgewidth=0.8,
+                             markersize=8.5, linestyle="None"))
+    return da
+
+
 def _draw_legend(ax) -> None:
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
     ax.axis("off")
 
-    nodes = [
-        (0.035, "o", C["aoi"], "Port AOI"),
-        (0.185, "s", C["aoi"], "Terminal AOI"),
-        (0.370, "^", C["aoi"], "Refinery AOI"),
-        (0.555, "D", C["choke"], "Chokepoint"),
-    ]
-    for x, mk, color, lab in nodes:
-        ax.scatter([x], [0.72], marker=mk, s=58, color=color,
-                   edgecolor="white", linewidth=0.8, zorder=3)
-        ax.text(x + 0.018, 0.72, lab, ha="left", va="center",
-                fontsize=8.3, color=C["ink"])
-    ax.plot([0.72, 0.805], [0.72, 0.72], color=C["corridor"], linewidth=2.30,
-            solid_capstyle="round")
-    ax.text(0.818, 0.72, "Corridor edge", ha="left", va="center",
-            fontsize=8.3, color=C["ink"])
+    items = []
+    for marker, color, lab, is_line in [
+        ("o", C["aoi"], "Port", False),
+        ("^", C["aoi"], "Refinery", False),
+        ("s", C["aoi"], "Export terminal", False),
+        ("D", C["choke"], "Chokepoint", False),
+        (None, C["corridor"], "Corridor edge", True),
+    ]:
+        items.append(HPacker(
+            children=[
+                _legend_symbol(marker, color=color, line=is_line),
+                TextArea(lab, textprops=dict(size=8.3, color=C["ink"])),
+            ],
+            align="center", pad=0, sep=4))
+    row1 = HPacker(children=items, align="center", pad=0, sep=18)
+    ax.add_artist(AnnotationBbox(
+        row1, (0.0, 0.84), xycoords="axes fraction",
+        box_alignment=(0.0, 0.5), frameon=False, pad=0,
+        annotation_clip=False))
 
-    ax.text(0.02, 0.26, "Voyage edge — weekly count  (width \u221d \u221an)",
-            ha="left", va="center", fontsize=8.3, color=C["ink"])
+    y_arr = 0.44
+    ax.text(0.02, y_arr, "Voyage edge — weekly count  (width \u221d \u221an)",
+            ha="left", va="center", fontsize=8.3, color=C["ink"], clip_on=False)
     xs = [0.46, 0.64, 0.82]
     for x, n in zip(xs, WIDTH_LEGEND):
         ax.annotate(
-            "", xy=(x + 0.14, 0.26), xytext=(x, 0.26),
+            "", xy=(x + 0.14, y_arr), xytext=(x, y_arr),
             arrowprops=dict(arrowstyle="-|>", color=C["voyage"],
                             lw=_voyage_lw(n), mutation_scale=12),
+            annotation_clip=False,
         )
-        ax.text(x + 0.07, 0.04, f"{n} voyages", ha="center", va="bottom",
-                fontsize=8.3, color=C["muted"])
+        ax.text(x + 0.07, 0.20, f"{n} voyages", ha="center", va="top",
+                fontsize=8.3, color=C["muted"], clip_on=False)
 
 
 def fig36_edge_classes() -> None:
@@ -511,16 +521,16 @@ def fig36_edge_classes() -> None:
             f"Natural Earth land not found under {NE_DIR}.")
 
     pos = _load_voyage_edges()
-    voy, week, med_n = _median_density_week(pos)
-    week_str = week.strftime("%-d %B %Y")
+    voy = _edges_for_week(pos, VOYAGE_WEEK)
+    week_str = VOYAGE_WEEK.strftime("%-d %B %Y")
 
     fig = plt.figure(figsize=(10.2, 9.35))
     gs = fig.add_gridspec(
-        3, 1, height_ratios=[1.00, 1.00, 0.20],
-        hspace=0.22, left=0.055, right=0.99, top=0.965, bottom=0.04)
+        5, 1, height_ratios=[1.00, 0.08, 1.00, 0.09, 0.24],
+        hspace=0.04, left=0.055, right=0.99, top=0.965, bottom=0.045)
     ax_a = fig.add_subplot(gs[0, 0])
-    ax_b = fig.add_subplot(gs[1, 0])
-    ax_leg = fig.add_subplot(gs[2, 0])
+    ax_b = fig.add_subplot(gs[2, 0])
+    ax_leg = fig.add_subplot(gs[4, 0])
 
     _basemap(ax_a, MAP_EXTENT, land_110)
     _draw_voyage_edges(ax_a, voy)
@@ -528,7 +538,8 @@ def fig36_edge_classes() -> None:
     _style_map_axes(ax_a, show_xlabel=False)
     _draw_aoi_nodes(ax_a, LABEL_OFF)
     ax_a.set_title(
-        "(a)  Dynamic voyage edges (directed and weighted)",
+        "(a)  Dynamic voyage edges, week ending 28 February 2025 "
+        "(directed and weighted)",
         loc="left", fontsize=10.0, color=C["ink"], pad=8)
 
     _basemap(ax_b, MAP_EXTENT, land_110)
@@ -544,8 +555,7 @@ def fig36_edge_classes() -> None:
     _draw_legend(ax_leg)
 
     save(fig, "fig_3_5_edge_classes")
-    print(f"  panel (a) week {week_str}; {len(voy)} lanes "
-          f"(sample median {med_n})")
+    print(f"  panel (a) week {week_str}; {len(voy)} lanes")
 
 
 # --------------------------------------------------------------------------

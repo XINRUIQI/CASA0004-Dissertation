@@ -114,12 +114,13 @@ mpl.rcParams.update({
 })
 
 
-def save(fig, name: str) -> None:
+def save(fig, *names: str) -> None:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    for ext in ("png", "pdf"):
-        fig.savefig(OUT_DIR / f"{name}.{ext}")
+    for name in names:
+        for ext in ("png", "pdf"):
+            fig.savefig(OUT_DIR / f"{name}.{ext}")
+        print(f"  saved {name}.png / .pdf")
     plt.close(fig)
-    print(f"  saved {name}.png / .pdf")
 
 
 # --------------------------------------------------------------------------
@@ -254,15 +255,7 @@ def fig33_site_map() -> None:
     for sp in ax.spines.values():
         sp.set_edgecolor("#AAAAAA")
         sp.set_linewidth(0.7)
-    ax.set_title("Eleven oil-infrastructure AOIs and six maritime chokepoints",
-                 loc="left")
-    ax.text(
-        0.0, -0.10,
-        "Markers indicate AOI centre coordinates rather than the full spatial "
-        "extent of each port or industrial complex.",
-        transform=ax.transAxes, ha="left", va="top", fontsize=7.2,
-        color="#555555")
-    save(fig, "fig_3_3_study_sites_map")
+    save(fig, "fig_3_3_study_sites_map", "fig_3_3_study_sites_map2")
 
 
 # --------------------------------------------------------------------------

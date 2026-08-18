@@ -392,8 +392,6 @@ def fig32_price_returns() -> None:
                     bottom=False, top=False, labelbottom=False)
     axr.tick_params(axis="x", which="both",
                     top=False, bottom=True, length=0, labelbottom=True)
-    axp.set_title("Brent price and weekly log returns, with the evaluation "
-                  "sample", loc="left")
 
     axp.plot(px.index, px["brent_price"], color="#333333", linewidth=1.15,
              zorder=3)
@@ -403,7 +401,7 @@ def fig32_price_returns() -> None:
     axr.axhline(0.0, color="#555555", linewidth=0.7, zorder=2)
     axr.plot(px.index, ret, color=C["finance"], linewidth=0.9, zorder=3)
     axr.set_ylabel("Weekly log return (%)")
-    axr.set_xlabel("Week ending Friday")
+    axr.set_xlabel("")
 
     axp.axvline(eval_lo, color="#555555", linewidth=0.9, linestyle="--", zorder=2)
     axp.annotate("evaluation sample",
@@ -413,8 +411,12 @@ def fig32_price_returns() -> None:
 
     handles = [Patch(facecolor=C["eval"], edgecolor="none",
                      label="Evaluation sample (from Jan 2021)")]
-    axr.legend(handles=handles, loc="upper center",
-               bbox_to_anchor=(0.5, -0.28), fontsize=7.5)
+    axr.text(1.0, -0.18, "Week ending Friday", transform=axr.transAxes,
+             ha="right", va="top", fontsize=9, clip_on=False)
+    axr.legend(handles=handles, loc="upper left",
+               bbox_to_anchor=(0.0, -0.20), fontsize=7.5,
+               handlelength=1.05, handleheight=0.65, handletextpad=0.35,
+               borderpad=0.0, borderaxespad=0.0, frameon=False)
 
     axp.set_xlim(px.index.min() - pd.Timedelta(days=20),
                  px.index.max() + pd.Timedelta(days=20))
@@ -424,7 +426,7 @@ def fig32_price_returns() -> None:
         ax.grid(axis="x", visible=True)
         ax.set_axisbelow(True)
 
-    fig.subplots_adjust(left=0.11, right=0.98, top=0.90, bottom=0.16,
+    fig.subplots_adjust(left=0.11, right=0.98, top=0.97, bottom=0.22,
                         hspace=0.08)
     save(fig, "fig_3_2_price_returns")
 

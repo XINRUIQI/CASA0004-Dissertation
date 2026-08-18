@@ -13,7 +13,7 @@ import matplotlib as mpl
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import pandas as pd
-from matplotlib.patches import Patch
+from matplotlib.patches import Rectangle
 
 ROOT = Path(__file__).resolve().parents[3]
 OUT_DIR = ROOT / "05_outputs" / "figures"
@@ -82,6 +82,8 @@ def draw_b(ax, raw, eligible, test) -> None:
         n_val = min(VAL_WEEKS, n_train)
         val_start = t_first - pd.Timedelta(weeks=n_val)
 
+        n_blue = n_train - n_val
+        n_test_block = hi - lo
         ax.barh(y, (val_start - first_origin).days, left=first_origin, height=0.74,
                 color=C["train"], edgecolor="white", linewidth=0.2, zorder=2)
         ax.barh(y, (t_first - val_start).days, left=val_start, height=0.74,
@@ -89,14 +91,26 @@ def draw_b(ax, raw, eligible, test) -> None:
         ax.barh(y, (t_last + week - t_first).days, left=t_first, height=0.74,
                 color=C["frozen"], edgecolor="white", linewidth=0.2, zorder=3)
 
+        mid_blue = first_origin + (val_start - first_origin) / 2
+        ax.text(mid_blue, y, str(n_blue), ha="center", va="center",
+                fontsize=6.4, color=C["ink"], zorder=4, clip_on=True)
+
         if b in (0, 1, 4, 9, 14, 18, 19):
             ax.text(first_origin - pd.Timedelta(days=28), y, f"Fit {b + 1}",
                     ha="right", va="center", fontsize=7.1, color=C["muted"])
 
+        if n_test_block != RETRAIN_EVERY:
+            ax.annotate(
+                "Final testing block\n(10 weeks only)",
+                xy=(t_last + week, y),
+                xytext=(8, 0), textcoords="offset points",
+                ha="left", va="center", fontsize=6.5, color=C["muted"],
+                annotation_clip=False, zorder=6, linespacing=1.15,
+            )
     ax.set_ylim(-0.8, n_blocks - 0.48)
     ax.set_yticks([])
     ax.set_xlim(data_start - pd.Timedelta(days=210),
-                last_week + pd.Timedelta(days=70))
+                last_week + pd.Timedelta(days=140))
     ax.grid(axis="x", alpha=0.28, linewidth=0.5)
     ax.set_axisbelow(True)
     for sp in ("top", "right", "left"):
@@ -106,30 +120,47 @@ def draw_b(ax, raw, eligible, test) -> None:
     ax.xaxis.set_major_locator(mdates.YearLocator())
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
 
-    ax.legend(handles=[
-        Patch(facecolor=C["drop"], hatch="///", edgecolor="#B8B2A8",
-              label="Dropped weeks (first 3 weeks + last 1 week)"),
-        Patch(facecolor=C["train"],
-              label="Training set (expanding every 13 weeks)"),
-        Patch(facecolor=C["val"],
-              label="Inner validation set (52 weeks)"),
-        Patch(facecolor=C["frozen"], label="Testing"),
-    ], ncol=4, loc="upper left", bbox_to_anchor=(0.0, -0.08),
-        frameon=False, fontsize=8.0, columnspacing=1.35, handlelength=1.5)
+    items = [
+        dict(fc=C["drop"], hatch="///", ec="#B8B2A8",
+             lab="Dropped weeks (first 3 weeks + last 1 week)"),
+        dict(fc=C["train"], lab="Training set (expanding every 13 weeks)"),
+        dict(fc=C["val"], lab="Inner validation set (52 weeks)"),
+        dict(fc=C["frozen"], lab="Testing (Fixed 13 weeks)"),
+    ]
+    xs = (0.11, 0.355, 0.565, 0.735)
+    for x, item in zip(xs, items):
+        ax.add_patch(Rectangle(
+            (x, -0.068), 0.016, 0.028, transform=ax.transAxes,
+            facecolor=item["fc"], edgecolor=item.get("ec", "none"),
+            hatch=item.get("hatch", None), linewidth=0.4,
+            clip_on=False, zorder=6))
+        ax.text(x + 0.022, -0.054, item["lab"], transform=ax.transAxes,
+                ha="left", va="center", fontsize=7.4, color=C["ink"],
+                clip_on=False)
 
 
 def main() -> None:
     raw, eligible, test = _weeks()
     fig = plt.figure(figsize=(12.6, 7.2))
-    ax = fig.add_axes([0.07, 0.14, 0.915, 0.84])
+    ax = fig.add_axes([0.07, 0.11, 0.915, 0.86])
     draw_b(ax, raw, eligible, test)
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
+    thesis_dir = ROOT / "06_writing" / "CASA-MSc-thesis-main" / "figures"
+    thesis_dir.mkdir(parents=True, exist_ok=True)
+    primary = OUT_DIR / "fig_3_7_expanding_window"
+    aliases = [
+        OUT_DIR / "fig_expanding_window_explainer",
+        thesis_dir / "fig_3_7_expanding_window",
+    ]
     for ext in ("png", "pdf"):
-        fig.savefig(OUT_DIR / f"fig_expanding_window_explainer.{ext}")
+        dest = primary.with_suffix(f".{ext}")
+        fig.savefig(dest)
+        data = dest.read_bytes()
+        for alias in aliases:
+            alias.with_suffix(f".{ext}").write_bytes(data)
+        print(f"saved {dest}")
     plt.close(fig)
-    print(f"saved {OUT_DIR / 'fig_expanding_window_explainer.png'}")
-    print(f"saved {OUT_DIR / 'fig_expanding_window_explainer.pdf'}")
 
 
 if __name__ == "__main__":
