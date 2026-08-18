@@ -2,7 +2,7 @@
 # References {-}
 '`
 `r if (knitr:::is_latex_output()) '
-# References {.unlisted .unnumbered}
+# References {.unnumbered}
 '`
 
 <div id="refs"></div>

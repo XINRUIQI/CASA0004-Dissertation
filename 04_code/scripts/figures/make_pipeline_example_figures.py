@@ -401,24 +401,26 @@ def _jurong_portwatch(week: str) -> int:
     return int(row["pw_portcalls_tanker"])
 
 
-def _draw_embedding_vector(ax, x0, y0, x1, y1) -> None:
-    """Schematic 1024-d vector; dimensions have no temporal order."""
-    labels = [r"$e_1$", r"$e_2$", r"$e_3$", r"$e_4$", r"$e_5$",
-              None, r"$e_{1024}$"]
-    n = len(labels)
-    gap = 0.010
-    box_w = (x1 - x0 - gap * (n - 1)) / n
-    h = y1 - y0
-    for i, lab in enumerate(labels):
-        x = x0 + i * (box_w + gap)
-        if lab is None:
-            text(ax, x + box_w / 2, y0 + h / 2, "…", size=11, color=C["rs"])
-            continue
-        ax.add_patch(Rectangle(
-            (x, y0), box_w, h, facecolor="white", edgecolor=C["rs"],
-            linewidth=0.95, zorder=4))
-        ax.text(x + box_w / 2, y0 + h / 2, lab, ha="center", va="center",
-                fontsize=8.0, color=C["rs"], zorder=5)
+def _draw_resize_square(ax, x_center: float, y_bottom: float, y_top: float,
+                        label: str = "224 × 224") -> None:
+    """Two stacked squares: back is an empty frame, front holds the label."""
+    pos = ax.get_position()
+    fig = ax.figure
+    ax_w = pos.width * fig.get_figwidth()
+    ax_h = pos.height * fig.get_figheight()
+    side_y = min(0.30, y_top - y_bottom - 0.04)
+    side_x = side_y * (ax_h / ax_w)
+    ox, oy = side_x * 0.14, side_y * 0.14
+    x0 = x_center - (side_x + ox) / 2
+    y0 = y_bottom + 0.5 * ((y_top - y_bottom) - (side_y + oy))
+    ax.add_patch(Rectangle(
+        (x0 + ox, y0 + oy), side_x, side_y, facecolor="none",
+        edgecolor=C["rs"], linewidth=1.05, zorder=3))
+    ax.add_patch(Rectangle(
+        (x0, y0), side_x, side_y, facecolor="white", edgecolor=C["rs"],
+        linewidth=1.15, zorder=4))
+    ax.text(x0 + side_x / 2, y0 + side_y / 2, label, ha="center", va="center",
+            fontsize=8.2, color=C["rs"], zorder=5, fontweight="bold")
 
 
 def fig_example() -> None:
@@ -560,7 +562,7 @@ def fig_example() -> None:
     text(ax_rs, x_deep, 0.57,
          "→  1024-d embedding",
          size=8.0, color=C["muted"], ha="left")
-    _draw_embedding_vector(ax_rs, x_deep, 0.10, 0.96, 0.44)
+    _draw_resize_square(ax_rs, 0.74, 0.08, 0.50)
 
     # ---- (C) shipping graph inputs: dynamic edges / static edge / node attr ----
     ax_ship.set_xlim(0, 1)

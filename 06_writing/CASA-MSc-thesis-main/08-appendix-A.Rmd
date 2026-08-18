@@ -7,12 +7,16 @@
 \setcounter{secnumdepth}{-1}
 % Variable names (`code`) use Times New Roman, same as body text
 \setmonofont{Times New Roman}[Ligatures=TeX]
+% Wrap identifiers at _ / - (xurl); same Times face as body (\urlstyle{same})
+\newcommand{\vn}{\path}
+\newcommand{\fmla}[1]{\parbox[c]{\hsize}{\raggedright #1}}
+\newcolumntype{Y}[1]{>{\vspace{0pt}\raggedright\arraybackslash}m{#1}}
 ```
 
-# Appendix A — Dataset Details {-}
+# Appendix A — Dataset details {-}
 
 ```{=latex}
-\markboth{Appendix A --- Dataset Details}{Appendix A --- Dataset Details}
+\markboth{Appendix A --- Dataset details}{Appendix A --- Dataset details}
 ```
 
 ## A.1 Variable dictionary {-}
@@ -21,26 +25,86 @@ All variables were selected from the literature reviewed in Chapter 2.
 
 ### A.1.1 Finance / macro (31) {-}
 
-Daily series enter as the Friday last value. Log returns are $\ln(P_t/P_{t-1})$
-and are not multiplied by 100.
+Daily series enter as the Friday last value. Log returns are
+$\log(P_{t+1}/P_t)$, as in Chapter 3, and are not multiplied by 100.
 
-The Literature column cites Chapter 2 sources for inclusion. It does not
-claim that the series improves one-week-ahead Brent forecasts.
+The Literature column cites Chapter 2 sources for inclusion.
 
 **Prices & derived (5)**
 
+```{r dict-prices, echo=FALSE, results='asis'}
+if (knitr::is_latex_output()) {
+  cat(r"(
+\begin{longtable}{@{}
+  Y{0.28\linewidth}
+  Y{0.26\linewidth}
+  Y{0.16\linewidth}
+  Y{0.26\linewidth}@{}}
+\toprule
+Variable & Meaning & Source & Literature \\
+\midrule
+\endfirsthead
+\toprule
+Variable & Meaning & Source & Literature \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
+\vn{brent_price} & Brent spot (USD/bbl) & EIA & EIA (2014) \\
+\vn{wti_price} & WTI Cushing spot (USD/bbl) & EIA & Hao and Wang (2023) \\
+\vn{brent_log_return} & Brent weekly log return & derived & Hao and Wang (2023) \\
+\vn{wti_log_return} & WTI weekly log return & derived & Hao and Wang (2023) \\
+\vn{brent_wti_spread} & Brent − WTI (USD/bbl) & derived & Alquist, Kilian and Vigfusson (2013) \\
+\end{longtable}
+)")
+} else knitr::asis_output("
 | Variable | Meaning | Source | Literature |
 | --- | --- | --- | --- |
-| `brent_price` | Brent spot (USD/bbl) | EIA | EIA (2014); Wittner (2020) |
+| `brent_price` | Brent spot (USD/bbl) | EIA | EIA (2014) |
 | `wti_price` | WTI Cushing spot (USD/bbl) | EIA | Hao and Wang (2023) |
 | `brent_log_return` | Brent weekly log return | derived | Hao and Wang (2023) |
 | `wti_log_return` | WTI weekly log return | derived | Hao and Wang (2023) |
 | `brent_wti_spread` | Brent − WTI (USD/bbl) | derived | Alquist, Kilian and Vigfusson (2013) |
+")
+```
 
 **EIA WPSR fundamentals (12)**
 
 Source: EIA *Weekly Petroleum Status Report* for all 12 series.
 
+```{r dict-eia, echo=FALSE, results='asis'}
+if (knitr::is_latex_output()) {
+  cat(r"(
+\begin{longtable}{@{}
+  Y{0.28\linewidth}
+  Y{0.26\linewidth}
+  Y{0.16\linewidth}
+  Y{0.26\linewidth}@{}}
+\toprule
+Variable & Meaning & Unit & Literature \\
+\midrule
+\endfirsthead
+\toprule
+Variable & Meaning & Unit & Literature \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
+\vn{crude_stocks_excl_spr} & commercial crude stocks excl. SPR & thousand barrels & Alquist, Kilian and Vigfusson (2013); Hao and Wang (2023) \\
+\vn{cushing_stocks} & Cushing crude stocks & thousand barrels & Alquist, Kilian and Vigfusson (2013); Hao and Wang (2023) \\
+\vn{crude_production} & U.S. crude production & thousand bbl/d & Kilian (2009) \\
+\vn{crude_imports} & crude imports & thousand bbl/d & Kilian (2009) \\
+\vn{crude_exports} & crude exports & thousand bbl/d & Kilian (2009); Alquist, Kilian and Vigfusson (2013) \\
+\vn{refinery_crude_input} & refinery crude input & thousand bbl/d & Kilian (2009) \\
+\vn{refinery_utilisation} & refinery utilisation & \% & Kilian (2009) \\
+\vn{gasoline_supplied} & gasoline product supplied & thousand bbl/d & Kilian (2009); Costa et al. (2021) \\
+\vn{distillate_supplied} & distillate product supplied & thousand bbl/d & Kilian (2009); Costa et al. (2021) \\
+\vn{jet_fuel_supplied} & jet-fuel product supplied & thousand bbl/d & Kilian (2009); Costa et al. (2021) \\
+\vn{crude_stocks_change} & weekly change in commercial stocks & thousand barrels & Alquist, Kilian and Vigfusson (2013); Hao and Wang (2023) \\
+\vn{cushing_stocks_change} & weekly change in Cushing stocks & thousand barrels & Alquist, Kilian and Vigfusson (2013); Hao and Wang (2023) \\
+\end{longtable}
+)")
+} else knitr::asis_output("
 | Variable | Meaning | Unit | Literature |
 | --- | --- | --- | --- |
 | `crude_stocks_excl_spr` | commercial crude stocks excl. SPR | thousand barrels | Alquist, Kilian and Vigfusson (2013); Hao and Wang (2023) |
@@ -55,9 +119,37 @@ Source: EIA *Weekly Petroleum Status Report* for all 12 series.
 | `jet_fuel_supplied` | jet-fuel product supplied | thousand bbl/d | Kilian (2009); Costa et al. (2021) |
 | `crude_stocks_change` | weekly change in commercial stocks | thousand barrels | Alquist, Kilian and Vigfusson (2013); Hao and Wang (2023) |
 | `cushing_stocks_change` | weekly change in Cushing stocks | thousand barrels | Alquist, Kilian and Vigfusson (2013); Hao and Wang (2023) |
+")
+```
 
 **Macro-financial (5)**
 
+```{r dict-macro, echo=FALSE, results='asis'}
+if (knitr::is_latex_output()) {
+  cat(r"(
+\begin{longtable}{@{}
+  Y{0.28\linewidth}
+  Y{0.26\linewidth}
+  Y{0.16\linewidth}
+  Y{0.26\linewidth}@{}}
+\toprule
+Variable & Meaning & Source & Literature \\
+\midrule
+\endfirsthead
+\toprule
+Variable & Meaning & Source & Literature \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
+\vn{vix} & CBOE equity-volatility index & FRED VIXCLS & Costa et al. (2021); Yılmaz and Zehir (2026) \\
+\vn{dollar_index} & broad nominal USD index & FRED DTWEXBGS & Costa et al. (2021); Yılmaz and Zehir (2026) \\
+\vn{treasury_10y} & 10-year Treasury yield & FRED DGS10 & Costa et al. (2021); Yılmaz and Zehir (2026) \\
+\vn{fed_funds_rate} & effective federal funds rate & FRED DFF & Costa et al. (2021); Yılmaz and Zehir (2026) \\
+\vn{sp500_log_return} & S\&P 500 weekly log return & Yahoo \nolinkurl{^GSPC} & Costa et al. (2021); Yılmaz and Zehir (2026) \\
+\end{longtable}
+)")
+} else knitr::asis_output("
 | Variable | Meaning | Source | Literature |
 | --- | --- | --- | --- |
 | `vix` | CBOE equity-volatility index | FRED VIXCLS | Costa et al. (2021); Yılmaz and Zehir (2026) |
@@ -65,9 +157,41 @@ Source: EIA *Weekly Petroleum Status Report* for all 12 series.
 | `treasury_10y` | 10-year Treasury yield | FRED DGS10 | Costa et al. (2021); Yılmaz and Zehir (2026) |
 | `fed_funds_rate` | effective federal funds rate | FRED DFF | Costa et al. (2021); Yılmaz and Zehir (2026) |
 | `sp500_log_return` | S&P 500 weekly log return | Yahoo ^GSPC | Costa et al. (2021); Yılmaz and Zehir (2026) |
+")
+```
 
 **Derived market/macro (9)**
 
+```{r dict-derived, echo=FALSE, results='asis'}
+if (knitr::is_latex_output()) {
+  cat(r"(
+\begin{longtable}{@{}
+  Y{0.28\linewidth}
+  Y{0.26\linewidth}
+  Y{0.20\linewidth}
+  Y{0.22\linewidth}@{}}
+\toprule
+Variable & Meaning & Source & Literature \\
+\midrule
+\endfirsthead
+\toprule
+Variable & Meaning & Source & Literature \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
+\vn{ovx} & CBOE crude-oil volatility index & Yahoo \nolinkurl{^OVX} & Kilian (2009); Yılmaz and Zehir (2026) \\
+\vn{gpr} & geopolitical-risk index (weekly mean of daily GPRD) & Caldara--Iacoviello & Kilian (2009); Yılmaz and Zehir (2026) \\
+\vn{gold_return} & gold weekly log return & FRED / Yahoo GC=F & Costa et al. (2021) \\
+\vn{global_econ_activity} & Kilian real economic activity (REA) & Dallas Fed IGREA & Kilian (2009) \\
+\vn{nonoil_industrial_commodity} & non-fuel industrial materials price index & IMF PINDUINDEXM (FRED) & Kilian (2009); Baumeister and Kilian (2015) \\
+\vn{brent_f1_spot_log_basis} & front-month futures − spot log basis & Yahoo BZ=F vs EIA spot & Alquist, Kilian and Vigfusson (2013) \\
+\vn{brent_roll_week} & front-month roll-week dummy \{0,1\} & calendar-derived & Alquist, Kilian and Vigfusson (2013) \\
+\vn{cadusd_log_return} & CAD/USD weekly log return & Yahoo CADUSD=X & Costa et al. (2021) \\
+\vn{dgs10_change} & weekly change in \vn{treasury_10y} & derived & Costa et al. (2021); Yılmaz and Zehir (2026) \\
+\end{longtable}
+)")
+} else knitr::asis_output("
 | Variable | Meaning | Source | Literature |
 | --- | --- | --- | --- |
 | `ovx` | CBOE crude-oil volatility index | Yahoo ^OVX | Kilian (2009); Yılmaz and Zehir (2026) |
@@ -79,8 +203,10 @@ Source: EIA *Weekly Petroleum Status Report* for all 12 series.
 | `brent_roll_week` | front-month roll-week dummy {0,1} | calendar-derived | Alquist, Kilian and Vigfusson (2013) |
 | `cadusd_log_return` | CAD/USD weekly log return | Yahoo CADUSD=X | Costa et al. (2021) |
 | `dgs10_change` | weekly change in `treasury_10y` | derived | Costa et al. (2021); Yılmaz and Zehir (2026) |
+")
+```
 
-`brent_f1_spot_log_basis` = $\ln(\mathrm{BZ{=}F})-\ln(\texttt{brent\_price})$; the futures leg is not back-adjusted, so `brent_roll_week` flags the calendar week of the roll. The basis is a public-data proxy for near-term tightness, not a pure calendar spread.
+`brent_f1_spot_log_basis` = $\log(\mathrm{BZ{=}F})-\log(\texttt{brent\_price})$; the futures leg is not back-adjusted, so `brent_roll_week` flags the calendar week of the roll. The basis is a public-data proxy for near-term tightness, not a pure calendar spread.
 
 ### A.1.2 Remote sensing {-}
 
@@ -89,6 +215,35 @@ Source: EIA *Weekly Petroleum Status Report* for all 12 series.
 Naming `{index}_anom_{AOI}`; `anom` = within-site deseasonalised z-score
 (expanding, past-only). Raw `level` and staleness/mask columns are not modelled.
 
+```{r dict-rs, echo=FALSE, results='asis'}
+if (knitr::is_latex_output()) {
+  cat(r"(
+\begingroup\small
+\begin{longtable}{@{}
+  Y{0.09\linewidth}
+  Y{0.16\linewidth}
+  Y{0.28\linewidth}
+  Y{0.18\linewidth}
+  Y{0.25\linewidth}@{}}
+\toprule
+Index & Meaning & Formula & Source & Literature \\
+\midrule
+\endfirsthead
+\toprule
+Index & Meaning & Formula & Source & Literature \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
+NDVI & vegetation greenness & (B8-B4)\newline/(B8+B4) & Sentinel-2 SR & land-cover control, not oil demand; contrast Bricongne et al. (2026) NO\textsubscript{2} \\
+NDWI & surface water/moisture & (B3-B8)\newline/(B3+B8) & Sentinel-2 SR & exploratory (water-adjacent terminals) \\
+NDBI & built-up & (B11-B8)\newline/(B11+B8) & Sentinel-2 SR & Wang et al. (2019); Jung (2026) \\
+BSI & bare soil / storage yards & ((B11+B4)\newline-(B8+B2))\newline/((B11+B4)\newline+(B8+B2)) & Sentinel-2 SR & Wang et al. (2019); Jung (2026) \\
+NTL & night-time light activity & VIIRS DNB \vn{avg_rad} & VIIRS DNB & Polinov, Bookman and Levin (2022); Jung (2026) \\
+\end{longtable}
+\endgroup
+)")
+} else knitr::asis_output("
 | Index | Meaning | Formula | Source | Literature |
 | --- | --- | --- | --- | --- |
 | `NDVI` | vegetation greenness | (B8−B4)/(B8+B4) | Sentinel-2 SR | land-cover control, not oil demand; contrast Bricongne et al. (2026) NO~2~ |
@@ -96,6 +251,8 @@ Naming `{index}_anom_{AOI}`; `anom` = within-site deseasonalised z-score
 | `NDBI` | built-up | (B11−B8)/(B11+B8) | Sentinel-2 SR | Wang et al. (2019); Jung (2026) |
 | `BSI` | bare soil / storage yards | ((B11+B4)−(B8+B2))/((B11+B4)+(B8+B2)) | Sentinel-2 SR | Wang et al. (2019); Jung (2026) |
 | `NTL` | night-time light activity | VIIRS DNB `avg_rad` | VIIRS DNB | Polinov, Bookman and Levin (2022); Jung (2026) |
+")
+```
 
 The Flat pathway uses within-site anomalies, not raw levels: night-time
 lights mainly capture cross-sectional scale, and raw radiance is a poor
@@ -129,6 +286,39 @@ cross-chokepoint aggregates and PortWatch port export/import volumes, plus
 `sar_{region}_{total,dark,share}`. The main Flat shipping specification uses
 all 164 columns.
 
+```{r dict-ship-flat, echo=FALSE, results='asis'}
+if (knitr::is_latex_output()) {
+  cat(r"(
+\begingroup\small
+\begin{longtable}{@{}
+  Y{0.40\linewidth}
+  Y{0.32\linewidth}
+  Y{0.24\linewidth}@{}}
+\toprule
+Family & Meaning & Literature \\
+\midrule
+\endfirsthead
+\toprule
+Family & Meaning & Literature \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
+\vn{gfw_{cp}_total_hours} /\newline \vn{total_vessels} /\newline \vn{cargo_hours} & GFW vessel-presence hours / distinct vessels / cargo hours & Arslanalp, Marini and Tumbarello (2019) \\
+\vn{gfw_{cp}_bunker_hours} /\newline \vn{other_hours} /\newline \vn{other_share} & bunker / other-vessel presence \& share & Arslanalp, Marini and Tumbarello (2019) \\
+\vn{gfw_{cp}_total_hours_mom_pct} /\newline \vn{mean_presence_hours_per_vessel} & month-over-month \%; per-vessel congestion proxy & author-derived; congestion concept in Mi et al. (2022) \\
+\vn{gfw_all_total_hours_sum} /\newline \vn{gfw_all_activity_zmean} & cross-chokepoint aggregate (sum / leak-free z-mean) & author-derived from GFW \\
+\vn{pw_{cp}_n_tanker} /\newline \vn{n_total} /\newline \vn{capacity_tanker} /\newline \vn{capacity} & PortWatch tanker / all-vessel transit count \& capacity & Arslanalp, Marini and Tumbarello (2019); Arslanalp et al. (2026); Adland, Jia and Strandenes (2017); Yan et al. (2020) \\
+\vn{pw_{cp}_tanker_share} /\newline \vn{tanker_cap_share} /\newline \vn{avg_tanker_size} & tanker shares; average tanker DWT & author-derived from PortWatch \\
+\vn{pw_{cp}_n_tanker_wow_pct} /\newline \vn{capacity_tanker_4w_ma} & week-over-week \%; 4-week MA & author-derived from PortWatch \\
+\vn{pw_all_*} (n\_tanker\_sum, n\_total\_sum, tanker\_share) & cross-chokepoint tanker aggregates & author-derived from PortWatch \\
+\vn{pw_tanker_exp_imp_net} /\newline \vn{_asym} /\newline \vn{_log_ratio} /\newline \vn{_4w_ma} & export−import net / asymmetry / log-ratio & author-derived; directional flows in Yan et al. (2020) \\
+\vn{pw_exp_hubs_export_vol} /\newline \vn{pw_imp_hubs_import_vol} (+\newline \vn{_wow_pct}) & export/import hub tanker tonnage & Arslanalp et al. (2026); Yan et al. (2020) \\
+\vn{sar_{region}_{total,dark,share}} & GFW SAR detections: total / unmatched (dark) / dark share; 17 regions × 3 & Paolo et al. (2024) \\
+\end{longtable}
+\endgroup
+)")
+} else knitr::asis_output("
 | Family | Meaning | Literature |
 | --- | --- | --- |
 | `gfw_{cp}_total_hours` / `total_vessels` / `cargo_hours` | GFW vessel-presence hours / distinct vessels / cargo hours | Arslanalp, Marini and Tumbarello (2019) |
@@ -142,6 +332,8 @@ all 164 columns.
 | `pw_tanker_exp_imp_net` / `_asym` / `_log_ratio` / `_4w_ma` | export−import net / asymmetry / log-ratio | author-derived; directional flows in Yan et al. (2020) |
 | `pw_exp_hubs_export_vol` / `pw_imp_hubs_import_vol` (+ `_wow_pct`) | export/import hub tanker tonnage | Arslanalp et al. (2026); Yan et al. (2020) |
 | `sar_{region}_{total,dark,share}` | GFW SAR detections: total / unmatched (dark) / dark share; 17 regions × 3 | Paolo et al. (2024) |
+")
+```
 
 PortWatch `n_tanker` is a liquid-bulk transit count, not unique ships and
 not crude-only; `capacity_tanker` is a DWT transit-capacity proxy, not
@@ -154,6 +346,38 @@ are author-constructed from native PortWatch and GFW fields.
 Node feature spaces differ by type. Graph edges follow maritime-network
 studies (Ouyang et al., 2022; Liang et al., 2022; Zhao et al., 2022).
 
+```{r dict-deep-aoi, echo=FALSE, results='asis'}
+if (knitr::is_latex_output()) {
+  cat(r"(
+\begin{longtable}{@{}
+  Y{0.28\linewidth}
+  Y{0.28\linewidth}
+  Y{0.16\linewidth}
+  Y{0.24\linewidth}@{}}
+\toprule
+Variable & Meaning & Source & Literature \\
+\midrule
+\endfirsthead
+\toprule
+Variable & Meaning & Source & Literature \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
+\vn{pw_portcalls_tanker} & tanker port calls (weekly sum) & PortWatch & Mi et al. (2022, 2023); Arslanalp et al. (2026) \\
+\vn{pw_portcalls_cargo} & cargo port calls & PortWatch & Arslanalp et al. (2026) \\
+\vn{pw_import_tanker} & tanker import tonnage & PortWatch & Arslanalp et al. (2026); Yan et al. (2020) \\
+\vn{pw_export_tanker} & tanker export tonnage & PortWatch & Arslanalp et al. (2026); Yan et al. (2020) \\
+\vn{gfw_n_visits} & port-visit count & GFW AIS & Mi et al. (2022, 2023) \\
+\vn{gfw_dwell_hrs_mean} & mean dwell hours & GFW AIS & Mi et al. (2022, 2023) \\
+\vn{gfw_dwell_hrs_median} & median dwell hours & GFW AIS & Mi et al. (2022, 2023) \\
+\vn{gfw_self_loops} & same-AOI repeat calls & GFW AIS & author-derived from GFW visits \\
+\vn{sar_detections_total} & SAR detections & GFW SAR & Paolo et al. (2024) \\
+\vn{sar_detections_dark} & unmatched (dark) detections & GFW SAR & Paolo et al. (2024) \\
+\vn{sar_dark_share} & dark / total & GFW SAR & Paolo et al. (2024) \\
+\end{longtable}
+)")
+} else knitr::asis_output("
 | Variable | Meaning | Source | Literature |
 | --- | --- | --- | --- |
 | `pw_portcalls_tanker` | tanker port calls (weekly sum) | PortWatch | Mi et al. (2022, 2023); Arslanalp et al. (2026) |
@@ -167,19 +391,46 @@ studies (Ouyang et al., 2022; Liang et al., 2022; Zhao et al., 2022).
 | `sar_detections_total` | SAR detections | GFW SAR | Paolo et al. (2024) |
 | `sar_detections_dark` | unmatched (dark) detections | GFW SAR | Paolo et al. (2024) |
 | `sar_dark_share` | dark / total | GFW SAR | Paolo et al. (2024) |
+")
+```
 
 Dwell hours keep only `durationHrs` ≤ 720 h (30 days); longer stays are set to missing.
 
 **Deep layout — chokepoint node features (20 per node)**
 
-Same families as the Flat layout, attached to the six chokepoint nodes rather
+Same families as the Flat layout, attached to the 6 chokepoint nodes rather
 than flattened.
 
+```{r dict-deep-choke, echo=FALSE, results='asis'}
+if (knitr::is_latex_output()) {
+  cat(r"(
+\begin{longtable}{@{}
+  Y{0.16\linewidth}
+  Y{0.54\linewidth}
+  Y{0.26\linewidth}@{}}
+\toprule
+Block & Features & Literature \\
+\midrule
+\endfirsthead
+\toprule
+Block & Features & Literature \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
+GFW (8) & \vn{total_hours}, \vn{total_vessels}, \vn{cargo_hours}, \vn{bunker_hours}, \vn{other_hours}, \vn{other_share}, \vn{total_hours_mom_pct}, \vn{mean_presence_hours_per_vessel} & same as Flat GFW \\
+PortWatch (9) & \vn{n_tanker}, \vn{n_total}, \vn{capacity_tanker}, \vn{capacity}, \vn{tanker_share}, \vn{tanker_cap_share}, \vn{avg_tanker_size}, \vn{n_tanker_wow_pct}, \vn{capacity_tanker_4w_ma} & same as Flat PortWatch \\
+SAR (3) & \vn{detections_total}, \vn{detections_dark}, \vn{dark_share} & Paolo et al. (2024) \\
+\end{longtable}
+)")
+} else knitr::asis_output("
 | Block | Features | Literature |
 | --- | --- | --- |
 | GFW (8) | `total_hours`, `total_vessels`, `cargo_hours`, `bunker_hours`, `other_hours`, `other_share`, `total_hours_mom_pct`, `mean_presence_hours_per_vessel` | same as Flat GFW |
 | PortWatch (9) | `n_tanker`, `n_total`, `capacity_tanker`, `capacity`, `tanker_share`, `tanker_cap_share`, `avg_tanker_size`, `n_tanker_wow_pct`, `capacity_tanker_4w_ma` | same as Flat PortWatch |
 | SAR (3) | `detections_total`, `detections_dark`, `dark_share` | Paolo et al. (2024) |
+")
+```
 
 Mi et al. (2022, 2023) mainly document oil prices affecting tanker port
 calls, so shipping is treated as a potentially bidirectional signal, not
@@ -200,40 +451,68 @@ refineries, and 1.6–3.2 km for terminals after visual coverage checks.
 ```{r aoi-sites, echo=FALSE, results='asis'}
 if (knitr::is_latex_output()) {
   cat(r"(
-{\def\LTcaptype{none}
-\setlength{\tabcolsep}{3.2pt}
+\begingroup
 \small
 \begin{longtable}{@{}
-  l
-  >{\raggedright\arraybackslash}m{1.85cm}
-  >{\raggedright\arraybackslash}m{2.15cm}
-  l
-  >{\raggedright\arraybackslash}m{1.85cm}
-  r r l r
-  >{\raggedright\arraybackslash}m{1.55cm}@{}}
+  Y{0.10\linewidth}
+  Y{0.18\linewidth}
+  Y{0.24\linewidth}
+  Y{0.10\linewidth}
+  Y{0.16\linewidth}
+  Y{0.18\linewidth}@{}}
 \toprule
-Site ID & Site name & Country / region & Type & Role & Lat. & Lon. & Buffer & Patch & Chokepoint \\
+Site ID & Site name & Country / region & Type & Role & Chokepoint \\
 \midrule
 \endfirsthead
 \toprule
-Site ID & Site name & Country / region & Type & Role & Lat. & Lon. & Buffer & Patch & Chokepoint \\
+Site ID & Site name & Country / region & Type & Role & Chokepoint \\
 \midrule
 \endhead
 \bottomrule
 \endlastfoot
-P001 & Rotterdam & Netherlands / Europe & port & pricing / import & 51.950 & 4.145 & 5 km & 6.4 km & Suez · Cape \\
-P002 & Fujairah & UAE / Middle East & terminal & transit / storage & 25.199 & 56.356 & 5 km & 3.2 km & Hormuz \\
-P003 & Ras Tanura & Saudi Arabia / Middle East & terminal & export & 26.643 & 50.157 & 5 km & 2.56 km & Hormuz \\
-P004 & Jurong Island & Singapore / Asia & refinery & transit / refining & 1.274 & 103.708 & 5 km & 5.12 km & Malacca \\
-P005 & Houston & USA / North America & port & import / refining & 29.736 & -95.100 & 5 km & 6.4 km & Panama \\
-P006 & Ningbo-Zhoushan & China / East Asia & port & import & 29.935 & 121.982 & 5 km & 6.4 km & Malacca \\
-P007 & Jamnagar & India / South Asia & refinery & refining & 22.345 & 69.860 & 5 km & 5.12 km & Hormuz \\
-P008 & Al Basrah Terminal & Iraq / Middle East & terminal & export & 29.681 & 48.810 & 5 km & 1.6 km & Hormuz \\
-P009 & Ulsan & South Korea / East Asia & refinery & refining & 35.433 & 129.343 & 5 km & 5.12 km & Malacca \\
-P010 & Kharg Island & Iran / Middle East & terminal & export & 29.231 & 50.324 & 5 km & 3.2 km & Hormuz \\
-P011 & Yanbu & Saudi Arabia / Middle East & terminal & export & 23.961 & 38.229 & 5 km & 3.2 km & Suez · Mandeb \\
+P001 & Rotterdam & Netherlands / Europe & port & pricing / import & Suez · Cape \\
+P002 & Fujairah & UAE / Middle~East & terminal & transit / storage & Hormuz \\
+P003 & Ras Tanura & Saudi Arabia / Middle~East & terminal & export & Hormuz \\
+P004 & Jurong Island & Singapore / Asia & refinery & transit / refining & Malacca \\
+P005 & Houston & USA / North~America & port & import / refining & Panama \\
+P006 & Ningbo-Zhoushan & China / East~Asia & port & import & Malacca \\
+P007 & Jamnagar & India / South~Asia & refinery & refining & Hormuz \\
+P008 & Al Basrah Terminal & Iraq / Middle~East & terminal & export & Hormuz \\
+P009 & Ulsan & South Korea / East~Asia & refinery & refining & Malacca \\
+P010 & Kharg Island & Iran / Middle~East & terminal & export & Hormuz \\
+P011 & Yanbu & Saudi Arabia / Middle~East & terminal & export & Suez · Mandeb \\
 \end{longtable}
-}
+
+\vspace{0.7em}
+\begin{longtable}{@{}
+  Y{0.12\linewidth}
+  Y{0.22\linewidth}
+  Y{0.18\linewidth}
+  Y{0.18\linewidth}
+  Y{0.14\linewidth}@{}}
+\toprule
+Site ID & Site name & Lat. & Lon. & Patch \\
+\midrule
+\endfirsthead
+\toprule
+Site ID & Site name & Lat. & Lon. & Patch \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
+P001 & Rotterdam & 51.950 & 4.145 & 6.4 km \\
+P002 & Fujairah & 25.199 & 56.356 & 3.2 km \\
+P003 & Ras Tanura & 26.643 & 50.157 & 2.56 km \\
+P004 & Jurong Island & 1.274 & 103.708 & 5.12 km \\
+P005 & Houston & 29.736 & -95.100 & 6.4 km \\
+P006 & Ningbo-Zhoushan & 29.935 & 121.982 & 6.4 km \\
+P007 & Jamnagar & 22.345 & 69.860 & 5.12 km \\
+P008 & Al Basrah Terminal & 29.681 & 48.810 & 1.6 km \\
+P009 & Ulsan & 35.433 & 129.343 & 5.12 km \\
+P010 & Kharg Island & 29.231 & 50.324 & 3.2 km \\
+P011 & Yanbu & 23.961 & 38.229 & 3.2 km \\
+\end{longtable}
+\endgroup
 )")
 } else {
   knitr::kable(
@@ -269,7 +548,7 @@ P011 & Yanbu & Saudi Arabia / Middle East & terminal & export & 23.961 & 38.229 
 }
 ```
 
-Buffer is the circular Flat radius. Patch is the side length of the Deep square image chip centred on the same coordinate. Type and Role are the facility type and functional role. The Chokepoint column lists each site's assigned oil-trade corridor(s).
+The circular Flat buffer is 5 km at every site (see the paragraph above). Patch is the side length of the Deep square image chip centred on the same coordinate. Type and Role are the facility type and functional role. The Chokepoint column lists each site's assigned oil-trade corridor(s). Coordinates are WGS84 decimal degrees.
 
 ### A.2.2 6 maritime chokepoints {-}
 
@@ -297,11 +576,10 @@ for shipping. This table is the as-of rule used in the main analysis.
 ```{r flat-lags, echo=FALSE, results='asis'}
 if (knitr::is_latex_output()) {
   cat(r"(
-{\def\LTcaptype{none}
 \begin{longtable}{@{}
-  >{\raggedright\arraybackslash}m{0.46\linewidth}
-  >{\raggedright\arraybackslash}m{0.30\linewidth}
-  >{\raggedright\arraybackslash}m{0.20\linewidth}@{}}
+  Y{0.44\linewidth}
+  Y{0.32\linewidth}
+  Y{0.20\linewidth}@{}}
 \toprule
 Source & freq $\rightarrow$ weekly & Lag \\
 \midrule
@@ -316,12 +594,11 @@ Daily finance\newline (Brent, WTI, VIX, DXY, DGS10, DFF, S\&P, gold, OVX, CAD) &
 EIA WPSR fundamentals & weekly $\rightarrow$ Friday & \textbf{+1 w} \\
 GPR & daily $\rightarrow$ weekly mean & \textbf{+1 w} \\
 Monthly macro (REA, non-oil commodity) & month-end, then carried forward & \textbf{+5 w} \\
-Sentinel-2 indices + VIIRS (M2) & monthly as-of & \textbf{month-end + 15 d} \\
+Sentinel-2 indices + VIIRS (M2) & monthly as-of & \begin{tabular}[c]{@{}l@{}}\textbf{month-end}\\\textbf{+ 15 d}\end{tabular} \\
 PortWatch chokepoint/port flows & daily $\rightarrow$ Friday sum & \textbf{+1 w} \\
 GFW monthly presence (49 of 164 Flat shipping columns) & month-end, then carried forward & \textbf{+4 w} \\
 GFW SAR dark-vessel (51 of 164 Flat shipping columns) & month-end, then carried forward & \textbf{+4 w} \\
 \end{longtable}
-}
 )")
 } else {
   knitr::kable(
@@ -405,26 +682,6 @@ Persian Gulf loadings, so it is attached to Hormuz on the import side.
 | `mandeb` | P011 |
 | `cape` | P001 |
 | `panama` | P005 |
-
-### A.4.3 Adjacency handling & edge-weight transform {-}
-
-- **Combine**: dynamic voyage-edge block (11×11) placed in the AOI sub-block;
-  fixed corridor edges broadcast over all weeks → combined (T, 17, 17). In the
-  stored adjacency the O-D block remains directed.
-- **Symmetrise + self-loop**: symmetrisation is applied only in the encoder.
-  For message passing the adjacency is then symmetrised and self-looped
-  (dense 17×17 boolean mask; dense is simpler than sparse for this tiny
-  dynamic graph).
-- **Edge-weight transform (attention prior)**: `log1p` of the symmetrised O-D
-  flow is **added to the GAT attention logits**, scaled by a **learned gain
-  `edge_scale`**, then softmax; it is not a multiplier on the attention weights
-  and is not used as an edge feature in message passing. Busy lanes therefore
-  receive a higher prior, and the model can down-weight it if unhelpful.
-- **Encoder**: type-specific projection (`F_aoi=11`, `F_choke=20` → `d_model=64`)
-  + node-type embedding → 2-layer dense multi-head GAT (heads = 4, LeakyReLU
-  slope 0.2) → causal TCN (kernel 3; lookback L) → node-attention pooling →
-  32-d `z_ship` (~42k params). Node-attention weights feed RQ3 (which
-  port/chokepoint the branch weights). Encoder details in Appendix C.
 
 ---
 

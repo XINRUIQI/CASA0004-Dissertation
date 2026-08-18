@@ -11,14 +11,14 @@ scored weeks).
 
 ## B.1 Deep fusion matrix {-}
 
-Entries are RMSE improvement versus M0 (%).
+Entries are $\Delta\mathrm{RMSE}$ (%).
 Positive values indicate lower RMSE than the no-change benchmark.
 
 | Set | Concat | Gated | Cross-attention |
 | --- | ---: | ---: | ---: |
 | S2 (finance + RS) | −2.01 | −2.43 | −5.87 |
 | **S3 (finance + shipping)** | −0.22 | **+0.15** | **+1.00** |
-| S4 (finance + RS + shipping) | −8.30 | −0.68 | +0.19 |
+| S4 (finance + RS + shipping) | −8.30 | −0.67 | +0.19 |
 
 M0 is cleared only where shipping is present. S2 never beats M0.
 Concatenation clears M0 in no set. The three positive cells are descriptive
@@ -57,12 +57,12 @@ indicates stronger evidence that their RMSEs differ. *n* = 257.
 | S1 | XGB | Deep | +2.71 | 0.097 |
 | S2 | Ridge | Deep gated | +3.64 | 0.096 |
 | S2 | XGB | Deep gated | +4.22 | 0.042 |
-| S3 | Ridge | Deep gated | +6.78 | 0.064 |
-| S3 | XGB | Deep gated | +5.95 | 0.010 |
-| S4 | Ridge | Deep gated | +7.85 | 0.029 |
-| S4 | XGB | Deep gated | +7.23 | 0.009 |
+| S3 | Ridge | Deep gated | +8.95 | 0.021 |
+| S3 | XGB | Deep gated | +4.85 | 0.104 |
+| S4 | Ridge | Deep gated | +7.90 | 0.027 |
+| S4 | XGB | Deep gated | +5.26 | 0.074 |
 
-All eight pairs favour Deep. Four have *p* below 0.05.
+All eight pairs favour Deep. Three have *p* below 0.05.
 
 ---
 
@@ -74,15 +74,15 @@ series. *n* = 257.
 
 **GFW monthly presence (Flat S3)**
 
-| Lag (weeks) | Ridge RMSE | Improvement vs M0 (%) | XGB RMSE | Improvement vs M0 (%) | XGB *p* vs S1 |
+| Lag (weeks) | Ridge RMSE | $\Delta\mathrm{RMSE}$ (%) | XGB RMSE | $\Delta\mathrm{RMSE}$ (%) | XGB *p* vs S1 |
 | ---: | ---: | ---: | ---: | ---: | ---: |
-| 1 | 4.407 | −6.15 | 4.801 | −15.63 | 0.972 |
-| **4 (locked)** | **4.447** | **−7.11** | **4.408** | **−6.17** | **0.633** |
-| 8 | 4.334 | −4.38 | 4.396 | −5.88 | 0.603 |
+| 1 | 4.478 | −7.85 | 4.693 | −13.03 | 0.945 |
+| **4 (locked)** | **4.553** | **−9.66** | **4.357** | **−4.94** | **0.471** |
+| 8 | 4.464 | −7.52 | 4.323 | −4.13 | 0.382 |
 
 **Monthly macro (Flat S1: REA and non-oil commodity)**
 
-| Lag (weeks) | Ridge RMSE | Improvement vs M0 (%) | XGB RMSE | Improvement vs M0 (%) |
+| Lag (weeks) | Ridge RMSE | $\Delta\mathrm{RMSE}$ (%) | XGB RMSE | $\Delta\mathrm{RMSE}$ (%) |
 | ---: | ---: | ---: | ---: | ---: |
 | 3 | 4.255 | −2.49 | 4.399 | −5.95 |
 | **5 (locked)** | **4.256** | **−2.52** | **4.368** | **−5.22** |

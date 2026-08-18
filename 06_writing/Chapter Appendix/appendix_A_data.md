@@ -1,4 +1,4 @@
-# Appendix A — Dataset Details
+# Appendix A — Dataset details
 
 # 附录 A — 数据集详情
 
@@ -12,22 +12,21 @@ All variables were selected from the literature reviewed in Chapter 2.
 
 ### A.1.1 Finance / macro (31) / 金融·宏观
 
-Daily series enter as the Friday last value. Log returns are ln(Pₜ/Pₜ₋₁)
+Daily series enter as the Friday last value. Log returns are log(Pₜ₊₁/Pₜ), as in Chapter 3,
 and are not multiplied by 100.
 
-日频序列取周五最后值。对数收益为 ln(Pₜ/Pₜ₋₁)，不乘 100。
+日频序列取周五最后值。对数收益为 log(Pₜ₊₁/Pₜ)，与第 3 章一致，不乘 100。
 
-The Literature column cites Chapter 2 sources for inclusion. It does not
-claim that the series improves one-week-ahead Brent forecasts.
+The Literature column cites Chapter 2 sources for inclusion.
 
-Literature 列给出第 2 章中支持纳入该变量的文献，并不表示该序列能改善提前一周的 Brent 预测。
+Literature 列给出第 2 章中支持纳入该变量的文献。
 
 **Prices & derived (5)** / 价格与派生
 
 
 | Variable           | Meaning / 含义                        | Source  | Literature / 文献                      |
 | ------------------ | ----------------------------------- | ------- | ------------------------------------ |
-| `brent_price`      | Brent spot (USD/bbl) / Brent 现货     | EIA     | EIA (2014); Wittner (2020)           |
+| `brent_price`      | Brent spot (USD/bbl) / Brent 现货     | EIA     | EIA (2014)                           |
 | `wti_price`        | WTI Cushing spot (USD/bbl) / WTI 现货 | EIA     | Hao and Wang (2023)                  |
 | `brent_log_return` | Brent weekly log return / 周对数收益     | derived | Hao and Wang (2023)                  |
 | `wti_log_return`   | WTI weekly log return / 周对数收益       | derived | Hao and Wang (2023)                  |
@@ -83,7 +82,7 @@ Source: EIA *Weekly Petroleum Status Report* for all 12 series. / 12 列来源�
 | `dgs10_change`                | weekly change in `treasury_10y` / 10 年美债收益率周变化               | derived                | Costa et al. (2021); Yılmaz and Zehir (2026) |
 
 
-`brent_f1_spot_log_basis` = ln(BZ=F) − ln(`brent_price`); the futures leg is not back-adjusted, so `brent_roll_week` flags the calendar week of the roll. The basis is a public-data proxy for near-term tightness, not a pure calendar spread. / 期货腿未 back-adjust，故以换月周哑变量控制合约切换。该基差是近月松紧的公开数据代理，不是纯日历价差。
+`brent_f1_spot_log_basis` = log(BZ=F) − log(`brent_price`); the futures leg is not back-adjusted, so `brent_roll_week` flags the calendar week of the roll. The basis is a public-data proxy for near-term tightness, not a pure calendar spread. / 期货腿未 back-adjust，故以换月周哑变量控制合约切换。该基差是近月松紧的公开数据代理，不是纯日历价差。
 
 ### A.1.2 Remote sensing / 遥感
 
@@ -193,7 +192,7 @@ Dwell hours keep only `durationHrs` ≤ 720 h (30 days); longer stays are set to
 
 **Deep layout — chokepoint node features (20 per node)** / 深度布局：咽喉节点特征
 
-Same families as the Flat layout, attached to the six chokepoint nodes rather
+Same families as the Flat layout, attached to the 6 chokepoint nodes rather
 than flattened. / 与扁平布局同族，挂在六个咽喉节点上而非扁平化。
 
 
@@ -348,35 +347,6 @@ Persian Gulf loadings, so it is attached to Hormuz on the import side.
 | `mandeb`   | P011                         |
 | `cape`     | P001                         |
 | `panama`   | P005                         |
-
-
-
-
-### A.4.3 Adjacency handling & edge-weight transform / 邻接处理与边权变换
-
-- **Combine**: dynamic voyage-edge block (11×11) placed in the AOI sub-block;
-fixed corridor edges broadcast over all weeks → combined (T, 17, 17). In the
-stored adjacency the O-D block remains directed. /
-动态航次边 O-D 块 + 固定走廊边广播 → 组合邻接。存盘邻接中 O-D 仍为有向。
-- **Symmetrise + self-loop**: symmetrisation is applied only in the encoder.
-For message passing the adjacency is then symmetrised and self-looped
-(dense 17×17 boolean mask; dense is simpler than sparse for this tiny
-dynamic graph). / 对称化只在编码器中进行。消息传递前对称化 + 自环。
-- **Edge-weight transform (attention prior)**: `log1p` of the symmetrised O-D  
-flow is **added to the GAT attention logits**, scaled by a **learned gain**  
-`edge_scale`, then softmax; it is not a multiplier on the attention weights  
-and is not used as an edge feature in message passing. Busy lanes therefore  
-receive a higher prior, and the model can down-weight it if unhelpful. /  
-边权变换：对称化后的 O-D 流量取 `log1p`，乘以可学习增益后  
-**加到 GAT 注意力 logits 上**再 softmax；不是乘在注意力权重上，也不作为  
-边特征进入消息传递。
-- **Encoder**: type-specific projection (`F_aoi=11`, `F_choke=20` → `d_model=64`)
-  - node-type embedding → 2-layer dense multi-head GAT (heads = 4, LeakyReLU
-  slope 0.2) → causal TCN (kernel 3; lookback L) → node-attention pooling →
-  32-d `z_ship` (~42k params). Node-attention weights feed RQ3 (which
-  port/chokepoint the branch weights). Encoder details in Appendix C. /
-  编码器：类型专属投影至内部宽 64，再经 2 层 GAT 与因果 TCN（kernel 3）池化为
-  32 维 `z_ship`。完整设定见附录 C。
 
 ---
 

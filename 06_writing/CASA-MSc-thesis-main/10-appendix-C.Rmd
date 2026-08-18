@@ -1,7 +1,7 @@
-# Appendix C — Hyperparameter Settings {-}
+# Appendix C — Hyperparameter settings {-}
 
 ```{=latex}
-\markboth{Appendix C --- Hyperparameter Settings}{Appendix C --- Hyperparameter Settings}
+\markboth{Appendix C --- Hyperparameter settings}{Appendix C --- Hyperparameter settings}
 ```
 
 This appendix records the locked hyperparameter grids and training settings used

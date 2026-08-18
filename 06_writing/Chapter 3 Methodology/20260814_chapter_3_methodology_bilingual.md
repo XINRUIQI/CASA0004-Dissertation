@@ -6,13 +6,13 @@
 
 The baseline for this study is a simple no-change benchmark, which predicts that next week’s Brent price will equal this week’s price. All learned models are evaluated against this benchmark. The available information is divided into different information sets, and models are trained and evaluated separately on these sets to examine whether different types of data provide useful predictive information and whether different ways of combining information affect forecasting performance. All specifications share the same weekly forecast dates, sample window and evaluation rules.
 
-本研究的基线是一个简单的不变预测基准，即预测下周 Brent 价格等于本周价格。本研究得到的模型都需要与这一基线进行比较。本研究将使用的信息划分为不同的信息集，并分别在各信息集上进行训练和预测，从而研究各类型数据是否能够提供有用的预测信息，以及不同的信息组合方式是否会影响预测表现。所有设定共用同一周度预测日、样本窗口与评估规则。
+本研究的基线是一个简单的不变预测基准，即预测下周 Brent 价格等于本周价格。所有学习得到的模型均对照该基准进行评价。可用信息被划分为不同的信息集，并分别在各信息集上训练和评价模型，以考察不同类型的数据是否提供有用的预测信息，以及不同的信息组合方式是否影响预测表现。所有设定共用同一周度预测日、样本窗口与评价规则。
 
 The no-change benchmark is denoted M0. At each forecast origin t, where P_t is the Brent price in week t, M0 sets the one-week-ahead price forecast equal to the current weekly price:
 
 不变预测基准记为 M0。设 P_t 为第 t 周的 Brent 价格，则在每个预测起点 t，M0 将提前一周的价格预测设为当前周价格：
 
-\hat{P}_{t+1|t}=P_t.
+\hat{P}_{t+1\mid t}=P_t.
 
 The predictors are organised into four information sets. S1 contains financial time series only, including financial, macroeconomic and oil-market variables. S2 adds remote sensing to S1, S3 adds shipping to S1, and S4 adds both modalities. S2 and S3 are parallel extensions of S1 rather than successive stages, while S4 combines the two. Table 3.1 lists the four sets together with the M0 benchmark.
 
@@ -76,11 +76,11 @@ and reconstruct the price forecast as
 
 并按下式重构价格预测：
 
-\hat{P}_{t+1|t}=P_t\exp\left(\hat{r}_{t+1|t}\right).
+\hat{P}_{t+1\mid t}=P_t\exp\left(\hat{r}_{t+1\mid t}\right).
 
-Log returns are used to reduce the strong persistence in the price level and to express the forecasting task in terms of proportional weekly changes. Root Mean Squared Error (RMSE) and the percentage improvement in RMSE over M0 are computed from the reconstructed price forecasts. Under this mapping, the no-change benchmark \hat{P}_{t+1|t}=P_t is exactly the same as forecasting a zero return \hat{r}_{t+1|t}=0.
+Log returns are used to reduce the strong persistence in the price level and to express the forecasting task in terms of proportional weekly changes. Root Mean Squared Error (RMSE) and $\Delta\mathrm{RMSE}$, the percentage improvement in RMSE over M0, are computed from the reconstructed price forecasts. Under this mapping, the no-change benchmark \hat{P}_{t+1\mid t}=P_t is exactly the same as forecasting a zero return \hat{r}_{t+1\mid t}=0.
 
-使用对数收益是为了减弱价格水平的强持续性，并将预测任务表示为周度比例变化。均方根误差（RMSE）以及相对 M0 的 RMSE 百分比改善均根据重构后的价格预测计算。在此对应关系下，不变预测基准 \hat{P}_{t+1|t}=P_t 与预测收益为零 \hat{r}_{t+1|t}=0 完全一致。
+使用对数收益是为了减弱价格水平的强持续性，并将预测任务表示为周度比例变化。均方根误差（RMSE）以及 $\Delta\mathrm{RMSE}$（相对 M0 的 RMSE 百分比改善）均根据重构后的价格预测计算。在此对应关系下，不变预测基准 \hat{P}_{t+1\mid t}=P_t 与预测收益为零 \hat{r}_{t+1\mid t}=0 完全一致。
 
 The modelling window covers 2019–2025 and provides a common weekly index of 365 observations (4 January 2019 to 26 December 2025). The training and evaluation samples are separated in time on an expanding window, rather than by random assignment, to prevent future information from leaking into model fitting. Figure 3.2 shows the Brent price and the weekly log returns over this window. The full validation protocol is in Section 3.6.
 
@@ -92,23 +92,23 @@ The modelling window covers 2019–2025 and provides a common weekly index of 36
 
 ## 3.3 Geographic scope
 
-## 3.3 地理范围与监测站点
+## 3.3 地理范围
 
-Because the prediction target is the global Brent benchmark rather than a local physical cargo price at a single terminal, the study does not use one specific study region. Spatial information instead comes from eleven oil-infrastructure monitoring sites and six maritime chokepoints. Rather than constituting a spatially exhaustive or geographically balanced sample, these locations were purposively selected to span different functional positions in the international oil system, including supply, transit, refining, demand and market access. Figure 3.3 places these sites and chokepoints on a world map. Full site names, coordinates, functional roles, patch sizes and graph edge definitions are in Appendix A.
+Because the prediction target is the global Brent benchmark rather than a local physical cargo price at a single terminal, the study does not use one specific study region. Spatial information instead comes from 11 oil-infrastructure monitoring sites and 6 maritime chokepoints. Rather than constituting a spatially exhaustive or geographically balanced sample, these locations were purposively selected to span different functional positions in the international oil system, including supply, transit, refining, demand and market access. Figure 3.3 places these sites and chokepoints on a world map. Full site names, coordinates, functional roles, patch sizes and graph edge definitions are in Appendix A.
 
-由于预测对象是全球 Brent 基准，而非单一码头的本地实物货价，本研究不采用一块特定的地理研究区。空间信息来自十一个石油基础设施监测站点与六个航运咽喉。这些位置并不构成对全球石油体系的完整或地理均衡抽样，而是通过目的性选取，覆盖供给、中转、炼化、需求与市场接入等不同功能环节。图 3.3 在世界地图上标出这些站点与咽喉。完整站名、坐标、功能角色、影像块尺寸与图边定义见附录 A。
+由于预测对象是全球 Brent 基准，而非单一码头的本地实物货价，本研究不采用一块特定的地理研究区。空间信息来自 11 个石油基础设施监测站点与 6 个航运咽喉。这些位置并不构成对全球石油体系的完整或地理均衡抽样，而是通过目的性选取，覆盖供给、中转、炼化、需求与市场接入等不同功能环节。图 3.3 在世界地图上标出这些站点与咽喉。完整站名、坐标、功能角色、影像块尺寸与图边定义见附录 A。
 
-The eleven sites comprise ports, refineries and export terminals selected purposively for their strategic roles and observability in the available satellite products. Flat remote-sensing features are summarised within a circular buffer of 5 km radius around each site. Deep image patches are centred on the same sites but vary in size by facility type and local spatial constraints. The sizes are generally larger for ports, intermediate for refineries and smaller for terminals.
+The 11 sites comprise ports, refineries and export terminals selected purposively for their strategic roles and observability in the available satellite products. Flat remote-sensing features are summarised within a circular buffer of 5 km radius around each site. Deep image patches are centred on the same sites but vary in size by facility type and local spatial constraints. The sizes are generally larger for ports, intermediate for refineries and smaller for terminals.
 
-这十一个站点包括港口、炼油厂和出口码头，并根据其战略作用以及在现有卫星产品中的可观测性进行目的性选取。Flat 路径的遥感特征在以各站点为中心、半径 5 km 的圆形缓冲区内进行汇总。Deep 路径的影像块同样以这些站点为中心，但其大小会根据设施类型和当地空间条件进行调整。总体而言，港口使用较大的影像块，炼油厂居中，码头较小。
+这 11 个站点包括港口、炼油厂和出口码头，并根据其战略作用以及在现有卫星产品中的可观测性进行目的性选取。Flat 路径的遥感特征在以各站点为中心、半径 5 km 的圆形缓冲区内进行汇总。Deep 路径的影像块同样以这些站点为中心，但其大小会根据设施类型和当地空间条件进行调整。总体而言，港口使用较大的影像块，炼油厂居中，码头较小。
 
-The shipping graph augments the eleven sites with six maritime chokepoints: the Strait of Hormuz, the Suez Canal, the Strait of Malacca, Bab el-Mandeb, the Panama Canal and the Cape of Good Hope. The resulting weekly graph contains seventeen nodes and two edge classes. Dynamic voyage edges between the eleven AOIs are directed origin–destination pairs, weighted by the number of voyages counted in each week from Global Fishing Watch (GFW) port-visit sequences, and therefore change from week to week. Fixed corridor edges are undirected. Each site is connected to the chokepoint or chokepoints on its main documented oil-trade corridor. These edges are defined in advance rather than inferred from weekly vessel movements or geographic proximity. Complete edge definitions are reported in Appendix A, and graph encoding is described in Section 3.5.2.
+The shipping graph augments the 11 sites with 6 maritime chokepoints: the Strait of Hormuz, the Suez Canal, the Strait of Malacca, Bab el-Mandeb, the Panama Canal and the Cape of Good Hope. The resulting weekly graph contains 17 nodes and two edge classes. Dynamic voyage edges between the 11 AOIs are directed origin–destination pairs, weighted by the number of voyages counted in each week from Global Fishing Watch (GFW) port-visit sequences, and therefore change from week to week. Fixed corridor edges are undirected. Each site is connected to the chokepoint or chokepoints on its main documented oil-trade corridor. These edges are defined in advance rather than inferred from weekly vessel movements or geographic proximity. Complete edge definitions are reported in Appendix A, and graph encoding is described in Section 3.5.2.
 
-航运图在十一个站点之外加入六个航运咽喉：霍尔木兹海峡、苏伊士运河、马六甲海峡、曼德海峡、巴拿马运河与好望角。由此形成包含十七个节点、两类边的周度图。十一个 AOI 之间的动态航次边为有向的起点–终点对，权重取各周内由 Global Fishing Watch 港口访问序列统计到的航次数，因而随周变化。固定走廊边为无向。每个站点与其主要石油贸易走廊上的一个或多个咽喉相连。这些边预先设定，而不是根据周度船舶移动或地理邻近关系推断。完整边定义见附录 A，图编码方法见第 3.5.2 节。
+航运图在 11 个站点之外加入 6 个航运咽喉：霍尔木兹海峡、苏伊士运河、马六甲海峡、曼德海峡、巴拿马运河与好望角。由此形成包含 17 个节点、两类边的周度图。11 个 AOI 之间的动态航次边为有向的起点–终点对，权重取各周内由 Global Fishing Watch 港口访问序列统计到的航次数，因而随周变化。固定走廊边为无向。每个站点与其主要石油贸易走廊上的一个或多个咽喉相连。这些边预先设定，而不是根据周度船舶移动或地理邻近关系推断。完整边定义见附录 A，图编码方法见第 3.5.2 节。
 
 **Figure 3.3. Spatial distribution of the 11 oil-infrastructure AOIs and 6 maritime chokepoints.**
 
-**图 3.3. 11 个石油基础设施 AOI 与六个航运咽喉的空间分布。**
+**图 3.3. 11 个石油基础设施 AOI 与 6 个航运咽喉的空间分布。**
 
 ## 3.4 Data sources and preparation
 
@@ -150,13 +150,13 @@ The financial block combines oil-market and macro-financial series from the US E
 
 金融数据块汇总了来自美国能源信息署（EIA）、联邦储备经济数据（FRED）、Yahoo Finance、达拉斯联储全球实际经济活动指数，以及 Caldara–Iacoviello 地缘政治风险（GPR）指数的油市和宏观金融序列。这些序列具有不同的原生时间频率，涵盖原油价格及价差、库存、产量与炼厂活动、波动与风险指标、利率、汇率，以及基于期货的油市指标。
 
-For the remote-sensing block, the Flat and Deep pathways extract inputs from the same eleven AOIs, but differ in their spatial coverage, products and representations. The Flat pathway uses Sentinel-2 optical indices and VIIRS night-time lights, whereas the Deep pathway uses frozen Prithvi-EO-2.0 embeddings derived from Sentinel-2 image patches and has no separate VIIRS input stream.
+For the remote-sensing block, the Flat and Deep pathways extract inputs from the same 11 AOIs, but differ in their spatial coverage, products and representations. The Flat pathway uses Sentinel-2 optical indices and VIIRS night-time lights, whereas the Deep pathway uses frozen Prithvi-EO-2.0 embeddings derived from Sentinel-2 image patches and has no separate VIIRS input stream. Preliminary experiments indicated that a separate VIIRS stream added little useful signal and reduced predictive performance, so it was excluded from the final Deep specification.
 
-对于遥感数据块，Flat 和 Deep 两条路径从相同的十一个 AOI 提取遥感输入，但空间范围、产品与表征不同。Flat 路径使用 Sentinel-2 光学指数与 VIIRS 夜光，Deep 路径使用由 Sentinel-2 影像块得到的冻结 Prithvi-EO-2.0 嵌入，且无单独的 VIIRS 输入流。
+对于遥感数据块，Flat 和 Deep 两条路径从相同的 11 个 AOI 提取输入，但空间范围、产品与表征不同。Flat 路径使用 Sentinel-2 光学指数与 VIIRS 夜光，Deep 路径使用由 Sentinel-2 影像块得到的冻结 Prithvi-EO-2.0 嵌入，且无单独的 VIIRS 输入流。预实验表明，单独的 VIIRS 流几乎未增加有用信号，并降低了预测表现，因此未纳入最终 Deep 设定。
 
-The shipping block covers activity at the eleven AOIs and six chokepoints. IMF PortWatch supplies tanker-flow measures at ports and chokepoints. Global Fishing Watch supplies measures of vessel presence and activity duration. These variables serve as proxies for physical shipping activity, tanker movements and congestion. In the Flat pathway, PortWatch and GFW enter as weekly tabular features. In the Deep pathway, the 17-node graph uses PortWatch flows, GFW AIS vessel-presence and activity measures, and GFW Synthetic Aperture Radar (SAR)-derived dark-vessel detections as node attributes. Dynamic voyage edges are constructed from GFW port-visit sequences. Full variable definitions are reported in Appendix A.
+The shipping block covers activity at the 11 AOIs and 6 chokepoints. IMF PortWatch supplies tanker-flow measures at ports and chokepoints. Global Fishing Watch supplies measures of vessel presence and activity duration. These variables serve as proxies for physical shipping activity, tanker movements and congestion. In the Flat pathway, PortWatch and GFW enter as weekly tabular features. In the Deep pathway, the 17-node graph uses PortWatch flows, GFW AIS vessel-presence and activity measures, and GFW Synthetic Aperture Radar (SAR)-derived dark-vessel detections as node attributes. Dynamic voyage edges are constructed from GFW port-visit sequences. Full variable definitions are reported in Appendix A.
 
-航运数据块覆盖十一个 AOI 和六个航运咽喉的活动。IMF PortWatch 提供港口和咽喉的油轮流量指标。Global Fishing Watch 提供船舶存在情况和活动时长指标。这些变量用于表征实物航运活动、油轮移动和拥堵情况。在 Flat 路径中，PortWatch 和 GFW 数据以周度表格特征的形式输入模型。在 Deep 路径中，17 节点图将 PortWatch 流量、GFW 的 AIS 船舶存在与活动指标，以及 GFW 基于合成孔径雷达（SAR）的暗船检测作为节点属性。动态航次边由 GFW 港口访问序列构建。完整变量定义见附录 A。
+航运数据块覆盖 11 个 AOI 和 6 个航运咽喉的活动。IMF PortWatch 提供港口和咽喉的油轮流量指标。Global Fishing Watch 提供船舶存在情况和活动时长指标。这些变量用于表征实物航运活动、油轮移动和拥堵情况。在 Flat 路径中，PortWatch 和 GFW 数据以周度表格特征的形式输入模型。在 Deep 路径中，17 节点图将 PortWatch 流量、GFW 的 AIS 船舶存在与活动指标，以及 GFW 基于合成孔径雷达（SAR）的暗船检测作为节点属性。动态航次边由 GFW 港口访问序列构建。完整变量定义见附录 A。
 
 Figure 3.4 works through one Friday origin at Jurong Island. It shows the two remote-sensing spatial supports, the values available at that date, and the shipping neighbourhood after product-specific lags.
 
@@ -202,7 +202,7 @@ After temporal alignment, the remaining gaps occur almost entirely before each s
 
 ### 3.5.1 Flat 模型
 
-Flat models implement early feature-level fusion. For each information set, all available numeric features are concatenated into a weekly feature table, and the most recent four weeks are flattened into a single row for each forecast origin. Ridge applies L2 regularisation (Hoerl and Kennard, 1970) and serves as a transparent linear comparator. XGBoost is a non-linear gradient-boosted tree ensemble (Chen and Guestrin, 2016) that captures nonlinearities and interactions not represented by Ridge. Because both learners operate on the same flattened table, neither preserves modality-specific structure. Both predict the one-week-ahead log return and then reconstruct the corresponding price forecast. Hyperparameter selection follows the time-ordered procedure described in Section 3.6, with exact search grids reported in Appendix C.
+Flat models implement early feature-level fusion. For each information set, all available numeric features are concatenated into a weekly feature table, and the most recent four weeks are flattened into a single row for each forecast origin. Ridge applies L2 regularisation (Hoerl and Kennard, 1970) and serves as a transparent linear comparator. XGBoost is a nonlinear gradient-boosted tree ensemble (Chen and Guestrin, 2016) that captures nonlinearities and interactions not represented by Ridge. Because both learners operate on the same flattened table, neither preserves modality-specific structure. Both predict the one-week-ahead log return and then reconstruct the corresponding price forecast. Hyperparameter selection follows the time-ordered procedure described in Section 3.6, with exact search grids reported in Appendix C.
 
 Flat 模型采用早期特征级融合。对每个信息集，所有可用数值特征拼接为一张周度特征表，并在每个预测起点将最近四周展平为一行。Ridge 采用 L2 正则化（Hoerl and Kennard, 1970），作为透明的线性对照。XGBoost 是非线性梯度提升树集成（Chen and Guestrin, 2016），用于捕捉 Ridge 无法表示的非线性与交互。由于两种学习器都作用于同一张展平表，因此都不保留模态专属结构。二者均预测提前一周的对数收益，再还原相应的价格预测。超参数选择遵循第 3.6 节所述的时序程序，具体搜索网格见附录 C。
 
@@ -222,9 +222,9 @@ The remote-sensing encoder receives monthly embeddings for the 11 AOIs, extracte
 
 遥感编码器接收 11 个 AOI 的月度嵌入，这些嵌入由冻结的 Prithvi-EO-2.0-300M 编码器从 Sentinel-2 地表反射率和谐化影像块中提取（Szwarcman 等，2026）。Prithvi-EO-2.0 是公开发布的对地观测基础模型。本研究使用其已发布权重作为固定编码器，不对其进行再训练或微调。影像块按照该 HLS 预训练编码器的六波段约定进行适配，波段映射、标准化与重采样方法见附录 A。时间注意力先汇总每个 AOI 的四周嵌入，随后站点注意力将 11 个 AOI 汇总为一个遥感表征。
 
-The shipping encoder applies a graph attention network with temporal encoding (GAT; Veličković et al., 2018) to the weekly 17-node graph over the four-week lookback, producing one shipping representation per forecast origin. The graph's nodes and two edge classes are as described in Section 3.3, with dynamic voyage edges directed and fixed corridor edges undirected. For message passing, the directed voyage edges and undirected corridor edges are combined in a symmetrised adjacency matrix, so the encoder does not retain edge direction or type. Adjacency and edge-weighting details are reported in Appendix A.4.3.
+The shipping encoder applies a graph attention network (GAT) with temporal encoding (Veličković et al., 2018) to the weekly 17-node graph over the four-week lookback, producing one shipping representation per forecast origin. The graph’s nodes and two edge classes are as described in Section 3.3, with dynamic voyage edges directed and fixed corridor edges undirected. For message passing, the directed voyage edges and undirected corridor edges are combined in a symmetrised adjacency matrix, so the encoder does not retain edge direction or type.
 
-航运编码器将带时间编码的图注意力网络（GAT；Veličković 等，2018）应用于四周回看窗口内的周度 17 节点图，为每个预测起点生成一个航运表征。图的节点与两类边如第 3.3 节所述，动态航次边为有向，固定走廊边为无向。进入消息传递时，有向航次边与无向走廊边合并为一张对称化邻接矩阵，因此编码器不再保留边的方向与类型。邻接关系与边权细节见附录 A.4.3。
+航运编码器将带时间编码的图注意力网络（GAT；Veličković 等，2018）应用于四周回看窗口内的周度 17 节点图，为每个预测起点生成一个航运表征。图的节点与两类边如第 3.3 节所述，动态航次边为有向，固定走廊边为无向。进入消息传递时，有向航次边与无向走廊边合并为一张对称化邻接矩阵，因此编码器不再保留边的方向与类型。
 
 The two edge classes before combination and symmetrisation are shown in Figure 3.5.
 
@@ -248,7 +248,7 @@ Figure 3.6 summarises the Deep model architecture and fusion mechanisms.
 
 ## 3.6 Training and validation
 
-## 3.6 估计与验证
+## 3.6 训练与验证
 
 ### 3.6.1 Expanding-window estimation and re-estimation
 
@@ -272,13 +272,13 @@ Figure 3.7 summarises the expanding-window schedule, while Figure 3.8 shows how 
 
 **Figure 3.8. Testing sample within one testing block (the first block shown). The fitted model is held fixed; t is the last of the four input weeks, and the model predicts week t+1. Each testing block contains 13 predictions, except the last.**
 
-**图 3.8. 一个估计块内的测试样本（以第一个估计块为例）。拟合模型保持固定；t 为四周输入的最后一周，模型预测第 t+1 周。**
+**图 3.8. 一个测试块内的测试样本（以第一个测试块为例）。拟合模型保持固定；t 为四周输入的最后一周，模型预测第 t+1 周。除最后一个测试块外，每个测试块包含 13 次预测。**
 
 ### 3.6.2 Model and Hyperparameter selection
 
-### 3.6.2 模型和超参数选择
+### 3.6.2 模型与超参数选择
 
-Flat models re-select Ridge and XGBoost hyperparameters on an inner validation set at each scheduled re-estimation, then refit on the full estimation sample available at that date. Deep models instead use a configuration fixed before evaluation, including the latent size. They share the four-week lookback used by the Flat models, which covers approximately one update cycle of the monthly remote-sensing and macroeconomic inputs. At each Deep re-estimation, inner validation is used for early stopping, and the checkpoint with the lowest validation loss is retained. The selected Deep checkpoint is used for the following forecasting. The model is not retrained using the combined training and validation data. Sensitivity analyses using the evaluation sample are reported separately in Appendix B and are not used to select or revise the main specification. Search grids, fixed configurations and early-stopping settings are reported in Appendix C.
+Flat models re-select Ridge and XGBoost hyperparameters on an inner validation set at each scheduled re-estimation, then refit on the full estimation sample available at that date. Deep models instead use a configuration fixed before evaluation, including the latent size. They share the four-week lookback used by the Flat models, which covers approximately one update cycle of the monthly remote-sensing and macroeconomic inputs. At each Deep re-estimation, inner validation is used for early stopping, and the checkpoint with the lowest validation loss is retained. The selected Deep checkpoint is used for the subsequent forecasting. The model is not retrained using the combined training and validation data. Sensitivity analyses using the evaluation sample are reported separately in Appendix B and are not used to select or revise the main specification. Search grids, fixed configurations and early-stopping settings are reported in Appendix C.
 
 Flat 模型在每次预定的重新估计时，先在内部验证集上重新选择 Ridge 和 XGBoost 的超参数，再使用当时可获得的完整估计样本重新拟合。Deep 模型则使用在评价开始前固定的配置，包括潜在维度。它们与 Flat 模型共用四周回看窗口，该窗口大约覆盖月度遥感与宏观输入的一个更新周期。每次重新估计 Deep 模型时，使用内部验证进行早停，并保留验证损失最低的 checkpoint。选定的 Deep checkpoint 直接用于后续预测，模型不会再使用合并后的训练集和验证集重新训练。基于评价样本的敏感性分析单独报告在附录 B 中，不用于选择或修改主要模型设定。搜索网格、固定配置和早停设置见附录 C。
 
@@ -290,36 +290,36 @@ Flat 模型在每次预定的重新估计时，先在内部验证集上重新选
 
 ### 3.7.1 预测评价
 
-The primary evaluation metrics are calculated from reconstructed price forecasts over the common sample of T=257 forecast origins. For model m,
+The primary evaluation metrics are calculated from reconstructed price forecasts over the common sample of n=257 forecast origins.
 
-主要评价指标根据重构后的价格预测，在 T=257 个共同预测起点上计算。对模型 m，
+主要评价指标根据重构后的价格预测，在 n=257 个共同预测起点上计算。
 
-\mathrm{RMSE}_m=
+\mathrm{RMSE}=
 \sqrt{
-\frac{1}{T}
-\sum_{t=1}^{T}
-\left(P_{t+1}-\hat{P}_{m,t+1\mid t}\right)^2
+\frac{1}{n}
+\sum_{t=1}^{n}
+\left(P_{t+1}-\hat{P}_{t+1\mid t}\right)^2
 }.
 
-Performance relative to the no-change benchmark M0 is summarised by the percentage improvement in RMSE
+Performance relative to the no-change benchmark M0 is summarised by $\Delta\mathrm{RMSE}$:
 
-相对不变预测基准 M0 的表现，以 RMSE 百分比改善来概括：
+相对不变预测基准 M0 的表现，以 $\Delta\mathrm{RMSE}$ 来概括：
 
-\mathrm{RMSE\ improvement\ vs\ M0}_m (\%)
+\Delta\mathrm{RMSE}
 =
-100\times\left(1-\frac{\mathrm{RMSE}_m}{\mathrm{RMSE}_{M0}}\right).
+100\times\left(1-\frac{\mathrm{RMSE}}{\mathrm{RMSE}_{\mathrm{M0}}}\right).
 
-Here, P_{t+1} is the observed price and \hat{P}_{m,t+1\mid t} is the price forecast produced by model m at forecast origin t. A positive value indicates a lower RMSE than M0, zero indicates equal RMSE, and a negative value indicates worse performance.
+Here, P_{t+1} is the observed price and \hat{P}_{t+1\mid t} is the price forecast produced by the model at forecast origin t. The index t=1,…,n orders the 257 evaluation origins in time; it does not index the 365-week calendar. A positive $\Delta\mathrm{RMSE}$ indicates a lower RMSE than M0, zero indicates equal RMSE, and a negative value indicates worse performance.
 
-其中 P_{t+1} 为观测价格，\hat{P}_{m,t+1\mid t} 为模型 m 在预测起点 t 给出的价格预测。正值表示 RMSE 低于 M0，零表示 RMSE 相同，负值表示表现更差。
+其中 P_{t+1} 为观测价格，\hat{P}_{t+1\mid t} 为该模型在预测起点 t 给出的价格预测。下标 t=1,…,n 按时间排列这 257 个评价起点，而不是全部 365 个日历周。正的 $\Delta\mathrm{RMSE}$ 表示 RMSE 低于 M0，零表示 RMSE 相同，负值表示表现更差。
 
 ### 3.7.2 Model Interpretation and Robustness Checks
 
 ### 3.7.2 模型解释与稳健性检验
 
-Model interpretability concerns identifying where a model’s predictive ability comes from, including which data sources and features contribute more or less to its predictions. For the main Deep specification with positive RMSE improvement relative to M0, SHapley Additive exPlanations (SHAP) values are calculated to quantify each input’s contribution (Lundberg and Lee, 2017). Absolute SHAP values are aggregated by data source and, where applicable, spatial site or node. Results are reported for the full sample, by year, and within predefined ±8-week event windows. For gated models, weekly modality weights are also reported to describe how the model allocates weight across financial, remote-sensing and shipping representations. SHAP and gate weights describe model attribution and internal allocation rather than causal importance. Robustness is assessed by rerunning the prespecified Deep models with random seeds and comparing their RMSE.
+Model interpretability concerns identifying where a model’s predictive ability comes from, including which data sources and features contribute more or less to its predictions. For the main Deep specification with positive $\Delta\mathrm{RMSE}$, SHAP values are calculated to quantify each input’s contribution (Lundberg and Lee, 2017). Absolute SHAP values are aggregated by data source and, where applicable, spatial site or node. Results are reported for the full sample, by year, and within predefined ±8-week event windows. For gated models, weekly modality weights are also reported to describe how the model allocates weight across financial, remote-sensing and shipping representations. SHAP and gate weights describe model attribution and internal allocation rather than causal importance. Robustness is assessed by rerunning the prespecified Deep models with random seeds and comparing their RMSE.
 
-模型可解释性关注识别模型预测能力的来源，包括哪些数据源和特征对预测贡献更大或更小。对于相对 M0 具有正 RMSE 改善的主要 Deep 设定，计算 SHapley Additive exPlanations（SHAP）值以量化各输入的贡献（Lundberg and Lee, 2017）。绝对 SHAP 值按数据源汇总，并在适用时按空间站点或节点汇总。结果报告全样本、分年以及预先设定的 ±8 周事件窗口。对于门控模型，还报告周度模态权重，以描述模型如何在金融、遥感与航运表征之间分配权重。SHAP 与门控权重描述的是模型归因与内部分配，而非因果重要性。稳健性通过以随机种子重跑预先指定的 Deep 模型并比较其 RMSE 来评估。
+模型可解释性关注识别模型预测能力的来源，包括哪些数据源和特征对预测贡献更大或更小。对于具有正 $\Delta\mathrm{RMSE}$ 的主要 Deep 设定，计算 SHapley Additive exPlanations（SHAP）值以量化各输入的贡献（Lundberg and Lee, 2017）。绝对 SHAP 值按数据源汇总，并在适用时按空间站点或节点汇总。结果报告全样本、分年以及预先设定的 ±8 周事件窗口。对于门控模型，还报告周度模态权重，以描述模型如何在金融、遥感与航运表征之间分配权重。SHAP 与门控权重描述的是模型归因与内部分配，而非因果重要性。稳健性通过以随机种子重跑预先指定的 Deep 模型并比较其 RMSE 来评估。
 
 ## 3.8 Ethical considerations
 

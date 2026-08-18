@@ -10,7 +10,7 @@ author:
     |
     | [GitHub Repository](https://github.com/XINRUIQI/CASA0004-Dissertation)
     |
-    | Word Count: 10,800
+    | Word Count: 10,859
     |
     | This dissertation is submitted in part requirement for the
     | MSc in the Centre for Advanced Spatial Analysis,
@@ -26,6 +26,7 @@ linestretch: 1.5
 bibliography: references.bib
 csl: harvard-cite-them-right.csl
 link-citations: yes
+lang: en-GB
 github-repo: XINRUIQI/CASA0004-Dissertation
 description: "This dissertation is submitted in part requirement for the MSc in the Centre for Advanced Spatial Analysis, Bartlett Faculty of the Built Environment, UCL"
 always_allow_html: yes
@@ -52,6 +53,6 @@ knitr::opts_chunk$set(
 # Abstract {.unlisted .unnumbered}
 '`
 
-Brent crude is one of the principal benchmarks for internationally traded oil and a key reference price in the global energy market. Its short-term movements affect energy costs, inflation, trade balances and fiscal revenues, and therefore influence decisions made by firms and governments. Using weekly data from 2019 to 2025, this study examines whether satellite remote-sensing and shipping data provide incremental value beyond financial time series for one-week-ahead Brent price forecasting. It also compares flat feature fusion with modality-specific encoding followed by fusion. Flat models combine all selected inputs in a single feature table, whereas deep models encode each data source separately before fusing the resulting representations. For both model families, the study compares a financial-time-series-only specification with alternatives that add remote sensing, shipping or both.
+Brent crude is one of the principal benchmarks for internationally traded oil and a key reference price in the global energy market. Its short-term movements affect energy costs, inflation, trade balances and fiscal revenues, and therefore influence decisions made by firms and governments. Using weekly data from 2019 to 2025, this study examines whether satellite remote-sensing and shipping data provide incremental value beyond financial time series for one-week-ahead Brent price forecasting. It also compares flat feature fusion with modality-specific encoding followed by fusion. Flat models combine all selected inputs in a single feature table, whereas deep models encode each data source separately before fusing the resulting representations. For both model families, the study tests whether remote sensing and shipping, separately or together, add predictive value beyond conventional financial information.
 
-The models are evaluated against a no-change benchmark that sets next week’s price equal to this week’s price. The results show that no flat model outperforms this benchmark, although shipping data provide limited evidence of incremental predictive information. Deep models combining financial time series and shipping data achieve a small improvement over the benchmark. Remote-sensing data provide no clear additional benefit. The advantage of deep models over flat models is most evident when shipping data are included. This study further uses modality gates to show which data sources the best-performing deep model relies on most. Overall, predictive value depends more on how multimodal data are used—especially how modalities are encoded and fused—than on simply adding more data.
+The models are evaluated against a no-change benchmark that sets next week’s price equal to this week’s price. The results show that no flat model outperforms this benchmark, although shipping data provide limited evidence of incremental predictive information. Deep models combining financial time series and shipping data achieve a small improvement over the benchmark. Remote-sensing data provide no clear additional benefit. Deep models consistently outperform Flat models, with the largest advantage observed when shipping data are included. This study further uses gated fusion and SHapley Additive exPlanations (SHAP) to show which data sources the deep models rely on most. Overall, predictive value depends more on how multimodal data are used, particularly how modalities are encoded and fused, than on simply adding more data. By highlighting the data sources and geographical locations that provide potential signals of supply-chain change, the framework could help governments monitor how geopolitical tensions and conflicts may affect oil prices and international trade, thereby informing energy-security and trade policy.

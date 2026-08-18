@@ -1,4 +1,4 @@
-# Appendix C — Hyperparameter Settings / 附录 C — 超参数设定
+# Appendix C — Hyperparameter settings / 附录 C — 超参数设定
 
 This appendix records the locked hyperparameter grids and training settings used
 for the reported results. Software versions, installation commands and scripts

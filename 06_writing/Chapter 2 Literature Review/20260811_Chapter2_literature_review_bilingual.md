@@ -42,7 +42,7 @@ A large share of international crude-oil trade is transported by sea. Shipping a
 
 国际原油贸易中有很大一部分通过海运完成。因此，航运活动可以提供有关实物原油流动、区域供给状况、港口拥堵以及主要航运咽喉中断的信息。船舶自动识别系统（AIS）数据记录船舶身份、位置和移动。尽管 AIS 不直接记录货物数量，但经过处理的 AIS 观测可以用于估计油轮活动和海运贸易。
 
-Adland, Jia and Strandenes (2017) compare AIS-based estimates of seaborne crude-oil exports with customs statistics and find that aggregate estimates are broadly consistent with official data. Yan et al. (2020) combine tanker trajectories with vessel characteristics and draught information to estimate voyage-level oil flows. Their estimates for major oil-importing and oil-exporting countries are strongly correlated with Joint Organisations Data Initiative statistics. These studies provide evidence that vessel movements can serve as proxies for the physical transportation of crude oil.
+Adland, Jia and Strandenes (2017) compare AIS-based estimates of seaborne crude-oil exports with customs statistics and find that aggregate estimates are broadly consistent with official data. Yan et al. (2020) combine tanker trajectories with vessel characteristics and draught information to estimate voyage-level oil flows. Their estimates for major oil-importing and oil-exporting countries are strongly correlated with Joint Organisations Data Initiative (JODI) statistics. These studies provide evidence that vessel movements can serve as proxies for the physical transportation of crude oil.
 
 Adland、Jia 与 Strandenes（2017）将基于 AIS 的海运原油出口估计与海关统计进行比较，发现总量估计与官方数据大体一致。Yan 等（2020）结合油轮轨迹、船舶特征和吃水信息，估计航次层面的石油流量。他们对主要石油进口国和出口国的估计与联合组织数据倡议的统计数据高度相关。这些研究表明，船舶移动可以作为原油实物运输的代理变量。
 

@@ -7,7 +7,7 @@ The baseline for this study is a simple no-change benchmark, which predicts that
 The no-change benchmark is denoted M0. At each forecast origin $t$, where $P_t$ is the Brent price in week $t$, M0 sets the one-week-ahead price forecast equal to the current weekly price:
 
 \begin{equation}
-\hat{P}_{t+1|t}=P_t.
+\hat{P}_{t+1\mid t}=P_t.
 (\#eq:m0)
 \end{equation}
 
@@ -37,7 +37,7 @@ knitr::include_graphics(here::here("figures", "fig_3_1_research_design.png"))
 
 ## Prediction target and sample period {#method-target}
 
-Let $P_t$ denote the last available daily Brent spot-price observation in week $t$, where each week ends on Friday, measured in US dollars per barrel. The forecast target is next week’s price $P_{t+1}$. Models are not trained directly on the price level. They predict the one-week logarithmic return
+Let $P_t$ denote the last available daily Brent spot-price observation in week $t$, where each week ends on Friday, measured in U.S. dollars per barrel. The forecast target is next week’s price $P_{t+1}$. Models are not trained directly on the price level. They predict the one-week logarithmic return
 
 \begin{equation}
 r_{t+1}=\log\left(\frac{P_{t+1}}{P_t}\right)
@@ -47,11 +47,11 @@ r_{t+1}=\log\left(\frac{P_{t+1}}{P_t}\right)
 and reconstruct the price forecast as
 
 \begin{equation}
-\hat{P}_{t+1|t}=P_t\exp\left(\hat{r}_{t+1|t}\right).
+\hat{P}_{t+1\mid t}=P_t\exp\left(\hat{r}_{t+1\mid t}\right).
 (\#eq:price-recon)
 \end{equation}
 
-Log returns are used to reduce the strong persistence in the price level and to express the forecasting task in terms of proportional weekly changes. Root Mean Squared Error (RMSE) and the percentage improvement in RMSE over M0 are computed from the reconstructed price forecasts. Under this mapping, the no-change benchmark $\hat{P}_{t+1|t}=P_t$ is exactly the same as forecasting a zero return $\hat{r}_{t+1|t}=0$.
+Log returns are used to reduce the strong persistence in the price level and to express the forecasting task in terms of proportional weekly changes. Root Mean Squared Error (RMSE) and $\Delta\mathrm{RMSE}$, the percentage improvement in RMSE over M0, are computed from the reconstructed price forecasts. Under this mapping, the no-change benchmark $\hat{P}_{t+1\mid t}=P_t$ is exactly the same as forecasting a zero return $\hat{r}_{t+1\mid t}=0$.
 
 ```{r price-returns, echo=FALSE, out.width="100%", fig.cap="Brent spot price and weekly log returns.", fig.scap="Brent spot price and weekly log returns.", fig.pos="H"}
 knitr::include_graphics(here::here("figures", "fig_3_2_price_returns.png"))
@@ -61,15 +61,15 @@ The modelling window covers 2019–2025 and provides a common weekly index of 36
 
 ## Geographic scope {#method-geography}
 
-Because the prediction target is the global Brent benchmark rather than a local physical cargo price at a single terminal, the study does not use one specific study region. Spatial information instead comes from eleven oil-infrastructure monitoring sites and six maritime chokepoints. Rather than constituting a spatially exhaustive or geographically balanced sample, these locations were purposively selected to span different functional positions in the international oil system, including supply, transit, refining, demand and market access. Figure \@ref(fig:study-sites) places these sites and chokepoints on a world map. Full site names, coordinates, functional roles, patch sizes and graph edge definitions are in Appendix A.
+Because the prediction target is the global Brent benchmark rather than a local physical cargo price at a single terminal, the study does not use one specific study region. Spatial information instead comes from 11 oil-infrastructure monitoring sites and 6 maritime chokepoints. Rather than constituting a spatially exhaustive or geographically balanced sample, these locations were purposively selected to span different functional positions in the international oil system, including supply, transit, refining, demand and market access. Figure \@ref(fig:study-sites) places these sites and chokepoints on a world map. Full site names, coordinates, functional roles, patch sizes and graph edge definitions are in Appendix A.
 
 ```{r study-sites, echo=FALSE, out.width="100%", fig.cap="Spatial distribution of the 11 oil-infrastructure AOIs and 6 maritime chokepoints.", fig.scap="Spatial distribution of AOIs and maritime chokepoints.", fig.pos="H"}
 knitr::include_graphics(here::here("figures", "fig_3_3_study_sites_map.png"))
 ```
 
-The eleven sites comprise ports, refineries and export terminals selected purposively for their strategic roles and observability in the available satellite products. Flat remote-sensing features are summarised within a circular buffer of 5 km radius around each site. Deep image patches are centred on the same sites but vary in size by facility type and local spatial constraints. The sizes are generally larger for ports, intermediate for refineries and smaller for terminals.
+The 11 sites comprise ports, refineries and export terminals selected purposively for their strategic roles and observability in the available satellite products. Flat remote-sensing features are summarised within a circular buffer of 5 km radius around each site. Deep image patches are centred on the same sites but vary in size by facility type and local spatial constraints. The sizes are generally larger for ports, intermediate for refineries and smaller for terminals.
 
-The shipping graph augments the eleven sites with six maritime chokepoints: the Strait of Hormuz, the Suez Canal, the Strait of Malacca, Bab el-Mandeb, the Panama Canal and the Cape of Good Hope. The resulting weekly graph contains seventeen nodes and two edge classes. Dynamic voyage edges between the eleven AOIs are directed origin–destination pairs, weighted by the number of voyages counted in each week from Global Fishing Watch (GFW) port-visit sequences, and therefore change from week to week. Fixed corridor edges are undirected. Each site is connected to the chokepoint or chokepoints on its main documented oil-trade corridor. These edges are defined in advance rather than inferred from weekly vessel movements or geographic proximity. Complete edge definitions are reported in Appendix A, and graph encoding is described in Section \@ref(method-deep).
+The shipping graph augments the 11 sites with 6 maritime chokepoints: the Strait of Hormuz, the Suez Canal, the Strait of Malacca, Bab el-Mandeb, the Panama Canal and the Cape of Good Hope. The resulting weekly graph contains 17 nodes and two edge classes. Dynamic voyage edges between the 11 AOIs are directed origin–destination pairs, weighted by the number of voyages counted in each week from Global Fishing Watch (GFW) port-visit sequences, and therefore change from week to week. Fixed corridor edges are undirected. Each site is connected to the chokepoint or chokepoints on its main documented oil-trade corridor. These edges are defined in advance rather than inferred from weekly vessel movements or geographic proximity. Complete edge definitions are reported in Appendix A, and graph encoding is described in Section \@ref(method-deep).
 
 ## Data sources and preparation {#method-data}
 
@@ -117,12 +117,12 @@ df <- data.frame(
       '<a href="https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_S2_SR_HARMONIZED" style="color:blue;">Sentinel-2 via GEE</a>'
     ),
     paste(
-      '<a href="https://portwatch.imf.org/" style="color:blue;">IMF PortWatch</a>;',
-      '<a href="https://globalfishingwatch.org/our-apis/" style="color:blue;">Global Fishing Watch</a>'
+      '<a href="https://portwatch.imf.org/" style="color:blue;">IMF PortWatch</a> (AIS-derived);',
+      '<a href="https://globalfishingwatch.org/our-apis/" style="color:blue;">Global Fishing Watch</a> (AIS- and SAR-derived)'
     ),
     paste(
-      '<a href="https://portwatch.imf.org/" style="color:blue;">IMF PortWatch</a>;',
-      '<a href="https://globalfishingwatch.org/our-apis/" style="color:blue;">Global Fishing Watch</a>'
+      '<a href="https://portwatch.imf.org/" style="color:blue;">IMF PortWatch</a> (AIS-derived);',
+      '<a href="https://globalfishingwatch.org/our-apis/" style="color:blue;">Global Fishing Watch</a> (AIS- and SAR-derived)'
     )
   ),
   check.names = FALSE
@@ -153,9 +153,9 @@ Remote sensing (Flat) & Sentinel-2 optical indices and VIIRS night-time lights &
 \midrule
 Remote sensing (Deep) & Monthly Sentinel-2 image patches & Frozen Prithvi-EO-2.0 embeddings at the same 11 AOIs & \href{https://huggingface.co/ibm-nasa-geospatial}{\textcolor{blue}{Prithvi-EO-2.0}}; \href{https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_S2_SR_HARMONIZED}{\textcolor{blue}{Sentinel-2 via GEE}} \\
 \midrule
-Shipping (Flat) & PortWatch and Global Fishing Watch AIS and SAR data & Port and chokepoint tanker flows; vessel-activity features & \href{https://portwatch.imf.org/}{\textcolor{blue}{IMF PortWatch}}; \href{https://globalfishingwatch.org/our-apis/}{\textcolor{blue}{Global Fishing Watch}} \\
+Shipping (Flat) & PortWatch and Global Fishing Watch AIS and SAR data & Port and chokepoint tanker flows; vessel-activity features & \href{https://portwatch.imf.org/}{\textcolor{blue}{IMF PortWatch}} (AIS-derived); \href{https://globalfishingwatch.org/our-apis/}{\textcolor{blue}{Global Fishing Watch}} (AIS- and SAR-derived) \\
 \midrule
-Shipping (Deep) & PortWatch and Global Fishing Watch AIS and SAR data & Weekly node attributes, dynamic voyage edges and fixed corridor edges for a 17-node graph comprising 11 AOIs and 6 chokepoints & \href{https://portwatch.imf.org/}{\textcolor{blue}{IMF PortWatch}}; \href{https://globalfishingwatch.org/our-apis/}{\textcolor{blue}{Global Fishing Watch}} \\
+Shipping (Deep) & PortWatch and Global Fishing Watch AIS and SAR data & Weekly node attributes, dynamic voyage edges and fixed corridor edges for a 17-node graph comprising 11 AOIs and 6 chokepoints & \href{https://portwatch.imf.org/}{\textcolor{blue}{IMF PortWatch}} (AIS-derived); \href{https://globalfishingwatch.org/our-apis/}{\textcolor{blue}{Global Fishing Watch}} (AIS- and SAR-derived) \\
 \end{longtable}
 )")
 } else {
@@ -174,11 +174,11 @@ Shipping (Deep) & PortWatch and Global Fishing Watch AIS and SAR data & Weekly n
 }
 ```
 
-The financial block combines oil-market and macro-financial series from the US Energy Information Administration (EIA), Federal Reserve Economic Data (FRED), Yahoo Finance, the Dallas Fed Index of Global Real Economic Activity, and the Caldara–Iacoviello geopolitical risk (GPR) index. These series are observed at different native frequencies and include crude prices and spreads, inventories, production and refinery activity, volatility and risk measures, interest rates, exchange rates, and futures-based oil indicators.
+The financial block combines oil-market and macro-financial series from the U.S. Energy Information Administration (EIA), Federal Reserve Economic Data (FRED), Yahoo Finance, the Dallas Fed Index of Global Real Economic Activity, and the Caldara–Iacoviello geopolitical risk (GPR) index. These series are observed at different native frequencies and include crude prices and spreads, inventories, production and refinery activity, volatility and risk measures, interest rates, exchange rates, and futures-based oil indicators.
 
-For the remote-sensing block, the Flat and Deep pathways extract inputs from the same eleven AOIs, but differ in their spatial coverage, products and representations. The Flat pathway uses Sentinel-2 optical indices and VIIRS night-time lights, whereas the Deep pathway uses frozen Prithvi-EO-2.0 embeddings derived from Sentinel-2 image patches and has no separate VIIRS input stream.
+For the remote-sensing block, the Flat and Deep pathways extract inputs from the same 11 AOIs, but differ in their spatial coverage, products and representations. The Flat pathway uses Sentinel-2 optical indices and VIIRS night-time lights, whereas the Deep pathway uses frozen Prithvi-EO-2.0 embeddings derived from Sentinel-2 image patches and has no separate VIIRS input stream. Preliminary experiments indicated that a separate VIIRS stream added little useful signal and reduced predictive performance, so it was excluded from the final Deep specification.
 
-The shipping block covers activity at the eleven AOIs and six chokepoints. IMF PortWatch supplies tanker-flow measures at ports and chokepoints. Global Fishing Watch supplies measures of vessel presence and activity duration. These variables serve as proxies for physical shipping activity, tanker movements and congestion. In the Flat pathway, PortWatch and GFW enter as weekly tabular features. In the Deep pathway, the 17-node graph uses PortWatch flows, GFW AIS vessel-presence and activity measures, and GFW Synthetic Aperture Radar (SAR)-derived dark-vessel detections as node attributes. Dynamic voyage edges are constructed from GFW port-visit sequences. Full variable definitions are reported in Appendix A.
+The shipping block covers activity at the 11 AOIs and 6 chokepoints. IMF PortWatch supplies tanker-flow measures at ports and chokepoints. Global Fishing Watch supplies measures of vessel presence and activity duration. These variables serve as proxies for physical shipping activity, tanker movements and congestion. In the Flat pathway, PortWatch and GFW enter as weekly tabular features. In the Deep pathway, the 17-node graph uses PortWatch flows, GFW AIS vessel-presence and activity measures, and GFW Synthetic Aperture Radar (SAR)-derived dark-vessel detections as node attributes. Dynamic voyage edges are constructed from GFW port-visit sequences. Full variable definitions are reported in Appendix A.
 
 Figure \@ref(fig:worked-example) works through one Friday origin at Jurong Island. It shows the two remote-sensing spatial supports, the values available at that date, and the shipping neighbourhood after product-specific lags.
 
@@ -196,7 +196,7 @@ Publication timing is approximated using source- and product-specific fixed lag 
 
 ### Data quality and missing values {#method-missing}
 
-Monthly optical composites are cloud-filtered before the indices are constructed, and cloud-quality indicators are not used as predictors. On the weekly calendar, mean coverage across the four optical indices is approximately 97 per cent, while VIIRS night-time-light anomalies are fully observed. Site-level coverage and counts of independent monthly composites are reported in Appendix A.
+Monthly optical composites are cloud-filtered before the indices are constructed, and cloud-quality indicators are not used as predictors. On the weekly calendar, mean coverage across the four optical indices is approximately 97%, while VIIRS night-time-light anomalies are fully observed. Site-level coverage and counts of independent monthly composites are reported in Appendix A.
 
 After temporal alignment, the remaining gaps occur almost entirely before each series’ first valid observation. These leading gaps are set to zero for remote-sensing variables and filled with the training-fold median for each shipping-count variable. Deep finance inputs contain no missing values after merging. Missing remote-sensing embeddings and shipping-graph values are set to zero after scaling. All imputation and scaling parameters are estimated separately within each training window.
 
@@ -204,7 +204,7 @@ After temporal alignment, the remaining gaps occur almost entirely before each s
 
 ### Flat models {#method-flat}
 
-Flat models implement early feature-level fusion. For each information set, all available numeric features are concatenated into a weekly feature table, and the most recent four weeks are flattened into a single row for each forecast origin. Ridge applies L2 regularisation [@hoerl1970] and serves as a transparent linear comparator. XGBoost is a non-linear gradient-boosted tree ensemble [@chen2016] that captures nonlinearities and interactions not represented by Ridge. Because both learners operate on the same flattened table, neither preserves modality-specific structure. Both predict the one-week-ahead log return and then reconstruct the corresponding price forecast. Hyperparameter selection follows the time-ordered procedure described in Section \@ref(method-validation), with exact search grids reported in Appendix C.
+Flat models implement early feature-level fusion. For each information set, all available numeric features are concatenated into a weekly feature table, and the most recent four weeks are flattened into a single row for each forecast origin. Ridge applies L2 regularisation [@hoerl1970] and serves as a transparent linear comparator. XGBoost is a nonlinear gradient-boosted tree ensemble [@chen2016] that captures nonlinearities and interactions not represented by Ridge. Because both learners operate on the same flattened table, neither preserves modality-specific structure. Both predict the one-week-ahead log return and then reconstruct the corresponding price forecast. Hyperparameter selection follows the time-ordered procedure described in Section \@ref(method-validation), with exact search grids reported in Appendix C.
 
 ### Deep models {#method-deep}
 
@@ -214,7 +214,7 @@ The finance encoder applies a temporal convolutional network (TCN) [@bai2018] to
 
 The remote-sensing encoder receives monthly embeddings for the 11 AOIs, extracted from Sentinel-2 Surface Reflectance Harmonized patches using a frozen Prithvi-EO-2.0-300M encoder [@szwarcman2026]. Prithvi-EO-2.0 is a publicly released Earth-observation foundation model. This study uses the published weights as a fixed encoder and does not retrain or fine-tune them. The patches are adapted to the six-band convention of the HLS-pretrained encoder, with band mapping, standardisation and resampling documented in Appendix A. Temporal attention combines the four-week embeddings for each AOI. Site attention then combines the 11 AOIs into one remote-sensing representation.
 
-The shipping encoder applies a graph attention network with temporal encoding (GAT) [@velickovic2018] to the weekly 17-node graph over the four-week lookback, producing one shipping representation per forecast origin. The graph's nodes and two edge classes are as described in Section \@ref(method-geography), with dynamic voyage edges directed and fixed corridor edges undirected. For message passing, the directed voyage edges and undirected corridor edges are combined in a symmetrised adjacency matrix, so the encoder does not retain edge direction or type. Adjacency and edge-weighting details are reported in Appendix A.
+The shipping encoder applies a graph attention network (GAT) with temporal encoding [@velickovic2018] to the weekly 17-node graph over the four-week lookback, producing one shipping representation per forecast origin. The graph’s nodes and two edge classes are as described in Section \@ref(method-geography), with dynamic voyage edges directed and fixed corridor edges undirected. For message passing, the directed voyage edges and undirected corridor edges are combined in a symmetrised adjacency matrix, so the encoder does not retain edge direction or type.
 
 The two edge classes before combination and symmetrisation are shown in Figure \@ref(fig:edge-classes).
 
@@ -250,38 +250,38 @@ knitr::include_graphics(here::here("figures", "fig_3_8_testing_block_origins.png
 
 ### Model and hyperparameter selection {#method-hyperparams}
 
-Flat models re-select Ridge and XGBoost hyperparameters on an inner validation set at each scheduled re-estimation, then refit on the full estimation sample available at that date. Deep models instead use a configuration fixed before evaluation, including the latent size. They share the four-week lookback used by the Flat models, which covers approximately one update cycle of the monthly remote-sensing and macroeconomic inputs. At each Deep re-estimation, inner validation is used for early stopping, and the checkpoint with the lowest validation loss is retained. The selected Deep checkpoint is used for the following forecasting. The model is not retrained using the combined training and validation data. Sensitivity analyses using the evaluation sample are reported separately in Appendix B and are not used to select or revise the main specification. Search grids, fixed configurations and early-stopping settings are reported in Appendix C.
+Flat models re-select Ridge and XGBoost hyperparameters on an inner validation set at each scheduled re-estimation, then refit on the full estimation sample available at that date. Deep models instead use a configuration fixed before evaluation, including the latent size. They share the four-week lookback used by the Flat models, which covers approximately one update cycle of the monthly remote-sensing and macroeconomic inputs. At each Deep re-estimation, inner validation is used for early stopping, and the checkpoint with the lowest validation loss is retained. The selected Deep checkpoint is used for the subsequent forecasting. The model is not retrained using the combined training and validation data. Sensitivity analyses using the evaluation sample are reported separately in Appendix B and are not used to select or revise the main specification. Search grids, fixed configurations and early-stopping settings are reported in Appendix C.
 
 ## Model evaluation and interpretation {#method-eval}
 
 ### Forecast evaluation {#method-metrics}
 
-The primary evaluation metrics are calculated from reconstructed price forecasts over the common sample of $T=257$ forecast origins. For model $m$,
+The primary evaluation metrics are calculated from reconstructed price forecasts over the common sample of $n=257$ forecast origins.
 
 \begin{equation}
-\mathrm{RMSE}_m=
+\mathrm{RMSE}=
 \sqrt{
-\frac{1}{T}
-\sum_{t=1}^{T}
-\left(P_{t+1}-\hat{P}_{m,t+1\mid t}\right)^2
+\frac{1}{n}
+\sum_{t=1}^{n}
+\left(P_{t+1}-\hat{P}_{t+1\mid t}\right)^2
 }.
 (\#eq:rmse)
 \end{equation}
 
-Performance relative to the no-change benchmark M0 is summarised by the percentage improvement in RMSE:
+Performance relative to the no-change benchmark M0 is summarised by $\Delta\mathrm{RMSE}$:
 
 \begin{equation}
-\mathrm{RMSE\ improvement\ vs\ M0}_m (\%)
+\Delta\mathrm{RMSE}
 =
-100\times\left(1-\frac{\mathrm{RMSE}_m}{\mathrm{RMSE}_{M0}}\right).
+100\times\left(1-\frac{\mathrm{RMSE}}{\mathrm{RMSE}_{\mathrm{M0}}}\right).
 (\#eq:rmse-improv)
 \end{equation}
 
-Here, $P_{t+1}$ is the observed price and $\hat{P}_{m,t+1\mid t}$ is the price forecast produced by model $m$ at forecast origin $t$. A positive value indicates a lower RMSE than M0, zero indicates equal RMSE, and a negative value indicates worse performance.
+Here, $P_{t+1}$ is the observed price and $\hat{P}_{t+1\mid t}$ is the price forecast produced by the model at forecast origin $t$. The index $t=1,\ldots,n$ orders the 257 evaluation origins in time; it does not index the 365-week calendar. A positive $\Delta\mathrm{RMSE}$ indicates a lower RMSE than M0, zero indicates equal RMSE, and a negative value indicates worse performance.
 
 ### Model interpretation and robustness checks {#method-interp}
 
-Model interpretability concerns identifying where a model’s predictive ability comes from, including which data sources and features contribute more or less to its predictions. For the main Deep specification with positive RMSE improvement relative to M0, SHapley Additive exPlanations (SHAP) values are calculated to quantify each input’s contribution [@lundberg2017]. Absolute SHAP values are aggregated by data source and, where applicable, spatial site or node. Results are reported for the full sample, by year, and within predefined ±8-week event windows. For gated models, weekly modality weights are also reported to describe how the model allocates weight across financial, remote-sensing and shipping representations. SHAP and gate weights describe model attribution and internal allocation rather than causal importance. Robustness is assessed by rerunning the prespecified Deep models with random seeds and comparing their RMSE.
+Model interpretability concerns identifying where a model’s predictive ability comes from, including which data sources and features contribute more or less to its predictions. For the main Deep specification with positive $\Delta\mathrm{RMSE}$, SHAP values are calculated to quantify each input’s contribution [@lundberg2017]. Absolute SHAP values are aggregated by data source and, where applicable, spatial site or node. Results are reported for the full sample, by year, and within predefined ±8-week event windows. For gated models, weekly modality weights are also reported to describe how the model allocates weight across financial, remote-sensing and shipping representations. SHAP and gate weights describe model attribution and internal allocation rather than causal importance. Robustness is assessed by rerunning the prespecified Deep models with random seeds and comparing their RMSE.
 
 ## Ethical considerations {#method-ethics}
 

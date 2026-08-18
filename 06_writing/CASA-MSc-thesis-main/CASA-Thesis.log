@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999998 (TeX Live 2026) (preloaded format=xelatex 2026.8.16)  18 AUG 2026 14:51
+This is XeTeX, Version 3.141592653-2.6-0.999998 (TeX Live 2026) (preloaded format=xelatex 2026.8.18)  18 AUG 2026 20:21
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -426,6 +426,35 @@ Package graphics Info: Driver file: xetex.def on input line 106.
 \pandoc@box=\box63
 \cslhangindent=\skip63
 \csllabelwidth=\skip64
+(/Users/shirly/Library/TinyTeX/texmf-dist/tex/generic/babel/babel.sty
+Package: babel 2026/08/08 v26.10 The multilingual framework for LuaLaTeX, pdfLaTeX and XeLaTeX
+\babel@savecnt=\count328
+LaTeX Encoding Info:    Redeclaring text command \ij (encoding OT1) on input line 2105.
+LaTeX Encoding Info:    Redeclaring text command \IJ (encoding OT1) on input line 2107.
+LaTeX Encoding Info:    Redeclaring text command \ij (encoding T1) on input line 2109.
+LaTeX Encoding Info:    Redeclaring text command \IJ (encoding T1) on input line 2110.
+LaTeX Encoding Info:    Ignoring declaration for text command \ij (encoding ?) on input line 2111.
+LaTeX Encoding Info:    Ignoring declaration for text command \IJ (encoding ?) on input line 2113.
+LaTeX Encoding Info:    Ignoring declaration for text command \SS (encoding ?) on input line 2138.
+\U@D=\dimen192
+\l@unhyphenated=\language5
+(/Users/shirly/Library/TinyTeX/texmf-dist/tex/generic/babel/xebabel.def)
+\bbl@readstream=\read2
+\bbl@dirlevel=\count329
+(/Users/shirly/Library/TinyTeX/texmf-dist/tex/generic/babel/locale/en/babel-british.tex)
+Package babel Info: Importing font and identification data for 'british'
+(babel)             from babel-en-GB.ini. Reported on input line 4426.
+(/Users/shirly/Library/TinyTeX/texmf-dist/tex/generic/babel-english/british.ldf
+Language: british 2017/06/06 v3.3r English support from the babel system
+(/Users/shirly/Library/TinyTeX/texmf-dist/tex/generic/babel-english/english.ldf
+Language: english 2017/06/06 v3.3r English support from the babel system
+Package babel Info: Hyphen rules for 'canadian' set to \l@english
+(babel)             (\language0). Reported on input line 102.
+Package babel Info: Hyphen rules for 'australian' set to \l@ukenglish
+(babel)             (\language3). Reported on input line 105.
+Package babel Info: Hyphen rules for 'newzealand' set to \l@ukenglish
+(babel)             (\language3). Reported on input line 108.
+)))
 
 Package fontspec Info: 
 (fontspec)             Times New Roman scale = 0.9636299023440277.
@@ -487,7 +516,7 @@ Package fontspec Info:
 (fontspec)             Roman/BI/OT:script=latn;language=dflt;mapping=tex-text;"
 
 LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/m/n' will be
-(Font)              scaled to size 12.0pt on input line 107.
+(Font)              scaled to size 12.0pt on input line 116.
 
 Package fontspec Info: 
 (fontspec)             Times New Roman scale = 0.9999971570313723.
@@ -531,11 +560,11 @@ Package fontspec Info:
 (fontspec)             Roman/BI/OT:script=latn;language=dflt;mapping=tex-text;"
 
 LaTeX Font Info:    Overwriting math alphabet `\mathrm' in version `normal'
-(Font)                  OT1/lmr/m/n --> TU/TimesNewRoman(1)/m/n on input line 107.
+(Font)                  OT1/lmr/m/n --> TU/TimesNewRoman(1)/m/n on input line 116.
 LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `normal'
-(Font)                  OT1/lmr/m/it --> TU/TimesNewRoman(1)/m/it on input line 107.
+(Font)                  OT1/lmr/m/it --> TU/TimesNewRoman(1)/m/it on input line 116.
 LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `normal'
-(Font)                  OT1/lmr/bx/n --> TU/TimesNewRoman(1)/b/n on input line 107.
+(Font)                  OT1/lmr/bx/n --> TU/TimesNewRoman(1)/b/n on input line 116.
 (/Users/shirly/Library/TinyTeX/texmf-dist/tex/latex/newunicodechar/newunicodechar.sty
 Package: newunicodechar 2018/04/08 v1.2 Defining Unicode characters
 )
@@ -656,9 +685,9 @@ Package fontspec Info:
 (fontspec)             <->s*[0.8320654025207222]"Helvetica/BI/AAT"
 
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `normal'
-(Font)                  OT1/lmss/m/n --> TU/Helvetica(1)/m/n on input line 113.
+(Font)                  OT1/lmss/m/n --> TU/Helvetica(1)/m/n on input line 122.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
-(Font)                  OT1/lmss/bx/n --> TU/Helvetica(1)/b/n on input line 113.
+(Font)                  OT1/lmss/bx/n --> TU/Helvetica(1)/b/n on input line 122.
 
 Package fontspec Info: 
 (fontspec)             Menlo scale = 0.8209226230763127.
@@ -776,23 +805,23 @@ Package fontspec Info:
 (fontspec)             <->s*[0.8209226230763127]"Menlo/BI/AAT"
 
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `normal'
-(Font)                  OT1/lmtt/m/n --> TU/Menlo(1)/m/n on input line 116.
+(Font)                  OT1/lmtt/m/n --> TU/Menlo(1)/m/n on input line 125.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
-(Font)                  OT1/lmtt/m/n --> TU/Menlo(1)/b/n on input line 116.
+(Font)                  OT1/lmtt/m/n --> TU/Menlo(1)/b/n on input line 125.
 (/Users/shirly/Library/TinyTeX/texmf-dist/tex/latex/titlesec/titlesec.sty
 Package: titlesec 2025/01/04 v2.17 Sectioning titles
 \ttl@box=\box64
 \beforetitleunit=\skip65
 \aftertitleunit=\skip66
-\ttl@plus=\dimen192
-\ttl@minus=\dimen193
+\ttl@plus=\dimen193
+\ttl@minus=\dimen194
 \ttl@toksa=\toks26
-\titlewidth=\dimen194
-\titlewidthlast=\dimen195
-\titlewidthfirst=\dimen196
+\titlewidth=\dimen195
+\titlewidthlast=\dimen196
+\titlewidthfirst=\dimen197
 ) (/Users/shirly/Library/TinyTeX/texmf-dist/tex/latex/hyphenat/hyphenat.sty
 Package: hyphenat 2009/09/02 v2.3c hyphenation utilities
-\langwohyphens=\language3
+\langwohyphens=\language6
 LaTeX Info: Redefining \_ on input line 43.
 ) (/Users/shirly/Library/TinyTeX/texmf-dist/tex/latex/tocbibind/tocbibind.sty
 Package: tocbibind 2026/06/01 v1.5l extra ToC listings
@@ -806,26 +835,26 @@ Package: pdfpages 2026/03/30 v0.6h Insert pages of external PDF documents (AM)
 Package: ifthen 2024/03/16 v1.1e Standard LaTeX ifthen package (DPC)
 ) (/Users/shirly/Library/TinyTeX/texmf-dist/tex/latex/eso-pic/eso-pic.sty
 Package: eso-pic 2026/05/31 v3.0e eso-pic (RN)
-\ESO@tempdima=\dimen197
-\ESO@tempdimb=\dimen198
+\ESO@tempdima=\dimen198
+\ESO@tempdimb=\dimen199
 )
-\AM@pagewidth=\dimen199
-\AM@pageheight=\dimen256
-\AM@fboxrule=\dimen257
+\AM@pagewidth=\dimen256
+\AM@pageheight=\dimen257
+\AM@fboxrule=\dimen258
 (/Users/shirly/Library/TinyTeX/texmf-dist/tex/latex/pdfpages/ppxetex.def
 File: ppxetex.def 2026/03/30 v0.6h Pdfpages driver for XeTeX (AM)
 )
-\pdfpages@includegraphics@status=\count328
+\pdfpages@includegraphics@status=\count330
 \AM@pagebox=\box65
 \AM@global@opts=\toks27
-\AM@pagecnt=\count329
+\AM@pagecnt=\count331
 \AM@toc@title=\toks28
 \AM@lof@heading=\toks29
-\c@AM@survey=\count330
+\c@AM@survey=\count332
 \AM@templatesizebox=\box66
 ) (/Users/shirly/Library/TinyTeX/texmf-dist/tex/latex/float/float.sty
 Package: float 2001/11/08 v1.3d Float enhancements (AL)
-\c@float@type=\count331
+\c@float@type=\count333
 \float@exts=\toks30
 \float@box=\box67
 \@float@everytoks=\toks31
@@ -833,25 +862,25 @@ Package: float 2001/11/08 v1.3d Float enhancements (AL)
 ) (/Users/shirly/Library/TinyTeX/texmf-dist/tex/latex/multirow/multirow.sty
 Package: multirow 2024/11/12 v2.9 Span multiple rows of a table
 \multirow@colwidth=\skip67
-\multirow@cntb=\count332
+\multirow@cntb=\count334
 \multirow@dima=\skip68
-\bigstrutjot=\dimen258
+\bigstrutjot=\dimen259
 ) (/Users/shirly/Library/TinyTeX/texmf-dist/tex/latex/caption/caption.sty
 Package: caption 2023/08/05 v3.6o Customizing captions (AR)
 (/Users/shirly/Library/TinyTeX/texmf-dist/tex/latex/caption/caption3.sty
 Package: caption3 2023/07/31 v2.4d caption3 kernel (AR)
-\caption@tempdima=\dimen259
-\captionmargin=\dimen260
-\caption@leftmargin=\dimen261
-\caption@rightmargin=\dimen262
-\caption@width=\dimen263
-\caption@indent=\dimen264
-\caption@parindent=\dimen265
-\caption@hangindent=\dimen266
+\caption@tempdima=\dimen260
+\captionmargin=\dimen261
+\caption@leftmargin=\dimen262
+\caption@rightmargin=\dimen263
+\caption@width=\dimen264
+\caption@indent=\dimen265
+\caption@parindent=\dimen266
+\caption@hangindent=\dimen267
 Package caption Info: Standard document class detected.
 )
-\c@caption@flags=\count333
-\c@continuedfloat=\count334
+\c@caption@flags=\count335
+\c@continuedfloat=\count336
 Package caption Info: float package is loaded.
 Package caption Info: longtable package is loaded.
 (/Users/shirly/Library/TinyTeX/texmf-dist/tex/latex/caption/ltcaption.sty
@@ -876,11 +905,11 @@ Package: fancyhdr 2025/02/07 v5.2 Extensive control of page headers and footers
 )
 
 Package fancyhdr Warning: \fancyhead's `E' option without twoside option is useless.
-(fancyhdr)                Please consider using the `twoside' option on input line 153.
+(fancyhdr)                Please consider using the `twoside' option on input line 162.
 
 
 Package fancyhdr Warning: \fancyfoot's `E' option without twoside option is useless.
-(fancyhdr)                Please consider using the `twoside' option on input line 154.
+(fancyhdr)                Please consider using the `twoside' option on input line 163.
 
 (/Users/shirly/Library/TinyTeX/texmf-dist/tex/latex/bookmark/bookmark.sty
 Package: bookmark 2026-05-21 v1.32 PDF bookmarks (HO)
@@ -913,19 +942,19 @@ Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 (/Users/shirly/Library/TinyTeX/texmf-dist/tex/latex/kvoptions/kvoptions.sty
 Package: kvoptions 2022-06-15 v3.15 Key value format for package options (HO)
 ))
-\c@section@level=\count335
+\c@section@level=\count337
 ) (/Users/shirly/Library/TinyTeX/texmf-dist/tex/generic/stringenc/stringenc.sty
 Package: stringenc 2019/11/29 v1.12 Convert strings between diff. encodings (HO)
 )
-\@linkdim=\dimen267
-\Hy@linkcounter=\count336
-\Hy@pagecounter=\count337
+\@linkdim=\dimen268
+\Hy@linkcounter=\count338
+\Hy@pagecounter=\count339
 (/Users/shirly/Library/TinyTeX/texmf-dist/tex/latex/hyperref/pd1enc.def
 File: pd1enc.def 2026-06-17 v7.01r Hyperref: PDFDocEncoding definition (HO)
 ) (/Users/shirly/Library/TinyTeX/texmf-dist/tex/generic/intcalc/intcalc.sty
 Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
 )
-\Hy@SavedSpaceFactor=\count338
+\Hy@SavedSpaceFactor=\count340
 (/Users/shirly/Library/TinyTeX/texmf-dist/tex/latex/hyperref/puenc.def
 File: puenc.def 2026-06-17 v7.01r Hyperref: PDF Unicode definition (HO)
 )
@@ -937,21 +966,21 @@ Package hyperref Info: Plain pages OFF on input line 4214.
 Package hyperref Info: Backreferencing OFF on input line 4219.
 Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
 Package hyperref Info: Bookmarks ON on input line 4466.
-\c@Hy@tempcnt=\count339
+\c@Hy@tempcnt=\count341
 (/Users/shirly/Library/TinyTeX/texmf-dist/tex/latex/url/url.sty
 \Urlmuskip=\muskip19
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
 )
 LaTeX Info: Redefining \url on input line 4805.
-\XeTeXLinkMargin=\dimen268
+\XeTeXLinkMargin=\dimen269
 (/Users/shirly/Library/TinyTeX/texmf-dist/tex/generic/bitset/bitset.sty
 Package: bitset 2019/12/09 v1.3 Handle bit-vector datatype (HO)
 (/Users/shirly/Library/TinyTeX/texmf-dist/tex/generic/bigintcalc/bigintcalc.sty
 Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO)
 ))
-\Fld@menulength=\count340
-\Field@Width=\dimen269
-\Fld@charsize=\dimen270
+\Fld@menulength=\count342
+\Field@Width=\dimen270
+\Fld@charsize=\dimen271
 Package hyperref Info: Hyper figures OFF on input line 6091.
 Package hyperref Info: Link nesting OFF on input line 6096.
 Package hyperref Info: Hyper index ON on input line 6099.
@@ -959,18 +988,18 @@ Package hyperref Info: backreferencing OFF on input line 6106.
 Package hyperref Info: Link coloring OFF on input line 6111.
 Package hyperref Info: Link coloring with OCG OFF on input line 6116.
 Package hyperref Info: PDF/A mode OFF on input line 6121.
-\Hy@abspage=\count341
-\c@Item=\count342
-\c@Hfootnote=\count343
+\Hy@abspage=\count343
+\c@Item=\count344
+\c@Hfootnote=\count345
 )
 Package hyperref Info: Driver (autodetected): hxetex.
 (/Users/shirly/Library/TinyTeX/texmf-dist/tex/latex/hyperref/hxetex.def
 File: hxetex.def 2026-06-17 v7.01r Hyperref driver for XeTeX
 \pdfm@box=\box69
-\c@Hy@AnnotLevel=\count344
-\HyField@AnnotCount=\count345
-\Fld@listcount=\count346
-\c@bookmark@seq@number=\count347
+\c@Hy@AnnotLevel=\count346
+\HyField@AnnotCount=\count347
+\Fld@listcount=\count348
+\c@bookmark@seq@number=\count349
 (/Users/shirly/Library/TinyTeX/texmf-dist/tex/latex/rerunfilecheck/rerunfilecheck.sty
 Package: rerunfilecheck 2025-06-21 v1.11 Rerun checks for auxiliary files (HO)
 (/Users/shirly/Library/TinyTeX/texmf-dist/tex/generic/uniquecounter/uniquecounter.sty
@@ -981,30 +1010,30 @@ Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 28
 \Hy@SectionHShift=\skip83
 ) (/Users/shirly/Library/TinyTeX/texmf-dist/tex/latex/bookmark/bkm-xetex.def
 File: bkm-xetex.def 2026-05-21 v1.32 bookmark driver for xetex (HO)
-\BKM@id=\count348
+\BKM@id=\count350
 )) (./CASA-Thesis.aux)
 \openout1 = `CASA-Thesis.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 236.
-LaTeX Font Info:    ... okay on input line 236.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 236.
-LaTeX Font Info:    ... okay on input line 236.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 236.
-LaTeX Font Info:    ... okay on input line 236.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 236.
-LaTeX Font Info:    ... okay on input line 236.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 236.
-LaTeX Font Info:    ... okay on input line 236.
-LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 236.
-LaTeX Font Info:    ... okay on input line 236.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 236.
-LaTeX Font Info:    ... okay on input line 236.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 236.
-LaTeX Font Info:    ... okay on input line 236.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 236.
-LaTeX Font Info:    ... okay on input line 236.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 236.
-LaTeX Font Info:    ... okay on input line 236.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 246.
+LaTeX Font Info:    ... okay on input line 246.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 246.
+LaTeX Font Info:    ... okay on input line 246.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 246.
+LaTeX Font Info:    ... okay on input line 246.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 246.
+LaTeX Font Info:    ... okay on input line 246.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 246.
+LaTeX Font Info:    ... okay on input line 246.
+LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 246.
+LaTeX Font Info:    ... okay on input line 246.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 246.
+LaTeX Font Info:    ... okay on input line 246.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 246.
+LaTeX Font Info:    ... okay on input line 246.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 246.
+LaTeX Font Info:    ... okay on input line 246.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 246.
+LaTeX Font Info:    ... okay on input line 246.
 *geometry* driver: auto-detecting
 *geometry* detected driver: xetex
 *geometry* verbose mode - [ preamble ] result:
@@ -1066,7 +1095,7 @@ Package fontspec Info:
 (fontspec)             <->s*[1.037736795366909]"[latinmodern-math.otf]/OT:script=math;language=dflt;"
 
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(0)/m/n' will be
-(Font)              scaled to size 12.45282pt on input line 236.
+(Font)              scaled to size 12.45282pt on input line 246.
 
 Package fontspec Info: 
 (fontspec)             latinmodern-math scale = 1.037736795366909.
@@ -1102,15 +1131,15 @@ Package fontspec Info:
 (fontspec)             <->s*[1.037736795366909]"[latinmodern-math.otf]/OT:script=math;language=dflt;"
 
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 12.45282pt on input line 236.
+(Font)              scaled to size 12.45282pt on input line 246.
 LaTeX Font Info:    Encoding `OT1' has changed to `TU' for symbol font
-(Font)              `operators' in the math version `normal' on input line 236.
+(Font)              `operators' in the math version `normal' on input line 246.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
-(Font)                  OT1/lmr/m/n --> TU/latinmodern-math.otf(1)/m/n on input line 236.
+(Font)                  OT1/lmr/m/n --> TU/latinmodern-math.otf(1)/m/n on input line 246.
 LaTeX Font Info:    Encoding `OT1' has changed to `TU' for symbol font
-(Font)              `operators' in the math version `bold' on input line 236.
+(Font)              `operators' in the math version `bold' on input line 246.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
-(Font)                  OT1/lmr/bx/n --> TU/latinmodern-math.otf(1)/b/n on input line 236.
+(Font)                  OT1/lmr/bx/n --> TU/latinmodern-math.otf(1)/b/n on input line 246.
 
 Package fontspec Info: 
 (fontspec)             latinmodern-math scale = 1.037736795366909.
@@ -1176,13 +1205,13 @@ Package fontspec Info:
 (fontspec)             <->s*[1.037840569046446]"[latinmodern-math.otf]/OT:script=math;language=dflt;"
 
 LaTeX Font Info:    Encoding `OMS' has changed to `TU' for symbol font
-(Font)              `symbols' in the math version `normal' on input line 236.
+(Font)              `symbols' in the math version `normal' on input line 246.
 LaTeX Font Info:    Overwriting symbol font `symbols' in version `normal'
-(Font)                  OMS/lmsy/m/n --> TU/latinmodern-math.otf(2)/m/n on input line 236.
+(Font)                  OMS/lmsy/m/n --> TU/latinmodern-math.otf(2)/m/n on input line 246.
 LaTeX Font Info:    Encoding `OMS' has changed to `TU' for symbol font
-(Font)              `symbols' in the math version `bold' on input line 236.
+(Font)              `symbols' in the math version `bold' on input line 246.
 LaTeX Font Info:    Overwriting symbol font `symbols' in version `bold'
-(Font)                  OMS/lmsy/b/n --> TU/latinmodern-math.otf(2)/b/n on input line 236.
+(Font)                  OMS/lmsy/b/n --> TU/latinmodern-math.otf(2)/b/n on input line 246.
 
 Package fontspec Info: 
 (fontspec)             latinmodern-math scale = 1.037736795366909.
@@ -1242,13 +1271,13 @@ Package fontspec Info:
 (fontspec)             <->s*[1.037633021687372]"[latinmodern-math.otf]/OT:script=math;language=dflt;"
 
 LaTeX Font Info:    Encoding `OMX' has changed to `TU' for symbol font
-(Font)              `largesymbols' in the math version `normal' on input line 236.
+(Font)              `largesymbols' in the math version `normal' on input line 246.
 LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `normal'
-(Font)                  OMX/lmex/m/n --> TU/latinmodern-math.otf(3)/m/n on input line 236.
+(Font)                  OMX/lmex/m/n --> TU/latinmodern-math.otf(3)/m/n on input line 246.
 LaTeX Font Info:    Encoding `OMX' has changed to `TU' for symbol font
-(Font)              `largesymbols' in the math version `bold' on input line 236.
+(Font)              `largesymbols' in the math version `bold' on input line 246.
 LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `bold'
-(Font)                  OMX/lmex/m/n --> TU/latinmodern-math.otf(3)/b/n on input line 236.
+(Font)                  OMX/lmex/m/n --> TU/latinmodern-math.otf(3)/b/n on input line 246.
 (/Users/shirly/Library/TinyTeX/texmf-dist/tex/latex/pdflscape/pdflscape.sty
 Package: pdflscape 2025-06-23 v0.14 Display of landscape pages in PDF
 (/Users/shirly/Library/TinyTeX/texmf-dist/tex/latex/pdflscape/pdflscape-nometadata.sty
@@ -1261,421 +1290,478 @@ Package pdflscape Info: Auto-detected driver: dvipdfm (xetex) on input line 98.
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: hyperref package is loaded.
 Package caption Info: End \AtBeginDocument code.
-Package hyperref Info: Link coloring OFF on input line 236.
+Package hyperref Info: Link coloring OFF on input line 246.
+Package babel Info: Main language set to 'british'.
 LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/m/n' will be
-(Font)              scaled to size 22.0pt on input line 238.
+(Font)              scaled to size 22.0pt on input line 248.
 LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/b/n' will be
-(Font)              scaled to size 22.0pt on input line 238.
+(Font)              scaled to size 22.0pt on input line 248.
 LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/m/n' will be
-(Font)              scaled to size 16.0pt on input line 238.
+(Font)              scaled to size 16.0pt on input line 248.
 LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/m/n' will be
-(Font)              scaled to size 14.0pt on input line 238.
+(Font)              scaled to size 14.0pt on input line 248.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 8.71696pt on input line 238.
+(Font)              scaled to size 8.71696pt on input line 248.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 6.22641pt on input line 238.
-LaTeX Font Info:    Trying to load font information for OML+lmm on input line 238.
+(Font)              scaled to size 6.22641pt on input line 248.
+LaTeX Font Info:    Trying to load font information for OML+lmm on input line 248.
 (/Users/shirly/Library/TinyTeX/texmf-dist/tex/latex/lm/omllmm.fd
 File: omllmm.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 12.4541pt on input line 238.
+(Font)              scaled to size 12.4541pt on input line 248.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 8.71785pt on input line 238.
+(Font)              scaled to size 8.71785pt on input line 248.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 6.22705pt on input line 238.
+(Font)              scaled to size 6.22705pt on input line 248.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 12.45154pt on input line 238.
+(Font)              scaled to size 12.45154pt on input line 248.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 8.71606pt on input line 238.
+(Font)              scaled to size 8.71606pt on input line 248.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 6.22577pt on input line 238.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 238.
+(Font)              scaled to size 6.22577pt on input line 248.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 248.
 (/Users/shirly/Library/TinyTeX/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 238.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 248.
 (/Users/shirly/Library/TinyTeX/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/m/n' will be
-(Font)              scaled to size 8.4pt on input line 238.
+(Font)              scaled to size 8.4pt on input line 248.
 [1
 
 ]
 LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/m/n' will be
-(Font)              scaled to size 24.88pt on input line 240.
+(Font)              scaled to size 24.88pt on input line 250.
 LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/b/n' will be
-(Font)              scaled to size 24.88pt on input line 240.
+(Font)              scaled to size 24.88pt on input line 250.
 [2
 
-]
+] [3]
 LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/b/n' will be
-(Font)              scaled to size 12.0pt on input line 248.
+(Font)              scaled to size 12.0pt on input line 258.
 File: general_images/signature.png Graphic file (type bmp)
 <general_images/signature.png>
-[3
+[4
 
-] [4
+] [5
 
-] (./CASA-Thesis.toc [5
+] (./CASA-Thesis.toc [6
 
-] [6])
+] [7])
 \tf@toc=\write3
 \openout3 = `CASA-Thesis.toc'.
 
-[7] (./CASA-Thesis.lof)
+[8] (./CASA-Thesis.lof)
 \tf@lof=\write4
 \openout4 = `CASA-Thesis.lof'.
 
-[8
+[9
 
 
 ] (./CASA-Thesis.lot)
 \tf@lot=\write5
 \openout5 = `CASA-Thesis.lot'.
 
-[9
+[10
 
 
-] [10
+] [11
 
 
 ]
 Chapter 1.
 LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/m/n' will be
-(Font)              scaled to size 17.28pt on input line 297.
+(Font)              scaled to size 17.28pt on input line 315.
 LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/b/n' will be
-(Font)              scaled to size 17.28pt on input line 297.
+(Font)              scaled to size 17.28pt on input line 315.
 
-Underfull \hbox (badness 1019) in paragraph at lines 299--300
+Underfull \hbox (badness 1019) in paragraph at lines 317--318
 \TU/TimesNewRoman(0)/m/n/12 operating costs of energy-intensive industries. These effects spread through financial
  []
 
+[12
 
-Underfull \hbox (badness 1072) in paragraph at lines 301--302
-\TU/TimesNewRoman(0)/m/n/12 expressed relative to a small number of benchmarks. Among the most widely used
- []
-
-
-Underfull \hbox (badness 1888) in paragraph at lines 301--302
-\TU/TimesNewRoman(0)/m/n/12 Information Administration, 2014[]). Brent is a benchmark complex rooted in light,
- []
-
-[11
-
-] [12]
-Underfull \hbox (badness 2005) in paragraph at lines 315--316
+] [13]
+Underfull \hbox (badness 2005) in paragraph at lines 333--334
 \TU/TimesNewRoman(0)/m/n/12 Representation-level fusion encodes each modality separately and then combines the
  []
 
-[13] [14]
+[14] [15]
 Chapter 2.
 
-Underfull \hbox (badness 3128) in paragraph at lines 331--332
+Underfull \hbox (badness 3128) in paragraph at lines 353--354
 \TU/TimesNewRoman(0)/m/n/12 Research on oil-price movements shows that similar price changes can arise from
  []
 
 
-Underfull \hbox (badness 1590) in paragraph at lines 331--332
+Underfull \hbox (badness 1590) in paragraph at lines 353--354
 \TU/TimesNewRoman(0)/m/n/12 economically different sources. Kilian ([]2009[]) distinguishes among shocks to global
  []
 
 
-Underfull \hbox (badness 1107) in paragraph at lines 333--334
+Underfull \hbox (badness 1107) in paragraph at lines 355--356
 []\TU/TimesNewRoman(0)/m/n/12 A separate literature examines whether these economic relationships produce accurate
  []
 
-[15
+[16
 
 ]
-LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/m/it' will be
-(Font)              scaled to size 12.0pt on input line 337.
-
-Underfull \hbox (badness 2310) in paragraph at lines 337--338
+Underfull \hbox (badness 2310) in paragraph at lines 359--360
 \TU/TimesNewRoman(0)/m/n/12 Machine learning has expanded the range of methods used in oil-price forecasting.
  []
 
 
-Underfull \hbox (badness 1509) in paragraph at lines 339--340
+Underfull \hbox (badness 1509) in paragraph at lines 361--362
 \TU/TimesNewRoman(0)/m/n/12 forecasting and report strong performance from temporal convolutional networks and
  []
 
 
-Underfull \hbox (badness 1430) in paragraph at lines 341--342
+Underfull \hbox (badness 7012) in paragraph at lines 361--362
+\TU/TimesNewRoman(0)/m/n/12 extraction with Extreme Gradient Boosting (XGBoost) for WTI price prediction.
+ []
+
+
+Underfull \hbox (badness 1430) in paragraph at lines 363--364
 \TU/TimesNewRoman(0)/m/n/12 approaches. Reported performance depends strongly on the target, horizon, sample,
  []
 
-[16]
-Underfull \hbox (badness 2189) in paragraph at lines 349--350
-\TU/TimesNewRoman(0)/m/n/12 Marini and Tumbarello ([]2019[]) construct high-frequency trade indicators from vessel
+[17]
+Underfull \hbox (badness 1424) in paragraph at lines 371--372
+\TU/TimesNewRoman(0)/m/n/12 high-frequency trade indicators from vessel movements and port calls. International
  []
 
-[17]
-Underfull \hbox (badness 3229) in paragraph at lines 359--360
+[18]
+Underfull \hbox (badness 3229) in paragraph at lines 381--382
 \TU/TimesNewRoman(0)/m/n/12 Maritime-network studies provide a way to preserve relationships among locations.
  []
 
-[18] [19] [20]
-Underfull \hbox (badness 2856) in paragraph at lines 385--386
-\TU/TimesNewRoman(0)/m/n/12 ([]Cong \TU/TimesNewRoman(0)/m/it/12 et al.\TU/TimesNewRoman(0)/m/n/12 , 2022[]) learns representations from temporal and multispectral satellite
- []
-
-[21]
-Underfull \hbox (badness 1259) in paragraph at lines 395--396
-\TU/TimesNewRoman(0)/m/n/12 information availability, but the meaning of each signal depends on its physical and
+[19] [20] [21]
+Underfull \hbox (badness 1546) in paragraph at lines 405--406
+\TU/TimesNewRoman(0)/m/n/12 to financial forecasting by combining textual reports and numerical economic series.
  []
 
 
-Underfull \hbox (badness 1490) in paragraph at lines 401--402
-[]\TU/TimesNewRoman(0)/m/n/12 Second, existing studies process shipping and remote-sensing data in different ways.
+Underfull \hbox (badness 2980) in paragraph at lines 407--408
+\TU/TimesNewRoman(0)/m/n/12 ([]Cong et al., 2022[]) learns representations from temporal and multispectral satellite
  []
 
 [22]
-Underfull \hbox (badness 2865) in paragraph at lines 405--406
+LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/m/n' will be
+(Font)              scaled to size 10.95pt on input line 424.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
+(Font)              scaled to size 11.36319pt on input line 431.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
+(Font)              scaled to size 8.30188pt on input line 431.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
+(Font)              scaled to size 11.36435pt on input line 431.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
+(Font)              scaled to size 8.30273pt on input line 431.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
+(Font)              scaled to size 11.36201pt on input line 431.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
+(Font)              scaled to size 8.30103pt on input line 431.
+LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/m/n' will be
+(Font)              scaled to size 10.0pt on input line 433.
+LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/m/it' will be
+(Font)              scaled to size 10.0pt on input line 439.
+LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/m/n' will be
+(Font)              scaled to size 8.0pt on input line 448.
+[23] [24]
+Underfull \hbox (badness 1490) in paragraph at lines 468--469
+[]\TU/TimesNewRoman(0)/m/n/12 Second, existing studies process shipping and remote-sensing data in different ways.
+ []
+
+
+Underfull \hbox (badness 2865) in paragraph at lines 472--473
 []\TU/TimesNewRoman(0)/m/n/12 This dissertation addresses these gaps through a shared rolling-origin out-of-sample
  []
 
 
-Underfull \hbox (badness 2573) in paragraph at lines 405--406
+Underfull \hbox (badness 2573) in paragraph at lines 472--473
 \TU/TimesNewRoman(0)/m/n/12 framework for one-week-ahead Brent price forecasting. It first compares financial
  []
 
-[23]
+[25] [26]
 Chapter 3.
-[24
+[27
 
-] [25]
+] [28]
 File: figures/fig_3_1_research_design.png Graphic file (type bmp)
 <figures/fig_3_1_research_design.png>
-[26]
+[29]
 LaTeX Font Info:    Font shape `TU/TimesNewRoman(1)/m/n' will be
-(Font)              scaled to size 12.0pt on input line 475.
+(Font)              scaled to size 12.0pt on input line 542.
 LaTeX Font Info:    Font shape `TU/TimesNewRoman(1)/m/n' will be
-(Font)              scaled to size 8.4pt on input line 475.
+(Font)              scaled to size 8.4pt on input line 542.
 LaTeX Font Info:    Font shape `TU/TimesNewRoman(1)/m/n' will be
-(Font)              scaled to size 6.0pt on input line 475.
+(Font)              scaled to size 6.0pt on input line 542.
 File: figures/fig_3_2_price_returns.pdf Graphic file (type pdf)
 <use figures/fig_3_2_price_returns.pdf>
-[27]
-File: figures/fig_3_3_study_sites_map.png Graphic file (type bmp)
-<figures/fig_3_3_study_sites_map.png>
-[28]
+[30]
+File: figures/fig_3_3_study_sites_map.pdf Graphic file (type pdf)
+<use figures/fig_3_3_study_sites_map.pdf>
+[31]
 LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/m/n' will be
-(Font)              scaled to size 14.4pt on input line 518.
+(Font)              scaled to size 14.4pt on input line 585.
 LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/b/n' will be
-(Font)              scaled to size 14.4pt on input line 518.
+(Font)              scaled to size 14.4pt on input line 585.
 
-Overfull \hbox (18.25981pt too wide) in alignment at lines 526--531
+Overfull \hbox (18.25981pt too wide) in alignment at lines 593--598
  [] [] [] [] 
  []
 
 
-Overfull \hbox (18.25981pt too wide) in alignment at lines 531--535
+Overfull \hbox (18.25981pt too wide) in alignment at lines 598--602
  [] [] [] [] 
  []
 
 
-Overfull \hbox (18.25981pt too wide) in alignment at lines 535--537
+Overfull \hbox (18.25981pt too wide) in alignment at lines 602--604
  [] [] [] [] 
  []
 
 
-Overfull \hbox (4.01997pt too wide) in paragraph at lines 542--543
+Overfull \hbox (4.01997pt too wide) in paragraph at lines 609--610
 []|[][]\TU/TimesNewRoman(1)/m/n/12 Prithvi-EO-2.0[][]; 
  []
 
 
-Overfull \hbox (18.25981pt too wide) in alignment at lines 537--547
+Overfull \hbox (18.25981pt too wide) in alignment at lines 604--614
  [] [] [] [] 
  []
 
-[29]
-Underfull \hbox (badness 1521) in paragraph at lines 549--550
+[32]
+Underfull \hbox (badness 1521) in paragraph at lines 616--617
 \TU/TimesNewRoman(1)/m/n/12 the Dallas Fed Index of Global Real Economic Activity, and the Caldara–Iacoviello
  []
 
-[30]
+[33]
 File: figures/fig_3_4_worked_example_jurong.pdf Graphic file (type pdf)
 <use figures/fig_3_4_worked_example_jurong.pdf>
-[31] [32]
-Underfull \hbox (badness 1286) in paragraph at lines 576--577
+[34] [35]
+Underfull \hbox (badness 1286) in paragraph at lines 643--644
 \TU/TimesNewRoman(1)/m/n/12 Monthly optical composites are cloud-filtered before the indices are constructed, and
  []
 
-[33]
-File: figures/fig_3_5_edge_classes.png Graphic file (type bmp)
-<figures/fig_3_5_edge_classes.png>
-[34]
+[36]
+File: figures/fig_3_5_edge_classes.pdf Graphic file (type pdf)
+<use figures/fig_3_5_edge_classes.pdf>
+[37]
 File: figures/fig_3_6_deep-model-architecture1.png Graphic file (type bmp)
 <figures/fig_3_6_deep-model-architecture1.png>
-[35] [36]
+[38] [39]
 File: figures/fig_3_7_expanding_window.pdf Graphic file (type pdf)
 <use figures/fig_3_7_expanding_window.pdf>
 File: figures/fig_3_8_testing_block_origins.pdf Graphic file (type pdf)
 <use figures/fig_3_8_testing_block_origins.pdf>
-[37] [38] [39]
-Underfull \hbox (badness 1231) in paragraph at lines 687--688
+[40] [41] [42]
+Underfull \hbox (badness 1231) in paragraph at lines 754--755
 \TU/TimesNewRoman(1)/m/n/12 available on GitHub ([][]$[][][][][] [] [] [] [][][][][][] [] [][][] [] [][][][][][][][] [] [][][][][][][][] [][] [][][][][][][][][][][][]$[][]). Package
  []
 
 
-Underfull \hbox (badness 1675) in paragraph at lines 687--688
+Underfull \hbox (badness 1675) in paragraph at lines 754--755
 \TU/TimesNewRoman(1)/m/n/12 versions, random seeds and installation commands are documented in the repository
  []
 
-[40]
+[43]
 Chapter 4.
-
-Overfull \hbox (25.32893pt too wide) in alignment at lines 695--700
- [] [] [] [] [] 
- []
-
-
-Overfull \hbox (25.32893pt too wide) in alignment at lines 700--704
- [] [] [] [] [] 
- []
-
-
-Overfull \hbox (25.32893pt too wide) in alignment at lines 704--706
- [] [] [] [] [] 
- []
-
-
-Overfull \hbox (25.32893pt too wide) in alignment at lines 706--728
- [] [] [] [] [] 
- []
-
-File: figures/fig_4_1_flat_rmse_improvement.png Graphic file (type bmp)
-<figures/fig_4_1_flat_rmse_improvement.png>
-[41
+LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/m/it' will be
+(Font)              scaled to size 12.0pt on input line 797.
+File: figures/fig_4_1_flat_rmse_improvement.pdf Graphic file (type pdf)
+<use figures/fig_4_1_flat_rmse_improvement.pdf>
+[44
 
 ]
-Underfull \hbox (badness 1137) in paragraph at lines 747--748
+Underfull \hbox (badness 1137) in paragraph at lines 814--815
 \TU/TimesNewRoman(1)/m/n/12 main specification, while cross-attention is reported as a secondary comparison. No
  []
 
-[42]
-Overfull \hbox (67.76602pt too wide) in alignment at lines 749--754
+[45]
+Overfull \hbox (12.83063pt too wide) in alignment at lines 816--821
  [] [] [] [] [] 
  []
 
 
-Overfull \hbox (67.76602pt too wide) in alignment at lines 754--758
+Overfull \hbox (12.83063pt too wide) in alignment at lines 821--825
  [] [] [] [] [] 
  []
 
 
-Overfull \hbox (67.76602pt too wide) in alignment at lines 758--760
+Overfull \hbox (12.83063pt too wide) in alignment at lines 825--827
  [] [] [] [] [] 
  []
 
 
-Overfull \hbox (67.76602pt too wide) in alignment at lines 760--779
+Overfull \hbox (12.83063pt too wide) in alignment at lines 827--846
  [] [] [] [] [] 
  []
 
-File: figures/fig_4_2_deep_rmse_improvement.png Graphic file (type bmp)
-<figures/fig_4_2_deep_rmse_improvement.png>
-[43]
-Underfull \hbox (badness 1721) in paragraph at lines 796--797
+File: figures/fig_4_2_deep_rmse_improvement.pdf Graphic file (type pdf)
+<use figures/fig_4_2_deep_rmse_improvement.pdf>
+[46]
+Underfull \hbox (badness 1721) in paragraph at lines 863--864
 []\TU/TimesNewRoman(1)/m/n/12 Overall, the Deep family performs better than the Flat family, although most Deep
  []
 
 
-Underfull \hbox (badness 1430) in paragraph at lines 796--797
+Underfull \hbox (badness 1430) in paragraph at lines 863--864
 \TU/TimesNewRoman(1)/m/n/12 specifications still do not outperform M0. For RQ1, shipping provides the clearest
  []
 
-[44]
-Overfull \hbox (24.36302pt too wide) in alignment at lines 802--807
+[47]
+Overfull \hbox (24.36302pt too wide) in alignment at lines 869--874
  [] [] [] [] [] [] 
  []
 
 
-Overfull \hbox (24.36302pt too wide) in alignment at lines 807--811
+Overfull \hbox (24.36302pt too wide) in alignment at lines 874--878
  [] [] [] [] [] [] 
  []
 
 
-Overfull \hbox (24.36302pt too wide) in alignment at lines 811--813
+Overfull \hbox (24.36302pt too wide) in alignment at lines 878--880
  [] [] [] [] [] [] 
  []
 
 
-Overfull \hbox (24.36302pt too wide) in alignment at lines 813--822
+Overfull \hbox (24.36302pt too wide) in alignment at lines 880--889
  [] [] [] [] [] [] 
  []
 
-File: figures/fig_4_3_flat_vs_deep_slope.png Graphic file (type bmp)
-<figures/fig_4_3_flat_vs_deep_slope.png>
-[45]
-Underfull \hbox (badness 1052) in paragraph at lines 837--838
-\TU/TimesNewRoman(1)/m/n/12 to representation-level fusion alone. Nevertheless, the comparison suggests that how
- []
+File: figures/fig_4_3_flat_vs_deep_slope.pdf Graphic file (type pdf)
+<use figures/fig_4_3_flat_vs_deep_slope.pdf>
+[48] [49] [50]
+File: figures/fig_4_4_node_shap_map.pdf Graphic file (type pdf)
+<use figures/fig_4_4_node_shap_map.pdf>
+File: figures/fig_4_5_node_shap_heatmap.pdf Graphic file (type pdf)
+<use figures/fig_4_5_node_shap_heatmap.pdf>
+[51] [52] [53
 
-[46] [47]
-File: figures/fig_4_4_node_shap_map.png Graphic file (type bmp)
-<figures/fig_4_4_node_shap_map.png>
-File: figures/fig_4_5_node_shap_heatmap.png Graphic file (type bmp)
-<figures/fig_4_5_node_shap_heatmap.png>
-[48] [49] [50
-
-] [51]
+] [54]
 Chapter 5.
-[52
+[55
 
 ]
-Underfull \hbox (badness 3758) in paragraph at lines 948--948
+Underfull \hbox (badness 3758) in paragraph at lines 1013--1013
 |[]\TU/TimesNewRoman(0)/b/n/17.28 RQ2 — Does representation-level fusion beat flat
  []
 
-
-Underfull \hbox (badness 1902) in paragraph at lines 952--953
-\TU/TimesNewRoman(1)/m/n/12 whereas multimodal models retain separate representations before fusion ([]Arevalo \TU/TimesNewRoman(0)/m/it/12 et
+[56] [57] [58] [59]
+Underfull \hbox (badness 1558) in paragraph at lines 1045--1046
+\TU/TimesNewRoman(1)/m/n/12 the Deep shipping pathway additionally introduces an explicit graph structure. The
  []
 
-[53] [54] [55] [56] [57] [58]
+[60] [61]
 Chapter 6.
-[59
+
+Underfull \hbox (badness 1314) in paragraph at lines 1061--1062
+\TU/TimesNewRoman(1)/m/n/12 value and predictive value should therefore be assessed separately. For applications
+ []
+
+
+Underfull \hbox (badness 2435) in paragraph at lines 1061--1062
+\TU/TimesNewRoman(1)/m/n/12 such as energy-security monitoring, trade planning and inflation-sensitive budgeting,
+ []
+
+[62
+
+] [63]
+Underfull \hbox (badness 1062) in paragraph at lines 1080--1081
+$[][][] [][] [][][][] [][] [][] [][] [][][][][][] [][] [][][][][][][] [][] [][][][][][][][][][] [][] [][][][][] [][] [][][][][] [][] [][] [][] [][][][] [][] [][][][] [][] [][][][][]$[] \TU/TimesNewRoman(1)/m/n/12 (Accessed: 1
+ []
+
+
+Underfull \hbox (badness 2818) in paragraph at lines 1083--1084
+\TU/TimesNewRoman(1)/m/n/12 J. (2026). \TU/TimesNewRoman(0)/m/it/12 Nowcasting country-level trade estimates using IMF PortWatch\TU/TimesNewRoman(1)/m/n/12 . IMF
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1083--1084
+\TU/TimesNewRoman(1)/m/n/12 at: []$[][][][][] [] [] [] [][][] [] [][][] [] [][][] [] [][] [] [][][][][][][][][][][][] [] [][] [] [][][][][][] [] [][][][] [] [][] [] [][] [] [][][][][][][][][][] [][] [][][][][][][] [][]$
+ []
+
+[64
 
 ]
-Underfull \hbox (badness 1178) in paragraph at lines 998--999
-[]\TU/TimesNewRoman(1)/m/n/12 Future research can extend this study in three areas: temporal and spatial coverage,
- []
-
-[60] [61
-
-] [62]
-Underfull \hbox (badness 4013) in paragraph at lines 1056--1057
-[]\TU/TimesNewRoman(1)/m/n/12 Hoerl, A.E. and Kennard, R.W. (1970) “Ridge regression: Biased estimation for
+Underfull \hbox (badness 1460) in paragraph at lines 1095--1096
+\TU/TimesNewRoman(0)/m/it/12 predict oil demand? \TU/TimesNewRoman(1)/m/n/12 ECB Working Paper Series No. 3198. Frankfurt am Main:
  []
 
 
-Underfull \hbox (badness 2409) in paragraph at lines 1056--1057
-\TU/TimesNewRoman(1)/m/n/12 nonorthogonal problems,” \TU/TimesNewRoman(0)/m/it/12 Technometrics\TU/TimesNewRoman(1)/m/n/12 , 12(1), pp. 55–67. Available at: []$[][][][][] []
- []
-
-[63]
-Underfull \hbox (badness 3312) in paragraph at lines 1068--1069
-\TU/TimesNewRoman(1)/m/n/12 multigraph convolutional network,” \TU/TimesNewRoman(0)/m/it/12 IEEE Transactions on Intelligent Transportation
- []
-
-[64]
-Underfull \hbox (badness 3199) in paragraph at lines 1107--1108
-[]\TU/TimesNewRoman(1)/m/n/12 Veličković, P. \TU/TimesNewRoman(0)/m/it/12 et al. \TU/TimesNewRoman(1)/m/n/12 (2018) “Graph attention networks,” \TU/TimesNewRoman(0)/m/it/12 International conference
+Underfull \hbox (badness 1253) in paragraph at lines 1095--1096
+\TU/TimesNewRoman(1)/m/n/12 European Central Bank. Available at: []$[][][][][] [] [] [] [][][] [] [][][] [] [][][][][][] [] [][] [] [][][] [] [][][] [] [][][][][][] [] [][][] []$
  []
 
 
-Underfull \hbox (badness 1194) in paragraph at lines 1107--1108
-\TU/TimesNewRoman(0)/m/it/12 on learning representations (ICLR 2018)\TU/TimesNewRoman(1)/m/n/12 . Vancouver, Canada. Available at: []$[][][][][] []
+Underfull \hbox (badness 6691) in paragraph at lines 1104--1105
+$[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] [][] [][][][][][][][] [][] [][][][][][][][][][] [] [][][][]$[] \TU/TimesNewRoman(1)/m/n/12 (Accessed: 18 August
  []
 
 [65]
-Underfull \hbox (badness 1515) in paragraph at lines 1113--1114
-\TU/TimesNewRoman(1)/m/n/12 Exchange. Available at: []$[][][][][] [] [] [] [][][] [] [][][] [] [][][] [] [][][][][][] [][] [][][][][] [][] [][][][][][][][][][] [][] [][][][][] [][] [][][][] [][] [][][] [][]
+Underfull \hbox (badness 2961) in paragraph at lines 1113--1114
+[]\TU/TimesNewRoman(1)/m/n/12 Foroutan, P. and Lahmiri, S. (2024). ‘Deep learning systems for forecasting the
  []
 
+
+Underfull \hbox (badness 10000) in paragraph at lines 1116--1117
+$[][][][][] [] [][][][][] [] [][][][] [] [][][][] [] [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] [][] [][][][][][][][] [][] [][][][][][][][][][] [] [][][][]$[]
+ []
+
+
+Underfull \hbox (badness 2401) in paragraph at lines 1122--1123
+[]\TU/TimesNewRoman(1)/m/n/12 Hoerl, A.E. and Kennard, R.W. (1970). ‘Ridge regression: biased estimation for
+ []
+
+
+Overfull \hbox (33.37964pt too wide) in paragraph at lines 1122--1123
+\TU/TimesNewRoman(1)/m/n/12 nonorthogonal problems’, \TU/TimesNewRoman(0)/m/it/12 Technometrics\TU/TimesNewRoman(1)/m/n/12 , 12(1), pp.55–67. doi: []10.1080/00401706.1970.10488634[]. 
+ []
+
+[66]
+Underfull \hbox (badness 1337) in paragraph at lines 1128--1129
+[]\TU/TimesNewRoman(1)/m/n/12 Jung, Y. (2026). ‘Watching trade from space: nowcasting and spatial extrapolation
+ []
+
+
+Underfull \hbox (badness 1389) in paragraph at lines 1128--1129
+\TU/TimesNewRoman(1)/m/n/12 of port-level maritime trade using satellite imagery’ [Preprint]. Available at: []$[][][][][] []$
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1137--1138
+[]$[][][][][] [] [] [] [][][][][][][][][][][] [] [][][][][][][] [] [][] [] [][][][][] [] [][][][] [] [][][][] [] [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] [][]$
+ []
+
+
+Underfull \hbox (badness 1325) in paragraph at lines 1143--1144
+[]\TU/TimesNewRoman(1)/m/n/12 Mi, J.J., Meng, X., Chen, Y. and Wang, Y. (2022). ‘The impact of the crude oil
+ []
+
+
+Underfull \hbox (badness 3514) in paragraph at lines 1143--1144
+\TU/TimesNewRoman(1)/m/n/12 system’, \TU/TimesNewRoman(0)/m/it/12 Journal of Marine Science and Engineering\TU/TimesNewRoman(1)/m/n/12 , 10(10), article 1559. doi:
+ []
+
+[67]
+Underfull \hbox (badness 1014) in paragraph at lines 1149--1150
+[]\TU/TimesNewRoman(1)/m/n/12 Neverova, N., Wolf, C., Taylor, G.W. and Nebout, F. (2016). ‘ModDrop: adaptive
+ []
+
+
+Underfull \hbox (badness 1552) in paragraph at lines 1152--1153
+[]\TU/TimesNewRoman(1)/m/n/12 Ouyang, Q., Sun, T., Xue, Y. and Liu, Z. (2022). ‘Long short-term memory and
+ []
+
+[68]
+Underfull \hbox (badness 1092) in paragraph at lines 1176--1177
+\TU/TimesNewRoman(1)/m/n/12 on high-resolution remote sensing images’, \TU/TimesNewRoman(0)/m/it/12 Remote Sensing\TU/TimesNewRoman(1)/m/n/12 , 11(7), article 793. doi:
+ []
+
+[69]
 
 Package fontspec Info: 
 (fontspec)             Times New Roman scale = 0.9999971570313723.
@@ -1718,486 +1804,561 @@ Package fontspec Info:
 (fontspec)             <->s*[1.018906948383191]"Times New
 (fontspec)             Roman/BI/OT:script=latn;language=dflt;mapping=tex-text;"
 
-[66]
-LaTeX Font Info:    Font shape `TU/TimesNewRoman(2)/m/n' will be
-(Font)              scaled to size 12.0pt on input line 1178.
-[67
-
-]
-Overfull \hbox (7.48235pt too wide) in paragraph at lines 1210--1210
-[]|\TU/TimesNewRoman(2)/m/n/12 crude_-stocks_-excl_-spr|  
- []
-
-
-Overfull \hbox (0.73235pt too wide) in paragraph at lines 1220--1220
-[]|\TU/TimesNewRoman(2)/m/n/12 crude_-stocks_-change|  
- []
-
-
-Overfull \hbox (11.41399pt too wide) in paragraph at lines 1221--1221
-[]|\TU/TimesNewRoman(2)/m/n/12 cushing_-stocks_-change|  
- []
-
-[68] [69]
-Overfull \hbox (40.7636pt too wide) in paragraph at lines 1281--1281
-[]|\TU/TimesNewRoman(2)/m/n/12 nonoil_-industrial_-commodity|  
- []
-
-
-Overfull \hbox (16.09563pt too wide) in paragraph at lines 1282--1282
-[]|\TU/TimesNewRoman(2)/m/n/12 brent_-f1_-spot_-log_-basis|  
- []
-
 [70]
-LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/m/n' will be
-(Font)              scaled to size 6.0pt on input line 1289.
+Overfull \hbox (18.25304pt too wide) in alignment at lines 1228--1232
+ [] [] [] [] 
+ []
 
-Underfull \hbox (badness 10000) in paragraph at lines 1289--1290
+
+Overfull \hbox (18.25304pt too wide) in alignment at lines 1232--1236
+ [] [] [] [] 
+ []
+
+
+Overfull \hbox (18.25304pt too wide) in alignment at lines 1236--1238
+ [] [] [] [] 
+ []
+
+LaTeX Font Info:    Font shape `TU/TimesNewRoman(2)/m/n' will be
+(Font)              scaled to size 12.0pt on input line 1239.
+
+Overfull \hbox (18.25304pt too wide) in alignment at lines 1238--1244
+ [] [] [] [] 
+ []
+
+
+Overfull \hbox (18.25304pt too wide) in alignment at lines 1254--1258
+ [] [] [] [] 
+ []
+
+
+Overfull \hbox (18.25304pt too wide) in alignment at lines 1258--1262
+ [] [] [] [] 
+ []
+
+
+Overfull \hbox (18.25304pt too wide) in alignment at lines 1262--1264
+ [] [] [] [] 
+ []
+
+
+Overfull \hbox (18.25304pt too wide) in alignment at lines 1264--1277
+ [] [] [] [] 
+ []
+
+[71
+
+] [72]
+Overfull \hbox (18.25304pt too wide) in alignment at lines 1285--1289
+ [] [] [] [] 
+ []
+
+
+Overfull \hbox (18.25304pt too wide) in alignment at lines 1289--1293
+ [] [] [] [] 
+ []
+
+
+Overfull \hbox (18.25304pt too wide) in alignment at lines 1293--1295
+ [] [] [] [] 
+ []
+
+
+Overfull \hbox (18.25304pt too wide) in alignment at lines 1295--1301
+ [] [] [] [] 
+ []
+
+
+Overfull \hbox (18.25305pt too wide) in alignment at lines 1309--1313
+ [] [] [] [] 
+ []
+
+
+Overfull \hbox (18.25305pt too wide) in alignment at lines 1313--1317
+ [] [] [] [] 
+ []
+
+
+Overfull \hbox (18.25305pt too wide) in alignment at lines 1317--1319
+ [] [] [] [] 
+ []
+
+
+Overfull \hbox (2.57472pt too wide) in paragraph at lines 1321--1321
+[]|\TU/TimesNewRoman(2)/m/n/12 Caldara–Iacoviello|  
+ []
+
+
+Overfull \hbox (18.25305pt too wide) in alignment at lines 1319--1329
+ [] [] [] [] 
+ []
+
+[73]
+LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/m/n' will be
+(Font)              scaled to size 6.0pt on input line 1331.
+
+Overfull \hbox (10.20009pt too wide) in paragraph at lines 1331--1332
+[]\TU/TimesNewRoman(2)/m/n/12 brent_-f1_-spot_-log_-basis = $[][][][] [] [][][][]$; the futures leg is not back-adjusted,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1331--1332
 \TU/TimesNewRoman(2)/m/n/12 so brent_-roll_-week flags the calendar week of the roll. The basis is a public-data proxy for
  []
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 1296--1298
+[74]
+Underfull \hbox (badness 10000) in paragraph at lines 1338--1340
 []\TU/TimesNewRoman(2)/m/n/12 Naming {index}_-anom_-{AOI}; anom = within-site deseasonalised z-score (expanding,
  []
 
 
-Overfull \hbox (9.75465pt too wide) in paragraph at lines 1322--1322
-[]|\TU/TimesNewRoman(2)/m/n/12 (B8−B4)/(B8+B4)|  
+Overfull \hbox (30.25302pt too wide) in alignment at lines 1347--1351
+ [] [] [] [] [] 
  []
 
 
-Overfull \hbox (9.75465pt too wide) in paragraph at lines 1323--1323
-[]|\TU/TimesNewRoman(2)/m/n/12 (B3−B8)/(B3+B8)|  
+Overfull \hbox (30.25302pt too wide) in alignment at lines 1351--1355
+ [] [] [] [] [] 
  []
 
 
-Overfull \hbox (20.86403pt too wide) in paragraph at lines 1324--1324
-[]|\TU/TimesNewRoman(2)/m/n/12 (B11−B8)/(B11+B8)|  
+Overfull \hbox (30.25302pt too wide) in alignment at lines 1355--1357
+ [] [] [] [] [] 
+ []
+
+LaTeX Font Info:    Font shape `TU/TimesNewRoman(1)/m/n' will be
+(Font)              scaled to size 10.95pt on input line 1358.
+LaTeX Font Info:    Font shape `TU/TimesNewRoman(1)/m/n' will be
+(Font)              scaled to size 8.0pt on input line 1358.
+LaTeX Font Info:    Font shape `TU/TimesNewRoman(2)/m/n' will be
+(Font)              scaled to size 10.95pt on input line 1362.
+
+Overfull \hbox (30.25302pt too wide) in alignment at lines 1357--1363
+ [] [] [] [] [] 
  []
 
 
-Overfull \hbox (135.91872pt too wide) in paragraph at lines 1325--1325
-[]|\TU/TimesNewRoman(2)/m/n/12 ((B11+B4)−(B8+B2))/((B11+B4)+(B8+B2))|  
- []
-
-[71]
-Underfull \hbox (badness 10000) in paragraph at lines 1330--1336
+Underfull \hbox (badness 10000) in paragraph at lines 1366--1372
 []\TU/TimesNewRoman(2)/m/n/12 The Flat pathway uses within-site anomalies, not raw levels: night-time lights mainly
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1330--1336
+Underfull \hbox (badness 10000) in paragraph at lines 1366--1372
 \TU/TimesNewRoman(2)/m/n/12 capture cross-sectional scale, and raw radiance is a poor tanker proxy (Polinov, Bookman
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1330--1336
+Underfull \hbox (badness 10000) in paragraph at lines 1366--1372
 \TU/TimesNewRoman(2)/m/n/12 and Levin, 2022). NDBI and BSI mark yards and tank farms, not tank-fill; filling rates as in
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1330--1336
+Underfull \hbox (badness 10000) in paragraph at lines 1366--1372
 \TU/TimesNewRoman(2)/m/n/12 Wang et al. (2019) need sub-metre imagery. Cloud-quality fields filter composites only; Hao
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1339--1345
+Underfull \hbox (badness 10000) in paragraph at lines 1375--1381
 []\TU/TimesNewRoman(2)/m/n/12 Frozen \TU/TimesNewRoman(0)/b/n/12 Prithvi-EO-2.0-300M \TU/TimesNewRoman(2)/m/n/12 embeddings (1024-d per AOI-month; Szwarcman et al.,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1339--1345
+Underfull \hbox (badness 10000) in paragraph at lines 1375--1381
 \TU/TimesNewRoman(2)/m/n/12 2026; cf. SatMAE, Cong et al., 2022). Prithvi was pretrained on six-band NASA HLS.
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1339--1345
+Underfull \hbox (badness 10000) in paragraph at lines 1375--1381
 \TU/TimesNewRoman(2)/m/n/12 This study uses Sentinel-2 Surface Reflectance Harmonized patches, not HLS. Weights are
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1339--1345
+Underfull \hbox (badness 10000) in paragraph at lines 1375--1381
 \TU/TimesNewRoman(2)/m/n/12 frozen because the weekly Brent sample is too small to fine-tune a 300-million-parameter
  []
 
-[72]
-Underfull \hbox (badness 10000) in paragraph at lines 1372--1376
+[75]
+Underfull \hbox (badness 10000) in paragraph at lines 1408--1412
 []\TU/TimesNewRoman(2)/m/n/12 Naming gfw_-{cp}_-{stat} and pw_-{cp}_-{stat} over 6 chokepoints, plus cross-chokepoint
  []
 
 
-Overfull \hbox (2.05043pt too wide) in paragraph at lines 1372--1376
+Overfull \hbox (2.05043pt too wide) in paragraph at lines 1408--1412
 \TU/TimesNewRoman(2)/m/n/12 aggregates and PortWatch port export/import volumes, plus sar_-{region}_-{total,dark,share}.
  []
 
 
-Overfull \hbox (18.98553pt too wide) in paragraph at lines 1396--1396
-[]|\TU/TimesNewRoman(2)/m/n/12 gfw_-{cp}_-total_-hours_-mom_-pct 
+Overfull \hbox (6.25981pt too wide) in alignment at lines 1417--1421
+ [] [] [] 
  []
 
 
-Overfull \hbox (23.42694pt too wide) in paragraph at lines 1396--1396
-\TU/TimesNewRoman(2)/m/n/12 mean_-presence_-hours_-per_-vessel|  
+Overfull \hbox (6.25981pt too wide) in alignment at lines 1421--1425
+ [] [] [] 
  []
 
 
-Overfull \hbox (1.64178pt too wide) in paragraph at lines 1400--1400
-[]|\TU/TimesNewRoman(2)/m/n/12 pw_-{cp}_-n_-tanker_-wow_-pct 
+Overfull \hbox (6.25981pt too wide) in alignment at lines 1425--1427
+ [] [] [] 
  []
 
 
-Overfull \hbox (13.8117pt too wide) in paragraph at lines 1404--1404
-[]|\TU/TimesNewRoman(2)/m/n/12 sar_-{region}_-{total,dark,share}|  
+Overfull \hbox (6.25981pt too wide) in alignment at lines 1427--1439
+ [] [] [] 
  []
 
-[73]
-Underfull \hbox (badness 10000) in paragraph at lines 1408--1413
+[76] [77]
+Underfull \hbox (badness 10000) in paragraph at lines 1442--1447
 []\TU/TimesNewRoman(2)/m/n/12 PortWatch n_-tanker is a liquid-bulk transit count, not unique ships and not crude-only;
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1408--1413
+Underfull \hbox (badness 10000) in paragraph at lines 1442--1447
 \TU/TimesNewRoman(2)/m/n/12 capacity_-tanker is a DWT transit-capacity proxy, not loaded barrels. GFW presence is
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1408--1413
+Underfull \hbox (badness 10000) in paragraph at lines 1442--1447
 \TU/TimesNewRoman(2)/m/n/12 general maritime activity, not oil volume. Derived shares, week-over-week changes and
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1416--1418
+Underfull \hbox (badness 10000) in paragraph at lines 1450--1452
 []\TU/TimesNewRoman(2)/m/n/12 Node feature spaces differ by type. Graph edges follow maritime-network studies (Ouyang
  []
 
 
-Overfull \hbox (2.08pt too wide) in paragraph at lines 1444--1444
-[]|\TU/TimesNewRoman(2)/m/n/12 gfw_-dwell_-hrs_-mean|  
+Overfull \hbox (18.25981pt too wide) in alignment at lines 1457--1461
+ [] [] [] [] 
  []
 
 
-Overfull \hbox (11.41399pt too wide) in paragraph at lines 1445--1445
-[]|\TU/TimesNewRoman(2)/m/n/12 gfw_-dwell_-hrs_-median|  
+Overfull \hbox (18.25981pt too wide) in alignment at lines 1461--1465
+ [] [] [] [] 
  []
 
-[74]
-Overfull \hbox (23.42694pt too wide) in paragraph at lines 1477--1477
-\TU/TimesNewRoman(2)/m/n/12 mean_-presence_-hours_-per_-vessel|  
+
+Overfull \hbox (18.25981pt too wide) in alignment at lines 1465--1467
+ [] [] [] [] 
  []
 
-[75]
-Underfull \hbox (badness 10000) in paragraph at lines 1483--1487
+
+Overfull \hbox (18.25981pt too wide) in alignment at lines 1467--1479
+ [] [] [] [] 
+ []
+
+[78]
+Overfull \hbox (6.25304pt too wide) in alignment at lines 1491--1495
+ [] [] [] 
+ []
+
+
+Overfull \hbox (6.25304pt too wide) in alignment at lines 1495--1499
+ [] [] [] 
+ []
+
+
+Overfull \hbox (6.25304pt too wide) in alignment at lines 1499--1501
+ [] [] [] 
+ []
+
+
+Overfull \hbox (6.25304pt too wide) in alignment at lines 1501--1505
+ [] [] [] 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1507--1511
 []\TU/TimesNewRoman(2)/m/n/12 Mi et al. (2022, 2023) mainly document oil prices affecting tanker port calls, so shipping is
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1483--1487
+Underfull \hbox (badness 10000) in paragraph at lines 1507--1511
 \TU/TimesNewRoman(2)/m/n/12 treated as a potentially bidirectional signal, not a proven leading indicator. SAR dark-vessel
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1483--1487
+Underfull \hbox (badness 10000) in paragraph at lines 1507--1511
 \TU/TimesNewRoman(2)/m/n/12 detections correct incomplete public AIS (Paolo et al., 2024); they are not a sanctions
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1496--1500
+Underfull \hbox (badness 10000) in paragraph at lines 1520--1524
 \TU/TimesNewRoman(2)/m/n/12 Fixed node order P001–P011 (graph AOI index 0–10). Flat remote-sensing features use
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1496--1500
+Underfull \hbox (badness 10000) in paragraph at lines 1520--1524
 \TU/TimesNewRoman(2)/m/n/12 a circular buffer of 5 km radius at every site. Deep Sentinel-2 patches are square and
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1496--1500
+Underfull \hbox (badness 10000) in paragraph at lines 1520--1524
 \TU/TimesNewRoman(2)/m/n/12 site-specific: 6.4 km for ports, 5.12 km for refineries, and 1.6–3.2 km for terminals after
  []
 
-[76]
-LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/m/n' will be
-(Font)              scaled to size 10.95pt on input line 1503.
-
-Overfull \hbox (6.99635pt too wide) in paragraph at lines 1514--1515
-[]|\TU/TimesNewRoman(0)/m/n/10.95 Chokepoint|  
- []
-
-
-Overfull \hbox (22.35654pt too wide) in alignment at lines 1512--1516
- [] [] [] [] [] [] [] [] [] [] 
- []
-
-
-Overfull \hbox (6.99635pt too wide) in paragraph at lines 1518--1519
-[]|\TU/TimesNewRoman(0)/m/n/10.95 Chokepoint|  
- []
-
-
-Overfull \hbox (22.35654pt too wide) in alignment at lines 1516--1520
- [] [] [] [] [] [] [] [] [] [] 
- []
-
-
-Overfull \hbox (22.35654pt too wide) in alignment at lines 1520--1522
- [] [] [] [] [] [] [] [] [] [] 
- []
-
-
-Overfull \hbox (27.04378pt too wide) in paragraph at lines 1528--1528
-[]|\TU/TimesNewRoman(0)/m/n/10.95 Ningbo-Zhoushan|  
- []
-
-
-Overfull \hbox (22.35654pt too wide) in alignment at lines 1522--1534
- [] [] [] [] [] [] [] [] [] [] 
- []
-
-[77]
-LaTeX Font Info:    Font shape `TU/TimesNewRoman(2)/m/n' will be
-(Font)              scaled to size 10.95pt on input line 1553.
-
-Overfull \hbox (2.372pt too wide) in paragraph at lines 1567--1570
-\TU/TimesNewRoman(2)/m/n/10.95 Every predictor enters the weekly (Friday-ending) matrix only after its conservative as-of availability.
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 1567--1570
-\TU/TimesNewRoman(2)/m/n/10.95 Flat and Deep share the same sources but differ for shipping. This table is the as-of rule used in the
- []
-
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 11.36319pt on input line 1581.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 8.30188pt on input line 1581.
-LaTeX Font Info:    Font shape `TU/TimesNewRoman(1)/m/n' will be
-(Font)              scaled to size 10.95pt on input line 1581.
-LaTeX Font Info:    Font shape `TU/TimesNewRoman(1)/m/n' will be
-(Font)              scaled to size 8.0pt on input line 1581.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 11.36435pt on input line 1581.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 8.30273pt on input line 1581.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 11.36201pt on input line 1581.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 8.30103pt on input line 1581.
-LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/b/n' will be
-(Font)              scaled to size 10.95pt on input line 1590.
-[78]
-Underfull \hbox (badness 10000) in paragraph at lines 1607--1610
-\TU/TimesNewRoman(1)/m/n/10.95 Finance and remote sensing use the same as-of dates as A.3.1 (Deep remote sensing = monthly
- []
-
 [79]
-Underfull \hbox (badness 10000) in paragraph at lines 1647--1652
-\TU/TimesNewRoman(1)/m/n/10.95 Directed AOI→AOI edges from GFW voyage counts; edge weight = n_-voyages for that week’s
+Overfull \hbox (42.25978pt too wide) in alignment at lines 1533--1537
+ [] [] [] [] [] [] 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1647--1652
-\TU/TimesNewRoman(1)/m/n/10.95 directed lane (from ≠ to; self-loops removed to a node feature). Different every week; 96 lanes, 106
+Overfull \hbox (42.25978pt too wide) in alignment at lines 1537--1541
+ [] [] [] [] [] [] 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1647--1652
-\TU/TimesNewRoman(1)/m/n/10.95 992 voyages total (top lanes e.g. Ningbo↔Singapore, Fujairah↔Singapore, Singapore↔Rotterdam).
+Overfull \hbox (42.25978pt too wide) in alignment at lines 1541--1543
+ [] [] [] [] [] [] 
  []
 
 
-Overfull \hbox (8.54207pt too wide) in paragraph at lines 1656--1662
-\TU/TimesNewRoman(1)/m/n/10.95 Fixed corridor edges are undirected (13 edges), specified in advance from each site’s main documented
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 1656--1662
-\TU/TimesNewRoman(1)/m/n/10.95 oil-trade corridor rather than inferred from weekly vessel movements or geographic proximity.
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 1656--1662
-\TU/TimesNewRoman(1)/m/n/10.95 Present every week. Every AOI carries at least one fixed corridor edge: P007 (Jamnagar) is a
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 1656--1662
-\TU/TimesNewRoman(1)/m/n/10.95 demand-side refinery rather than a Gulf export terminal, but its crude slate is dominated by Persian
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 1686--1690
-[]\TU/TimesNewRoman(0)/b/n/10.95 Combine\TU/TimesNewRoman(1)/m/n/10.95 : dynamic voyage-edge block (11×11) placed in the AOI sub-block; fixed corridor
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 1686--1690
-\TU/TimesNewRoman(1)/m/n/10.95 edges broadcast over all weeks → combined (T, 17, 17). In the stored adjacency the O-D
+Overfull \hbox (42.25978pt too wide) in alignment at lines 1543--1555
+ [] [] [] [] [] [] 
  []
 
 [80]
-Underfull \hbox (badness 1168) in paragraph at lines 1690--1695
-[]\TU/TimesNewRoman(0)/b/n/10.95 Symmetrise + self-loop\TU/TimesNewRoman(1)/m/n/10.95 : symmetrisation is applied only in the encoder. For message passing
+Underfull \hbox (badness 10000) in paragraph at lines 1588--1589
+[]\TU/TimesNewRoman(2)/m/n/12 The circular Flat buffer is 5 km at every site (see the paragraph above). Patch is the side
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1690--1695
-\TU/TimesNewRoman(1)/m/n/10.95 the adjacency is then symmetrised and self-looped (dense 17×17 boolean mask; dense is
- []
-
-LaTeX Font Info:    Font shape `TU/TimesNewRoman(2)/b/n' will be
-(Font)              scaled to size 10.72743pt on input line 1697.
-
-Underfull \hbox (badness 10000) in paragraph at lines 1695--1701
-[]\TU/TimesNewRoman(0)/b/n/10.95 Edge-weight transform (attention prior)\TU/TimesNewRoman(1)/m/n/10.95 : log1p of the symmetrised O-D flow is \TU/TimesNewRoman(0)/b/n/10.95 added
+Underfull \hbox (badness 10000) in paragraph at lines 1588--1589
+\TU/TimesNewRoman(2)/m/n/12 length of the Deep square image chip centred on the same coordinate. Type and Role are the
  []
 
 
-Underfull \hbox (badness 1960) in paragraph at lines 1695--1701
-\TU/TimesNewRoman(0)/b/n/10.95 to the GAT attention logits\TU/TimesNewRoman(1)/m/n/10.95 , scaled by a \TU/TimesNewRoman(0)/b/n/10.95 learned gain \TU/TimesNewRoman(2)/b/n/10.95 edge_-scale\TU/TimesNewRoman(1)/m/n/10.95 , then softmax; it is not
+Underfull \hbox (badness 10000) in paragraph at lines 1588--1589
+\TU/TimesNewRoman(2)/m/n/12 facility type and functional role. The Chokepoint column lists each site’s assigned oil-trade
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1695--1701
-\TU/TimesNewRoman(1)/m/n/10.95 a multiplier on the attention weights and is not used as an edge feature in message passing.
+Underfull \hbox (badness 10000) in paragraph at lines 1617--1620
+\TU/TimesNewRoman(2)/m/n/12 Every predictor enters the weekly (Friday-ending) matrix only after its conservative as-of
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1706--1710
-[]\TU/TimesNewRoman(1)/m/n/10.95 node-type embedding → 2-layer dense multi-head GAT (heads = 4, LeakyReLU slope
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 1706--1710
-\TU/TimesNewRoman(1)/m/n/10.95 0.2) → causal TCN (kernel 3; lookback L) → node-attention pooling → 32-d z_-ship
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 1706--1710
-\TU/TimesNewRoman(1)/m/n/10.95 (~42k params). Node-attention weights feed RQ3 (which port/chokepoint the branch
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 1718--1721
-\TU/TimesNewRoman(1)/m/n/10.95 Site-level rates for Section 3.4.3. Weekly-calendar coverage counts a month for every later Friday
+Underfull \hbox (badness 10000) in paragraph at lines 1617--1620
+\TU/TimesNewRoman(2)/m/n/12 availability. Flat and Deep share the same sources but differ for shipping. This table is the
  []
 
 [81]
-Underfull \hbox (badness 10000) in paragraph at lines 1755--1758
-[]\TU/TimesNewRoman(1)/m/n/10.95 The shortfall at Ulsan and Ningbo-Zhoushan is the expanding 12-month history required to define an
+Overfull \hbox (6.25981pt too wide) in alignment at lines 1627--1631
+ [] [] [] 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1755--1758
-\TU/TimesNewRoman(1)/m/n/10.95 anomaly, not missing monthly composites. Jurong Island combines that warm-up with residual cloud
+Overfull \hbox (6.25981pt too wide) in alignment at lines 1631--1635
+ [] [] [] 
+ []
+
+
+Overfull \hbox (6.25981pt too wide) in alignment at lines 1635--1637
+ [] [] [] 
+ []
+
+
+Overfull \hbox (6.25981pt too wide) in alignment at lines 1637--1646
+ [] [] [] 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1653--1656
+\TU/TimesNewRoman(2)/m/n/12 Finance and remote sensing use the same as-of dates as A.3.1 (Deep remote sensing =
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1653--1656
+\TU/TimesNewRoman(2)/m/n/12 monthly Prithvi embeddings, also month-end + 15 days). Only the 17-node shipping graph
  []
 
 [82]
-Underfull \hbox (badness 10000) in paragraph at lines 1772--1774
-\TU/TimesNewRoman(1)/m/n/10.95 Entries are RMSE improvement versus M0 (%). Positive values indicate lower RMSE than the
+Underfull \hbox (badness 10000) in paragraph at lines 1686--1689
+\TU/TimesNewRoman(2)/m/n/12 Deep models encode shipping as a \TU/TimesNewRoman(0)/b/n/12 weekly 17-node heterogeneous graph \TU/TimesNewRoman(2)/m/n/12 (11 AOIs + 6
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1789--1792
-[]\TU/TimesNewRoman(1)/m/n/10.95 M0 is cleared only where shipping is present. S2 never beats M0. Concatenation clears M0 in no set.
+Underfull \hbox (badness 10000) in paragraph at lines 1693--1698
+\TU/TimesNewRoman(2)/m/n/12 Directed AOI→AOI edges from GFW voyage counts; edge weight = n_-voyages for that
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1798--1799
-\TU/TimesNewRoman(1)/m/n/10.95 Three random seeds (42, 1 and 2) for every Deep specification in Table []4.5[]. The main seed-42 run is
+Underfull \hbox (badness 10000) in paragraph at lines 1693--1698
+\TU/TimesNewRoman(2)/m/n/12 week’s directed lane (from ≠ to; self-loops removed to a node feature). Different every
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1798--1799
-\TU/TimesNewRoman(1)/m/n/10.95 marked with a diamond. Means remain negative for all specifications; only five of thirty individual
- []
-
-File: figures/fig_B_1_seed_robustness.png Graphic file (type bmp)
-<figures/fig_B_1_seed_robustness.png>
-[83
-
-] [84]
-LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/m/n' will be
-(Font)              scaled to size 8.0pt on input line 1820.
-LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/m/it' will be
-(Font)              scaled to size 10.95pt on input line 1821.
-
-Underfull \hbox (badness 10000) in paragraph at lines 1818--1824
-\TU/TimesNewRoman(1)/m/n/10.95 Same eight pairs as Table 4.3. Improvement is the Deep RMSE reduction relative to the matched
+Overfull \hbox (18.99574pt too wide) in paragraph at lines 1693--1698
+\TU/TimesNewRoman(2)/m/n/12 week; 96 lanes, 106 992 voyages total (top lanes e.g. Ningbo↔Singapore, Fujairah↔Singapore,
  []
 
 
-Underfull \hbox (badness 1490) in paragraph at lines 1818--1824
-\TU/TimesNewRoman(1)/m/n/10.95 Flat model, $[][][] [] [][] [] [][][][][][]$. Positive values indicate a lower Deep RMSE. \TU/TimesNewRoman(0)/m/it/10.95 p \TU/TimesNewRoman(1)/m/n/10.95 is
+Underfull \hbox (badness 10000) in paragraph at lines 1702--1708
+\TU/TimesNewRoman(2)/m/n/12 Fixed corridor edges are undirected (13 edges), specified in advance from each site’s main
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1818--1824
-\TU/TimesNewRoman(1)/m/n/10.95 the probability of a difference at least this large if the two models had the same RMSE. Smaller \TU/TimesNewRoman(0)/m/it/10.95 p
+Underfull \hbox (badness 10000) in paragraph at lines 1702--1708
+\TU/TimesNewRoman(2)/m/n/12 documented oil-trade corridor rather than inferred from weekly vessel movements or
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1851--1854
-\TU/TimesNewRoman(1)/m/n/10.95 Locked as-of lags are GFW monthly presence +4 weeks and monthly macro +5 weeks (Appendix
+Underfull \hbox (badness 10000) in paragraph at lines 1702--1708
+\TU/TimesNewRoman(2)/m/n/12 geographic proximity. Present every week. Every AOI carries at least one fixed corridor
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1702--1708
+\TU/TimesNewRoman(2)/m/n/12 edge: P007 (Jamnagar) is a demand-side refinery rather than a Gulf export terminal, but its
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1702--1708
+\TU/TimesNewRoman(2)/m/n/12 crude slate is dominated by Persian Gulf loadings, so it is attached to Hormuz on the import
+ []
+
+[83]
+Underfull \hbox (badness 10000) in paragraph at lines 1731--1734
+\TU/TimesNewRoman(2)/m/n/12 Site-level rates for Section 3.4.3. Weekly-calendar coverage counts a month for every later
+ []
+
+
+Overfull \hbox (1.86794pt too wide) in paragraph at lines 1746--1747
+[]\TU/TimesNewRoman(2)/m/n/12 Weekly-calendar 
+ []
+
+
+Overfull \hbox (8.20778pt too wide) in paragraph at lines 1763--1763
+[]|\TU/TimesNewRoman(2)/m/n/12 Ningbo-Zhoushan|  
+ []
+
+[84]
+Underfull \hbox (badness 10000) in paragraph at lines 1768--1771
+[]\TU/TimesNewRoman(2)/m/n/12 The shortfall at Ulsan and Ningbo-Zhoushan is the expanding 12-month history required to
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1768--1771
+\TU/TimesNewRoman(2)/m/n/12 define an anomaly, not missing monthly composites. Jurong Island combines that warm-up
  []
 
 [85]
-Underfull \hbox (badness 10000) in paragraph at lines 1920--1923
-[]\TU/TimesNewRoman(1)/m/n/10.95 No lag beats M0. Shortening GFW to +1 week makes XGBoost substantially worse. Monthly-macro
+Underfull \hbox (badness 10000) in paragraph at lines 1777--1779
+\TU/TimesNewRoman(2)/m/n/12 All checks use the same protocol as Chapter 3 (lookback 4, expanding window, 257 scored
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1920--1923
-\TU/TimesNewRoman(1)/m/n/10.95 lag moves S1 by at most 0.03 RMSE. The locked buffers are not the reason Flat models with spatial
- []
-
-[86]
-Underfull \hbox (badness 10000) in paragraph at lines 1929--1932
-\TU/TimesNewRoman(1)/m/n/10.95 This appendix records the locked hyperparameter grids and training settings used for the reported
+Underfull \hbox (badness 10000) in paragraph at lines 1785--1787
+\TU/TimesNewRoman(2)/m/n/12 Entries are $[][]$ (%). Positive values indicate lower RMSE than the no-change
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1929--1932
-\TU/TimesNewRoman(1)/m/n/10.95 results. Software versions, installation commands and scripts are in the GitHub repository: []$[][][][][] []
+Underfull \hbox (badness 10000) in paragraph at lines 1802--1805
+[]\TU/TimesNewRoman(2)/m/n/12 M0 is cleared only where shipping is present. S2 never beats M0. Concatenation clears M0
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1968--1970
-\TU/TimesNewRoman(1)/m/n/10.95 The main specification is locked to lookback 4 and latent size 32, matching the Flat lookback.
+Underfull \hbox (badness 10000) in paragraph at lines 1811--1812
+\TU/TimesNewRoman(2)/m/n/12 Three random seeds (42, 1 and 2) for every Deep specification in Table []4.5[]. The main
  []
 
-[87
+
+Underfull \hbox (badness 10000) in paragraph at lines 1811--1812
+\TU/TimesNewRoman(2)/m/n/12 seed-42 run is marked with a diamond. Means remain negative for all specifications; only
+ []
+
+[86
 
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 1974--1978
-\TU/TimesNewRoman(1)/m/n/10.95 The shared fused latent size is 32. The shipping encoder uses a wider internal width (d_-model=64);
+File: figures/fig_B_1_seed_robustness.pdf Graphic file (type pdf)
+<use figures/fig_B_1_seed_robustness.pdf>
+
+Underfull \hbox (badness 10000) in paragraph at lines 1831--1837
+\TU/TimesNewRoman(2)/m/n/12 Same eight pairs as Table 4.3. Improvement is the Deep RMSE reduction relative to the
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1974--1978
-\TU/TimesNewRoman(1)/m/n/10.95 only the pooled branch output is projected to 32-d before fusion. Both the finance and shipping TCN
+Underfull \hbox (badness 2368) in paragraph at lines 1831--1837
+\TU/TimesNewRoman(2)/m/n/12 matched Flat model, $[][][] [] [][] [] [][][][][][]$. Positive values indicate a lower
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1831--1837
+\TU/TimesNewRoman(2)/m/n/12 Deep RMSE. \TU/TimesNewRoman(0)/m/it/12 p \TU/TimesNewRoman(2)/m/n/12 is the probability of a difference at least this large if the two models had the
+ []
+
+[87]
+Underfull \hbox (badness 10000) in paragraph at lines 1864--1867
+\TU/TimesNewRoman(2)/m/n/12 Locked as-of lags are GFW monthly presence +4 weeks and monthly macro +5 weeks
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1864--1867
+\TU/TimesNewRoman(2)/m/n/12 (Appendix A.3). Alternative lags are an extra calendar shift on already-lagged series. \TU/TimesNewRoman(0)/m/it/12 n \TU/TimesNewRoman(2)/m/n/12 =
  []
 
 [88]
-Underfull \hbox (badness 10000) in paragraph at lines 2026--2029
-[]\TU/TimesNewRoman(1)/m/n/10.95 After early stopping, the checkpoint with the lowest inner-validation loss is kept for the subsequent
+Underfull \hbox (badness 10000) in paragraph at lines 1933--1936
+[]\TU/TimesNewRoman(2)/m/n/12 No lag beats M0. Shortening GFW to +1 week makes XGBoost substantially worse.
  []
 
-[89] [90
 
-] [91] [92] [93] (./CASA-Thesis.aux)
+Underfull \hbox (badness 10000) in paragraph at lines 1933--1936
+\TU/TimesNewRoman(2)/m/n/12 Monthly-macro lag moves S1 by at most 0.03 RMSE. The locked buffers are not the reason
+ []
+
+[89]
+Underfull \hbox (badness 10000) in paragraph at lines 1942--1945
+\TU/TimesNewRoman(2)/m/n/12 This appendix records the locked hyperparameter grids and training settings used for the
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1942--1945
+\TU/TimesNewRoman(2)/m/n/12 reported results. Software versions, installation commands and scripts are in the GitHub
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1981--1983
+\TU/TimesNewRoman(2)/m/n/12 The main specification is locked to lookback 4 and latent size 32, matching the Flat
+ []
+
+[90
+
+]
+Underfull \hbox (badness 10000) in paragraph at lines 1987--1991
+\TU/TimesNewRoman(2)/m/n/12 The shared fused latent size is 32. The shipping encoder uses a wider internal width
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1987--1991
+\TU/TimesNewRoman(2)/m/n/12 (d_-model=64); only the pooled branch output is projected to 32-d before fusion. Both
+ []
+
+[91]
+Underfull \hbox (badness 10000) in paragraph at lines 2039--2042
+[]\TU/TimesNewRoman(2)/m/n/12 After early stopping, the checkpoint with the lowest inner-validation loss is kept for the
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2039--2042
+\TU/TimesNewRoman(2)/m/n/12 subsequent forecast block. The model is not refit on the combined training and validation
+ []
+
+[92] [93
+
+] [94] [95] [96] [97] (./CASA-Thesis.aux)
  ***********
 LaTeX2e <2026-06-01>
 L3 programming layer <2026-07-20>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 20955 strings out of 469828
- 391661 string characters out of 5468359
- 960328 words of memory out of 5000000
- 49569 multiletter control sequences out of 15000+600000
- 633488 words of font info for 124 fonts, out of 8000000 for 9000
- 14 hyphenation exceptions out of 8191
- 90i,12n,117p,1478b,524s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 22000 strings out of 469785
+ 409857 string characters out of 5467108
+ 999985 words of memory out of 5000000
+ 50604 multiletter control sequences out of 15000+600000
+ 633480 words of font info for 123 fonts, out of 8000000 for 9000
+ 36 hyphenation exceptions out of 8191
+ 90i,12n,117p,1659b,640s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on CASA-Thesis.pdf (93 pages).
+Output written on CASA-Thesis.pdf (97 pages).

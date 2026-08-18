@@ -7,8 +7,8 @@ Does not retrain models.
     python 04_code/scripts/figures/make_chapter4_figures.py
     python 04_code/scripts/figures/make_chapter4_figures.py --only 4.1 4.2
 
-    4.1  Flat RMSE improvement vs M0 (grouped Cleveland dot plot)
-    4.2  Deep RMSE improvement vs M0 (gated vs cross-attention dumbbell)
+    4.1  Flat ΔRMSE (grouped Cleveland dot plot)
+    4.2  Deep ΔRMSE (gated vs cross-attention dumbbell)
     price  Brent price / returns (Figure 3.2; evaluation sample, no event windows)
     slope  Flat XGBoost → Deep gated paired slopes
     4.3  Shipping gate weight vs shipping |SHAP| share (dual-dot, no link)
@@ -180,14 +180,14 @@ mpl.rcParams.update({
 
 # Table 4.1 / 4.2 display values (percent). Plot these, not a second rounding of RMSE.
 FLAT_IMP = [
-    ("S1", -2.5,  "\u22122.5%",  -5.2,  "\u22125.2%"),
-    ("S2", -6.3,  "\u22126.3%",  -6.9,  "\u22126.9%"),
-    ("S3", -9.7,  "\u22129.7%",  -4.9,  "\u22124.9%"),
-    ("S4", -9.3,  "\u22129.3%",  -6.3,  "\u22126.3%"),
+    ("S1", -2.52, "\u22122.52%", -5.22, "\u22125.22%"),
+    ("S2", -6.31, "\u22126.31%", -6.95, "\u22126.95%"),
+    ("S3", -9.66, "\u22129.66%", -4.94, "\u22124.94%"),
+    ("S4", -9.32, "\u22129.32%", -6.27, "\u22126.27%"),
 ]
 DEEP_IMP = [
-    ("S1", -2.4,  "\u22122.4%",  None, None),
-    ("S2", -2.4,  "\u22122.4%",  -5.9,  "\u22125.9%"),
+    ("S1", -2.36, "\u22122.36%", None, None),
+    ("S2", -2.43, "\u22122.43%", -5.87, "\u22125.87%"),
     ("S3",  0.15, "+0.15%",       1.00, "+1.00%"),
     ("S4", -0.67, "\u22120.67%",  0.19, "+0.19%"),
 ]
@@ -275,7 +275,7 @@ def _open_improvement_fig():
     ax.axhline(0.0, color="#222222", linewidth=1.0, linestyle="--", zorder=2)
     ax.set_ylim(*IMP["ylim"])
     ax.set_yticks(IMP["yticks"])
-    ax.set_ylabel("RMSE improvement vs M0 (%)", fontsize=IMP["ylab_fs"])
+    ax.set_ylabel(r"$\Delta\mathrm{RMSE}$ (%)", fontsize=IMP["ylab_fs"])
     ax.grid(axis="y", visible=True, color="#D0D0D0", linewidth=0.7)
     ax.grid(axis="x", visible=False)
     ax.set_axisbelow(True)

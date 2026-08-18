@@ -5,7 +5,7 @@
 # Declaration {.unlisted .unnumbered}
 '`
 
-I, XINRUI QI, hereby declare that this dissertation is all my own original work and that all sources have been acknowledged. It is **10,800** words in length.
+I, XINRUI QI, hereby declare that this dissertation is all my own original work and that all sources have been acknowledged. Generative AI has been used for translation, writing refinement and assistance with resolving coding issues. It is **10,859** words in length.
 
 ```{r declaration-signature, echo=FALSE, out.width="40%", fig.align="left"}
 knitr::include_graphics(here::here("general_images", "signature.png"))
@@ -20,7 +20,11 @@ XINRUI QI, 15th of August 2026
 # Acknowledgements {.unlisted .unnumbered}
 '`
 
-I would like to thank my supervisor and those who supported this dissertation.
+I would like to thank my supervisor, Beatrice Taylor, for her guidance and support throughout this dissertation. Her comments on the research design, methods and writing helped me keep the analysis focused and present the work more clearly.
+
+I am also grateful to the organisations and data providers that make financial, satellite and shipping data openly available. This research would not have been possible without these public resources.
+
+Finally, I thank those who stood by me this year, and the home that let me watch the London sunset every evening.
 
 ```{=latex}
 \setcounter{tocdepth}{3}
@@ -47,8 +51,8 @@ I would like to thank my supervisor and those who supported this dissertation.
 - Figure 3.6. Deep model architecture and fusion mechanisms.
 - Figure 3.7. Expanding-window estimation and evaluation schedule.
 - Figure 3.8. Testing sample within one testing block.
-- Figure 4.1. RMSE improvement vs M0 for the Flat models.
-- Figure 4.2. RMSE improvement vs M0 for the Deep models.
+- Figure 4.1. ΔRMSE for the Flat models.
+- Figure 4.2. ΔRMSE for the Deep models.
 - Figure 4.3. RMSE change from Flat XGBoost to gated Deep models.
 - Figure 4.4. Node-level shipping SHAP shares, 2022 and 2024.
 - Figure 4.5. Temporal variation in node-level shipping attribution.
@@ -60,6 +64,7 @@ I would like to thank my supervisor and those who supported this dissertation.
 '`
 
 `r if (knitr:::is_html_output()) '
+- Table 2.1. Literature synthesis.
 - Table 3.1. Information sets.
 - Table 3.2. Datasets, variables and sources.
 - Table 4.1. Flat out-of-sample performance.
@@ -80,12 +85,16 @@ I would like to thank my supervisor and those who supported this dissertation.
 | ---- | ---------- |
 | AIS | Automatic Identification System |
 | AOI | Area of Interest |
+| bbl | barrel |
 | EIA | U.S. Energy Information Administration |
+| FRED | Federal Reserve Economic Data |
 | GAT | Graph Attention Network |
 | GEE | Google Earth Engine |
 | GFW | Global Fishing Watch |
+| GPR | Geopolitical Risk Index |
 | IMF | International Monetary Fund |
 | RMSE | Root Mean Squared Error |
+| RS | Remote Sensing |
 | SAR | Synthetic Aperture Radar |
 | SHAP | SHapley Additive exPlanations |
 | TCN | Temporal Convolutional Network |
