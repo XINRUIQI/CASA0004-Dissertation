@@ -93,25 +93,25 @@ Financial and oil-market variables &
   Lagged price, inventories, production and refinery activity, volatility, GPR, rates, exchange rates, futures and market indicators &
   Persistence, uncertainty, macro-financial conditions, market expectations &
   Strong benchmark; difficult to improve upon &
-  Kilian (2009); Alquist, Kilian and Vigfusson (2013); Baumeister and Kilian (2015); Costa et al. (2021); Yılmaz and Zehir (2026) \\
+  Kilian (2009); Alquist \emph{et al.} (2013); Baumeister and Kilian (2015); Costa \emph{et al.} (2021); Yılmaz and Zehir (2026) \\
 \midrule
 Shipping, AIS and PortWatch &
   Tanker flows, port calls, chokepoint transits, capacity-weighted activity &
   Physical trade, supply disruption, congestion, regional flow changes &
   Directionality, noisy cargo inference, missing AIS activity &
-  Adland, Jia and Strandenes (2017); Yan et al. (2020); Arslanalp, Marini and Tumbarello (2019); Arslanalp et al. (2026); Mi et al. (2022, 2023); Paolo et al. (2024); Ouyang et al. (2022); Liang et al. (2022); Zhao et al. (2022) \\
+  Adland \emph{et al.} (2017); Yan \emph{et al.} (2020); Arslanalp \emph{et al.} (2019, 2026); Mi \emph{et al.} (2022, 2023); Paolo \emph{et al.} (2024); Ouyang \emph{et al.} (2022); Liang \emph{et al.} (2022); Zhao \emph{et al.} (2022) \\
 \midrule
 Remote sensing &
   Night-time lights, NO\textsubscript{2}, cloud cover, site-level imagery or embeddings &
   Industrial activity, demand conditions, inventory observability, infrastructure signals &
   Indirect mechanism; cloud cover and missing data &
-  Polinov, Bookman and Levin (2022); Hao and Wang (2023); Wang et al. (2019); Bricongne et al. (2026); Jung (2026) \\
+  Polinov, Bookman and Levin (2022); Hao and Wang (2023); Wang \emph{et al.} (2019); Bricongne \emph{et al.} (2026); Jung (2026) \\
 \midrule
 Multimodal learning &
   Modality-specific representations and fusion &
   Preservation of heterogeneous structure before prediction &
   Limited direct evidence in oil-price forecasting &
-  Baltrušaitis, Ahuja and Morency (2019); Arevalo et al. (2017); Emami-Gohari et al. (2024); Cong et al. (2022); Fuller, Millard and Green (2023); Szwarcman et al. (2026); Ma et al. (2022) \\
+  Baltrušaitis \emph{et al.} (2019); Arevalo \emph{et al.} (2017); Emami-Gohari \emph{et al.} (2024); Cong \emph{et al.} (2022); Fuller, Millard and Green (2023); Szwarcman \emph{et al.} (2026); Ma \emph{et al.} (2022) \\
 \bottomrule
 \end{tabular}}
 \end{table}
@@ -143,10 +143,10 @@ Multimodal learning &
       "Limited direct evidence in oil-price forecasting"
     ),
     `Key references` = c(
-      "Kilian (2009); Alquist, Kilian and Vigfusson (2013); Baumeister and Kilian (2015); Costa et al. (2021); Yılmaz and Zehir (2026)",
-      "Adland, Jia and Strandenes (2017); Yan et al. (2020); Arslanalp, Marini and Tumbarello (2019); Arslanalp et al. (2026); Mi et al. (2022, 2023); Paolo et al. (2024); Ouyang et al. (2022); Liang et al. (2022); Zhao et al. (2022)",
+      "Kilian (2009); Alquist et al. (2013); Baumeister and Kilian (2015); Costa et al. (2021); Yılmaz and Zehir (2026)",
+      "Adland et al. (2017); Yan et al. (2020); Arslanalp et al. (2019, 2026); Mi et al. (2022, 2023); Paolo et al. (2024); Ouyang et al. (2022); Liang et al. (2022); Zhao et al. (2022)",
       "Polinov, Bookman and Levin (2022); Hao and Wang (2023); Wang et al. (2019); Bricongne et al. (2026); Jung (2026)",
-      "Baltrušaitis, Ahuja and Morency (2019); Arevalo et al. (2017); Emami-Gohari et al. (2024); Cong et al. (2022); Fuller, Millard and Green (2023); Szwarcman et al. (2026); Ma et al. (2022)"
+      "Baltrušaitis et al. (2019); Arevalo et al. (2017); Emami-Gohari et al. (2024); Cong et al. (2022); Fuller, Millard and Green (2023); Szwarcman et al. (2026); Ma et al. (2022)"
     ),
     check.names = FALSE
   )
