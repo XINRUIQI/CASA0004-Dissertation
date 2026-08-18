@@ -1,8 +1,8 @@
-# Appendix C — Hyperparameter grids & locked settings
+# Appendix C — Hyperparameter Settings
 
 This appendix records the locked hyperparameter grids and training settings used
 for the reported results. Software versions, installation commands and scripts
-are in the GitHub repository.
+are in the GitHub repository: [https://github.com/XINRUIQI/CASA0004-Dissertation](https://github.com/XINRUIQI/CASA0004-Dissertation).
 
 ---
 
@@ -21,7 +21,7 @@ segment only.
 
 ---
 
-## C.2 Locked Deep architecture and training
+## C.2 Deep architecture and training
 
 The main specification is locked to lookback 4 and latent size 32, matching the
 Flat lookback. Sensitivity is reported in Appendix B.
@@ -53,8 +53,6 @@ fusion. Both the finance and shipping TCN stacks reuse the same causal
 | Batch size | 32 |
 | Maximum epochs | 80 |
 | Early stopping | inner validation, patience 12 |
-| Device | CPU |
-| Seed | 42 (robustness: 1, 2) |
 
 After early stopping, the checkpoint with the lowest inner-validation loss is
 kept for the subsequent forecast block. The model is not refit on the combined

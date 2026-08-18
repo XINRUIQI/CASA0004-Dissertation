@@ -1,14 +1,17 @@
 # Appendix B — Extra results & robustness {-}
 
+```{=latex}
+\markboth{Appendix B --- Extra results \& robustness}{Appendix B --- Extra results \& robustness}
+```
+
 All checks use the same protocol as Chapter 3 (lookback 4, expanding window, 257
-scored weeks). These tables qualify Chapter 4; they are not used to select the
-main specification.
+scored weeks).
 
 ---
 
-## B.1 Deep fusion matrix
+## B.1 Deep fusion matrix {-}
 
-Seed 42, lookback 4, 257 weeks. Entries are RMSE improvement versus M0 (%).
+Entries are RMSE improvement versus M0 (%).
 Positive values indicate lower RMSE than the no-change benchmark.
 
 | Set | Concat | Gated | Cross-attention |
@@ -17,24 +20,29 @@ Positive values indicate lower RMSE than the no-change benchmark.
 | **S3 (finance + shipping)** | −0.22 | **+0.15** | **+1.00** |
 | S4 (finance + RS + shipping) | −8.30 | −0.68 | +0.19 |
 
-On this seed, M0 is cleared only where shipping is present. S2 never beats M0.
+M0 is cleared only where shipping is present. S2 never beats M0.
 Concatenation clears M0 in no set. The three positive cells are descriptive
-orderings on one seed. Seed-averaged results are in Table \@ref(tab:seed-robust);
-individual seeds are in Figure \@ref(fig:seed-robustness).
+orderings on one seed.
 
 ---
 
-## B.2 Random-seed robustness
+## B.2 Random-seed robustness {-}
 
 Three random seeds (42, 1 and 2) for every Deep specification in Table \@ref(tab:seed-robust). The main seed-42 run is marked with a diamond. Means remain negative for all specifications; only five of thirty individual runs are positive.
 
-```{r seed-robustness, echo=FALSE, out.width="100%", fig.cap="Random-seed robustness of Deep specifications: individual seeds and means relative to M0. The main seed-42 run is marked with a diamond."}
+```{=latex}
+\setcounter{figure}{0}
+\renewcommand{\thefigure}{B.\arabic{figure}}
+\renewcommand{\theHfigure}{B.\arabic{figure}}
+```
+
+```{r seed-robustness, echo=FALSE, out.width="100%", fig.cap="Random-seed robustness of Deep specifications: individual seeds and means relative to M0. The main seed-42 run is marked with a diamond.", fig.scap="Random-seed robustness of Deep specifications."}
 knitr::include_graphics(here::here("figures", "fig_B_1_seed_robustness.png"))
 ```
 
 ---
 
-## B.3 Matched Flat–Deep comparisons
+## B.3 Matched Flat–Deep comparisons {-}
 
 Same eight pairs as Table 4.3. Improvement is the Deep RMSE reduction relative
 to the matched Flat model,
@@ -58,7 +66,7 @@ All eight pairs favour Deep. Four have *p* below 0.05.
 
 ---
 
-## B.4 Publication-lag sweep
+## B.4 Publication-lag sweep {-}
 
 Locked as-of lags are GFW monthly presence +4 weeks and monthly macro +5 weeks
 (Appendix A.3). Alternative lags are an extra calendar shift on already-lagged

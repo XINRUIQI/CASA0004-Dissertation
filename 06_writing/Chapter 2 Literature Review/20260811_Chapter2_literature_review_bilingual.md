@@ -102,7 +102,7 @@ Existing studies demonstrate that satellite observations contain information rel
 
 现有研究表明，卫星观测包含与石油需求、储存和海运贸易相关的信息。然而，在已经加入金融和油市变量后，遥感指标或卫星影像表征能否改善短期 Brent 价格预测，目前仍缺乏充分的直接证据。
 
-## 2.6 Multimodal learning and data fusion
+## 2.6 Multimodal learning
 
 ## 2.6 多模态学习与数据融合
 
@@ -113,7 +113,7 @@ Multimodal learning refers to methods that process and combine information from 
 Baltrušaitis, Ahuja and Morency (2019) identify representation, translation, alignment, fusion and co-learning as five core challenges in multimodal machine learning. This dissertation focuses on fusion, specifically the distinction between feature-level and representation-level fusion. Feature-level fusion places observed or engineered variables from all modalities in a common feature table before modelling. Representation-level fusion processes each modality separately before combining the resulting representations.
 
 
-Baltrušaitis、Ahuja 与 Morency（2019）将表示、对齐和融合等问题视为多模态学习的主要挑战。对于本研究，最重要的区别是特征级融合与表示级融合。特征级融合在建模前将不同来源的观测变量或工程化变量放入共同的特征表。表示级融合则先分别处理各类数据，再融合所得表征。
+Baltrušaitis、Ahuja 与 Morency（2019）将表示、翻译、对齐、融合和协同学习视为多模态机器学习的五项核心挑战。本文关注融合，尤其是特征级融合与表示级融合的区别。特征级融合在建模前将各模态的观测变量或工程化变量放入共同的特征表。表示级融合则先分别处理各类数据，再融合所得表征。
 
 The two approaches retain different amounts of modality-specific structure. Feature-level fusion is compatible with conventional regression and tree-based models, but it may reduce temporal, spatial and network data to a common tabular format. Representation-level fusion can maintain separate processing streams for different data sources. Arevalo et al. (2017) propose a gated multimodal unit that combines modality-specific representations through input-dependent gates. The contribution of each modality can therefore change across observations. Gohari et al. (2024) apply a related modality-aware approach to financial forecasting by combining textual reports and numerical economic series. Their results show that separate representations and cross-modal interactions can improve performance in a financial time-series setting.
 
@@ -135,7 +135,7 @@ Existing multimodal research provides methods for preserving temporal, spatial a
 
 现有多模态研究提供了在融合前保留时间、空间和网络结构的方法。然而，当表示级融合和扁平特征融合使用相同底层信息时，前者能否在油价预测中取得更好表现，仍缺乏直接证据。
 
-## 2.7 Research gaps and positioning of this dissertation
+## 2.7 Research gaps
 
 ## 2.7 研究空白与本文定位
 
@@ -161,7 +161,7 @@ Third, forecasting studies often use different evaluation settings, and analyses
 
 This dissertation addresses these gaps through a shared rolling-origin out-of-sample framework for one-week-ahead Brent price forecasting. It first compares financial time-series data with information sets that add remote-sensing data, shipping data or both. It then compares flat feature fusion with modality-aware representation-level fusion using matched underlying data. All models are evaluated against the same no-change benchmark in terms of forecast accuracy. Model interpretations are used to describe model reliance across prediction dates and geographic locations. These analyses describe model behaviour rather than causal relationships.
 
-本文通过一套共享的滚动起点样本外框架回应这些研究空白。研究首先比较金融时序数据，以及分别加入航运数据、遥感数据或二者的信息集。随后，在使用匹配底层数据的情况下，比较扁平特征融合与模态感知的表示级融合。所有模型均使用相同的不变预测基准进行评价，并通过正式统计检验判断预测表现的差异。模态级解释用于描述表现较好的模型在不同市场条件下依赖哪些数据来源。相关结果仅用于解释模型行为，不作为因果关系的证据。
+本文通过一套共享的滚动起点样本外框架回应这些研究空白，用于提前一周的 Brent 价格预测。研究首先比较金融时序数据，以及分别加入遥感数据、航运数据或二者的信息集。随后，在使用匹配底层数据的情况下，比较扁平特征融合与模态感知的表示级融合。所有模型均使用相同的不变预测基准，以预测精度进行评价。模型解释用于描述模型在不同预测日期和地理位置上的依赖。相关分析描述模型行为，而非因果关系。
 
 
 ---

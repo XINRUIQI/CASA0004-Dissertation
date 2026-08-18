@@ -6,7 +6,7 @@
 
 ## 4.1 Flat 模型结果
 
-Table 4.1 reports the out-of-sample performance of the Flat Ridge and XGBoost models across feature sets S1–S4, with M0 shown for comparison. All eight Flat models have higher RMSE than M0 and therefore record negative RMSE improvement.
+Table 4.1 reports the out-of-sample performance of the Flat Ridge and XGBoost models across feature sets S1–S4, with M0 shown for comparison. Figure 4.1 visualises the RMSE improvements reported in Table 4.1. All eight Flat models have higher RMSE than M0 and therefore record negative RMSE improvement.
 
 表 4.1 报告 Flat Ridge 与 XGBoost 模型在特征集 S1–S4 上的样本外表现，并列出 M0 作为比较基准。八个已训练模型的 RMSE 均高于 M0，因此其改善均为负值。
 
@@ -30,19 +30,8 @@ Table 4.1 reports the out-of-sample performance of the Flat Ridge and XGBoost mo
 
 *Note:* Positive values indicate lower RMSE than M0.
 
-**Figure 4.1 — Flat-model RMSE improvement relative to M0**
+**Figure 4.1. RMSE improvement vs M0 for the Flat models.**
 
-The dashed line denotes zero improvement relative to M0. Positive values indicate lower RMSE than M0.
-
-**图 4.1 — Flat 模型相对 M0 的 RMSE improvement**
-
-虚线表示相对 M0 的零改善。正值表示 RMSE 低于 M0。
-
-Figure 4.1
-
-Figure 4.1 displays the same RMSE improvements as Table 4.1. All eight points lie below the M0 line.
-
-图 4.1 展示与表 4.1 相同的 RMSE improvement。八个点全部位于 M0 零线下方。
 
 For Ridge, S1 has the lowest RMSE and S3 the highest; adding remote sensing, shipping, or both raises RMSE relative to S1. For XGBoost, S3 records a slightly lower RMSE than S1 (4.357 versus 4.368), while S2 and S4 remain higher than S1. No Flat model records a positive RMSE improvement relative to M0. Overall, the Flat family performs worse than the no-change benchmark across all information sets. 
 
@@ -58,30 +47,37 @@ The Flat results therefore provide no evidence of improvement relative to the no
 
 ## 4.2 Deep 模型结果
 
-Table 4.2 reports Deep-model performance across S1–S4. Gated fusion is the prespecified main specification, while cross-attention is reported as a secondary comparison. No cross-attention result is reported for S1 because only the finance encoder is active.
+Table 4.2 reports Deep-model performance across S1–S4. Gated fusion is the prespecified main specification, while cross-attention is reported as a secondary comparison. No cross-attention result is reported for S1 because only the finance encoder is active. Figure 4.2 visualises the RMSE improvements reported in Table 4.2.
 
 表 4.2 报告 Deep 模型在 S1–S4 上的表现。门控融合是预先设定的主要模型，交叉注意力则作为次要比较。S1 仅启用金融编码器，因此不报告交叉注意力结果。
 
-**Table 4.2 — Deep out-of-sample performance** *(gated = main specification)*【备注：说一下表格里的XAttn 的全称】
+**Table 4.2 — Deep out-of-sample performance** *(gated = main specification)*
 
 
-| Set       | Variables                             | Model         | RMSE  | Improvement vs M0 (%) |
-| --------- | ------------------------------------- | ------------- | ----- | --------------------- |
-| Benchmark |                                       | M0            | 4.152 |                       |
-| S1        | financial time series                 | M1-Deep       | 4.250 | −2.4%                 |
-| S2        | financial time series + RS            | M2-Deep-Gated | 4.253 | −2.4%                 |
+| Set       | Variables                             | Model                   | RMSE  | Improvement vs M0 (%) |
+| --------- | ------------------------------------- | ----------------------- | ----- | --------------------- |
+| Benchmark |                                       | M0                      | 4.152 |                       |
+| S1        | financial time series                 | M1-Deep                 | 4.250 | −2.4%                 |
+| S2        | financial time series + RS            | M2-Deep-Gated           | 4.253 | −2.4%                 |
 |           |                                       | M2-Deep-Cross-attention | 4.396 | −5.9%                 |
-| S3        | financial time series + shipping      | M3-Deep-Gated | 4.146 | +0.15%                |
+| S3        | financial time series + shipping      | M3-Deep-Gated           | 4.146 | +0.15%                |
 |           |                                       | M3-Deep-Cross-attention | 4.110 | +1.00%                |
-| S4        | financial time series + RS + shipping | M4-Deep-Gated | 4.180 | −0.67%                |
+| S4        | financial time series + RS + shipping | M4-Deep-Gated           | 4.180 | −0.67%                |
 |           |                                       | M4-Deep-Cross-attention | 4.144 | +0.19%                |
 
 
-The gated S1 and S2 models record similar RMSE of 4.250 and 4.253, both higher than that of M0. Adding remote sensing therefore provides no descriptive improvement. Neither reported fusion approach reduces RMSE relative to the finance-only Deep model at S2. With shipping included, gated S3 records the lowest RMSE among the gated models at 4.146, improving on M0 by 0.15%. Gated S4 rises to 4.180, 0.67% worse than M0, indicating that adding remote sensing to S3 does not provide a further improvement.
+*Note:* Positive values indicate lower RMSE than M0.
+
+
+**Figure 4.2. RMSE improvement vs M0 for the Deep models.**
+
+
+
+The gated S1 and S2 models record similar RMSEs of 4.250 and 4.253, both higher than that of M0. Adding remote sensing therefore provides no descriptive improvement. Neither reported fusion approach reduces RMSE relative to the finance-only Deep model at S2. With shipping included, gated S3 records the lowest RMSE among the gated models at 4.146, improving on M0 by 0.15%. Gated S4 rises to 4.180, 0.67% worse than M0, indicating that adding remote sensing to S3 does not provide a further improvement.
 
 门控 S1 与 S2 模型的 RMSE 均高于 M0，分别为 4.250 和 4.253。两种融合方法均未能在 S2 上相对于仅金融的 Deep 模型降低 RMSE。加入航运数据后，门控融合的 S3 在各门控模型中取得最低 RMSE，为 4.146，相比 M0 改善了 0.15%。门控融合的 S4 的 RMSE 上升至 4.180，比 M0 高 0.67%，表明在 S3 的基础上进一步加入遥感数据并未带来额外改善。
 
-On the reported seed-42 run, cross-attention has a higher RMSE than gated fusion at S2, at 4.396 compared with 4.253, but lower RMSEs at S3 and S4. Cross-attention records RMSEs of 4.110 and 4.144 at S3 and S4, corresponding to RMSE improvements of 1.00% and 0.19%. These results are therefore reported only as descriptive secondary comparisons and do not provide evidence that cross-attention is superior.
+On the reported seed-42 run, cross-attention has a higher RMSE than gated fusion at S2, at 4.396 compared with 4.253, but lower RMSEs at S3 and S4. Cross-attention records RMSEs of 4.110 and 4.144 at S3 and S4, corresponding to RMSE improvements of 1.00% and 0.19%. These results are therefore reported only as descriptive secondary comparisons and rather than evidence that cross-attention is superior.
 
 在报告的随机种子 42 结果中，交叉注意力在 S2 上的 RMSE 高于门控融合，分别为 4.396 和 4.253，但在 S3 和 S4 上取得了更低的 RMSE。交叉注意力在 S3 和 S4 上的 RMSE 分别为 4.110 和 4.144，对应的正改善分别为 1.00% 和 0.19%。因此，这些结果仅作为描述性的次要比较报告，而不构成交叉注意力更优的证据。
 
@@ -116,19 +112,13 @@ Table 4.3 compares the main Deep model with both Flat models within each feature
 
 *Note. Positive values indicate a lower Deep RMSE than the matched Flat model.*
 
-*注。Deep RMSE reduction 为 Deep 相对对应 Flat 模型的 RMSE 降幅，正值表示 Deep 更低。*
-
-Figure 4.3
-
-**Figure 4.3 — Change in out-of-sample price RMSE from flat XGBoost to gated Deep models. All results use the common 257-week evaluation sample. The dashed line marks the M0 no-change benchmark. S1 is included as a modelling-path reference, while the modality-matched comparisons relevant to RQ2 are S2–S4.**
-
-**图 4.3 — 扁平 XGBoost 到门控 Deep 模型的样本外价格 RMSE 变化。全部结果使用共同的 257 周评价样本。虚线为 M0 无变化基准。S1 作为建模路径参照，与 RQ2 相关的模态匹配比较为 S2–S4。**
-
-Across all four feature sets, the main Deep model records lower RMSE than both Ridge and XGBoost. The reduction ranges from 0.15% against Ridge at S1 to 8.95% against Ridge at S3. At S1 and S2, the main Deep models improve on both Flat learners but remain worse than M0. S3 is the only feature set which has lower RMSE than M0. Although the main Deep S4 model improves substantially over both Flat models, it remains worse than M0 and does not improve on the main Deep S3 model.
+Figure 4.3 shows the change in RMSE from Flat XGBoost to the matched gated Deep model within each information set. Across all four feature sets, the main Deep model records lower RMSE than both Ridge and XGBoost. The reduction ranges from 0.15% against Ridge at S1 to 8.95% against Ridge at S3. At S1 and S2, the main Deep models improve on both Flat learners but remain worse than M0. S3 is the only feature set which has lower RMSE than M0. Although the main Deep S4 model improves substantially over both Flat models, it remains worse than M0 and does not improve on the main Deep S3 model.
 
 在全部四个特征集上，主要 Deep 模型的 RMSE 都低于 Ridge 和 XGBoost。相较于 Ridge，其 RMSE 降幅从 S1 的 0.15% 到 S3 的 8.95% 不等。在 S1 和 S2 上，主要 Deep 模型虽然优于两个 Flat 模型，但表现仍弱于 M0。S3 是唯一一个 RMSE 低于 M0 的特征集。尽管主要 Deep S4 模型相比两个 Flat 模型都有明显改善，但其表现仍弱于 M0，也没有优于主要 Deep S3 模型。
 
-Overall, this comparisons show that the main Deep pathway records lower RMSE than both Flat learners across all four feature sets. For RQ2, this provides consistent evidence that modality-aware representation-level modelling performs better than flat feature fusion when using matched modality sets. However, because the Deep and Flat pathways also differ in model architecture and data representation, the improvement cannot be attributed to representation-level fusion alone. Nevertheless, the comparison suggests that how heterogeneous data are organised and represented may affect the extent to which different information is retained and used by the model, and that preserving the distinct structure and characteristics of different data types may be valuable for future research.
+**Figure 4.3. RMSE change from Flat XGBoost to gated Deep models.**
+
+Overall, these comparisons show that the main Deep pathway records lower RMSE than both Flat learners across all four feature sets. For RQ2, this provides consistent evidence that modality-aware representation-level modelling performs better than flat feature fusion when using matched information sets. However, because the Deep and Flat pathways also differ in model architecture and data representation, the improvement cannot be attributed to representation-level fusion alone. Nevertheless, the comparison suggests that how heterogeneous data are organised and represented may affect the extent to which different information is retained and used by the model, and that preserving the distinct structure and characteristics of different data types may be valuable for future research.
 
 总体来看，比较结果表明，主要 Deep 路径在全部四个特征集上的 RMSE 均低于两种 Flat 学习器。对于 RQ2，这一结果一致表明，在使用匹配模态集时，模态感知的表征级建模优于扁平特征融合。不过，由于 Deep 与 Flat 路径在模型架构和数据表征上也存在差异，因此这一改善不能完全归因于表征级融合本身。尽管如此，这一比较表明，异质数据的组织和表征方式可能会影响不同信息在模型中的保留与利用程度，并说明在处理不同类型的数据时，保留其各自的数据结构和特征可能具有研究价值。
 
@@ -165,25 +155,25 @@ Financial inputs dominate absolute SHAP throughout the sample, accounting for 96
 
 金融输入在整个样本内始终主导绝对 SHAP，在完整样本中占 96.8%，航运仅占 3.2%。航运归因在 2023 至 2024 年及红海窗口内相对较高，介于 5.0%和 5.9%之间，但在 2025 年降至 0.8%。因此，航运贡献整体较小，只在部分时期暂时上升。
 
-The main-run gate allocates average weights of 55.8% to finance and 44.2% to shipping, a substantially more balanced division than the SHAP attribution. Figure 4.3 isolates this contrast for shipping: the gate assigns it a representation weight of about 25–52%, while its realised share of absolute SHAP remains 0.8–5.9%. The two quantities are not interchangeable; SHAP is therefore used as the primary basis for interpreting RQ3.
+The main-run gate allocates average weights of 55.8% to finance and 44.2% to shipping, a substantially more balanced division than the SHAP attribution. This contrast reflects the difference between internal representation weighting and output attribution; SHAP is therefore used as the primary basis for interpreting RQ3.
 
-主要运行中的门控权重平均向金融和航运表示分配 55.8%和 44.2%，明显比 SHAP 归因更加均衡。图 4.4 单独画出航运一侧：门控给予约 25–52% 的表征权重，而其实现的绝对 SHAP 份额仅为 0.8–5.9%。二者不可互换，因此 RQ3 的主要解释依据是 SHAP。
+主要运行中的门控权重平均向金融和航运表示分配 55.8%和 44.2%，明显比 SHAP 归因更加均衡。
 
 At the input-group level, EIA variables provide the largest full-sample contribution at 43.6%, followed by financial and macroeconomic variables at 31.4%. All twenty highest-ranked individual features are financial inputs, led by crude production, Cushing stocks and the federal funds rate. No shipping subgroup contributes more than 2.0% in any reported period, although PortWatch and SAR become modestly more prominent during the Red Sea window.
 
 在输入组层面，EIA 变量的完整样本贡献最大，为 43.6%，其次是金融与宏观变量的 31.4%。排名前二十的单项特征均为金融输入，其中原油产量、Cushing 库存和联邦基金利率排名最高。所有报告时期内，单个航运子组的贡献均未超过 2.0%，但 PortWatch 和 SAR 在红海窗口中相对更加突出。
 
-Within the shipping representation, the highest full-sample node shares belong to Jurong, Hormuz, Suez, the Cape route and Bab el-Mandeb. Jurong and Hormuz lead the rankings from 2021 to 2023, while Suez, Bab el-Mandeb and the Cape route occupy the first three positions in 2024. Figure 4.5 shows this shift for 2022 and 2024, the two calendar years with the largest node-share reallocation. Figure 4.6 tracks the same within-shipping shares through time. During the ±8-week Red Sea window, the largest trailing six-week mean of any node's within-shipping share was 14.0% (Suez). These shares are normalised within the shipping modality and do not represent each node's share of total-model attribution.
+Within the shipping representation, the highest full-sample node shares belong to Jurong, Hormuz, Suez, the Cape route and Bab el-Mandeb. Jurong and Hormuz lead the rankings from 2021 to 2023, while Suez, Bab el-Mandeb and the Cape route occupy the first three positions in 2024. During the Red Sea window, attribution is distributed across several locations, with no individual node accounting for more than 12% of shipping attribution. Figure 4.4 maps this redistribution between 2022 and 2024.
 
-在航运表示内部，完整样本节点份额最高的是裕廊、霍尔木兹、苏伊士、好望角航线和曼德海峡。2021 至 2023 年主要由裕廊和霍尔木兹领先，而 2024 年排名前三的节点转为苏伊士、曼德海峡和好望角航线。图 4.5 用节点份额差异最大的两个日历年——2022 与 2024——展示这一转移。图 4.6 按周给出同一套航运内部份额。在 ±8 周红海窗口内，六周向后滚动均值的最大节点份额为 14.0%（苏伊士）。这些份额在航运模态内部归一化，并不代表各节点占全模型归因的比例。
+Figure 4.5 shows how the within-shipping node shares vary across forecast origins. During the ±8-week Red Sea window, Suez records the largest six-week trailing mean at 14.0%.
 
-**Figure 4.6 — Temporal variation in node-level shipping attribution in gated Deep S3.** Trailing six-week mean of each node's share of absolute SHAP within the shipping modality. Chokepoint nodes appear above AOI nodes; within each group, nodes are ordered by full-sample within-shipping share. Shares are normalised within shipping and do not represent total-model attribution. The colour scale is locked at 18%, matching Figure 4.5. Grey bands mark ±8-week event windows: Russia–Ukraine (24 February 2022), EU oil ban (1 June 2022), OPEC+ (2 April 2023) and Red Sea (19 November 2023). During the Red Sea window the largest smoothed within-shipping node share was 14.0% (Suez).
-
-**图 4.6 — Deep S3 节点级航运归因的时间变化。** 颜色为各节点占航运模态绝对 SHAP 的六周向后滚动均值。咽喉节点在上、AOI 节点在下，组内按完整样本航运内部份额从高到低排列。份额在航运模态内部归一化，不代表全模型归因。色标锁定为 18%，与图 4.5 一致。灰色带为 ±8 周事件窗：俄乌冲突（2022-02-24）、欧盟石油禁令（2022-06-01）、OPEC+（2023-04-02）和红海（2023-11-19）。红海窗内平滑后的最大航运内部节点份额为 14.0%（苏伊士）。
-
-For RQ3, the model relies predominantly on financial information across all market conditions. Shipping provides a much smaller and more episodic contribution, becoming relatively more important in some periods of market and trade disruption, particularly in 2023–2024 and during the Red Sea event window. Its geographic focus also shifts over time across major ports and chokepoints rather than remaining concentrated in one location. Overall, the results suggest that financial data provide the model’s core predictive information, while shipping data act as a supplementary source whose importance increases under particular market conditions.
+For RQ3, the model relies predominantly on financial information across the reported periods. Shipping provides a much smaller and more episodic contribution, becoming relatively more important in some periods of market and trade disruption, particularly in 2023–2024 and during the Red Sea event window. Its geographic focus also shifts over time across major ports and chokepoints rather than remaining concentrated in one location. Overall, the results suggest that financial data provide the model’s core predictive information, while shipping data act as a supplementary source whose importance increases under particular market conditions.
 
 对于 RQ3，模型在不同市场条件下均主要依赖金融信息。航运数据的整体贡献明显较小，并呈现出阶段性特征，在部分市场和贸易扰动时期相对更加重要，尤其是在 2023–2024 年以及红海事件窗口内。航运信息的地域重点也会随时间在不同主要港口和咽喉之间变化，而不会长期集中于单一地点。总体而言，金融数据构成模型预测的核心信息来源，而航运数据则作为补充信息源，其重要性会在特定市场条件下上升。
+
+**Figure 4.4. Annual mean node-level shares of absolute SHAP within the shipping modality, 2022 and 2024.**
+
+**Figure 4.5. Temporal variation in node-level shipping attribution for gated Deep S3.** Values are six-week trailing averages of each node’s share of absolute SHAP within the shipping modality.
 
 ## 4.5 Robustness
 
@@ -196,18 +186,18 @@ For RQ3, the model relies predominantly on financial information across all mark
 **表 4.5 — 全部 Deep 设定的随机种子稳健性** *（相对 M0 的 RMSE improvement，%）*
 
 
-| Set | Model          | Main-run improvement | Across-run mean ± SD | Positive runs |
-| --- | -------------- | -------------------- | -------------------- | ------------- |
-| S1  | M1-Deep        | −2.36%               | −1.00% ± 1.33        | 1/3           |
-| S2  | M2-Deep-Gated  | −2.43%               | −3.15% ± 1.67        | 0/3           |
-|     | M2-Deep-Concat | −2.01%               | −1.79% ± 0.77        | 0/3           |
-|     | M2-Deep-Cross-attention  | −5.87%               | −3.57% ± 2.77        | 0/3           |
-| S3  | M3-Deep-Gated  | +0.15%               | −0.51% ± 0.80        | 1/3           |
-|     | M3-Deep-Concat | −0.22%               | −0.27% ± 0.35        | 1/3           |
-|     | M3-Deep-Cross-attention  | +1.00%               | −3.01% ± 4.07        | 1/3           |
-| S4  | M4-Deep-Gated  | −0.68%               | −0.91% ± 0.26        | 0/3           |
-|     | M4-Deep-Concat | −8.30%               | −3.79% ± 3.95        | 0/3           |
-|     | M4-Deep-Cross-attention  | +0.19%               | −1.90% ± 2.75        | 1/3           |
+| Set | Model                   | Main-run improvement | Across-run mean ± SD | Positive runs |
+| --- | ----------------------- | -------------------- | -------------------- | ------------- |
+| S1  | M1-Deep                 | −2.36%               | −1.00% ± 1.33        | 1/3           |
+| S2  | M2-Deep-Gated           | −2.43%               | −3.15% ± 1.67        | 0/3           |
+|     | M2-Deep-Concat          | −2.01%               | −1.79% ± 0.77        | 0/3           |
+|     | M2-Deep-Cross-attention | −5.87%               | −3.57% ± 2.77        | 0/3           |
+| S3  | M3-Deep-Gated           | +0.15%               | −0.51% ± 0.80        | 1/3           |
+|     | M3-Deep-Concat          | −0.22%               | −0.27% ± 0.35        | 1/3           |
+|     | M3-Deep-Cross-attention | +1.00%               | −3.01% ± 4.07        | 1/3           |
+| S4  | M4-Deep-Gated           | −0.68%               | −0.91% ± 0.26        | 0/3           |
+|     | M4-Deep-Concat          | −8.30%               | −3.79% ± 3.95        | 0/3           |
+|     | M4-Deep-Cross-attention | +0.19%               | −1.90% ± 2.75        | 1/3           |
 
 
 *Note. The seed-42 column is the main reported run in Tables 4.2–4.4. S1 has no fusion operator. Individual seeds are shown in Appendix B.2.*

@@ -1,28 +1,26 @@
 --- 
-title: "A Modality-Aware Spatio-Temporal Fusion Framework for Brent Crude Oil Forecasting Using Financial Time Series, Satellite Imagery and Maritime Networks"
-
-author: 
+title: "A Modality-Aware Spatiotemporal Fusion Framework for Brent Crude Oil Forecasting"
+subtitle: "Using Maritime Networks, Satellite Imagery and Financial Time Series"
+author:
+- XINRUI QI
 - |
-    | XINRUI QI
-    |    
-    | CASA0004, MSc Dissertation 
-    |  
+    | CASA0004: MSc Dissertation
+    |
     | Supervisor: Beatrice Taylor
     |
-    | Code repository: https://github.com/XINRUIQI/CASA0004-Dissertation
+    | [GitHub Repository](https://github.com/XINRUIQI/CASA0004-Dissertation)
     |
-    | This dissertation is submitted in part requirement for the 
-    | MSc in the Centre for Advanced Spatial Analysis, 
+    | Word Count: 10,800
+    |
+    | This dissertation is submitted in part requirement for the
+    | MSc in the Centre for Advanced Spatial Analysis,
     | Bartlett Faculty of the Built Environment, UCL
-    |
-    | Word count:  10800??
-
-date: "`r Sys.Date()`"
+date: "15th of August 2026"
 site: bookdown::bookdown_site
 output: bookdown::gitbook
 documentclass: book
 classoption: oneside
-geometry: "left=4cm, right=3cm, top=2.5cm, bottom=2.5cm"
+geometry: "left=3cm, right=3cm, top=2.5cm, bottom=2.5cm"
 fontsize: 12pt
 linestretch: 1.5
 bibliography: references.bib

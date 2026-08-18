@@ -2,6 +2,9 @@
 \setmainfont{Times New Roman}[
   Ligatures = TeX
 ]
+% Times New Roman lacks Unicode subscripts such as ₂; map them for PDF output.
+\usepackage{newunicodechar}
+\newunicodechar{₂}{\textsubscript{2}}
 \setsansfont{Helvetica}[
   Scale = MatchLowercase
 ]
@@ -9,26 +12,42 @@
   Scale = MatchLowercase
 ]
 
-\usepackage{titlesec}
+\usepackage[explicit]{titlesec}
 \titleformat{\chapter}[hang]
   {\normalfont\huge\bfseries}
   {\chaptertitlename~\thechapter}
   {1em}
+  {#1\gdef\currenthead{\chaptertitlename~\thechapter. #1}}
+\titleformat{name=\chapter,numberless}[hang]
+  {\normalfont\huge\bfseries}
   {}
+  {0pt}
+  {#1\gdef\currenthead{#1}}
 \titlespacing*{\chapter}{0pt}{50pt}{40pt}
+\titlespacing*{name=\chapter,numberless}{0pt}{50pt}{40pt}
 
 \usepackage[none]{hyphenat}
 \pagestyle{plain}
 \raggedbottom
-\usepackage[nottoc,notlot,notlof]{tocbibind}
+\usepackage[nottoc]{tocbibind}
 \usepackage{pdfpages}
-\usepackage[width=\textwidth]{caption}
+\usepackage{float}
+\usepackage{multirow}
+\usepackage[labelsep=period]{caption}
+\captionsetup{
+  format=plain,
+  justification=centering,
+  singlelinecheck=false
+}
 
 \usepackage{fancyhdr}
 \pagestyle{fancy}
 \fancyhf{}
 \setlength{\headheight}{15pt}%
-\fancyhead[RO,RE]{\nouppercase{\leftmark}}
+\newcommand{\currenthead}{}
+\renewcommand{\chaptermark}[1]{\gdef\currenthead{\chaptertitlename~\thechapter. #1}}
+\renewcommand{\sectionmark}[1]{}
+\fancyhead[RO,RE]{\nouppercase{\currenthead}}
 \fancyfoot[CO, CE] {\thepage}
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrulewidth}{0pt}
@@ -47,5 +66,33 @@
   \setcounter{page}{\@ne}%
 }{%
   \if@restonecol\twocolumn \else \newpage \fi
+}
+\renewcommand{\maketitle}{%
+  \begin{titlepage}
+    \singlespacing
+    \centering
+    \vspace*{1.6cm}
+    {\fontsize{22}{28}\selectfont\bfseries
+      A Modality-Aware Spatiotemporal\\[0.2em]
+      Fusion Framework\\[0.2em]
+      for Brent Crude Oil Forecasting\par}
+    \vspace{1.05em}
+    {\fontsize{16}{22}\selectfont
+      Using Maritime Networks, Satellite Imagery\\[0.15em]
+      and Financial Time Series\par}
+    \vfill
+    {\fontsize{14}{20}\selectfont XINRUI QI\par}
+    \vfill
+    {\fontsize{12}{18}\selectfont
+      CASA0004: MSc Dissertation\\[0.95em]
+      Supervisor: Beatrice Taylor\\[0.95em]
+      \href{https://github.com/XINRUIQI/CASA0004-Dissertation}{\textcolor{blue}{\underline{GitHub Repository}}}\\[0.95em]
+      Word Count: 10,800\\[1.35em]
+      This dissertation is submitted in part requirement for the MSc\\
+      in the Centre for Advanced Spatial Analysis,\\
+      Bartlett Faculty of the Built Environment, UCL\\[1.35em]
+      15\textsuperscript{th} of August 2026\par}
+    \vspace*{1.1cm}
+  \end{titlepage}%
 }
 \makeatother

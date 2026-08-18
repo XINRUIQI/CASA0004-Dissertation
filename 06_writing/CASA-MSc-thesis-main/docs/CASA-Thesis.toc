@@ -1,0 +1,73 @@
+\contentsline {chapter}{List of Figures}{8}{chapter*.5}%
+\contentsline {chapter}{List of Tables}{9}{chapter*.6}%
+\contentsline {chapter}{\numberline {1}Introduction}{11}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Background}{11}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Research Aim}{13}{section.1.2}%
+\contentsline {chapter}{\numberline {2}Literature review}{15}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Crude-oil price drivers and forecasting benchmarks}{15}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Machine learning in crude-oil price forecasting}{16}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Shipping activity as an oil-market signal}{17}{section.2.3}%
+\contentsline {section}{\numberline {2.4}Maritime networks and graph-based modelling}{18}{section.2.4}%
+\contentsline {section}{\numberline {2.5}Remote sensing as an oil-market signal}{19}{section.2.5}%
+\contentsline {section}{\numberline {2.6}Multimodal learning}{20}{section.2.6}%
+\contentsline {section}{\numberline {2.7}Research gaps}{22}{section.2.7}%
+\contentsline {chapter}{\numberline {3}Methodology}{24}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Research design}{24}{section.3.1}%
+\contentsline {section}{\numberline {3.2}Prediction target and sample period}{27}{section.3.2}%
+\contentsline {section}{\numberline {3.3}Geographic scope}{28}{section.3.3}%
+\contentsline {section}{\numberline {3.4}Data sources and preparation}{29}{section.3.4}%
+\contentsline {subsection}{\numberline {3.4.1}Data sources}{29}{subsection.3.4.1}%
+\contentsline {subsection}{\numberline {3.4.2}Spatial aggregation and temporal alignment}{32}{subsection.3.4.2}%
+\contentsline {subsection}{\numberline {3.4.3}Data quality and missing values}{33}{subsection.3.4.3}%
+\contentsline {section}{\numberline {3.5}Forecasting models}{33}{section.3.5}%
+\contentsline {subsection}{\numberline {3.5.1}Flat models}{33}{subsection.3.5.1}%
+\contentsline {subsection}{\numberline {3.5.2}Deep models}{34}{subsection.3.5.2}%
+\contentsline {section}{\numberline {3.6}Training and validation}{36}{section.3.6}%
+\contentsline {subsection}{\numberline {3.6.1}Expanding-window estimation and re-estimation}{36}{subsection.3.6.1}%
+\contentsline {subsection}{\numberline {3.6.2}Model and hyperparameter selection}{38}{subsection.3.6.2}%
+\contentsline {section}{\numberline {3.7}Model evaluation and interpretation}{39}{section.3.7}%
+\contentsline {subsection}{\numberline {3.7.1}Forecast evaluation}{39}{subsection.3.7.1}%
+\contentsline {subsection}{\numberline {3.7.2}Model interpretation and robustness checks}{39}{subsection.3.7.2}%
+\contentsline {section}{\numberline {3.8}Ethical considerations}{40}{section.3.8}%
+\contentsline {chapter}{\numberline {4}Results}{41}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Flat-model results}{41}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Deep-model results}{43}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Flat versus Deep}{45}{section.4.3}%
+\contentsline {section}{\numberline {4.4}Interpretability}{47}{section.4.4}%
+\contentsline {section}{\numberline {4.5}Robustness}{50}{section.4.5}%
+\contentsline {chapter}{\numberline {5}Discussion}{52}{chapter.5}%
+\contentsline {section}{\numberline {5.1}RQ1 --- Do spatial data help?}{52}{section.5.1}%
+\contentsline {section}{\numberline {5.2}RQ2 --- Does representation-level fusion beat flat fusion?}{53}{section.5.2}%
+\contentsline {section}{\numberline {5.3}RQ3 --- What does the model rely on?}{54}{section.5.3}%
+\contentsline {section}{\numberline {5.4}Implications}{55}{section.5.4}%
+\contentsline {section}{\numberline {5.5}Limitations}{56}{section.5.5}%
+\contentsline {section}{\numberline {5.6}Future research}{57}{section.5.6}%
+\contentsline {chapter}{\numberline {6}Conclusion}{59}{chapter.6}%
+\setcounter {tocdepth}{0}
+\contentsline {chapter}{Appendix A --- Dataset Details}{67}{appendix*.23}%
+\contentsline {section}{A.1 Variable dictionary}{67}{appendix*.23}%
+\contentsline {subsection}{A.1.1 Finance / macro (31)}{67}{appendix*.23}%
+\contentsline {subsection}{A.1.2 Remote sensing}{71}{none.5}%
+\contentsline {subsection}{A.1.3 Shipping}{73}{none.7}%
+\contentsline {section}{A.2 AOI and chokepoint node lists}{76}{none.10}%
+\contentsline {subsection}{A.2.1 11 oil-infrastructure AOIs}{76}{none.10}%
+\contentsline {subsection}{A.2.2 6 maritime chokepoints}{78}{none.11}%
+\contentsline {section}{A.3 Publication-lag table}{79}{none.12}%
+\contentsline {subsection}{A.3.1 Flat models}{79}{none.12}%
+\contentsline {subsection}{A.3.2 Deep models}{80}{none.13}%
+\contentsline {section}{A.4 Shipping graph edge definition}{80}{none.14}%
+\contentsline {subsection}{A.4.1 Dynamic voyage edges (AOI→AOI)}{81}{none.14}%
+\contentsline {subsection}{A.4.2 Fixed corridor edges (AOI↔chokepoint)}{81}{none.14}%
+\contentsline {subsection}{A.4.3 Adjacency handling \& edge-weight transform}{81}{none.15}%
+\contentsline {section}{A.5 Flat remote-sensing coverage}{82}{none.15}%
+\contentsline {chapter}{Appendix B --- Extra results \& robustness}{84}{appendix*.24}%
+\contentsline {section}{B.1 Deep fusion matrix}{84}{appendix*.24}%
+\contentsline {section}{B.2 Random-seed robustness}{85}{none.17}%
+\contentsline {section}{B.3 Matched Flat--Deep comparisons}{85}{figure.caption.25}%
+\contentsline {section}{B.4 Publication-lag sweep}{86}{none.18}%
+\contentsline {chapter}{Appendix C --- Hyperparameter Settings}{88}{appendix*.26}%
+\contentsline {section}{C.1 Flat search grids}{88}{appendix*.26}%
+\contentsline {section}{C.2 Deep architecture and training}{89}{none.21}%
+\contentsline {subsection}{C.2.1 Encoders, fusion and regression head}{89}{none.21}%
+\contentsline {subsection}{C.2.2 Training}{90}{none.22}%
+\contentsline {chapter}{Appendix D --- Research log}{91}{appendix*.27}%

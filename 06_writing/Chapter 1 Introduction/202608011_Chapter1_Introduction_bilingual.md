@@ -28,7 +28,7 @@ The models are evaluated against a no-change benchmark that sets next week’s p
 
 
 
-### 1.1 Importance and background
+### 1.1 Background
 
 
 
@@ -62,14 +62,14 @@ This dissertation therefore addresses two empirical questions. First, do remote-
 
 因此，本研究主要回答两个实证问题。第一，在金融时序中加入遥感与航运数据，能否改善提前一周的 Brent 价格预测？由此得到的模型能否优于不变预测基准？第二，在使用相同底层数据的情况下，先分别编码各类数据再进行融合，是否比将所有输入合并到同一张特征表中表现更好？下一节将介绍本研究的目标和正式研究问题。
 
-### 1.2 Aim and research questions
+### 1.2 Research Aim
 
 
 ### 1.2 研究目标与研究问题
 
 The main aim of this dissertation is to develop a reproducible comparison framework for evaluating how different data sources and model designs perform in one-week-ahead Brent price forecasting. The framework combines financial time-series data, satellite remote-sensing data and shipping data. It uses a rolling-origin design that restricts each forecast to information available at the forecast origin and compares models by forecast accuracy. Flat feature fusion places all inputs in a single feature table before modelling. Representation-level fusion encodes each modality separately and then combines the resulting representations. This framework enables consistent comparisons of the incremental value of different data sources and the effects of different fusion designs. The empirical setting uses weekly Friday-ending Brent spot prices from 2019 to 2025, spanning periods of demand, supply and maritime disruption, with remote-sensing and shipping inputs covering eleven oil-related monitoring sites and six major maritime chokepoints.
 
-本研究的主要目标是构建一套可复现的对照框架，用于评估不同数据来源和模型设计在提前一周的 Brent 价格预测中的表现。该框架结合金融时序数据、卫星遥感数据和航运数据。框架采用滚动起点预测设计，以避免使用未来信息，并通过正式统计检验比较不同模型的预测表现。扁平特征融合在建模前将所有输入放入同一张特征表中。表示级融合则分别编码各类数据，再将所得表征进行融合。该框架能够一致地比较不同数据来源的增量价值，以及不同融合设计对预测表现的影响。本研究以 2019—2025 年周五截止的周度 Brent 现货价格为实证对象，样本涵盖需求、供给与海上运输扰动时期，遥感与航运输入覆盖十一个石油相关监测站点和六个主要航运咽喉。
+本研究的主要目标是构建一套可复现的对照框架，用于评估不同数据来源和模型设计在提前一周的 Brent 价格预测中的表现。该框架结合金融时序数据、卫星遥感数据和航运数据。框架采用滚动起点预测设计，使每次预测仅使用该预测起点已可获得的信息，并通过预测精度比较不同模型。扁平特征融合在建模前将所有输入放入同一张特征表中。表示级融合则分别编码各类数据，再将所得表征进行融合。该框架能够一致地比较不同数据来源的增量价值，以及不同融合设计对预测表现的影响。本研究以 2019—2025 年周五截止的周度 Brent 现货价格为实证对象，样本涵盖需求、供给与海上运输扰动时期，遥感与航运输入覆盖十一个石油相关监测站点和六个主要航运咽喉。
 
 The study is organised around three research questions.
 

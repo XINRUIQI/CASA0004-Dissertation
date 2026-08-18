@@ -48,9 +48,9 @@ AOI = {
     "P001": ("Rotterdam", "port", 4.145, 51.950),
     "P002": ("Fujairah", "terminal", 56.356, 25.199),
     "P003": ("Ras Tanura", "terminal", 50.157, 26.643),
-    "P004": ("Singapore/Jurong", "refinery", 103.708, 1.274),
+    "P004": ("Jurong Island", "refinery", 103.708, 1.274),
     "P005": ("Houston", "port", -95.100, 29.736),
-    "P006": ("Ningbo", "port", 121.982, 29.935),
+    "P006": ("Ningbo-\nZhoushan", "port", 121.982, 29.935),
     "P007": ("Jamnagar", "refinery", 69.860, 22.345),
     "P008": ("Basra", "terminal", 48.810, 29.681),
     "P009": ("Ulsan", "refinery", 129.343, 35.433),
@@ -87,7 +87,7 @@ LABEL_OFF = {
     "P001": (0.0, 4.2, "center", "bottom"),
     "P004": (3.4, -5.2, "left", "top"),
     "P005": (-3.6, 2.4, "right", "bottom"),
-    "P006": (-8.0, -4.6, "right", "top"),   # Ningbo: lower left
+    "P006": (-8.0, -4.6, "right", "top"),   # Ningbo-Zhoushan: lower left
     "P007": (-3.8, -6.6, "right", "top"),
     "P009": (6.4, 5.2, "left", "bottom"),   # Ulsan: upper right
     "P011": (-6.0, -3.8, "right", "top"),
@@ -319,6 +319,21 @@ def _basemap(ax, bounds, land_shp: Path, *, coast_lw: float = 0.4,
     ax.set_aspect(1 / math.cos(math.radians((lat0 + lat1) / 2)))
 
 
+def _inset_scalebar(ax, lon: float, lat: float, length_km: int = 200) -> None:
+    """Same 200 km bar as Figure 3.3, at inset latitude (Plate Carrée)."""
+    km_per_deg = 111.32 * math.cos(math.radians(lat))
+    dlon = length_km / km_per_deg
+    tick = 0.12
+    color = C["grey"]
+    ax.plot([lon, lon + dlon], [lat, lat], color=color, linewidth=1.5,
+            solid_capstyle="butt", zorder=7, clip_on=True)
+    for x in (lon, lon + dlon):
+        ax.plot([x, x], [lat - tick, lat + tick], color=color,
+                linewidth=1.15, solid_capstyle="butt", zorder=7, clip_on=True)
+    ax.text(lon + dlon / 2, lat + 0.22, f"{length_km} km", ha="center",
+            va="bottom", fontsize=6.0, color=color, zorder=7)
+
+
 def _mark_gulf_box(ax) -> None:
     """Locator rectangle only: light grey stroke, no fill, below graph edges."""
     lon0, lat0, lon1, lat1 = INSET_BOUNDS
@@ -451,6 +466,8 @@ def _add_gulf_inset(ax, land_10: Path, *, voyage=None, corridor=False):
     if corridor:
         _draw_corridor_edges(axi, pad=0.14, keep_ends=INSET_BOUNDS)
         _draw_inset_nodes(axi, chokes=True)
+    # Same 200 km bar and placement as Figure 3.3.
+    _inset_scalebar(axi, lon=47.85, lat=23.05, length_km=200)
     axi.set_xticks([])
     axi.set_yticks([])
     for sp in axi.spines.values():

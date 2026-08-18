@@ -41,7 +41,7 @@ However, the comparisons in this study evaluate complete modelling pathways, inc
 
 不过，本研究比较的是完整的建模路径，其中包括各自的编码器和融合策略。因此，这些结果支持 Deep 整体方法的优势，但不能说明其较好表现是由网络结构的保留，或某一种具体的融合方式所导致的。
 
-## 5.3 RQ3 — What does the model rely on when value exists?
+## 5.3 RQ3 — What does the model rely on?
 
 RQ3 asked how the model uses information when a specification improves on the benchmark. The gate and SHAP results show that the internally learned weights assigned to each data source do not directly correspond to their contributions to the model output. The forecast still relies mainly on financial and EIA information, while shipping provides incremental predictive information beyond the financial inputs. Although shipping has a relatively small SHAP contribution, gated Deep S3 still records a small RMSE improvement relative to M0. This suggests that a modality can add predictive value even if it accounts for only a small share of the model’s output.
 

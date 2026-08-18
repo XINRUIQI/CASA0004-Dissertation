@@ -40,8 +40,8 @@ C = {
 mpl.rcParams.update({
     "font.sans-serif": ["Arial", "Helvetica Neue", "DejaVu Sans"],
     "axes.unicode_minus": False,
-    "figure.dpi": 120,
-    "savefig.dpi": 300,
+    "figure.dpi": 150,
+    "savefig.dpi": 600,
     "savefig.bbox": "tight",
     "savefig.facecolor": "white",
     "figure.facecolor": "white",
@@ -92,8 +92,8 @@ def draw_b(ax, raw, eligible, test) -> None:
                 color=C["frozen"], edgecolor="white", linewidth=0.2, zorder=3)
 
         mid_blue = first_origin + (val_start - first_origin) / 2
-        ax.text(mid_blue, y, str(n_blue), ha="center", va="center",
-                fontsize=6.4, color=C["ink"], zorder=4, clip_on=True)
+        ax.text(mid_blue, y, f"{n_blue} weeks", ha="center", va="center",
+                fontsize=6.2, color=C["ink"], zorder=4, clip_on=True)
 
         if b in (0, 1, 4, 9, 14, 18, 19):
             ax.text(first_origin - pd.Timedelta(days=28), y, f"Fit {b + 1}",
@@ -155,7 +155,7 @@ def main() -> None:
     ]
     for ext in ("png", "pdf"):
         dest = primary.with_suffix(f".{ext}")
-        fig.savefig(dest)
+        fig.savefig(dest, dpi=600 if ext == "png" else None)
         data = dest.read_bytes()
         for alias in aliases:
             alias.with_suffix(f".{ext}").write_bytes(data)

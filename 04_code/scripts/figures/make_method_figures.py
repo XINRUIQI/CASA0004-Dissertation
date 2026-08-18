@@ -234,13 +234,13 @@ def fig33_site_map() -> None:
 
     handles = [
         Line2D([], [], marker="o", linestyle="", color=C["aoi"],
-               markeredgecolor="white", markersize=7, label="AOI - port"),
-        Line2D([], [], marker="s", linestyle="", color=C["aoi"],
-               markeredgecolor="white", markersize=7, label="AOI - terminal"),
+               markeredgecolor="white", markersize=7, label="Port"),
         Line2D([], [], marker="^", linestyle="", color=C["aoi"],
-               markeredgecolor="white", markersize=7, label="AOI - refinery"),
+               markeredgecolor="white", markersize=7, label="Refinery"),
+        Line2D([], [], marker="s", linestyle="", color=C["aoi"],
+               markeredgecolor="white", markersize=7, label="Export terminal"),
         Line2D([], [], marker="D", linestyle="", color=C["choke"],
-               markeredgecolor="white", markersize=7, label="Maritime chokepoint"),
+               markeredgecolor="white", markersize=7, label="Chokepoint"),
     ]
     ax.legend(handles=handles, loc="lower right", ncol=1,
               bbox_to_anchor=(1.0, 0.02))

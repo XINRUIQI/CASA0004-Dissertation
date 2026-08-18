@@ -1,5 +1,9 @@
 # Appendix D — Research log {-}
 
+```{=latex}
+\markboth{Appendix D --- Research log}{Appendix D --- Research log}
+```
+
 | Date | Task |
 | --- | --- |
 | 10 April 2026 | **Meeting 0.** Preliminary discussion with the supervisor on the research direction. Self-proposed topic: oil-price forecasting using spatial and shipping indicators. |
@@ -17,11 +21,11 @@
 | 3 July 2026 | Streamlined the finance block from the literature; built the 17-node shipping graph; ran modality-aware Deep models (finance TCN, frozen Prithvi remote-sensing encoder, shipping GAT, gated fusion). First evidence that structured shipping encoding can improve on flat fusion, though beating Model 0 remained difficult. |
 | 4 July 2026 | Started writing the literature review. |
 | 8 July 2026 | **Meeting 4.** Reviewed Flat and Deep results against Model 0. Agreed to stop major model redesign, keep Model 0 central, and present three result blocks (Flat versus Model 0; Deep versus Model 0; Flat versus Deep). Interpretability was restricted to models that beat Model 0. |
-| 15 July 2026 | Finished Chapters 1–2 and drafted the dissertation outline. |
+| 15 July 2026 | Finished Chapters 1 and 2 and drafted the dissertation outline. |
 | 16 July 2026 | Received written feedback from Beatrice Taylor on structure and the literature review. |
 | 20 July 2026 | Revised Chapter 2 from the feedback, adjusted the structure, and continued writing Chapter 3. |
 | 29 July 2026 | **Meeting 5.** Last formal meeting before submission. Discussed sentence-level clarity; policy as broader geopolitical and trade context rather than one named statute; a world map of monitoring sites and chokepoints as the study-area figure; the balance between a readable narrative and a replicable method; and the Flat/Deep remote-sensing mismatch, which should be stated in the text. |
-| 1 August 2026 | Completed the first full draft. |
-| 3 August 2026 | Received written comments from Beatrice Taylor on narrative, methods clarity and presentation. |
+| 3 August 2026 | Completed the first full draft. |
+| 4 August 2026 | Received written comments from Beatrice Taylor on narrative, methods clarity and presentation. |
 | 11 August 2026 | Revised the full draft; rebuilt the figure set (study-site map, worked example, RMSE comparisons, SHAP map and heatmap); aligned Bookdown numbering and Harvard references. |
 | 17 August 2026 | Finalised remaining figures. |

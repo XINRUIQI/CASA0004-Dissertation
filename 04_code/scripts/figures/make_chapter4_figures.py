@@ -58,7 +58,7 @@ AOI_XY = {
     "P001": ("Rotterdam", "port", 4.145, 51.950),
     "P002": ("Fujairah", "terminal", 56.356, 25.199),
     "P003": ("Ras Tanura", "terminal", 50.157, 26.643),
-    "P004": ("Jurong", "refinery", 103.708, 1.274),
+    "P004": ("Jurong Island", "refinery", 103.708, 1.274),
     "P005": ("Houston", "port", -95.100, 29.736),
     "P006": ("Ningbo-Zhoushan", "port", 121.982, 29.935),
     "P007": ("Jamnagar", "refinery", 69.860, 22.345),
@@ -79,7 +79,7 @@ TYPE_MARKER = {"port": "o", "terminal": "s", "refinery": "^"}
 CHOKE_IDS = list(CHOKE_XY)
 NAMED_NODES = ["P004", "hormuz", "suez", "cape", "mandeb"]
 NAMED_LABEL = {
-    "P004": "Jurong",
+    "P004": "Jurong Island",
     "hormuz": "Hormuz",
     "suez": "Suez",
     "cape": "Cape of Good Hope",
@@ -120,7 +120,7 @@ HEAT_LABEL = {
     "hormuz": "Hormuz", "suez": "Suez", "mandeb": "Bab el-Mandeb",
     "cape": "Cape of Good Hope", "malacca": "Malacca", "panama": "Panama",
     "P001": "Rotterdam", "P002": "Fujairah", "P003": "Ras Tanura",
-    "P004": "Jurong", "P005": "Houston", "P006": "Ningbo-Zhoushan",
+    "P004": "Jurong Island", "P005": "Houston", "P006": "Ningbo-Zhoushan",
     "P007": "Jamnagar", "P008": "Basra", "P009": "Ulsan",
     "P010": "Kharg", "P011": "Yanbu",
 }
@@ -205,7 +205,7 @@ IMP = {
     "ylim": (-10.5, 1.5),
     "yticks": [-10, -8, -6, -4, -2, 0],
     "xlim": (-0.55, 3.80),
-    "subplot": dict(left=0.155, right=0.975, top=0.965, bottom=0.22),
+    "subplot": dict(left=0.155, right=0.975, top=0.965, bottom=0.185),
     "main_s": 80,
     "sec_s": 58,
     "link_w": 1.35,
@@ -291,9 +291,9 @@ def _open_improvement_fig():
 
 
 def _legend_below(ax, handles) -> None:
-    ax.legend(handles=handles, loc="upper center", bbox_to_anchor=(0.5, -0.13),
+    ax.legend(handles=handles, loc="upper center", bbox_to_anchor=(0.5, -0.085),
               ncol=2, fontsize=IMP["legend_fs"], handletextpad=0.45,
-              columnspacing=1.6, frameon=False)
+              columnspacing=1.6, frameon=False, borderaxespad=0.0)
 
 
 def _value_label(ax, x, y, text, color, *, dy=0.0, dy_pts=0.0) -> None:
@@ -502,11 +502,6 @@ def fig42_slope() -> None:
     ax.set_xticks([0, 1])
     ax.set_xticklabels(["Flat\n(XGBoost)", "Deep\n(gated fusion)"])
     ax.set_ylabel("RMSE (USD/bbl)")
-    ax.set_title(
-        "Within matched modality sets and the common evaluation sample,\n"
-        "all Deep specifications reduce RMSE relative to XGBoost; only S3 also beats M0",
-        loc="left",
-    )
     y_lo = min(min(flat), min(deep), m0)
     y_hi = max(max(flat), max(deep), m0)
     pad = (y_hi - y_lo) * 0.16
@@ -795,7 +790,7 @@ def fig44_node_map() -> None:
     for size, color, lab, edge, alpha in (
         (CENTER_SIZE, C["choke"], "Chokepoint", "white", 1.0),
         (CENTER_SIZE, C["aoi"], "AOI", "white", 1.0),
-        (OTHER_SIZE, OTHER_COLOR, "Other node", "#7A7A7A", OTHER_ALPHA),
+        (OTHER_SIZE, OTHER_COLOR, "Other nodes", "#7A7A7A", OTHER_ALPHA),
     ):
         leg.scatter([0.22], [y], s=size, marker="o",
                     facecolor=to_rgba(color, alpha),

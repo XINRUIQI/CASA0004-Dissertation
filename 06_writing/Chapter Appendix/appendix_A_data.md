@@ -1,6 +1,6 @@
-# Appendix A — Data: variable dictionary, AOI/chokepoint lists, lags, graph edges
+# Appendix A — Dataset Details
 
-# 附录 A — 数据：变量词典、AOI/咽喉列表、滞后期表、航运图边定义
+# 附录 A — 数据集详情
 
 ---
 
@@ -211,10 +211,6 @@ public AIS (Paolo et al., 2024); they are not a sanctions variable.
 
 Mi 等（2022，2023）主要记录油价影响油轮靠港，因此航运被当作可能双向的信号，而不是已被证明的领先指标。SAR 暗船检测用于校正公共 AIS 覆盖不全（Paolo 等，2024），不是制裁变量。
 
-### A.1.4 Exploratory data analysis / 探索性分析结果
-
-Exploratory analysis of the 365-week modelling window checked coverage and lead–lag association with next week’s Brent log return. After the lags in A.3, the finance, remote-sensing and shipping series are largely complete, and shipping records physical corridor shocks such as Red Sea re-routing. Linear associations with next week’s return are weak. This is consistent with selecting predictors from the literature rather than from in-sample correlations, and with judging incremental value by out-of-sample comparisons rather than by a one-week linear lead.
-
 ---
 
 
@@ -311,19 +307,6 @@ sensing = monthly Prithvi embeddings, also month-end + 15 days). Only the
 | GFW SAR dark-vessel                             | node features         | **+4 w** |
 | GFW monthly presence (chokepoint node features) | node features         | **+4 w** |
 
-
-
-
-### A.3.3 Why GFW is +4 w (Flat) but +2 w (Deep) / 为何 GFW 扁平 +4、深度 +2
-
-These are different GFW products, not one stream lagged two ways. Flat +4 w
-is monthly vessel presence, with a conservative availability buffer rather
-than an official four-week release. Deep +2 w is near-real-time AIS voyage
-O–D. The two are not interchangeable.
-
-两个数字对应不同 GFW 产品，不是同一数据流改滞后。Flat +4 周为月频船舶存在
-（保守可得性缓冲，非官方发布规则）；Deep +2 周为近实时 AIS 航次 O–D。不可互换。
-
 ---
 
 
@@ -380,15 +363,15 @@ For message passing the adjacency is then symmetrised and self-looped
 (dense 17×17 boolean mask; dense is simpler than sparse for this tiny
 dynamic graph). / 对称化只在编码器中进行。消息传递前对称化 + 自环。
 - **Edge-weight transform (attention prior)**: `log1p` of the symmetrised O-D  
-flow is **added to the GAT attention logits**, scaled by a **learned gain  
-`edge_scale`**, then softmax; it is not a multiplier on the attention weights  
+flow is **added to the GAT attention logits**, scaled by a **learned gain**  
+`edge_scale`, then softmax; it is not a multiplier on the attention weights  
 and is not used as an edge feature in message passing. Busy lanes therefore  
 receive a higher prior, and the model can down-weight it if unhelpful. /  
 边权变换：对称化后的 O-D 流量取 `log1p`，乘以可学习增益后  
 **加到 GAT 注意力 logits 上**再 softmax；不是乘在注意力权重上，也不作为  
 边特征进入消息传递。
 - **Encoder**: type-specific projection (`F_aoi=11`, `F_choke=20` → `d_model=64`)
-  + node-type embedding → 2-layer dense multi-head GAT (heads = 4, LeakyReLU
+  - node-type embedding → 2-layer dense multi-head GAT (heads = 4, LeakyReLU
   slope 0.2) → causal TCN (kernel 3; lookback L) → node-attention pooling →
   32-d `z_ship` (~42k params). Node-attention weights feed RQ3 (which
   port/chokepoint the branch weights). Encoder details in Appendix C. /

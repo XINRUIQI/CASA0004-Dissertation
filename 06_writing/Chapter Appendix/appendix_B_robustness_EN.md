@@ -1,14 +1,13 @@
 # Appendix B — Extra results & robustness
 
 All checks use the same protocol as Chapter 3 (lookback 4, expanding window, 257
-scored weeks). These tables qualify Chapter 4; they are not used to select the
-main specification.
+scored weeks).
 
 ---
 
 ## B.1 Deep fusion matrix
 
-Seed 42, lookback 4, 257 weeks. Entries are RMSE improvement versus M0 (%).
+Entries are RMSE improvement versus M0 (%).
 Positive values indicate lower RMSE than the no-change benchmark.
 
 | Set | Concat | Gated | Cross-attention |
@@ -17,10 +16,9 @@ Positive values indicate lower RMSE than the no-change benchmark.
 | **S3 (finance + shipping)** | −0.22 | **+0.15** | **+1.00** |
 | S4 (finance + RS + shipping) | −8.30 | −0.68 | +0.19 |
 
-On this seed, M0 is cleared only where shipping is present. S2 never beats M0.
+M0 is cleared only where shipping is present. S2 never beats M0.
 Concatenation clears M0 in no set. The three positive cells are descriptive
-orderings on one seed. Seed-averaged results are in Table 4.5; individual seeds
-are in Figure B.1.
+orderings on one seed.
 
 ---
 

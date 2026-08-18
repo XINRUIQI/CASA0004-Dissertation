@@ -115,3 +115,79 @@ a.anchor:hover {
 .summary > li:first-child {
   height: auto !important;
 }
+
+/* Cover page: title / subtitle / author / meta hierarchy */
+#header {
+  text-align: center;
+  font-family: "Times New Roman", Times, serif;
+  padding: 2.4em 0.4em 3.2em;
+}
+
+#header h1.title {
+  font-size: 1.85em;
+  font-weight: 700;
+  line-height: 1.28;
+  margin: 0 0 0.45em;
+}
+
+#header h1.subtitle,
+#header p.subtitle {
+  font-size: 1.22em;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1.35;
+  margin: 0 0 3.2em;
+}
+
+#header p.subtitle em,
+#header h1.subtitle em {
+  font-style: normal;
+}
+
+#header p.author {
+  font-size: 1.02em;
+  font-style: normal;
+  line-height: 1.85;
+  margin: 0.15em 0;
+}
+
+#header p.author em {
+  font-style: normal;
+}
+
+#header h1.title + p.author,
+#header .subtitle + p.author {
+  font-size: 1.18em;
+  margin: 2.8em 0;
+}
+
+#header p.author a {
+  color: #0563c1;
+  text-decoration: underline;
+}
+
+#header p.date {
+  font-style: normal;
+  margin-top: 1.4em;
+}
+
+#header p.date em {
+  font-style: normal;
+}
+
+#declaration img {
+  max-width: 280px;
+  height: auto;
+  display: block;
+  margin: 1.4em 0 0.3em;
+  border: none;
+  box-shadow: none;
+}
+
+.figure,
+.figure p.caption,
+p.caption,
+figcaption,
+caption {
+  text-align: center;
+}
