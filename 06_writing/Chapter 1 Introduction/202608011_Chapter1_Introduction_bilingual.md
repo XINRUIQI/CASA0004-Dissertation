@@ -18,19 +18,11 @@ The models are evaluated against a no-change benchmark that sets next week’s p
 
 ---
 
-
-
 ## Chapter 1 — Introduction *(~600 words)*
-
-
 
 ## 第 1 章 — 绪论 *(约 600 词)*
 
-
-
 ### 1.1 Background
-
-
 
 ### 1.1 背景
 
@@ -59,12 +51,11 @@ These data create two practical challenges. First, the signals are noisy and arr
 
 这些数据带来两项实际挑战。第一，各类信号含有噪声，观测频率和发布时间也不相同。它们还可能是对油价变化的反应，而不是油价的领先信号。同时，可用的周度样本相对较小。第二，一种常见方法是在建模前将所有异质输入放入同一张特征表中。这种扁平特征融合方法便于应用 Ridge 回归和梯度提升树等传统模型，但无法明确保留金融时序的时间结构、遥感数据的站点结构以及航运数据的网络结构。
 
-This dissertation therefore addresses two empirical questions. First, do remote-sensing and shipping data improve one-week-ahead Brent price forecasts when they are added to financial time series? Can the resulting models outperform the no-change benchmark? Second, when the underlying data remain the same, does encoding each modality separately before fusion perform better than combining all inputs in a single feature table? The next section presents the study aim and formal research questions.
+This dissertation therefore addresses two empirical questions. First, do remote-sensing and shipping data improve one-week-ahead Brent price forecasts when they are added to financial time series? Can the resulting models outperform the no-change benchmark? Second, when the underlying data remain matched, does encoding each modality separately before fusion perform better than combining all inputs in a single feature table? The next section presents the study aim and formal research questions.
 
 因此，本研究主要回答两个实证问题。第一，在金融时序中加入遥感与航运数据，能否改善提前一周的 Brent 价格预测？由此得到的模型能否优于不变预测基准？第二，在使用相同底层数据的情况下，先分别编码各类数据再进行融合，是否比将所有输入合并到同一张特征表中表现更好？下一节将介绍本研究的目标和正式研究问题。
 
 ### 1.2 Research aim
-
 
 ### 1.2 研究目标
 
@@ -92,6 +83,6 @@ The study is organised around three research questions.
 
 ### 1.3 论文结构
 
-The remainder of this dissertation is organised as follows. Chapter 2 reviews four related strands of literature covering oil-price forecasting benchmarks, machine-learning methods, shipping and satellite signals, and multimodal fusion. It then identifies the research gap addressed by the research questions. Chapter 3 presents the comparison framework, including the information sets, the Flat and Deep pathways, the rolling-origin evaluation against the no-change benchmark, and the ethical considerations relating to the spatial data. Chapter 4 reports the out-of-sample results for RQ1, RQ2 and RQ3. Chapter 5 interprets the findings in relation to the literature and discusses the implications and limitations. Chapter 6 concludes the dissertation.
+The remainder of this dissertation is organised as follows. Chapter 2 reviews four related strands of literature, identifies the research gap and motivates the present study. Chapter 3 presents the comparison framework, including the information sets, the Flat and Deep pathways, the rolling-origin evaluation against the no-change benchmark, and the ethical considerations relating to the spatial data. Chapter 4 reports the out-of-sample results for RQ1, RQ2 and RQ3. Chapter 5 interprets the findings in relation to the literature and discusses the implications and limitations. Chapter 6 concludes the dissertation.
 
-本文其余部分安排如下。第 2 章综述四支相关文献，涵盖油价预测基准、机器学习方法、航运与卫星信号以及多模态融合，并指出本研究问题所针对的研究空白。第 3 章介绍对照框架，包括信息集、Flat 与 Deep 两条路径、相对不变预测基准的滚动起点评价，以及与空间数据有关的伦理考量。第 4 章报告 RQ1、RQ2 与 RQ3 的样本外结果。第 5 章结合文献解释研究发现，并讨论其含义与局限。第 6 章为全文结论。
+本文其余部分安排如下。第 2 章综述四支相关文献，指出研究空白并引出本研究。第 3 章介绍对照框架，包括信息集、Flat 与 Deep 两条路径、相对不变预测基准的滚动起点评价，以及与空间数据有关的伦理考量。第 4 章报告 RQ1、RQ2 与 RQ3 的样本外结果。第 5 章结合文献解释研究发现，并讨论其含义与局限。第 6 章为全文结论。

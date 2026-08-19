@@ -4,7 +4,7 @@
 
 The baseline for this study is a simple no-change benchmark, which predicts that next week’s Brent price will equal this week’s price. All learned models are evaluated against this benchmark. The available information is divided into different information sets, and models are trained and evaluated separately on these sets to examine whether different types of data provide useful predictive information and whether different ways of combining information affect forecasting performance. All specifications share the same weekly forecast dates, sample window and evaluation rules.
 
-The no-change benchmark is denoted M0. At each forecast origin $t$, where $P_t$ is the Brent price in week $t$, M0 sets the one-week-ahead price forecast equal to the current weekly price:
+The no-change benchmark is denoted M0. Let $P_t$ denote the last available daily observation of the Brent spot price in week $t$. Each week ends on Friday, and prices are measured in U.S. dollars per barrel. M0 sets its forecast of the corresponding price in the following week, $P_{t+1}$, equal to $P_t$:
 
 \begin{equation}
 \hat{P}_{t+1\mid t}=P_t.
@@ -23,9 +23,11 @@ Table: (#tab:info-sets) Information sets.
 | S3                             | S1 + shipping                                                    |
 | S4                             | S1 + remote sensing + shipping                                   |
 
-Two model families are applied to these information sets. The Flat family first combines all selected predictors into a weekly feature table. The most recent weeks are then flattened into a single row and used to fit Ridge and XGBoost. This early joining of features is called flat feature fusion. The Deep family initially keeps each data type separate. Financial, remote-sensing and shipping data are encoded independently. The resulting representations are then combined, with gated fusion learning how much weight to assign to each data type. Flat and Deep are compared using the same information set and evaluation sample. Because the two families also differ in model class, capacity and some modality-specific representations, these comparisons are interpreted as comparisons between overall modelling strategies rather than as tests of fusion alone. Fusion is assessed more directly within the Deep family by comparing simple concatenation, gated fusion and cross-attention while holding the encoders and inputs fixed. Together, these comparisons address RQ2.
+Two model families are applied to these information sets. The Flat family first combines all selected predictors into a weekly feature table. The most recent weeks are then flattened into a single row and used to fit Ridge and XGBoost. This early joining of features is called flat feature fusion. The Deep family initially keeps each data type separate. Financial, remote-sensing and shipping data are encoded independently. The resulting representations are then combined, with gated fusion learning how much weight to assign to each data type. Flat and Deep are compared using the same information set and evaluation sample. Because the two families also differ in model class, capacity and some modality-specific representations, these comparisons are interpreted as comparisons between overall modelling strategies rather than as tests of fusion alone. Fusion is assessed more directly within the Deep family by comparing simple concatenation, gated fusion and cross-attention while holding the encoders and inputs fixed.
 
-Within each model family, comparisons across S1–S4 use the same forecasting method and evaluation sample; only the information included in the model changes. S2 against S1 measures the contribution of adding remote sensing alone, while S3 against S1 measures the contribution of shipping. S4 against S1 measures their joint contribution. S4 against S3 and S4 against S2 examine whether each source still adds useful information once the other is already included. These comparisons, together with each model’s comparison against M0, address RQ1.
+Within each model family, S1–S4 are evaluated using the same forecasting method and evaluation sample, so differences in performance are interpreted in relation to changes in the available information. Comparisons with S1 assess the incremental and joint contributions of the added modalities, while comparisons of S4 with S2 and S3 test whether each modality adds useful information once the other is included.
+
+The information-set comparisons, together with each model’s comparison against M0, address RQ1. The comparisons between Flat and Deep, as well as those among the Deep fusion methods, address RQ2.
 
 RQ3 is restricted to Deep specifications that outperform M0 under the predefined criterion. For these specifications, the study reports the weights assigned to finance, remote sensing and shipping data, and examines how model attention patterns vary across different market conditions. These quantities are used to describe which information the models rely on.
 
@@ -37,14 +39,14 @@ knitr::include_graphics(here::here("figures", "fig_3_1_research_design.png"))
 
 ## Prediction target and sample period {#method-target}
 
-Let $P_t$ denote the last available daily Brent spot-price observation in week $t$, where each week ends on Friday, measured in U.S. dollars per barrel. The forecast target is next week’s price $P_{t+1}$. Models are not trained directly on the price level. They predict the one-week logarithmic return
+Unlike M0, the learned models are not trained directly on the price level. Instead, they predict the one-week logarithmic return from $P_t$ to $P_{t+1}$:
 
 \begin{equation}
 r_{t+1}=\log\left(\frac{P_{t+1}}{P_t}\right)
 (\#eq:log-return)
 \end{equation}
 
-and reconstruct the price forecast as
+The predicted return is then converted back into a price forecast:
 
 \begin{equation}
 \hat{P}_{t+1\mid t}=P_t\exp\left(\hat{r}_{t+1\mid t}\right).
@@ -61,7 +63,7 @@ The modelling window covers 2019–2025 and provides a common weekly index of 36
 
 ## Geographic scope {#method-geography}
 
-Because the prediction target is the global Brent benchmark rather than a local physical cargo price at a single terminal, the study does not use one specific study region. Spatial information instead comes from 11 oil-infrastructure monitoring sites and 6 maritime chokepoints. Rather than constituting a spatially exhaustive or geographically balanced sample, these locations were purposively selected to span different functional positions in the international oil system, including supply, transit, refining, demand and market access. Figure \@ref(fig:study-sites) places these sites and chokepoints on a world map. Full site names, coordinates, functional roles, patch sizes and graph edge definitions are in Appendix A.
+Because the prediction target is the global Brent benchmark instead of a local physical cargo price at a single terminal, the study does not use one specific study region. Spatial information instead comes from 11 oil-infrastructure monitoring sites and 6 maritime chokepoints. Rather than constituting a spatially exhaustive or geographically balanced sample, these locations were purposively selected to span different functional positions in the international oil system, including supply, transit, refining, demand and market access. Figure \@ref(fig:study-sites) places these sites and chokepoints on a world map. Full site names, coordinates, functional roles, patch sizes and graph edge definitions are in Appendix A.
 
 ```{r study-sites, echo=FALSE, out.width="100%", fig.cap="Spatial distribution of the 11 oil-infrastructure AOIs and 6 maritime chokepoints.", fig.scap="Spatial distribution of AOIs and maritime chokepoints.", fig.pos="H"}
 knitr::include_graphics(here::here("figures", "fig_3_3_study_sites_map.png"))

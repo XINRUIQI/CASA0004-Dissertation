@@ -8,9 +8,9 @@ The baseline for this study is a simple no-change benchmark, which predicts that
 
 本研究的基线是一个简单的不变预测基准，即预测下周 Brent 价格等于本周价格。所有学习得到的模型均对照该基准进行评价。可用信息被划分为不同的信息集，并分别在各信息集上训练和评价模型，以考察不同类型的数据是否提供有用的预测信息，以及不同的信息组合方式是否影响预测表现。所有设定共用同一周度预测日、样本窗口与评价规则。
 
-The no-change benchmark is denoted M0. At each forecast origin t, where P_t is the Brent price in week t, M0 sets the one-week-ahead price forecast equal to the current weekly price:
+The no-change benchmark is denoted M0. Let P_t denote the last available daily observation of the Brent spot price in week t. Each week ends on Friday, and prices are measured in U.S. dollars per barrel. M0 sets its forecast of the corresponding price in the following week, P_{t+1}, equal to P_t:
 
-不变预测基准记为 M0。设 P_t 为第 t 周的 Brent 价格，则在每个预测起点 t，M0 将提前一周的价格预测设为当前周价格：
+不变预测基准记为 M0。设 P_t 为第 t 周内最后一个可获得的 Brent 现货价格日度观测。各周于周五结束，价格以美元/桶计。M0 将下一周对应价格 P_{t+1} 的预测设为 P_t：
 
 \hat{P}_{t+1\mid t}=P_t.
 
@@ -42,13 +42,17 @@ The predictors are organised into four information sets. S1 contains financial t
 | S4     | S1 + 遥感 + 航运      |
 
 
-Two model families are applied to these information sets. The Flat family first combines all selected predictors into a weekly feature table. The most recent weeks are then flattened into a single row and used to fit Ridge and XGBoost. This early joining of features is called flat feature fusion. The Deep family initially keeps each data type separate. Financial, remote-sensing and shipping data are encoded independently. The resulting representations are then combined, with gated fusion learning how much weight to assign to each data type. Flat and Deep are compared using the same information set and evaluation sample. Because the two families also differ in model class, capacity and some modality-specific representations, these comparisons are interpreted as comparisons between overall modelling strategies rather than as tests of fusion alone. Fusion is assessed more directly within the Deep family by comparing simple concatenation, gated fusion and cross-attention while holding the encoders and inputs fixed. Together, these comparisons address RQ2.
+Two model families are applied to these information sets. The Flat family first combines all selected predictors into a weekly feature table. The most recent weeks are then flattened into a single row and used to fit Ridge and XGBoost. This early joining of features is called flat feature fusion. The Deep family initially keeps each data type separate. Financial, remote-sensing and shipping data are encoded independently. The resulting representations are then combined, with gated fusion learning how much weight to assign to each data type. Flat and Deep are compared using the same information set and evaluation sample. Because the two families also differ in model class, capacity and some modality-specific representations, these comparisons are interpreted as comparisons between overall modelling strategies rather than as tests of fusion alone. Fusion is assessed more directly within the Deep family by comparing simple concatenation, gated fusion and cross-attention while holding the encoders and inputs fixed.
 
-两套模型族应用于这些信息集。Flat 族首先将所有选定的预测变量合并为一张周度特征表。随后将最近几周的数据展平为一行，用于拟合 Ridge 和 XGBoost。这种在输入阶段直接合并特征的方式称为扁平特征融合。Deep 族则先将不同类型的数据分开处理。金融、遥感和航运数据分别进行编码。随后将得到的表征组合起来，并通过门控融合学习为不同数据类型分配权重。Flat 与 Deep 在相同的信息集和评价样本上进行比较。由于两类模型在模型类型、容量以及部分模态的表征方式上也存在差异，因此这类比较反映的是两种整体建模策略的差异，而不是单独检验融合方式本身。融合方式在 Deep 族内部得到更直接的比较：在编码器和输入保持不变的条件下，比较简单拼接、门控融合与交叉注意力。这些比较共同回答 RQ2。
+两套模型族应用于这些信息集。Flat 族首先将所有选定的预测变量合并为一张周度特征表。随后将最近几周的数据展平为一行，用于拟合 Ridge 和 XGBoost。这种在输入阶段直接合并特征的方式称为扁平特征融合。Deep 族则先将不同类型的数据分开处理。金融、遥感和航运数据分别进行编码。随后将得到的表征组合起来，并通过门控融合学习为不同数据类型分配权重。Flat 与 Deep 在相同的信息集和评价样本上进行比较。由于两类模型在模型类型、容量以及部分模态的表征方式上也存在差异，因此这类比较反映的是两种整体建模策略的差异，而不是单独检验融合方式本身。融合方式在 Deep 族内部得到更直接的比较：在编码器和输入保持不变的条件下，比较简单拼接、门控融合与交叉注意力。
 
-Within each model family, comparisons across S1–S4 use the same forecasting method and evaluation sample; only the information included in the model changes. S2 against S1 measures the contribution of adding remote sensing alone, while S3 against S1 measures the contribution of shipping. S4 against S1 measures their joint contribution. S4 against S3 and S4 against S2 examine whether each source still adds useful information once the other is already included. These comparisons, together with each model’s comparison against M0, address RQ1.
+Within each model family, S1–S4 are evaluated using the same forecasting method and evaluation sample, so differences in performance are interpreted in relation to changes in the available information. Comparisons with S1 assess the incremental and joint contributions of the added modalities, while comparisons of S4 with S2 and S3 test whether each modality adds useful information once the other is included.
 
-在每个模型族中，S1–S4 的比较使用相同的预测方法和评价样本，仅改变模型所使用的信息。S2 对 S1 衡量单独加入遥感后带来的贡献，S3 对 S1 衡量加入航运后的贡献。S4 对 S1 衡量两类信息共同加入后的贡献。S4 对 S3 和 S4 对 S2 则分别考察：当另一类数据已经纳入模型后，新增的数据源是否仍能提供有用信息。这些比较连同各模型与 M0 的比较，共同回答 RQ1。
+在每个模型族中，S1–S4 使用相同的预测方法和评价样本进行评价，因此表现差异被解释为与可用信息的变化有关。与 S1 的比较用于评估新增模态的增量贡献与共同贡献；S4 与 S2、S3 的比较则检验：当另一模态已经纳入时，该模态是否仍能提供有用信息。
+
+The information-set comparisons, together with each model’s comparison against M0, address RQ1. The comparisons between Flat and Deep, as well as those among the Deep fusion methods, address RQ2.
+
+信息集比较连同各模型与 M0 的比较，共同回答 RQ1。Flat 与 Deep 之间的比较，以及 Deep 族内部不同融合方法之间的比较，共同回答 RQ2。
 
 RQ3 is restricted to Deep specifications that outperform M0 under the predefined criterion. For these specifications, the study reports the weights assigned to finance, remote sensing and shipping data, and examines how model attention patterns vary across different market conditions. These quantities are used to describe which information the models rely on.
 
@@ -66,15 +70,15 @@ The overall research design is summarised in Figure 3.1.
 
 ## 3.2 预测目标与样本期
 
-Let P_t denote the last available daily Brent spot-price observation in week t, where each week ends on Friday, measured in US dollars per barrel. The forecast target is next week’s price P_{t+1}. Models are not trained directly on the price level. They predict the one-week logarithmic return
+Unlike M0, the learned models are not trained directly on the price level. Instead, they predict the one-week logarithmic return from P_t to P_{t+1}:
 
-令 P_t 表示第 t 周内最后一个可获得的 Brent 现货价格日度观测，各周于周五结束，单位为美元/桶。预测目标是下一周的价格 P_{t+1}。模型不直接在价格水平上训练，而是预测一周对数收益
+与 M0 不同，学习模型不直接在价格水平上训练，而是预测从 P_t 到 P_{t+1} 的一周对数收益：
 
 r_{t+1}=\log\left(\frac{P_{t+1}}{P_t}\right)
 
-and reconstruct the price forecast as
+The predicted return is then converted back into a price forecast:
 
-并按下式重构价格预测：
+随后将预测收益转换回价格预测：
 
 \hat{P}_{t+1\mid t}=P_t\exp\left(\hat{r}_{t+1\mid t}\right).
 
@@ -94,7 +98,7 @@ The modelling window covers 2019–2025 and provides a common weekly index of 36
 
 ## 3.3 地理范围
 
-Because the prediction target is the global Brent benchmark rather than a local physical cargo price at a single terminal, the study does not use one specific study region. Spatial information instead comes from 11 oil-infrastructure monitoring sites and 6 maritime chokepoints. Rather than constituting a spatially exhaustive or geographically balanced sample, these locations were purposively selected to span different functional positions in the international oil system, including supply, transit, refining, demand and market access. Figure 3.3 places these sites and chokepoints on a world map. Full site names, coordinates, functional roles, patch sizes and graph edge definitions are in Appendix A.
+Because the prediction target is the global Brent benchmark instead of a local physical cargo price at a single terminal, the study does not use one specific study region. Spatial information instead comes from 11 oil-infrastructure monitoring sites and 6 maritime chokepoints. Rather than constituting a spatially exhaustive or geographically balanced sample, these locations were purposively selected to span different functional positions in the international oil system, including supply, transit, refining, demand and market access. Figure 3.3 places these sites and chokepoints on a world map. Full site names, coordinates, functional roles, patch sizes and graph edge definitions are in Appendix A.
 
 由于预测对象是全球 Brent 基准，而非单一码头的本地实物货价，本研究不采用一块特定的地理研究区。空间信息来自 11 个石油基础设施监测站点与 6 个航运咽喉。这些位置并不构成对全球石油体系的完整或地理均衡抽样，而是通过目的性选取，覆盖供给、中转、炼化、需求与市场接入等不同功能环节。图 3.3 在世界地图上标出这些站点与咽喉。完整站名、坐标、功能角色、影像块尺寸与图边定义见附录 A。
 
