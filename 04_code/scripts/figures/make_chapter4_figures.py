@@ -948,52 +948,47 @@ SEED_MARK = {42: ("D", 78, 1.15), 1: ("o", 42, 0.85), 2: ("s", 42, 0.85)}
 
 def fig46_seed_robustness() -> None:
     pooled = pd.read_csv(DEEP / "_cross" / "deep_seed_pooled.csv")
-    fig, ax = plt.subplots(figsize=(8.2, 5.6))
-    y = np.arange(len(SEED_SPECS))[::-1]
+    fig, ax = plt.subplots(figsize=(8.8, 5.2))
+    x = np.arange(len(SEED_SPECS), dtype=float)
 
-    # Band by information set
-    set_spans = {"S1": (9.5, 10.5), "S2": (6.5, 9.5),
-                 "S3": (3.5, 6.5), "S4": (0.5, 3.5)}
-    # y positions from bottom: last spec y=0 ... first spec y=9
-    # Rebuild spans from actual y.
     by_set: dict[str, list[float]] = {}
-    for yi, (cfg, s, _) in zip(y, SEED_SPECS):
-        by_set.setdefault(s, []).append(yi)
-    for s, ys in by_set.items():
-        lo, hi = min(ys) - 0.45, max(ys) + 0.45
-        ax.axhspan(lo, hi, color="#F4F4F4" if s in ("S1", "S3") else "white",
+    for xi, (cfg, s, _) in zip(x, SEED_SPECS):
+        by_set.setdefault(s, []).append(xi)
+    for s, xs in by_set.items():
+        lo, hi = min(xs) - 0.45, max(xs) + 0.45
+        ax.axvspan(lo, hi, color="#F4F4F4" if s in ("S1", "S3") else "white",
                    zorder=0)
 
-    for yi, (cfg, s, lab) in zip(y, SEED_SPECS):
+    for xi, (cfg, s, lab) in zip(x, SEED_SPECS):
         d = pooled[pooled["config"] == cfg]
         skills = {int(r.seed): float(r.skill_vs_M0) * 100 for r in d.itertuples()}
         mean = float(np.mean(list(skills.values())))
         highlight = cfg == "m3_deep_gated"
-        ax.plot([min(skills.values()), max(skills.values())], [yi, yi],
+        ax.plot([xi, xi], [min(skills.values()), max(skills.values())],
                 color=C["gated"] if highlight else "#C8C8C8",
                 linewidth=1.4 if highlight else 0.9, zorder=1)
-        ax.plot(mean, yi, marker="|", markersize=14, markeredgewidth=2.0,
+        ax.plot(xi, mean, marker="_", markersize=14, markeredgewidth=2.0,
                 color="#222222", zorder=4)
         for seed, (mk, sz, mew) in SEED_MARK.items():
             v = skills[seed]
             main = seed == 42
-            ax.scatter(v, yi, marker=mk, s=sz, zorder=5 if main else 3,
+            ax.scatter(xi, v, marker=mk, s=sz, zorder=5 if main else 3,
                        facecolors=C["gated"] if main else "white",
                        edgecolors=C["gated"] if highlight else "#555555",
                        linewidths=mew)
 
-    ax.axvline(0.0, color="black", linewidth=1.1, zorder=2)
-    ax.set_yticks(y)
-    labels = [f"{s}  {lab}" for _, s, lab in SEED_SPECS]
-    ax.set_yticklabels(labels, fontsize=8)
-    for tick, (cfg, _, _) in zip(ax.get_yticklabels(), SEED_SPECS):
+    ax.axhline(0.0, color="black", linewidth=1.1, zorder=2)
+    ax.set_xticks(x)
+    labels = [f"{s}\n{lab}" for _, s, lab in SEED_SPECS]
+    ax.set_xticklabels(labels, fontsize=7.5)
+    for tick, (cfg, _, _) in zip(ax.get_xticklabels(), SEED_SPECS):
         if cfg == "m3_deep_gated":
             tick.set_fontweight("bold")
-    ax.set_xlabel("RMSE improvement vs M0 (%)")
-    ax.set_title("Main-run +0.15% at gated S3 is the one positive seed; "
-                 "the three-seed mean stays negative", loc="left")
-    ax.set_xlim(-9.2, 2.4)
-    ax.grid(axis="y", visible=False)
+    ax.set_ylabel(r"$\Delta\mathrm{RMSE}$ (%)")
+    ax.set_ylim(-9.2, 2.4)
+    ax.set_xlim(-0.7, len(SEED_SPECS) - 0.3)
+    ax.grid(axis="x", visible=False)
+    ax.tick_params(axis="x", length=0, pad=4)
 
     handles = [
         Line2D([], [], marker="D", linestyle="", color=C["gated"],
@@ -1002,11 +997,11 @@ def fig46_seed_robustness() -> None:
                markeredgecolor="#555555", markersize=7, label="Seed 1"),
         Line2D([], [], marker="s", linestyle="", markerfacecolor="white",
                markeredgecolor="#555555", markersize=7, label="Seed 2"),
-        Line2D([], [], marker="|", linestyle="", color="#222222",
+        Line2D([], [], marker="_", linestyle="", color="#222222",
                markersize=10, markeredgewidth=2, label="Three-seed mean"),
     ]
     ax.legend(handles=handles, ncol=4, loc="upper center",
-              bbox_to_anchor=(0.5, -0.12), fontsize=7.5)
+              bbox_to_anchor=(0.5, -0.16), fontsize=7.5)
     fig.tight_layout()
     save(fig, "fig_B_1_seed_robustness")
 

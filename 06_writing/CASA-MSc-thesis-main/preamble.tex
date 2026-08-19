@@ -32,6 +32,11 @@
 \usepackage[nottoc]{tocbibind}
 \usepackage{pdfpages}
 \usepackage{float}
+
+% Pandoc writes \includegraphics{file} without an extension. XeLaTeX then
+% prefers a sibling .pdf over .png. Several figures (especially 3.4) have
+% a different PDF than the intended PNG, so prefer PNG for all figures.
+\AtBeginDocument{\DeclareGraphicsExtensions{.png}}
 \usepackage{multirow}
 \usepackage[labelsep=period]{caption}
 \captionsetup{

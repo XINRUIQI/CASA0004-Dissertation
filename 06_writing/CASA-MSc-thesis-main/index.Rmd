@@ -38,6 +38,7 @@ if (!requireNamespace("here", quietly = TRUE)) {
   install.packages("here", repos = "https://cloud.r-project.org")
 }
 library(here)
+options(knitr.graphics.auto_pdf = FALSE)
 knitr::opts_chunk$set(
   echo = FALSE,
   warning = FALSE,

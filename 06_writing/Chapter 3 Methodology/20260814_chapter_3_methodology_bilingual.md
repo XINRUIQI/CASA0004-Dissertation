@@ -80,11 +80,11 @@ The predicted return is then converted back into a price forecast:
 
 随后将预测收益转换回价格预测：
 
-\hat{P}_{t+1\mid t}=P_t\exp\left(\hat{r}_{t+1\mid t}\right).
+\hat{P}*{t+1\mid t}=P_t\exp\left(\hat{r}*{t+1\mid t}\right).
 
-Log returns are used to reduce the strong persistence in the price level and to express the forecasting task in terms of proportional weekly changes. Root Mean Squared Error (RMSE) and $\Delta\mathrm{RMSE}$, the percentage improvement in RMSE over M0, are computed from the reconstructed price forecasts. Under this mapping, the no-change benchmark \hat{P}_{t+1\mid t}=P_t is exactly the same as forecasting a zero return \hat{r}_{t+1\mid t}=0.
+Log returns are used to reduce the strong persistence in the price level and to express the forecasting task in terms of proportional weekly changes. Root Mean Squared Error (RMSE) and $\Delta\mathrm{RMSE}$, the percentage improvement in RMSE over M0, are computed from the reconstructed price forecasts. Under this mapping, the no-change benchmark \hat{P}*{t+1\mid t}=P_t is exactly the same as forecasting a zero return \hat{r}*{t+1\mid t}=0.
 
-使用对数收益是为了减弱价格水平的强持续性，并将预测任务表示为周度比例变化。均方根误差（RMSE）以及 $\Delta\mathrm{RMSE}$（相对 M0 的 RMSE 百分比改善）均根据重构后的价格预测计算。在此对应关系下，不变预测基准 \hat{P}_{t+1\mid t}=P_t 与预测收益为零 \hat{r}_{t+1\mid t}=0 完全一致。
+使用对数收益是为了减弱价格水平的强持续性，并将预测任务表示为周度比例变化。均方根误差（RMSE）以及 $\Delta\mathrm{RMSE}$（相对 M0 的 RMSE 百分比改善）均根据重构后的价格预测计算。在此对应关系下，不变预测基准 \hat{P}*{t+1\mid t}=P_t 与预测收益为零 \hat{r}*{t+1\mid t}=0 完全一致。
 
 The modelling window covers 2019–2025 and provides a common weekly index of 365 observations (4 January 2019 to 26 December 2025). The training and evaluation samples are separated in time on an expanding window, rather than by random assignment, to prevent future information from leaking into model fitting. Figure 3.2 shows the Brent price and the weekly log returns over this window. The full validation protocol is in Section 3.6.
 
@@ -134,7 +134,7 @@ The study uses three broad types of data: financial time series, satellite remot
 | Modality              | Dataset / product                                                                     | Key variables                                                                                                                  | Source                                                                                                                                                                                                                                                |
 | --------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Financial time series | Oil-market and macro-financial series at daily, weekly and monthly native frequencies | Prices, inventories, production, interest rates, GPR and related indicators                                                    | [EIA](https://www.eia.gov/petroleum/supply/weekly/); [FRED](https://fred.stlouisfed.org/); [Yahoo Finance](https://finance.yahoo.com/); [Dallas Fed IGREA](https://www.dallasfed.org/research/igrea); [GPR](https://www.matteoiacoviello.com/gpr.htm) |
-| Remote sensing (Flat) | Sentinel-2 optical indices and VIIRS night-time lights                                | Site-level anomalies at 11 AOIs (NDVI, NDWI, NDBI, BSI; NTL)                                                                   | [Sentinel-2 via GEE](https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_S2_SR_HARMONIZED); [VIIRS via GEE](https://developers.google.com/earth-engine/datasets/catalog/NOAA_VIIRS_DNB_MONTHLY_V1_VCMSLCFG)        |
+| Remote sensing (Flat) | Sentinel-2 optical indices and VIIRS night-time lights                                | Site-level anomalies at 11 AOIs (NDVI, NDWI, NDBI, BSI; NTL)                                                                   | [Sentinel-2 via GEE](https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_S2_SR_HARMONIZED); [VIIRS via GEE](https://developers.google.com/earth-engine/datasets/catalog/NOAA_VIIRS_DNB_MONTHLY_V1_VCMSLCFG)                        |
 | Remote sensing (Deep) | Monthly Sentinel-2 image patches                                                      | Frozen Prithvi-EO-2.0 embeddings at the same 11 AOIs                                                                           | [Prithvi-EO-2.0](https://huggingface.co/ibm-nasa-geospatial); [Sentinel-2 via GEE](https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_S2_SR_HARMONIZED)                                                                           |
 | Shipping (Flat)       | PortWatch and Global Fishing Watch AIS and SAR data                                   | Port and chokepoint tanker flows; vessel-activity features                                                                     | [IMF PortWatch](https://portwatch.imf.org/) (AIS-derived); [Global Fishing Watch](https://globalfishingwatch.org/our-apis/) (AIS- and SAR-derived)                                                                                                    |
 | Shipping (Deep)       | PortWatch and Global Fishing Watch AIS and SAR data                                   | Weekly node attributes, dynamic voyage edges and fixed corridor edges for a 17-node graph comprising 11 AOIs and 6 chokepoints | [IMF PortWatch](https://portwatch.imf.org/) (AIS-derived); [Global Fishing Watch](https://globalfishingwatch.org/our-apis/) (AIS- and SAR-derived)                                                                                                    |
@@ -150,7 +150,7 @@ The study uses three broad types of data: financial time series, satellite remot
 | 航运（Deep） | PortWatch 与 Global Fishing Watch 的 AIS 与 SAR 数据 | 17 节点周度图的节点属性、动态航次边与固定走廊边（11 个 AOI 与 6 个咽喉） | [IMF PortWatch](https://portwatch.imf.org/)（AIS 衍生）；[Global Fishing Watch](https://globalfishingwatch.org/our-apis/)（AIS 与 SAR 衍生）                                                                                                                |
 
 
-The financial block combines oil-market and macro-financial series from the US Energy Information Administration (EIA), Federal Reserve Economic Data (FRED), Yahoo Finance, the Dallas Fed Index of Global Real Economic Activity, and the Caldara–Iacoviello geopolitical risk (GPR) index. These series are observed at different native frequencies and include crude prices and spreads, inventories, production and refinery activity, volatility and risk measures, interest rates, exchange rates, and futures-based oil indicators.
+The financial block combines oil-market and macro-financial series from the US Energy Information Administration (EIA), Federal Reserve Economic Data (FRED), Yahoo Finance, the Dallas Fed Index of Global Real Economic Activity, and the Caldara–Iacoviello geopolitical risk (GPR) index. These series are observed at different native frequencies. They include crude prices and spreads, inventories, production and refinery activity. Volatility and risk measures, interest rates, exchange rates, and futures-based oil indicators are also included.
 
 金融数据块汇总了来自美国能源信息署（EIA）、联邦储备经济数据（FRED）、Yahoo Finance、达拉斯联储全球实际经济活动指数，以及 Caldara–Iacoviello 地缘政治风险（GPR）指数的油市和宏观金融序列。这些序列具有不同的原生时间频率，涵盖原油价格及价差、库存、产量与炼厂活动、波动与风险指标、利率、汇率，以及基于期货的油市指标。
 
@@ -174,17 +174,18 @@ Figure 3.4 works through one Friday origin at Jurong Island. It shows the two re
 
 ### 3.4.2 空间聚合与时间对齐
 
-Spatially referenced data are first aggregated to the monitoring locations used in the models. Remote-sensing observations are aggregated from pixels to AOI–month products. PortWatch and GFW series are aggregated from vessel events or traffic counts to AOIs and chokepoints. The identity of each site or node is retained before the series enter the models.
+Spatially referenced data are first aggregated to the monitoring locations used in the models. Remote-sensing observations are aggregated from pixels to AOI–month composites. PortWatch and GFW series are aggregated from vessel events or traffic counts to sites and chokepoints. The identity of each site or node is retained before the series enter the models.
 
-带有空间参照的数据首先聚合到模型所使用的监测位置。遥感观测由像元聚合为 AOI–月度产品。PortWatch 与 GFW 序列由船舶事件或交通计数聚合到 AOI 与咽喉。各站点或节点的身份在进入模型前予以保留。
+带有空间参照的数据首先聚合到模型所使用的监测位置。遥感观测由像元聚合为 AOI–月度合成。PortWatch 与 GFW 序列由船舶事件或交通计数聚合到站点与咽喉。各站点或节点的身份在进入模型前予以保留。
 
-All series are aligned to a common Friday-ending weekly calendar. Daily observations are converted using end-of-week values, weekly means or weekly sums as appropriate, while monthly series are carried forward only after their assumed availability dates. Monthly remote-sensing products are aligned to their conservative availability dates, with the most recent eligible composite carried forward to avoid look-ahead bias.
+All series are aligned to a common Friday-ending weekly calendar. Daily observations are converted using end-of-week values, weekly means or weekly sums as appropriate, while monthly series are carried forward only after their assumed availability dates. For remote-sensing products, these availability dates are set conservatively, and the most recent eligible composite is carried forward to avoid look-ahead bias.
 
-所有时间序列均对齐至统一的、以周五为周末的周度日历。对于日度数据，根据变量性质分别采用周末值、周均值或周总和进行周度聚合；对于月度数据，则仅在其假定的可获得日期之后向前填充。月度遥感产品按照较为保守的可获得日期进行对齐，并仅向前延用最近一期已符合可用条件的合成数据，以避免前视偏差。
+所有时间序列均对齐至统一的、以周五为周末的周度日历。对于日度数据，根据变量性质分别采用周末值、周均值或周总和进行周度聚合；对于月度数据，则仅在其假定的可获得日期之后向前填充。对于遥感产品，这些可获得日期设定得较为保守，并向前延用最近一期已符合可用条件的合成数据，以避免前视偏差。  
 
-Publication timing is approximated using source- and product-specific fixed lag buffers rather than observation-level release timestamps. Exact aggregation rules, lag constants and implementation scripts are reported in Appendix A. One-week buffers are applied to EIA fundamentals and PortWatch flows, while monthly macroeconomic series, remote-sensing products and individual GFW AIS and SAR products receive longer buffers.
 
-发布时间通过按来源和产品设定的固定滞后缓冲近似，而不是逐条采用观测值的实际发布时间戳。具体聚合规则、滞后常数与实现脚本见附录 A。EIA 基本面与 PortWatch 流量施加一周缓冲，月度宏观序列、遥感产品以及 GFW 的各 AIS 与 SAR 产品则使用更长的缓冲。
+Publication timing is approximated using fixed lag buffers defined separately for each source and product, rather than observation-level release timestamps. Exact aggregation rules and lag constants are reported in Appendix A. One-week buffers are applied to EIA fundamentals and PortWatch flows, while monthly macroeconomic series, remote-sensing products and individual GFW AIS and SAR products receive longer buffers.
+
+发布时间通过按来源和产品分别设定的固定滞后缓冲近似，而不是逐条采用观测值的实际发布时间戳。具体聚合规则与滞后常数见附录 A。EIA 基本面与 PortWatch 流量施加一周缓冲，月度宏观序列、遥感产品以及 GFW 的各 AIS 与 SAR 产品则使用更长的缓冲。
 
 ### 3.4.3 Data quality and missing values
 
@@ -206,9 +207,9 @@ After temporal alignment, the remaining gaps occur almost entirely before each s
 
 ### 3.5.1 Flat 模型
 
-Flat models implement early feature-level fusion. For each information set, all available numeric features are concatenated into a weekly feature table, and the most recent four weeks are flattened into a single row for each forecast origin. Ridge applies L2 regularisation (Hoerl and Kennard, 1970) and serves as a transparent linear comparator. XGBoost is a nonlinear gradient-boosted tree ensemble (Chen and Guestrin, 2016) that captures nonlinearities and interactions not represented by Ridge. Because both learners operate on the same flattened table, neither preserves modality-specific structure. Both predict the one-week-ahead log return and then reconstruct the corresponding price forecast. Hyperparameter selection follows the time-ordered procedure described in Section 3.6, with exact search grids reported in Appendix C.
+Flat models implement early feature-level fusion. For each information set, all available numeric features are concatenated into a weekly feature table, and the most recent four weeks are flattened into a single row for each forecast origin. Ridge applies L2 regularisation (Hoerl and Kennard, 1970) and serves as a transparent linear comparator. XGBoost is a nonlinear gradient-boosted tree ensemble (Chen and Guestrin, 2016) that captures nonlinearities and interactions not represented by Ridge. Because both learners operate on the same flattened table, neither preserves modality-specific structure. Hyperparameter selection follows the time-ordered procedure described in Section 3.6, with exact search grids reported in Appendix C.
 
-Flat 模型采用早期特征级融合。对每个信息集，所有可用数值特征拼接为一张周度特征表，并在每个预测起点将最近四周展平为一行。Ridge 采用 L2 正则化（Hoerl and Kennard, 1970），作为透明的线性对照。XGBoost 是非线性梯度提升树集成（Chen and Guestrin, 2016），用于捕捉 Ridge 无法表示的非线性与交互。由于两种学习器都作用于同一张展平表，因此都不保留模态专属结构。二者均预测提前一周的对数收益，再还原相应的价格预测。超参数选择遵循第 3.6 节所述的时序程序，具体搜索网格见附录 C。
+Flat 模型采用早期特征级融合。对每个信息集，所有可用数值特征拼接为一张周度特征表，并在每个预测起点将最近四周展平为一行。Ridge 采用 L2 正则化（Hoerl and Kennard, 1970），作为透明的线性对照。XGBoost 是非线性梯度提升树集成（Chen and Guestrin, 2016），用于捕捉 Ridge 无法表示的非线性与交互。由于两种学习器都作用于同一张展平表，因此都不保留模态专属结构。超参数选择遵循第 3.6 节所述的时序程序，具体搜索网格见附录 C。
 
 ### 3.5.2 Deep models
 
@@ -218,9 +219,9 @@ Deep models encode each modality separately, retaining its temporal and, where a
 
 Deep 模型分别编码各模态，在融合 S2–S4 的模态表征之前，保留各模态的时间结构，并在适用时保留其站点或网络组织。
 
-The finance encoder applies a temporal convolutional network (TCN; Bai, Kolter and Koltun, 2018) to the four-week financial sequence retained across S1–S4. It produces one finance representation per forecast origin using only current and earlier positions at each convolutional layer.
+The finance encoder applies a temporal convolutional network (Bai, Kolter and Koltun, 2018) to the four-week financial sequence retained across S1–S4. It produces one finance representation per forecast origin using only current and earlier positions at each convolutional layer.
 
-金融编码器将时间卷积网络（TCN；Bai, Kolter and Koltun, 2018）应用于 S1–S4 均保留的四周金融序列。各卷积层仅使用当前位置及其之前的位置，并为每个预测起点生成一个金融表征。
+金融编码器将时间卷积网络（Bai, Kolter and Koltun, 2018）应用于 S1–S4 均保留的四周金融序列。各卷积层仅使用当前位置及其之前的位置，并为每个预测起点生成一个金融表征。
 
 The remote-sensing encoder receives monthly embeddings for the 11 AOIs, extracted from Sentinel-2 Surface Reflectance Harmonized patches using a frozen Prithvi-EO-2.0-300M encoder (Szwarcman et al., 2026). Prithvi-EO-2.0 is a publicly released Earth-observation foundation model. This study uses the published weights as a fixed encoder and does not retrain or fine-tune them. The patches are adapted to the six-band convention of the HLS-pretrained encoder, with band mapping, standardisation and resampling documented in Appendix A. Temporal attention combines the four-week embeddings for each AOI. Site attention then combines the 11 AOIs into one remote-sensing representation.
 
@@ -274,17 +275,17 @@ Figure 3.7 summarises the expanding-window schedule, while Figure 3.8 shows how 
 
 **图 3.7. 扩展窗估计与评价安排。**
 
-**Figure 3.8. Testing sample within one testing block (the first block shown). The fitted model is held fixed; t is the last of the four input weeks, and the model predicts week t+1. Each testing block contains 13 predictions, except the last.**
+**Figure 3.8. Testing sample within one testing block (Fit 1 block shown). The fitted model is held fixed; t is the last of the four input weeks, and the model predicts week t+1. Each testing block contains 13 predictions, except the last.**
 
-**图 3.8. 一个测试块内的测试样本（以第一个测试块为例）。拟合模型保持固定；t 为四周输入的最后一周，模型预测第 t+1 周。除最后一个测试块外，每个测试块包含 13 次预测。**
+**图 3.8. 一个测试块内的测试样本（以 Fit 1 块为例）。拟合模型保持固定；t 为四周输入的最后一周，模型预测第 t+1 周。除最后一个测试块外，每个测试块包含 13 次预测。**
 
 ### 3.6.2 Model and Hyperparameter selection
 
 ### 3.6.2 模型与超参数选择
 
-Flat models re-select Ridge and XGBoost hyperparameters on an inner validation set at each scheduled re-estimation, then refit on the full estimation sample available at that date. Deep models instead use a configuration fixed before evaluation, including the latent size. They share the four-week lookback used by the Flat models, which covers approximately one update cycle of the monthly remote-sensing and macroeconomic inputs. At each Deep re-estimation, inner validation is used for early stopping, and the checkpoint with the lowest validation loss is retained. The selected Deep checkpoint is used for the subsequent forecasting. The model is not retrained using the combined training and validation data. Sensitivity analyses using the evaluation sample are reported separately in Appendix B and are not used to select or revise the main specification. Search grids, fixed configurations and early-stopping settings are reported in Appendix C.
+Flat models re-select Ridge and XGBoost hyperparameters on an inner validation set at each scheduled re-estimation, then refit on the full estimation sample available at that date. Deep models instead use a configuration fixed before evaluation, including the latent size. They share the four-week lookback used by the Flat models. At each Deep re-estimation, inner validation is used for early stopping, and the checkpoint with the lowest validation loss is retained. The selected Deep checkpoint is used for the subsequent forecasting. The model is not retrained using the combined training and validation data. Sensitivity analyses using the evaluation sample are reported separately in Appendix B and are not used to select or revise the main specification. Search grids, fixed configurations and early-stopping settings are reported in Appendix C.
 
-Flat 模型在每次预定的重新估计时，先在内部验证集上重新选择 Ridge 和 XGBoost 的超参数，再使用当时可获得的完整估计样本重新拟合。Deep 模型则使用在评价开始前固定的配置，包括潜在维度。它们与 Flat 模型共用四周回看窗口，该窗口大约覆盖月度遥感与宏观输入的一个更新周期。每次重新估计 Deep 模型时，使用内部验证进行早停，并保留验证损失最低的 checkpoint。选定的 Deep checkpoint 直接用于后续预测，模型不会再使用合并后的训练集和验证集重新训练。基于评价样本的敏感性分析单独报告在附录 B 中，不用于选择或修改主要模型设定。搜索网格、固定配置和早停设置见附录 C。
+Flat 模型在每次预定的重新估计时，先在内部验证集上重新选择 Ridge 和 XGBoost 的超参数，再使用当时可获得的完整估计样本重新拟合。Deep 模型则使用在评价开始前固定的配置，包括潜在维度。它们与 Flat 模型共用四周回看窗口。每次重新估计 Deep 模型时，使用内部验证进行早停，并保留验证损失最低的 checkpoint。选定的 Deep checkpoint 直接用于后续预测，模型不会再使用合并后的训练集和验证集重新训练。基于评价样本的敏感性分析单独报告在附录 B 中，不用于选择或修改主要模型设定。搜索网格、固定配置和早停设置见附录 C。
 
 ## 3.7 Model Evaluation and Interpretation
 
@@ -309,8 +310,8 @@ Performance relative to the no-change benchmark M0 is summarised by $\Delta\math
 
 相对不变预测基准 M0 的表现，以 $\Delta\mathrm{RMSE}$ 来概括：
 
-\Delta\mathrm{RMSE}
-=
+# \Delta\mathrm{RMSE}
+
 100\times\left(1-\frac{\mathrm{RMSE}}{\mathrm{RMSE}_{\mathrm{M0}}}\right).
 
 Here, P_{t+1} is the observed price and \hat{P}_{t+1\mid t} is the price forecast produced by the model at forecast origin t. The index t=1,…,n orders the 257 evaluation origins in time; it does not index the 365-week calendar. A positive $\Delta\mathrm{RMSE}$ indicates a lower RMSE than M0, zero indicates equal RMSE, and a negative value indicates worse performance.
@@ -329,12 +330,13 @@ Model interpretability concerns identifying where a model’s predictive ability
 
 ## 3.8 伦理考量
 
-The study uses only secondary, aggregate data and does not involve human participants. It received approval through UCL’s low-risk ethics process. All datasets were used in accordance with their published licences and terms of use, including the Copernicus open licence for Sentinel-2, the open distribution terms for VIIRS night-time lights, and the research-use terms of IMF PortWatch and Global Fishing Watch. Remote-sensing and vessel-activity variables are analysed only at the aggregate site or chokepoint level; no attempt is made to identify individual vessels, operators or persons.
+The study uses only secondary, aggregate data and does not involve human participants. It received approval through UCL’s low-risk ethics process. All datasets were used in accordance with their published licences and terms of use, including the Copernicus open licence for Sentinel-2, the open distribution terms for VIIRS night-time lights, and the research-use terms of IMF PortWatch and Global Fishing Watch. Remote-sensing and vessel-activity variables are analysed only at the aggregate site or chokepoint level. The study does not attempt to identify individual vessels, operators or persons.
 
-本研究仅使用二手、汇总型数据，不涉及人类参与者。研究已通过 UCL 低风险伦理审批。所有数据集均按其公布的许可与使用条款使用，包括 Sentinel-2 的 Copernicus 开放许可、VIIRS 夜光的开放分发条款，以及 IMF PortWatch 与 Global Fishing Watch 的研究使用条款。遥感与船舶活动变量仅在站点或咽喉的汇总层面分析；不试图识别单船、运营商或个人。
+本研究仅使用二手、汇总型数据，不涉及人类参与者。研究已通过 UCL 低风险伦理审批。所有数据集均按其公布的许可与使用条款使用，包括 Sentinel-2 的 Copernicus 开放许可、VIIRS 夜光的开放分发条款，以及 IMF PortWatch 与 Global Fishing Watch 的研究使用条款。遥感与船舶活动变量仅在站点或咽喉的汇总层面分析。本研究不试图识别单船、运营商或个人。
 
-Analysis was conducted in Python, and the code required to reproduce the analysis is available on GitHub ([https://github.com/XINRUIQI/CASA0004-Dissertation](https://github.com/XINRUIQI/CASA0004-Dissertation)). Package versions, random seeds and installation commands are documented in the repository README. Search grids and locked training settings are reported in Appendix C.
+Analysis was conducted in Python, and the code required to reproduce the analysis is available on GitHub ([https://github.com/XINRUIQI/CASA0004-Dissertation](https://github.com/XINRUIQI/CASA0004-Dissertation)). Package versions, random seeds and installation commands are documented in the repository README.
 
-分析在 Python 中完成，复现所需代码见 GitHub（[https://github.com/XINRUIQI/CASA0004-Dissertation](https://github.com/XINRUIQI/CASA0004-Dissertation)）。软件包版本、随机种子与安装命令见仓库 README。搜索网格与锁定训练设定见附录 C。
+分析在 Python 中完成，复现所需代码见 GitHub（[https://github.com/XINRUIQI/CASA0004-Dissertation](https://github.com/XINRUIQI/CASA0004-Dissertation)）。软件包版本、随机种子与安装命令见仓库 README。
 
 ---
+

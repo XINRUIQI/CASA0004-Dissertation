@@ -144,6 +144,11 @@
 \usepackage[nottoc]{tocbibind}
 \usepackage{pdfpages}
 \usepackage{float}
+
+% Pandoc writes \includegraphics{file} without an extension. XeLaTeX then
+% prefers a sibling .pdf over .png. Several figures (especially 3.4) have
+% a different PDF than the intended PNG, so prefer PNG for all figures.
+\AtBeginDocument{\DeclareGraphicsExtensions{.png}}
 \usepackage{multirow}
 \usepackage[labelsep=period]{caption}
 \captionsetup{
@@ -358,7 +363,7 @@ A separate literature examines whether these economic relationships produce accu
 
 Machine learning has expanded the range of methods used in oil-price forecasting. These methods can process large predictor sets and capture nonlinear relationships and interactions. Costa et al. (\citeproc{ref-costa2021}{2021}) evaluate 23 methods using 315 macroeconomic and financial variables. They find that no single method performs best at every forecast horizon. Machine-learning methods are competitive at short horizons, but econometric, market-based and combined forecasts also perform strongly in some settings. Yılmaz and Zehir (\citeproc{ref-yilmaz2026}{2026}) compare econometric and tree-based models for Brent returns using macro-financial and geopolitical variables. Light Gradient Boosting Machine (LightGBM) produces the most consistent results across their reported settings, but the broader comparison again shows that performance depends on the forecast horizon, predictor set and evaluation design.
 
-Deep-learning studies focus more directly on learning temporal representations. Foroutan and Lahmiri (\citeproc{ref-foroutan2024}{2024}) compare a range of methods for next-day WTI and Brent spot-price forecasting and report strong performance from temporal convolutional networks and LightGBM. Simsek et al. (\citeproc{ref-simsek2024}{2024}) combine Long Short-Term Memory (LSTM) feature extraction with Extreme Gradient Boosting (XGBoost) for WTI price prediction. Graph-based methods have also been introduced. Zhao, Xue and Cheng (\citeproc{ref-zhao2023}{2023}), for example, model time-varying relationships among economic and financial variables and use a spatial--temporal graph neural network to forecast WTI futures. Their graph represents statistical relationships among predictors rather than a physical transportation network.
+Deep-learning studies focus more directly on learning temporal representations. Foroutan and Lahmiri (\citeproc{ref-foroutan2024}{2024}) compare a range of methods for next-day WTI and Brent spot-price forecasting and report strong performance from temporal convolutional networks (TCN) and LightGBM. Simsek et al. (\citeproc{ref-simsek2024}{2024}) combine Long Short-Term Memory (LSTM) feature extraction with Extreme Gradient Boosting (XGBoost) for WTI price prediction. Graph-based methods have also been introduced. Zhao, Xue and Cheng (\citeproc{ref-zhao2023}{2023}), for example, model time-varying relationships among economic and financial variables and use a spatial--temporal graph neural network to forecast WTI futures. Their graph represents statistical relationships among predictors rather than a physical transportation network.
 
 Overall, machine learning provides greater flexibility for modelling high-dimensional data, nonlinearities and temporal interactions. However, the literature does not establish that this flexibility consistently translates into superior forecasts. Reported performance varies with the target, forecast horizon, sample, information set, benchmark and evaluation design. Taken together, the evidence for a general out-of-sample forecasting advantage of machine learning remains mixed.
 
@@ -615,7 +620,7 @@ Shipping (Flat) & PortWatch and Global Fishing Watch AIS and SAR data & Port and
 Shipping (Deep) & PortWatch and Global Fishing Watch AIS and SAR data & Weekly node attributes, dynamic voyage edges and fixed corridor edges for a 17-node graph comprising 11 AOIs and 6 chokepoints & \href{https://portwatch.imf.org/}{\textcolor{blue}{IMF PortWatch}} (AIS-derived); \href{https://globalfishingwatch.org/our-apis/}{\textcolor{blue}{Global Fishing Watch}} (AIS- and SAR-derived) \\
 \end{longtable}
 
-The financial block combines oil-market and macro-financial series from the U.S. Energy Information Administration (EIA), Federal Reserve Economic Data (FRED), Yahoo Finance, the Dallas Fed Index of Global Real Economic Activity, and the Caldara--Iacoviello geopolitical risk (GPR) index. These series are observed at different native frequencies and include crude prices and spreads, inventories, production and refinery activity, volatility and risk measures, interest rates, exchange rates, and futures-based oil indicators.
+The financial block combines oil-market and macro-financial series from the U.S. Energy Information Administration (EIA), Federal Reserve Economic Data (FRED), Yahoo Finance, the Dallas Fed Index of Global Real Economic Activity, and the Caldara--Iacoviello geopolitical risk (GPR) index. These series are observed at different native frequencies. They include crude prices and spreads, inventories, production and refinery activity. Volatility and risk measures, interest rates, exchange rates, and futures-based oil indicators are also included.
 
 For the remote-sensing block, the Flat and Deep pathways extract inputs from the same 11 AOIs, but differ in their spatial coverage, products and representations. The Flat pathway uses Sentinel-2 optical indices and VIIRS night-time lights, whereas the Deep pathway uses frozen Prithvi-EO-2.0 embeddings derived from Sentinel-2 image patches and has no separate VIIRS input stream. Preliminary experiments indicated that a separate VIIRS stream added little useful signal and reduced predictive performance, so it was excluded from the final Deep specification.
 
@@ -634,11 +639,11 @@ Figure \ref{fig:worked-example} works through one Friday origin at Jurong Island
 
 \subsection{Spatial aggregation and temporal alignment}\label{method-alignment}
 
-Spatially referenced data are first aggregated to the monitoring locations used in the models. Remote-sensing observations are aggregated from pixels to AOI--month products. PortWatch and GFW series are aggregated from vessel events or traffic counts to AOIs and chokepoints. The identity of each site or node is retained before the series enter the models.
+Spatially referenced data are first aggregated to the monitoring locations used in the models. Remote-sensing observations are aggregated from pixels to AOI--month composites. PortWatch and GFW series are aggregated from vessel events or traffic counts to sites and chokepoints. The identity of each site or node is retained before the series enter the models.
 
-All series are aligned to a common Friday-ending weekly calendar. Daily observations are converted using end-of-week values, weekly means or weekly sums as appropriate, while monthly series are carried forward only after their assumed availability dates. Monthly remote-sensing products are aligned to their conservative availability dates, with the most recent eligible composite carried forward to avoid look-ahead bias.
+All series are aligned to a common Friday-ending weekly calendar. Daily observations are converted using end-of-week values, weekly means or weekly sums as appropriate, while monthly series are carried forward only after their assumed availability dates. For remote-sensing products, these availability dates are set conservatively, and the most recent eligible composite is carried forward to avoid look-ahead bias.
 
-Publication timing is approximated using source- and product-specific fixed lag buffers rather than observation-level release timestamps. Exact aggregation rules, lag constants and implementation scripts are reported in Appendix A. One-week buffers are applied to EIA fundamentals and PortWatch flows, while monthly macroeconomic series, remote-sensing products and individual GFW AIS and SAR products receive longer buffers.
+Publication timing is approximated using fixed lag buffers defined separately for each source and product, rather than observation-level release timestamps. Exact aggregation rules and lag constants are reported in Appendix A. One-week buffers are applied to EIA fundamentals and PortWatch flows, while monthly macroeconomic series, remote-sensing products and individual GFW AIS and SAR products receive longer buffers.
 
 \subsection{Data quality and missing values}\label{method-missing}
 
@@ -650,13 +655,13 @@ After temporal alignment, the remaining gaps occur almost entirely before each s
 
 \subsection{Flat models}\label{method-flat}
 
-Flat models implement early feature-level fusion. For each information set, all available numeric features are concatenated into a weekly feature table, and the most recent four weeks are flattened into a single row for each forecast origin. Ridge applies L2 regularisation (\citeproc{ref-hoerl1970}{Hoerl and Kennard, 1970}) and serves as a transparent linear comparator. XGBoost is a nonlinear gradient-boosted tree ensemble (\citeproc{ref-chen2016}{Chen and Guestrin, 2016}) that captures nonlinearities and interactions not represented by Ridge. Because both learners operate on the same flattened table, neither preserves modality-specific structure. Both predict the one-week-ahead log return and then reconstruct the corresponding price forecast. Hyperparameter selection follows the time-ordered procedure described in Section \ref{method-validation}, with exact search grids reported in Appendix C.
+Flat models implement early feature-level fusion. For each information set, all available numeric features are concatenated into a weekly feature table, and the most recent four weeks are flattened into a single row for each forecast origin. Ridge applies L2 regularisation (\citeproc{ref-hoerl1970}{Hoerl and Kennard, 1970}) and serves as a transparent linear comparator. XGBoost is a nonlinear gradient-boosted tree ensemble (\citeproc{ref-chen2016}{Chen and Guestrin, 2016}) that captures nonlinearities and interactions not represented by Ridge. Because both learners operate on the same flattened table, neither preserves modality-specific structure. Hyperparameter selection follows the time-ordered procedure described in Section \ref{method-validation}, with exact search grids reported in Appendix C.
 
 \subsection{Deep models}\label{method-deep}
 
 Deep models encode each modality separately, retaining its temporal and, where applicable, site or network organisation before fusing the resulting representations for S2--S4.
 
-The finance encoder applies a temporal convolutional network (TCN) (\citeproc{ref-bai2018}{Bai, Kolter and Koltun, 2018}) to the four-week financial sequence retained across S1--S4. It produces one finance representation per forecast origin using only current and earlier positions at each convolutional layer.
+The finance encoder applies a temporal convolutional network (\citeproc{ref-bai2018}{Bai, Kolter and Koltun, 2018}) to the four-week financial sequence retained across S1--S4. It produces one finance representation per forecast origin using only current and earlier positions at each convolutional layer.
 
 The remote-sensing encoder receives monthly embeddings for the 11 AOIs, extracted from Sentinel-2 Surface Reflectance Harmonized patches using a frozen Prithvi-EO-2.0-300M encoder (\citeproc{ref-szwarcman2026}{{Szwarcman et al.}, 2026}). Prithvi-EO-2.0 is a publicly released Earth-observation foundation model. This study uses the published weights as a fixed encoder and does not retrain or fine-tune them. The patches are adapted to the six-band convention of the HLS-pretrained encoder, with band mapping, standardisation and resampling documented in Appendix A. Temporal attention combines the four-week embeddings for each AOI. Site attention then combines the 11 AOIs into one remote-sensing representation.
 
@@ -711,12 +716,12 @@ Figure \ref{fig:expanding-window} summarises the expanding-window schedule, whil
 
 }
 
-\caption[Testing sample within one testing block.]{Testing sample within one testing block (the first block shown). The fitted model is held fixed; $t$ is the last of the four input weeks, and the model predicts week $t+1$. Each testing block contains 13 predictions, except the last.}\label{fig:testing-block}
+\caption[Testing sample within one testing block.]{Testing sample within one testing block (Fit 1 block shown). The fitted model is held fixed; $t$ is the last of the four input weeks, and the model predicts week $t+1$. Each testing block contains 13 predictions, except the last.}\label{fig:testing-block}
 \end{figure}
 
 \subsection{Model and hyperparameter selection}\label{method-hyperparams}
 
-Flat models re-select Ridge and XGBoost hyperparameters on an inner validation set at each scheduled re-estimation, then refit on the full estimation sample available at that date. Deep models instead use a configuration fixed before evaluation, including the latent size. They share the four-week lookback used by the Flat models, which covers approximately one update cycle of the monthly remote-sensing and macroeconomic inputs. At each Deep re-estimation, inner validation is used for early stopping, and the checkpoint with the lowest validation loss is retained. The selected Deep checkpoint is used for the subsequent forecasting. The model is not retrained using the combined training and validation data. Sensitivity analyses using the evaluation sample are reported separately in Appendix B and are not used to select or revise the main specification. Search grids, fixed configurations and early-stopping settings are reported in Appendix C.
+Flat models re-select Ridge and XGBoost hyperparameters on an inner validation set at each scheduled re-estimation, then refit on the full estimation sample available at that date. Deep models instead use a configuration fixed before evaluation, including the latent size. They share the four-week lookback used by the Flat models. At each Deep re-estimation, inner validation is used for early stopping, and the checkpoint with the lowest validation loss is retained. The selected Deep checkpoint is used for the subsequent forecasting. The model is not retrained using the combined training and validation data. Sensitivity analyses using the evaluation sample are reported separately in Appendix B and are not used to select or revise the main specification. Search grids, fixed configurations and early-stopping settings are reported in Appendix C.
 
 \section{Model evaluation and interpretation}\label{method-eval}
 
@@ -751,9 +756,9 @@ Model interpretability concerns identifying where a model's predictive ability c
 
 \section{Ethical considerations}\label{method-ethics}
 
-The study uses only secondary, aggregate data and does not involve human participants. It received approval through UCL's low-risk ethics process. All datasets were used in accordance with their published licences and terms of use, including the Copernicus open licence for Sentinel-2, the open distribution terms for VIIRS night-time lights, and the research-use terms of IMF PortWatch and Global Fishing Watch. Remote-sensing and vessel-activity variables are analysed only at the aggregate site or chokepoint level; no attempt is made to identify individual vessels, operators or persons.
+The study uses only secondary, aggregate data and does not involve human participants. It received approval through UCL's low-risk ethics process. All datasets were used in accordance with their published licences and terms of use, including the Copernicus open licence for Sentinel-2, the open distribution terms for VIIRS night-time lights, and the research-use terms of IMF PortWatch and Global Fishing Watch. Remote-sensing and vessel-activity variables are analysed only at the aggregate site or chokepoint level. The study does not attempt to identify individual vessels, operators or persons.
 
-Analysis was conducted in Python, and the code required to reproduce the analysis is available on GitHub (\href{https://github.com/XINRUIQI/CASA0004-Dissertation}{\textcolor{blue}{\nolinkurl{https://github.com/XINRUIQI/CASA0004-Dissertation}}}). Package versions, random seeds and installation commands are documented in the repository README. Search grids and locked training settings are reported in Appendix C. A research log of supervisory meetings is in Appendix D.
+Analysis was conducted in Python, and the code required to reproduce the analysis is available on GitHub (\href{https://github.com/XINRUIQI/CASA0004-Dissertation}{\textcolor{blue}{\nolinkurl{https://github.com/XINRUIQI/CASA0004-Dissertation}}}). Package versions, random seeds and installation commands are documented in the repository README.
 
 \chapter{Results}\label{results}
 
