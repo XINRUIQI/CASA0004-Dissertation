@@ -4,8 +4,8 @@
 
 CASA0004 MSc dissertation · [Centre for Advanced Spatial Analysis (CASA)](https://www.ucl.ac.uk/bartlett/casa), Bartlett Faculty of the Built Environment, UCL
 
-**Xinrui Qi** · Supervisor: Beatrice Taylor · 15 August 2026  
-[linkedin.com/in/xinruiqi](https://www.linkedin.com/in/xinruiqi) · [xinruiqi7@gmail.com](mailto:xinruiqi7@gmail.com)
+**Author:** Xinrui Qi · [LinkedIn](https://www.linkedin.com/in/xinruiqi) · [xinruiqi7@gmail.com](mailto:xinruiqi7@gmail.com)  
+**Supervisor:** Beatrice Taylor
 
 ---
 
