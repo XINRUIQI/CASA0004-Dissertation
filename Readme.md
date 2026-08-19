@@ -186,7 +186,7 @@ Rebuild from raw is optional and needs local `data/raw/`. Prithvi embedding expo
 
 ## Software environment
 
-Python **3.9.6** (CPython, macOS). Pinned in `[code/requirements.txt](code/requirements.txt)`. Deep training and evaluation run on **CPU** by default.
+Python **3.9.6** (CPython, macOS). Pinned in `[code/requirements.txt](code/requirements.txt)`.
 
 
 | Package      | Version | Role                           |
@@ -196,7 +196,7 @@ Python **3.9.6** (CPython, macOS). Pinned in `[code/requirements.txt](code/requi
 | scipy        | 1.13.1  | *p* values                     |
 | scikit-learn | 1.6.1   | Ridge, scaling                 |
 | xgboost      | 2.1.4   | Flat XGBoost                   |
-| torch        | 2.8.0   | Deep encoders and fusion (CPU) |
+| torch        | 2.8.0   | Deep encoders and fusion       |
 | matplotlib   | 3.9.4   | figures                        |
 | shap         | 0.49.1  | attribution                    |
 
