@@ -2,6 +2,8 @@
 \setmainfont{Times New Roman}[
   Ligatures = TeX
 ]
+% Table/body label in Times, not Latin Modern math (Δ otherwise mismatches RMSE).
+\newcommand{\DRMSE}{ΔRMSE}
 % Times New Roman lacks Unicode subscripts such as ₂; map them for PDF output.
 \usepackage{newunicodechar}
 \newunicodechar{₂}{\textsubscript{2}}
@@ -43,6 +45,16 @@
   format=plain,
   justification=centering,
   singlelinecheck=false
+}
+% Keep table notes with the table and prevent mid-note page breaks.
+\newcommand{\tablenote}[1]{%
+  \par\nopagebreak[4]%
+  \vspace{0.35em}%
+  \nopagebreak[4]%
+  \noindent\begin{minipage}{\linewidth}
+    \textit{Note:} #1
+  \end{minipage}%
+  \par
 }
 
 \usepackage{fancyhdr}
@@ -92,7 +104,7 @@
       CASA0004: MSc Dissertation\\[0.95em]
       Supervisor: Beatrice Taylor\\[0.95em]
       \href{https://github.com/XINRUIQI/CASA0004-Dissertation}{\textcolor{blue}{\underline{GitHub Repository}}}\\[0.95em]
-      Word Count: 10,859\\[1.35em]
+      Word Count: 10,896\\[1.35em]
       This dissertation is submitted in part requirement for the MSc\\
       in the Centre for Advanced Spatial Analysis,\\
       Bartlett Faculty of the Built Environment, UCL\\[1.35em]

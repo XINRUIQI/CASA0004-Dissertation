@@ -10,7 +10,7 @@ author:
     |
     | [GitHub Repository](https://github.com/XINRUIQI/CASA0004-Dissertation)
     |
-    | Word Count: 10,859
+    | Word Count: 10,896
     |
     | This dissertation is submitted in part requirement for the
     | MSc in the Centre for Advanced Spatial Analysis,

@@ -114,6 +114,8 @@
 \setmainfont{Times New Roman}[
   Ligatures = TeX
 ]
+% Table/body label in Times, not Latin Modern math (Δ otherwise mismatches RMSE).
+\newcommand{\DRMSE}{ΔRMSE}
 % Times New Roman lacks Unicode subscripts such as ₂; map them for PDF output.
 \usepackage{newunicodechar}
 \newunicodechar{₂}{\textsubscript{2}}
@@ -155,6 +157,16 @@
   format=plain,
   justification=centering,
   singlelinecheck=false
+}
+% Keep table notes with the table and prevent mid-note page breaks.
+\newcommand{\tablenote}[1]{%
+  \par\nopagebreak[4]%
+  \vspace{0.35em}%
+  \nopagebreak[4]%
+  \noindent\begin{minipage}{\linewidth}
+    \textit{Note:} #1
+  \end{minipage}%
+  \par
 }
 
 \usepackage{fancyhdr}
@@ -204,7 +216,7 @@
       CASA0004: MSc Dissertation\\[0.95em]
       Supervisor: Beatrice Taylor\\[0.95em]
       \href{https://github.com/XINRUIQI/CASA0004-Dissertation}{\textcolor{blue}{\underline{GitHub Repository}}}\\[0.95em]
-      Word Count: 10,859\\[1.35em]
+      Word Count: 10,896\\[1.35em]
       This dissertation is submitted in part requirement for the MSc\\
       in the Centre for Advanced Spatial Analysis,\\
       Bartlett Faculty of the Built Environment, UCL\\[1.35em]
@@ -241,7 +253,7 @@ Supervisor: Beatrice Taylor\\
 \strut \\
 \href{https://github.com/XINRUIQI/CASA0004-Dissertation}{GitHub Repository}\\
 \strut \\
-Word Count: 10,859\\
+Word Count: 10,896\\
 \strut \\
 This dissertation is submitted in part requirement for the\\
 MSc in the Centre for Advanced Spatial Analysis,\\
@@ -260,7 +272,7 @@ The models are evaluated against a no-change benchmark that sets next week's pri
 
 \chapter*{Declaration}\label{declaration}
 
-I, XINRUI QI, hereby declare that this dissertation is all my own original work and that all sources have been acknowledged. Generative AI has been used for translation, writing refinement and assistance with resolving coding issues. It is \textbf{10,859} words in length.
+I, XINRUI QI, hereby declare that this dissertation is all my own original work and that all sources have been acknowledged. Generative AI has been used for translation, writing refinement and assistance with resolving coding issues. It is \textbf{10,896} words in length.
 
 \begin{flushleft}\includegraphics[width=0.4\linewidth]{general_images/signature} \end{flushleft}
 
@@ -766,14 +778,14 @@ Analysis was conducted in Python, and the code required to reproduce the analysi
 
 Table \ref{tab:flat-perf} reports the out-of-sample performance of the Flat Ridge and XGBoost models across feature sets S1--S4, with M0 shown for comparison. Figure \ref{fig:flat-rmse} visualises the \(\Delta\mathrm{RMSE}\) values reported in Table \ref{tab:flat-perf}. All eight Flat models have higher RMSE than M0 and therefore record negative \(\Delta\mathrm{RMSE}\).
 
-\begin{longtable}{@{}l>{\raggedright\arraybackslash}p{0.32\linewidth}lrr@{}}
+\begin{longtable}{@{}l>{\raggedright\arraybackslash}p{0.28\linewidth}lrr@{}}
 \caption[Flat out-of-sample performance]{\label{tab:flat-perf} Flat out-of-sample performance ($n = 257$).}\\
 \toprule
-Set & Variables & Model & RMSE & $\Delta\mathrm{RMSE}$ (\%) \\
+Set & Variables & Model & RMSE & \mbox{\DRMSE{} (\%)} \\
 \midrule
 \endfirsthead
 \toprule
-Set & Variables & Model & RMSE & $\Delta\mathrm{RMSE}$ (\%) \\
+Set & Variables & Model & RMSE & \mbox{\DRMSE{} (\%)} \\
 \midrule
 \endhead
 \bottomrule
@@ -783,25 +795,25 @@ Benchmark & & M0 & 4.152 & \\
 S1 & financial time series &
   \begin{tabular}[c]{@{}l@{}}M1-Flat-Ridge\\ M1-Flat-XGB\end{tabular} &
   \begin{tabular}[c]{@{}r@{}}4.256\\ 4.368\end{tabular} &
-  \begin{tabular}[c]{@{}r@{}}$-2.52$\%\\ $-5.22$\%\end{tabular} \\
+  \begin{tabular}[c]{@{}r@{}}−2.52\%\\ −5.22\%\end{tabular} \\
 \midrule
 S2 & financial time series + RS &
   \begin{tabular}[c]{@{}l@{}}M2-Flat-Ridge\\ M2-Flat-XGB\end{tabular} &
   \begin{tabular}[c]{@{}r@{}}4.414\\ 4.440\end{tabular} &
-  \begin{tabular}[c]{@{}r@{}}$-6.31$\%\\ $-6.95$\%\end{tabular} \\
+  \begin{tabular}[c]{@{}r@{}}−6.31\%\\ −6.95\%\end{tabular} \\
 \midrule
 S3 & financial time series + shipping &
   \begin{tabular}[c]{@{}l@{}}M3-Flat-Ridge\\ M3-Flat-XGB\end{tabular} &
   \begin{tabular}[c]{@{}r@{}}4.553\\ 4.357\end{tabular} &
-  \begin{tabular}[c]{@{}r@{}}$-9.66$\%\\ $-4.94$\%\end{tabular} \\
+  \begin{tabular}[c]{@{}r@{}}−9.66\%\\ −4.94\%\end{tabular} \\
 \midrule
 S4 & financial time series + RS + shipping &
   \begin{tabular}[c]{@{}l@{}}M4-Flat-Ridge\\ M4-Flat-XGB\end{tabular} &
   \begin{tabular}[c]{@{}r@{}}4.539\\ 4.412\end{tabular} &
-  \begin{tabular}[c]{@{}r@{}}$-9.32$\%\\ $-6.27$\%\end{tabular} \\
+  \begin{tabular}[c]{@{}r@{}}−9.32\%\\ −6.27\%\end{tabular} \\
 \end{longtable}
-
-\emph{Note:} Positive values indicate lower RMSE than M0.
+\enlargethispage{2\baselineskip}
+\tablenote{Lower RMSE values indicate better forecasting performance. Positive \DRMSE{} values indicate a lower RMSE than M0, with larger values indicating greater improvement.}
 
 \begin{figure}[H]
 
@@ -812,47 +824,46 @@ S4 & financial time series + RS + shipping &
 \caption[$\Delta$RMSE for the Flat models.]{$\Delta$RMSE for the Flat models.}\label{fig:flat-rmse}
 \end{figure}
 
-For Ridge, S1 has the lowest RMSE and S3 the highest; adding remote sensing, shipping or both raises RMSE relative to S1. For XGBoost, S3 records a slightly lower RMSE than S1 (4.357 versus 4.368), while S2 and S4 remain higher than S1. No Flat model records a positive \(\Delta\mathrm{RMSE}\). Overall, the Flat family performs worse than the no-change benchmark across all information sets.
+For Ridge, S1 has the lowest RMSE and S3 the highest. Adding remote sensing, shipping or both raises RMSE relative to S1. For XGBoost, S3 records a slightly lower RMSE than S1 (4.357 versus 4.368), while S2 and S4 remain higher than S1. No Flat model records a positive \(\Delta\mathrm{RMSE}\). Overall, the Flat family performs worse than the no-change benchmark across all information sets.
 
 The Flat results therefore provide no evidence of improvement relative to the no-change benchmark. Remote sensing consistently reduces performance for both Ridge and XGBoost. Shipping slightly improves XGBoost relative to S1 but worsens Ridge performance, and in neither case is the improvement sufficient to outperform M0.
 
 \section{Deep-model results}\label{results-deep}
 
-Table \ref{tab:deep-perf} reports Deep-model performance across S1--S4. Gated fusion is the prespecified main specification, while cross-attention is reported as a secondary comparison. No cross-attention result is reported for S1 because only the finance encoder is active. Figure \ref{fig:deep-rmse} visualises the \(\Delta\mathrm{RMSE}\) values reported in Table \ref{tab:deep-perf}.
+Table \ref{tab:deep-perf} reports Deep-model performance across S1--S4. Gated fusion is the prespecified main specification, while cross-attention is reported as a secondary comparison. No gated or cross-attention result is reported for S1 because only the finance encoder is active. Figure \ref{fig:deep-rmse} visualises the \(\Delta\mathrm{RMSE}\) values reported in Table \ref{tab:deep-perf}.
 
-\begin{longtable}{@{}l>{\raggedright\arraybackslash}p{0.30\linewidth}lrr@{}}
+\begin{longtable}{@{}l>{\raggedright\arraybackslash}p{0.28\linewidth}lrr@{}}
 \caption[Deep out-of-sample performance]{\label{tab:deep-perf} Deep out-of-sample performance (gated = main specification; $n = 257$).}\\
 \toprule
-Set & Variables & Model & RMSE & $\Delta\mathrm{RMSE}$ (\%) \\
+Set & Variables & Model & RMSE & \mbox{\DRMSE{} (\%)} \\
 \midrule
 \endfirsthead
 \toprule
-Set & Variables & Model & RMSE & $\Delta\mathrm{RMSE}$ (\%) \\
+Set & Variables & Model & RMSE & \mbox{\DRMSE{} (\%)} \\
 \midrule
 \endhead
 \bottomrule
 \endlastfoot
 Benchmark & & M0 & 4.152 & \\
 \midrule
-S1 & financial time series & M1-Deep & 4.250 & $-2.36$\% \\
+S1 & financial time series & M1-Deep & 4.250 & −2.36\% \\
 \midrule
 S2 & financial time series + RS &
   \begin{tabular}[c]{@{}l@{}}M2-Deep-Gated\\ M2-Deep-Cross-attention\end{tabular} &
   \begin{tabular}[c]{@{}r@{}}4.253\\ 4.396\end{tabular} &
-  \begin{tabular}[c]{@{}r@{}}$-2.43$\%\\ $-5.87$\%\end{tabular} \\
+  \begin{tabular}[c]{@{}r@{}}−2.43\%\\ −5.87\%\end{tabular} \\
 \midrule
 S3 & financial time series + shipping &
   \begin{tabular}[c]{@{}l@{}}M3-Deep-Gated\\ M3-Deep-Cross-attention\end{tabular} &
   \begin{tabular}[c]{@{}r@{}}4.146\\ 4.110\end{tabular} &
-  \begin{tabular}[c]{@{}r@{}}$+0.15$\%\\ $+1.00$\%\end{tabular} \\
+  \begin{tabular}[c]{@{}r@{}}+0.15\%\\ +1.00\%\end{tabular} \\
 \midrule
 S4 & financial time series + RS + shipping &
   \begin{tabular}[c]{@{}l@{}}M4-Deep-Gated\\ M4-Deep-Cross-attention\end{tabular} &
   \begin{tabular}[c]{@{}r@{}}4.180\\ 4.144\end{tabular} &
-  \begin{tabular}[c]{@{}r@{}}$-0.67$\%\\ $+0.19$\%\end{tabular} \\
+  \begin{tabular}[c]{@{}r@{}}−0.67\%\\ +0.19\%\end{tabular} \\
 \end{longtable}
-
-\emph{Note:} Positive values indicate lower RMSE than M0.
+\tablenote{Lower RMSE values indicate better forecasting performance. Positive \DRMSE{} values indicate a lower RMSE than M0, with larger values indicating greater improvement.}
 
 \begin{figure}[H]
 
@@ -863,9 +874,9 @@ S4 & financial time series + RS + shipping &
 \caption[$\Delta$RMSE for the Deep models.]{$\Delta$RMSE for the Deep models.}\label{fig:deep-rmse}
 \end{figure}
 
-The gated S1 and S2 models record similar RMSEs of 4.250 and 4.253, both higher than that of M0. Adding remote sensing therefore provides no descriptive improvement. Neither reported fusion approach reduces RMSE relative to the finance-only Deep model at S2. With shipping included, gated S3 records the lowest RMSE among the gated models at 4.146, with \(\Delta\mathrm{RMSE}=+0.15\%\). Gated S4 rises to 4.180, with \(\Delta\mathrm{RMSE}=-0.67\%\), indicating that adding remote sensing to S3 does not provide a further improvement.
+The S1 and the gated S2 models record similar RMSEs of 4.250 and 4.253, both higher than that of M0. Neither reported fusion approach reduces RMSE relative to the finance-only Deep model at S2. Adding remote sensing therefore provides no descriptive improvement. With shipping included, gated S3 records the lowest RMSE among the gated models, at 4.146, representing a 0.15\% improvement over M0. The RMSE of gated S4 rises to 4.180, which is 0.67\% worse than M0. This indicates that adding remote sensing to S3 does not provide a further improvement.
 
-On the reported seed-42 run, cross-attention has a higher RMSE than gated fusion at S2, at 4.396 compared with 4.253, but lower RMSEs at S3 and S4. Cross-attention records RMSEs of 4.110 and 4.144 at S3 and S4, corresponding to \(\Delta\mathrm{RMSE}\) of 1.00\% and 0.19\%. These results are therefore reported only as descriptive secondary comparisons, rather than evidence that cross-attention is superior.
+On the reported run, cross-attention has a higher RMSE than gated fusion at S2, at 4.396 compared with 4.253, but lower RMSEs at S3 and S4. Cross-attention records RMSEs of 4.110 and 4.144 at S3 and S4, corresponding to \(\Delta\mathrm{RMSE}\) of 1.00\% and 0.19\%. These results are therefore reported only as descriptive secondary comparisons, rather than evidence that cross-attention is superior.
 
 Overall, the Deep family performs better than the Flat family, although most Deep specifications still do not outperform M0. For RQ1, shipping provides the clearest improvement. S3 achieves the best performance under both gated fusion and cross-attention, and both models outperform M0 in the reported run. Remote sensing provides little additional value. It does not improve the finance-only model at S2 and weakens the gated model when added to shipping at S4.
 
@@ -894,8 +905,7 @@ S3 & M3--Flat--XGB & 4.357 & M3--Deep--Gated & 4.146 & +4.85\% \\
 S4 & M4--Flat--Ridge & 4.539 & M4--Deep--Gated & 4.180 & +7.90\% \\
 S4 & M4--Flat--XGB & 4.412 & M4--Deep--Gated & 4.180 & +5.26\% \\
 \end{longtable}
-
-\emph{Note:} Positive values indicate a lower Deep RMSE than the matched Flat model.
+\tablenote{Positive values in the Deep vs Flat (\%) column indicate that the Deep model has a lower RMSE than the matched Flat model. Larger values indicate a greater relative improvement by the Deep model.}
 
 \begin{figure}[H]
 
@@ -906,7 +916,7 @@ S4 & M4--Flat--XGB & 4.412 & M4--Deep--Gated & 4.180 & +5.26\% \\
 \caption[RMSE change from Flat XGBoost to gated Deep models.]{RMSE change from Flat XGBoost to gated Deep models.}\label{fig:flat-deep-slope}
 \end{figure}
 
-Figure \ref{fig:flat-deep-slope} shows the change in RMSE from Flat XGBoost to the matched gated Deep model within each information set. Across all four feature sets, the main Deep model records lower RMSE than both Ridge and XGBoost. The reduction ranges from 0.15\% against Ridge at S1 to 8.95\% against Ridge at S3. At S1 and S2, the main Deep models improve on both Flat learners but remain worse than M0. S3 is the only information set in which the main Deep model has a lower RMSE than M0. Although the main Deep S4 model improves substantially over both Flat models, it remains worse than M0 and does not improve on the main Deep S3 model.
+Figure \ref{fig:flat-deep-slope} shows the change in RMSE from Flat XGBoost to the matched gated Deep model within each information set. Across all four feature sets, the main Deep model records lower RMSE than both Ridge and XGBoost. The reduction ranges from 0.15\% against Ridge at S1 to 8.95\% against Ridge at S3. At S1 and S2, the main Deep models improve on both Flat learners but remain worse than M0. S3 is the only information set for which both Deep specifications perform better than M0. Although the main Deep S4 model improves substantially over both Flat models, it remains worse than M0 and does not improve on the main Deep S3 model.
 
 Overall, these comparisons show that the main Deep pathway records lower RMSE than both Flat learners across all four feature sets. For RQ2, this provides consistent evidence that modality-aware representation-level modelling performs better than flat feature fusion when using matched information sets. Since the Deep and Flat pathways also differ in other respects, the improvement cannot be attributed to representation-level fusion alone. The comparison nevertheless suggests that the organisation and representation of heterogeneous data affect what information the model retains and uses. Preserving the distinct structure of each data type therefore warrants further investigation.
 
@@ -917,13 +927,13 @@ Following the eligibility rule in Section \ref{method-interp}, interpretation is
 \begin{longtable}{@{}lrrrrrrr@{}}
 \caption{\label{tab:period-attr} Period-specific performance and attribution for gated Deep S3.}\\
 \toprule
-Period & $n$ & RMSE & $\Delta\mathrm{RMSE}$ (\%) & \multicolumn{2}{c}{Gate} & \multicolumn{2}{c}{SHAP} \\
+Period & $n$ & RMSE & \mbox{\DRMSE{} (\%)} & \multicolumn{2}{c}{Gate} & \multicolumn{2}{c}{SHAP} \\
 \cmidrule(lr){5-6} \cmidrule(lr){7-8}
  & & & & finance & shipping & finance & shipping \\
 \midrule
 \endfirsthead
 \toprule
-Period & $n$ & RMSE & $\Delta\mathrm{RMSE}$ (\%) & \multicolumn{2}{c}{Gate} & \multicolumn{2}{c}{SHAP} \\
+Period & $n$ & RMSE & \mbox{\DRMSE{} (\%)} & \multicolumn{2}{c}{Gate} & \multicolumn{2}{c}{SHAP} \\
 \cmidrule(lr){5-6} \cmidrule(lr){7-8}
  & & & & finance & shipping & finance & shipping \\
 \midrule
@@ -946,15 +956,15 @@ Red Sea & 16 & 3.265 & +2.55\% & 0.489 & 0.511 & 94.1\% & 5.9\% \\
 
 Financial inputs dominate absolute SHAP throughout the sample, accounting for 96.8\% of full-sample attribution compared with 3.2\% for shipping. Shipping attribution is relatively higher in 2023--2024 and during the Red Sea window, at between 5.0\% and 5.9\%, but falls to 0.8\% in 2025. Its contribution is therefore small and episodic rather than persistently elevated.
 
-The main-run gate allocates average weights of 55.8\% to finance and 44.2\% to shipping, a substantially more balanced division than the SHAP attribution. This contrast reflects the difference between internal representation weighting and output attribution; SHAP is therefore used as the primary basis for interpreting RQ3.
+The main-run gate allocates average weights of 55.8\% to finance and 44.2\% to shipping, a substantially more balanced division than the SHAP attribution. This contrast reflects the difference between internal representation weighting and output attribution. SHAP is therefore used as the primary basis for interpreting RQ3.
 
 At the input-group level, EIA variables provide the largest full-sample contribution at 43.6\%, followed by financial and macroeconomic variables at 31.4\%. All twenty highest-ranked individual features are financial inputs, led by crude production, Cushing stocks and the federal funds rate. No shipping subgroup contributes more than 2.0\% in any reported period, although PortWatch and SAR become modestly more prominent during the Red Sea window.
 
-Within the shipping representation, the highest full-sample node shares belong to Jurong, Hormuz, Suez, the Cape route and Bab el-Mandeb. Jurong and Hormuz lead the rankings from 2021 to 2023, while Suez, Bab el-Mandeb and the Cape route occupy the first three positions in 2024. During the Red Sea window, attribution is distributed across several locations, with no individual node accounting for more than 12\% of shipping attribution. Figure \ref{fig:node-shap-map} maps this redistribution between 2022 and 2024.
+Within the shipping representation, the highest full-sample node shares belong to Jurong, Hormuz, Suez, the Cape route and Bab el-Mandeb. Jurong and Hormuz lead the rankings from 2021 to 2023, while Suez, Bab el-Mandeb and the Cape route occupy the first three positions in 2024. Figure \ref{fig:node-shap-map} maps this redistribution between 2022 and 2024.
 
-Figure \ref{fig:node-shap-heatmap} shows how the within-shipping node shares vary across forecast origins. During the ±8-week Red Sea window, Suez records the largest six-week trailing mean at 14.0\%.
+Figure \ref{fig:node-shap-heatmap} shows how the within-shipping node shares vary across forecast origins. During the Red Sea window, shipping attribution is distributed across several nodes. Across the full window, no single node accounts for more than 12\% of the total.
 
-For RQ3, the model relies predominantly on financial information across the reported periods. Shipping provides a much smaller and more episodic contribution, becoming relatively more important in some periods of market and trade disruption, particularly in 2023--2024 and during the Red Sea event window. Its geographic focus also shifts over time across major ports and chokepoints rather than remaining concentrated in one location. Overall, the results suggest that financial data provide the model's core predictive information, while shipping data act as a supplementary source whose importance increases under particular market conditions.
+For RQ3, the model relies predominantly on financial information across the reported periods. Shipping provides a much smaller and more episodic contribution. It becomes relatively more important during some periods of market and trade disruption, particularly in 2023--2024 and during the Red Sea event window. Its geographic focus also shifts over time across major ports and chokepoints rather than remaining concentrated in one location. Overall, the results suggest that financial data provide the model's core predictive information, while shipping data act as a supplementary source whose importance increases under particular market conditions.
 
 \begin{figure}[H]
 \centering
@@ -973,13 +983,13 @@ For RQ3, the model relies predominantly on financial information across the repo
 \section{Robustness}\label{results-robustness}
 
 \begin{longtable}{@{}llrrr@{}}
-\caption[Random-seed robustness of all Deep specifications]{\label{tab:seed-robust} Random-seed robustness of all Deep specifications ($\Delta\mathrm{RMSE}$, \%).}\\
+\caption[Random-seed robustness of all Deep specifications]{\label{tab:seed-robust} Random-seed robustness of all Deep specifications (\DRMSE, \%).}\\
 \toprule
-Set & Model & \begin{tabular}[t]{@{}r@{}}Main-run\\ $\Delta\mathrm{RMSE}$\end{tabular} & \begin{tabular}[t]{@{}r@{}}Across-run\\ mean ± SD\end{tabular} & \begin{tabular}[t]{@{}r@{}}Positive\\ runs\end{tabular} \\
+Set & Model & \begin{tabular}[t]{@{}r@{}}Main-run\\ \DRMSE\end{tabular} & \begin{tabular}[t]{@{}r@{}}Across-run\\ mean ± SD\end{tabular} & \begin{tabular}[t]{@{}r@{}}Positive\\ runs\end{tabular} \\
 \midrule
 \endfirsthead
 \toprule
-Set & Model & \begin{tabular}[t]{@{}r@{}}Main-run\\ $\Delta\mathrm{RMSE}$\end{tabular} & \begin{tabular}[t]{@{}r@{}}Across-run\\ mean ± SD\end{tabular} & \begin{tabular}[t]{@{}r@{}}Positive\\ runs\end{tabular} \\
+Set & Model & \begin{tabular}[t]{@{}r@{}}Main-run\\ \DRMSE\end{tabular} & \begin{tabular}[t]{@{}r@{}}Across-run\\ mean ± SD\end{tabular} & \begin{tabular}[t]{@{}r@{}}Positive\\ runs\end{tabular} \\
 \midrule
 \endhead
 \bottomrule
@@ -1001,7 +1011,7 @@ S1 & M1-Deep & -2.36\% & -1.00\% ± 1.33 & 1/3 \\
 
 \emph{Note:} The seed-42 column is the main reported run in Tables \ref{tab:deep-perf}--\ref{tab:period-attr}. S1 has no fusion operator. SD denotes the standard deviation. Individual seeds are shown in Appendix B.2.
 
-Table \ref{tab:seed-robust} reports the results of rerunning all Deep specifications with multiple random seeds. None of the models achieves a positive mean \(\Delta\mathrm{RMSE}\) across runs, and only five of the thirty individual runs are positive. No S2 specification records a positive \(\Delta\mathrm{RMSE}\) in any seed. S3 concatenation has the best mean result, but it is still negative at −0.27\%, while the main gated S3 model records −0.51\%. Across seeds the S3 order reverses: concatenation (−0.27\%) remains closest to M0, ahead of gated (−0.51\%) and cross-attention (−3.01\%). Gated S3 also outperforms S1 in only one of the three matched runs. The positive \(\Delta\mathrm{RMSE}\) values observed in the main run are therefore sensitive to random initialisation. Gated fusion remains the main specification because it supplies modality weights for RQ3, not because it is the more accurate operator. Overall, although the Deep models do not consistently outperform M0, some specifications, particularly S3, show predictive potential and merit further investigation. The better-performing Deep specifications remain broadly close to M0 rather than demonstrating a consistent forecasting advantage.
+Table \ref{tab:seed-robust} reports the results of rerunning all Deep specifications with multiple random seeds. None of the models achieves a positive mean \(\Delta\mathrm{RMSE}\) across runs, and only five of the thirty individual runs are positive. No S2 specification records a positive \(\Delta\mathrm{RMSE}\) in any seed. S3 concatenation has the best mean result, but it is still negative at −0.27\%, while the main gated S3 model records −0.51\%. Across seeds, the S3 order reverses, with concatenation (−0.27\%) remaining closest to M0, followed by gated (−0.51\%) and cross-attention (−3.01\%). Gated S3 also outperforms S1 in only one of the three matched runs. The positive \(\Delta\mathrm{RMSE}\) values observed in the main run are therefore sensitive to random initialisation. Gated fusion remains the main specification because it supplies modality weights for RQ3, not because it is the more accurate operator. Overall, although the Deep models do not consistently outperform M0, some specifications such as S3 show predictive potential and merit further investigation. The better-performing Deep specifications remain broadly close to M0 rather than demonstrating a consistent forecasting advantage.
 
 \chapter{Discussion}\label{discussion}
 
@@ -1009,11 +1019,11 @@ Table \ref{tab:seed-robust} reports the results of rerunning all Deep specificat
 
 RQ1 asked whether remote sensing and shipping add out-of-sample value beyond financial time series. The answer depends on the modelling pathway.
 
-Within the Flat family, no model outperforms the no-change benchmark, consistent with the short-horizon oil-forecasting literature that treats the no-change forecast as a demanding reference (\citeproc{ref-alquist2013}{Alquist, Kilian and Vigfusson, 2013}). Relative to the finance-only S1 specification, remote sensing increases forecast error for both Ridge and XGBoost, while shipping increases error for Ridge but slightly reduces it for XGBoost. The latter result shows that shipping is not uniformly detrimental within the Flat pathway, but the improvement remains insufficient to outperform M0. Overall, simply adding spatial features to Flat models does not produce additional predictive value.
+Within the Flat family, no model outperforms the no-change benchmark, consistent with the short-horizon oil-forecasting literature that treats the no-change forecast as a demanding reference (\citeproc{ref-alquist2013}{Alquist, Kilian and Vigfusson, 2013}). Relative to the finance-only S1 specification, remote sensing increases forecast error for both Ridge and XGBoost, while shipping increases error for Ridge but slightly reduces it for XGBoost. The latter result shows that shipping is not uniformly beneficial within the Flat pathway, since the improvement remains insufficient to outperform M0. Overall, simply adding spatial features to Flat models does not produce additional predictive value.
 
 Under the Deep pathway, adding remote sensing to finance in S2 does not improve forecast accuracy over either S1 or M0. By contrast, adding shipping to finance in S3 produces a small positive \(\Delta\mathrm{RMSE}\), making S3 the best-performing specification in the main gated pathway. Extending S3 with remote sensing in S4 does not further reduce forecast error. The secondary cross-attention results show the same ordering across the multimodal specifications, with S3 performing best, followed by S4 and S2. Shipping is therefore the more informative spatial source in this design, while remote sensing contributes little to predictive accuracy. The improvement is notable because the other main modelling specifications fail to beat M0, although the gain remains limited.
 
-Observations of activity across multiple ports and chokepoints appear to be more useful for short-term forecasting than the selected remote-sensing measures from individual sites. The limited value of remote sensing may be due to a mismatch in scale: the satellite data are monthly and local, while Brent is constructed at a weekly frequency.
+Observations of activity across multiple ports and chokepoints appear to be more useful for short-term forecasting than the selected remote-sensing measures from individual sites. The limited value of remote sensing may be due to a mismatch in scale. The satellite data are monthly and local, while Brent is constructed at a weekly frequency.
 
 These findings refine the AIS and satellite literature reviewed in Chapter \ref{literature}. Existing studies often demonstrate that ships and satellites contain information about trade or physical activity (\citeproc{ref-adland2017}{Adland, Jia and Strandenes, 2017}; \citeproc{ref-yan2020}{Yan et al., 2020}; \citeproc{ref-hao2023}{Hao and Wang, 2023}), but less often ask whether those signals improve one-week-ahead Brent forecasts relative to both a financial baseline and M0. The present results distinguish informational content from predictive value. The ability to measure trade or industrial activity does not necessarily produce a forecast improvement against a demanding weekly benchmark.
 
@@ -1021,7 +1031,7 @@ These findings refine the AIS and satellite literature reviewed in Chapter \ref{
 
 RQ2 asked whether representation-level Deep modelling outperforms flat feature fusion under the same information sets and evaluation protocol. Across the matched multimodal sets S2--S4, the main Deep pathway records lower RMSE than the Flat learners. The largest differences appear in S3 and S4, both of which include shipping data. The results therefore show that the Deep pathway outperforms early feature concatenation under the current framework. However, outperforming the Flat models does not necessarily mean outperforming the no-change benchmark.
 
-Early-fusion approaches combine heterogeneous predictors within a single feature space, whereas multimodal models retain separate representations before fusion (\citeproc{ref-arevalo2017}{Arevalo et al., 2017}; \citeproc{ref-gohari2024}{Emami-Gohari et al., 2024}). This study extends the comparison to weekly Brent forecasting. The larger Deep advantage in S3 and S4 provides further support for the value of representation-level modelling. From a spatial perspective, representation-level modelling may be particularly useful for observations distributed across networks of ports and chokepoints. Spatial relationships among shipping nodes can provide additional structural information. By contrast, treating these observations as independent tabular features does not explicitly preserve these relationships.
+This study extends the comparison between early-fusion approaches and multimodal models (\citeproc{ref-arevalo2017}{Arevalo et al., 2017}; \citeproc{ref-gohari2024}{Emami-Gohari et al., 2024}) to weekly Brent forecasting. The larger Deep advantage in S3 and S4 provides further support for the value of representation-level modelling. From a spatial perspective, representation-level modelling may be particularly useful for observations distributed across networks of ports and chokepoints. Spatial relationships among shipping nodes can provide additional structural information. By contrast, treating these observations as independent tabular features does not explicitly preserve these relationships.
 
 However, the comparisons in this study evaluate complete modelling pathways, including their encoders and fusion strategies. They therefore support the overall Deep approach but do not identify the preservation of network structure or any individual fusion operator as the cause of its better performance.
 
@@ -1037,9 +1047,9 @@ Attention and gate weights describe operations within fitted models rather than 
 
 Model choice should be aligned with the structure of the input data. Relational data, such as shipping networks, capture relationships among observations that may carry useful information. Preserving this structure before fusion may therefore be more appropriate than direct feature concatenation. More generally, new data sources should be evaluated under a common out-of-sample framework. Their value should be compared both against a model using only established predictors and against a simple benchmark forecast. The first comparison tests whether the new data add information beyond conventional inputs, while the second tests whether the full modelling system improves on a basic forecasting rule.
 
-These models provide diagnostic rather than causal insight into oil prices. They show which information is useful for one-week-ahead prediction and help identify periods or parts of the supply network that deserve further analysis. However, they do not explain the mechanisms that cause oil prices to move. Their main value is therefore to integrate and assess predictive information from different sources, thereby supporting further analysis of oil-market conditions.
+These comparisons establish predictive value rather than causal explanation. The models show which information is useful for one-week-ahead prediction and help identify periods or parts of the supply network that deserve further analysis. However, they do not explain the mechanisms that cause oil prices to move. Their main value is therefore to integrate and assess predictive information from different sources, thereby supporting further analysis of oil-market conditions.
 
-Spatial data should be assessed according to how well their scale, frequency and structure match the analytical task. Remote sensing describes conditions at selected facilities, so it may be more suitable for monitoring facility activity or regional production. Shipping data capture flows across connected ports, chokepoints and routes, and therefore better reflect disruptions and adjustments across the global oil supply network. Better observation of such physical activity may be useful for applications such as energy-security monitoring, trade planning and inflation-sensitive fiscal management, but it does not necessarily improve one-week-ahead Brent forecasts. More broadly, this study suggests that the value of a data source depends on the task for which it is used. A data source may be useful for forecasting, monitoring, explanation or risk detection, without being equally useful for all of them. In particular, monitoring value and predictive value should be assessed separately, since data that effectively capture physical activity or market stress may not necessarily improve forecasts.
+This distinction also means that a data source should not be judged by forecasting performance alone. Spatial data should be assessed according to how well their scale, frequency and structure match the analytical task. Remote sensing describes conditions at selected facilities, so it may be more suitable for monitoring facility activity or regional production. Shipping data capture flows across connected ports, chokepoints and routes, and therefore better reflect disruptions and adjustments across the global oil supply network. Better observation of such physical activity may be useful for applications such as energy-security monitoring, trade planning and inflation-sensitive fiscal management, but it does not necessarily improve one-week-ahead Brent forecasts. More broadly, this study suggests that the value of a data source depends on the task for which it is used. A data source may be valuable for one task, such as forecasting, monitoring, diagnostic analysis or risk detection, without being equally valuable for others. In particular, its monitoring and predictive value should be assessed separately.
 
 \section{Limitations}\label{discussion-limitations}
 
@@ -1047,27 +1057,27 @@ The sample size in this study is limited by the availability of the aligned data
 
 The study applies a range of methods to reduce information leakage, including publication lags and as-of alignment, but limitations in data availability and preprocessing remain. The study uses revised historical series rather than real-time vintages and therefore does not fully reproduce the information available at each forecast origin. Monthly Global Fishing Watch data and remote-sensing inputs are carried forward weekly between releases, limiting their ability to capture short-lived changes. Some variables are also indirect proxies, while preprocessing and representation choices such as missing-value treatment and the use of fixed Prithvi-EO-2.0 embeddings introduce additional assumptions. The observed model performance therefore cannot be attributed to the source data alone.
 
-The spatial findings are conditional on the coverage and construction of a purposively selected network of 11 sites and 6 chokepoints. The site sample is weighted towards Gulf export and transshipment nodes and Asian import and refining hubs, although it also includes Rotterdam and Houston. No site-level AOIs are located in Russia, West Africa or Latin America, although the Panama Canal is included as a chokepoint. These omissions partly reflect constraints on consistent cross-source data availability and satellite observability over the full study period, although using observability as a site-selection criterion may itself introduce geographic bias. The importance assigned to individual nodes by the model therefore reflects dependence within this constructed network rather than a comprehensive ranking of global oil infrastructure.
+The spatial findings are conditional on the coverage and construction of a purposively selected network of 11 sites and 6 chokepoints. The site sample is weighted towards Gulf export and transshipment nodes and Asian import and refining hubs, although it also includes Rotterdam and Houston. No site-level AOIs are located in Russia or West Africa. These omissions partly reflect the difficulty of obtaining consistent cross-source data and usable satellite imagery throughout the study period. At the same time, using image availability as a site-selection criterion may introduce geographic bias. The importance assigned to individual nodes by the model therefore reflects dependence within this constructed network rather than a comprehensive ranking of global oil infrastructure.
 
 The comparison between the Flat and Deep families evaluates differences between complete modelling pathways rather than differences in any single model component. The two pathways differ in model class, data representation and fusion approach. For example, the Deep shipping pathway additionally introduces an explicit graph structure. The remote-sensing inputs also differ, as VIIRS night-time-light data are included in the Flat pathway but not in the Deep pathway. Therefore, the observed performance differences cannot be clearly attributed to any single model architecture or to the gated-fusion mechanism itself.
 
 \section{Future research}\label{discussion-future}
 
-A key next step is to determine whether the value of shipping data remains stable over longer periods and across a wider oil-transport network. A longer-term evaluation could use archived data releases and include additional regions such as Russian Baltic and Black Sea ports, West African loading areas and Latin American exporters. This would provide evidence from a longer time period and broader geographic coverage. Where AIS data are incomplete, SAR-based vessel detection could help capture vessel activity not visible in AIS data, including dark-fleet activity.
+A key next step is to determine whether the value of shipping data remains stable over longer periods and across a wider oil-transport network. A longer-term evaluation could use archived data releases and include additional regions such as Russian Baltic and Black Sea ports, West African loading areas and Latin American exporters. This would provide evidence from a longer time period and broader geographic coverage. The SAR-based vessel-detection layer used in this study could also be extended to regions where AIS coverage is less complete, particularly those with substantial dark-fleet activity.
 
 The transferability of this framework could be assessed by applying it to other forecasting tasks and markets. The same Flat--Deep comparison could be applied to other energy commodities and markets, such as WTI crude oil, liquefied natural gas and natural gas. It could also be extended to grain and metal markets to test whether modelling network structure remains useful outside the energy sector. Remote sensing should be evaluated for targets that better match its spatial and temporal scale, such as facility activity, regional production or longer-term price movements. Where possible, future studies should also compare Flat and Deep remote-sensing models using the same underlying inputs. This would make it easier to separate the effect of model architecture from differences in data representation.
 
-Beyond forecast accuracy, future work should examine the practical value of these forecasts. For public-sector applications, probabilistic forecasts and scenario ranges could be compared with existing financial and EIA monitoring. This would help assess whether shipping information improves the timing and focus of energy-security monitoring, trade planning or inflation-sensitive budgeting. Evaluating policy actions such as strategic reserve releases, sanctions or fiscal responses would require more than forecasting alone. Forecasting models would need to be combined with causal or decision-analysis methods to estimate how these actions affect prices, supply and policy costs. Model attribution should therefore be used as a diagnostic tool rather than as an automatic policy signal.
+Beyond forecast accuracy, future work should examine the practical value of these forecasts. For public-sector applications, probabilistic forecasts and scenario ranges could be compared with existing financial and EIA monitoring. This would help assess whether shipping information improves the timing and focus of energy-security monitoring, trade planning or inflation-sensitive budgeting. Evaluating policy actions such as strategic reserve releases, sanctions or fiscal responses would require more than forecasting alone. Forecasting models would need to be combined with causal or decision-analysis methods to estimate how these actions affect prices, supply and policy costs. Model-attribution results should therefore be treated as diagnostic evidence that can inform further policy analysis, rather than as a direct basis for policy action.
 
 \chapter{Conclusion}\label{conclusion}
 
-Short-term oil price volatility affects budgeting, hedging and market-risk decisions, yet weekly Brent forecasts remain difficult to improve on a simple no-change rule. Using weekly data from 2019 to 2025, this study examined whether satellite remote sensing and maritime shipping provide predictive information beyond conventional financial indicators. It also tested whether modality-aware representation-level modelling performs better than flat feature fusion. Under a common evaluation framework, each added data source was compared with both a finance-only model and the no-change benchmark.
+Short-term oil price volatility affects budgeting, hedging and market-risk decisions, yet weekly Brent forecasts remain difficult to improve on a simple no-change rule. Using weekly data from 2019 to 2025, this study examined whether satellite remote sensing and maritime shipping provide predictive information beyond conventional financial indicators. It also tested whether modality-aware representation-level modelling performs better than flat feature fusion. Under a common evaluation framework, each added spatial data was compared with both a finance-only model and the no-change benchmark.
 
 The results show that adding more data or using more complex models does not guarantee better forecasting performance. Remote sensing provides no consistent improvement, either when added alone or together with shipping data. Shipping provides clearer incremental predictive value, although this improvement is mainly observed in the Deep pathway. In the main run, the Deep model using financial and shipping data records a modest improvement over the no-change benchmark, while none of the Flat models outperforms the benchmark. Across the same information sets, the Deep pathway generally performs better than the Flat models. This supports the value of preserving the structure of different data types and modelling them at the representation level. Model interpretation further shows that forecasts continue to rely mainly on financial and EIA information. Shipping makes a smaller contribution, and its importance varies across disruption types, periods and locations in the transport network.
 
-The main contribution of this study is to provide a framework and set of criteria for assessing when new types of data provide meaningful predictive value. By comparing each new data source with both established financial information and a simple no-change benchmark, the framework distinguishes incremental value from overall forecasting performance. The study also shows that the value of a data source should be assessed according to how well its scale, frequency and structure match the analytical task. Remote sensing may be more suitable for monitoring facility activity or regional production, while shipping data are better suited to capturing disruptions and adjustments across global supply networks. Monitoring value and predictive value should therefore be assessed separately. For applications such as energy-security monitoring, trade planning and inflation-sensitive budgeting, spatial data such as remote sensing and shipping can complement conventional market information by revealing facility activity, transport disruptions, rerouting and changes in supply networks. The value of spatial data therefore extends beyond price forecasting to the monitoring of physical activity and the identification of potential risks. This broader monitoring role connects the study to wider agendas of energy security and oil-market transparency reflected in official oil-market monitoring and initiatives such as JODI. Better observation of chokepoints, rerouting and facility activity can support these agendas even when incorporating such signals does not enable weekly forecasts to outperform a no-change benchmark.
+The main contribution of this study is to provide a framework and set of criteria for assessing when new types of data provide meaningful predictive value. By comparing each new data source with both established financial information and a simple no-change benchmark, the framework distinguishes incremental value from overall forecasting performance. The study also shows that the value of a data source should be assessed according to how well its scale, frequency and structure match the analytical task. Remote sensing may be more suitable for monitoring facility activity or regional production, while shipping data are better suited to capturing disruptions and adjustments across global supply networks. Monitoring value and predictive value should therefore be assessed separately. For applications such as energy-security monitoring, trade planning and inflation-sensitive budgeting, spatial data such as remote sensing and shipping can complement conventional market information by revealing facility activity, transport disruptions, rerouting and changes in supply networks. This broader monitoring role connects the study to wider agendas of energy security and oil-market transparency reflected in official oil-market monitoring and initiatives such as JODI. Better observation of chokepoints, rerouting and facility activity can support these agendas even when incorporating such signals does not enable weekly forecasts to outperform a no-change benchmark.
 
-Future research can extend this study in three areas: temporal and spatial coverage, forecasting tasks, and practical applications. First, a longer time span and broader geographic coverage would help test whether the value of shipping information remains stable across different periods and regions. Second, the same research framework could be applied to other energy and commodity markets, including WTI crude oil, liquefied natural gas, natural gas, grains and metals. Remote sensing could also be evaluated for tasks that better match its spatial and temporal scale. Finally, future research should further assess the practical value of the framework, including its use in energy-security monitoring, trade planning and budgeting. Evaluating specific policies would require combining the forecasting framework with causal or decision-analysis methods.
+Future research can extend this study in three areas: temporal and spatial coverage, forecasting tasks, and practical applications. First, a longer time span and broader geographic coverage would help test whether the value of shipping information remains stable across different periods and regions. Second, the same research framework could be applied to other energy and commodity markets, including WTI crude oil, liquefied natural gas, natural gas, grains and metals. Remote sensing could also be evaluated for tasks that better match its spatial and temporal scale. Finally, future research should further assess the practical value of the framework, including its use in energy-security monitoring, trade planning and budgeting. Evaluating specific policies would require combining the forecasting framework with causal or decision-analysis methods. Together, these extensions would help clarify when spatial data improve forecasting and when their main value lies in monitoring physical market conditions.
 
 \chapter*{References}\label{references}
 \addcontentsline{toc}{chapter}{References}
