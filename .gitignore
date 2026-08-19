@@ -1,27 +1,39 @@
-# Data — raw data should not be committed
-03_data/raw/
+# Local-only archive (literature PDFs, etc.) — never commit
+_local/
 
-# Literature PDFs — copyrighted material
-01_literature/papers_pdf/
+# Raw downloads. Scripts, AOI tables and manifests are tracked (see exceptions).
+data/raw/**
+!data/raw/**/
+!data/raw/**/*.py
+!data/raw/**/*.js
+!data/raw/**/*.md
+!data/raw/**/aoi_oil_infrastructure.csv
+!data/raw/**/s2_patch_exclusions.csv
+!data/raw/**/manifest.csv
+!data/raw/**/.gitkeep
 
-# Large binary files
+# Secrets
+.env
+**/.gfw_token
+**/*token*
+
+# Large / generated binaries
 *.zip
 *.tar.gz
 *.h5
 *.pkl
 *.parquet
+*.psd
 
-# Office temp files
+# Office / OS
 ~$*
-
-# macOS
 .DS_Store
 
 # Python
 __pycache__/
 *.pyc
 .ipynb_checkpoints/
-
-# Environment
-.env
 .venv/
+
+# Thesis (Bookdown) — local only; not part of the public code/data repo
+thesis/

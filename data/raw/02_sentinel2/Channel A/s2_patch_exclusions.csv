@@ -1,0 +1,4 @@
+site_id,site_name,month,filename,reason
+P008,Basra,2019_01,S2_P008_Basra_2019_01.tif,GEE export all-zero after SCL cloud mask (n_scenes=1 mean_cloud=59.7); treat as missing in pipeline
+P009,Ulsan,2022_02,S2_P009_Ulsan_2022_02.tif,SCL median composite sparse after cloud mask (n_scenes=2 mean_cloud=44.2; 0.23% nonzero pixels); treat as missing in pipeline
+P009,Ulsan,2022_09,S2_P009_Ulsan_2022_09.tif,SCL median composite sparse after cloud mask (n_scenes=1 mean_cloud=25.9; 0.03% nonzero pixels); treat as missing in pipeline

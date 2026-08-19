@@ -74,7 +74,7 @@ Models predict the one-week log return $r_{t+1}=\log(P_{t+1}/P_t)$ and reconstru
 | Secondary tests                                             | Diebold–Mariano (Harvey–Leybourne–Newbold) vs M0; Clark–West vs S1 |
 
 
-Hyperparameters, encoder sizes and early-stopping settings: [Appendix C](06_writing/Chapter%20Appendix/appendix_C_config_EN.md). Robustness (fusion matrix, seeds): [Appendix B](06_writing/Chapter%20Appendix/appendix_B_robustness_EN.md).
+Hyperparameters, encoder sizes and early-stopping settings: [Appendix C](docs/appendix/appendix_C_config_EN.md). Robustness (fusion matrix, seeds): [Appendix B](docs/appendix/appendix_B_robustness_EN.md).
 
 ---
 
@@ -96,9 +96,9 @@ The target is the **global Brent benchmark**, not a local cargo price, so the st
 | Shipping       | PortWatch tanker flows and GFW vessel-activity features                    | 17-node graph: node attributes, dynamic voyage edges, fixed corridor edges                                               | [IMF PortWatch](https://portwatch.imf.org/), [Global Fishing Watch](https://globalfishingwatch.org/our-apis/)                                                                                                                                         |
 
 
-All series are aligned to the Friday weekly calendar with source-specific **publication-lag buffers** so that each forecast uses only information treated as available at the origin. Variable dictionaries, lags, AOIs and graph edges: [Appendix A](06_writing/Chapter%20Appendix/appendix_A_data_EN.md). Source licences and download notes: `[03_data/Dataset/external_sources.md](03_data/Dataset/external_sources.md)`.
+All series are aligned to the Friday weekly calendar with source-specific **publication-lag buffers** so that each forecast uses only information treated as available at the origin. Variable dictionaries, lags, AOIs and graph edges: [Appendix A](docs/appendix/appendix_A_data_EN.md). Source licences and download notes: [`data/sources.md`](data/sources.md).
 
-Raw downloads live in `03_data/raw/` (gitignored). Modelling reads the processed weekly products already in the repository.
+Raw downloads live in `data/raw/` (gitignored). Modelling reads the processed weekly products already in the repository.
 
 ---
 
@@ -130,20 +130,20 @@ Interpretation: monitoring value and predictive value should be assessed separat
 ## Repository layout
 
 ```text
-casa0004 Dissertation/
-├── 00_admin/                 working notes, meetings, walkthroughs
-├── 01_literature/            literature matrix and reading notes
-├── 02_ai_conversations/      AI-use log
-├── 03_data/
-│   ├── raw/                  original downloads (local only; gitignored)
-│   ├── processed/            weekly matrices, Prithvi embeddings, 17-node graph
-│   └── Dataset/              external_sources.md
-├── 04_code/                  modelling code (see 04_code/README.md)
-│   ├── scripts/flat|deep|tools|figures/
-│   └── src/backtest|models/
-├── 05_outputs/               metrics, predictions, figures
-├── 06_writing/               thesis (Bookdown) and bilingual drafts
-└── 07_submission/            reproducibility-pack index
+.
+├── README.md
+├── code/                     modelling (see code/README.md)
+│   ├── requirements.txt
+│   ├── src/                  backtest, encoders, fusion
+│   └── scripts/              flat / deep / figures / tools
+├── data/
+│   ├── sources.md            licences and download notes
+│   ├── processed/            weekly matrix, Prithvi embeddings, 17-node graph
+│   └── raw/                  local downloads (gitignored except scripts/AOI)
+├── results/                  metrics, predictions, figures
+└── docs/
+    ├── reproducibility.md
+    └── appendix/             A–D (data, robustness, hyperparameters, log)
 ```
 
 
@@ -153,11 +153,11 @@ casa0004 Dissertation/
 
 | File                                                                                      | Role                                              |
 | ----------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| `03_data/processed/merge/outputs/weekly_feature_matrix.csv`                               | Shared weekly matrix for Flat and Deep            |
-| `03_data/processed/merge/outputs/weekly_feature_dictionary.csv`                           | Feature dictionary                                |
-| `03_data/processed/M3/outputs/m3_graph17_tensors.npz`                                     | Deep 17-node shipping graph                       |
-| `03_data/processed/M2/outputs/s2_prithvi_emb_meanpool.npy` and `s2_prithvi_emb_index.csv` | Frozen Prithvi embeddings                         |
-| `05_outputs/baselines/Flat/M1_Flat/baseline_predictions.csv`                              | Flat S1 predictions (Deep scripts read this file) |
+| `data/processed/merge/outputs/weekly_feature_matrix.csv`                               | Shared weekly matrix for Flat and Deep            |
+| `data/processed/merge/outputs/weekly_feature_dictionary.csv`                           | Feature dictionary                                |
+| `data/processed/M3/outputs/m3_graph17_tensors.npz`                                     | Deep 17-node shipping graph                       |
+| `data/processed/M2/outputs/s2_prithvi_emb_meanpool.npy` and `s2_prithvi_emb_index.csv` | Frozen Prithvi embeddings                         |
+| `results/baselines/Flat/M1_Flat/baseline_predictions.csv`                              | Flat S1 predictions (Deep scripts read this file) |
 
 
 ---
@@ -172,28 +172,28 @@ Processed weekly matrices and Deep tensors are in the repository. Reproducing th
 # 0) Environment (Python 3.9.x; tested 3.9.6 / macOS)
 cd "/path/to/casa0004 Dissertation"
 python3 -m venv .venv && source .venv/bin/activate
-python3 -m pip install -r 04_code/requirements.txt
+python3 -m pip install -r code/requirements.txt
 
 # 1) Flat S1–S4 (run S1 / M1 first: Deep scripts read its predictions)
-python3 04_code/scripts/flat/run_baseline.py --modality M1
-python3 04_code/scripts/flat/run_baseline.py --modality M2 --m2-features anom
-python3 04_code/scripts/flat/run_baseline.py --modality M3
-python3 04_code/scripts/flat/run_baseline.py --modality M4
+python3 code/scripts/flat/run_baseline.py --modality M1
+python3 code/scripts/flat/run_baseline.py --modality M2 --m2-features anom
+python3 code/scripts/flat/run_baseline.py --modality M3
+python3 code/scripts/flat/run_baseline.py --modality M4
 
 # 2) Deep main results (gated fusion; representation-level)
-python3 04_code/scripts/deep/run_deep_baseline.py
+python3 code/scripts/deep/run_deep_baseline.py
 
 # 3) Optional: sub-period tables, fusion matrix, interpretability
-python3 04_code/scripts/tools/subperiod_eval.py
-python3 04_code/scripts/deep/run_deep_fusion_matrix.py
-python3 04_code/scripts/deep/run_deep_interpret.py --seeds 42,1,2 --lookback 4
+python3 code/scripts/tools/subperiod_eval.py
+python3 code/scripts/deep/run_deep_fusion_matrix.py
+python3 code/scripts/deep/run_deep_interpret.py --seeds 42,1,2 --lookback 4
 ```
 
-Outputs: `05_outputs/baselines/Flat/M*_Flat/` and `05_outputs/baselines/Deep/_cross/`.
+Outputs: `results/baselines/Flat/M*_Flat/` and `results/baselines/Deep/_cross/`.
 
-Full command list, flags, robustness scripts and optional rebuild-from-raw: `[04_code/README.md](04_code/README.md)`. Submission-facing checklist: `[07_submission/reproducibility_pack/README.md](07_submission/reproducibility_pack/README.md)`.
+Full command list, flags, robustness scripts and optional rebuild-from-raw: [`code/README.md`](code/README.md). Submission-facing checklist: [`docs/reproducibility.md`](docs/reproducibility.md).
 
-Rebuild from raw is optional and needs local `03_data/raw/`. Prithvi embedding export is a one-off offline step outside this `requirements.txt` environment.
+Rebuild from raw is optional and needs local `data/raw/`. Prithvi embedding export is a one-off offline step outside this `requirements.txt` environment.
 
 ---
 
@@ -201,7 +201,7 @@ Rebuild from raw is optional and needs local `03_data/raw/`. Prithvi embedding e
 
 ## Software environment
 
-Python **3.9.6** (CPython, macOS). Pinned in `[04_code/requirements.txt](04_code/requirements.txt)`. Deep training and evaluation run on **CPU** by default.
+Python **3.9.6** (CPython, macOS). Pinned in `[code/requirements.txt](code/requirements.txt)`. Deep training and evaluation run on **CPU** by default.
 
 
 | Package      | Version | Role                           |
@@ -253,15 +253,13 @@ Qi, X. (2026). *A modality-aware spatiotemporal fusion framework for Brent crude
 ## Document index
 
 
-| Purpose                              | Path                                                                                                                                                                             |
-| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Thesis (Bookdown)                    | `[06_writing/CASA-MSc-thesis-main/](06_writing/CASA-MSc-thesis-main/)`                                                                                                           |
-| Code runbook                         | `[04_code/README.md](04_code/README.md)`                                                                                                                                         |
-| Reproducibility-pack index           | `[07_submission/reproducibility_pack/README.md](07_submission/reproducibility_pack/README.md)`                                                                                   |
-| Appendix A — data, AOIs, lags, graph | `[06_writing/Chapter Appendix/appendix_A_data_EN.md](06_writing/Chapter%20Appendix/appendix_A_data_EN.md)`                                                                       |
-| Appendix B — robustness              | `[06_writing/Chapter Appendix/appendix_B_robustness_EN.md](06_writing/Chapter%20Appendix/appendix_B_robustness_EN.md)`                                                           |
-| Appendix C — hyperparameters         | `[06_writing/Chapter Appendix/appendix_C_config_EN.md](06_writing/Chapter%20Appendix/appendix_C_config_EN.md)`                                                                   |
-| External data sources                | `[03_data/Dataset/external_sources.md](03_data/Dataset/external_sources.md)`                                                                                                     |
-| Flat / Deep walkthroughs             | `[00_admin/flat_baseline_full_walkthrough.md](00_admin/flat_baseline_full_walkthrough.md)`, `[00_admin/deep_model_full_walkthrough.md](00_admin/deep_model_full_walkthrough.md)` |
+| Purpose | Path |
+| --- | --- |
+| Code runbook | [`code/README.md`](code/README.md) |
+| Reproducibility checklist | [`docs/reproducibility.md`](docs/reproducibility.md) |
+| Appendix A — data, AOIs, lags, graph | [`docs/appendix/appendix_A_data_EN.md`](docs/appendix/appendix_A_data_EN.md) |
+| Appendix B — robustness | [`docs/appendix/appendix_B_robustness_EN.md`](docs/appendix/appendix_B_robustness_EN.md) |
+| Appendix C — hyperparameters | [`docs/appendix/appendix_C_config_EN.md`](docs/appendix/appendix_C_config_EN.md) |
+| External data sources | [`data/sources.md`](data/sources.md) |
 
 
