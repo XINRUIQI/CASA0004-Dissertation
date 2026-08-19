@@ -9,16 +9,17 @@ scored weeks).
 
 Entries are $\Delta\mathrm{RMSE}$ (%).
 Positive values indicate lower RMSE than the no-change benchmark.
+Seed 42.
 
 | Set | Concat | Gated | Cross-attention |
 | --- | ---: | ---: | ---: |
 | S2 (finance + RS) | −2.01 | −2.43 | −5.87 |
 | **S3 (finance + shipping)** | −0.22 | **+0.15** | **+1.00** |
-| S4 (finance + RS + shipping) | −8.30 | −0.68 | +0.19 |
+| S4 (finance + RS + shipping) | −8.30 | −0.67 | +0.19 |
 
 M0 is cleared only where shipping is present. S2 never beats M0.
 Concatenation clears M0 in no set. The three positive cells are descriptive
-orderings on one seed.
+orderings on one seed. Cross-seed means are in Table 4.5; individual seeds are in B.2.
 
 ---
 
@@ -30,7 +31,7 @@ specifications; only five of thirty individual runs are positive.
 
 **Figure B.1 — Random-seed robustness of Deep specifications: individual seeds and means relative to M0. The main seed-42 run is marked with a diamond.**
 
-![Figure B.1](../../results/figures/fig_B_1_seed_robustness.png)
+<img src="../../results/figures/fig_B_1_seed_robustness.png" alt="Figure B.1. Random-seed robustness of Deep specifications." width="100%">
 
 ---
 

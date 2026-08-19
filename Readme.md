@@ -2,7 +2,7 @@
 
 **Using Maritime Networks, Satellite Imagery and Financial Time Series**
 
-CASA0010 MSc dissertation · [Centre for Advanced Spatial Analysis (CASA)](https://www.ucl.ac.uk/bartlett/casa), Bartlett Faculty of the Built Environment, UCL
+CASA0004 MSc dissertation · [Centre for Advanced Spatial Analysis (CASA)](https://www.ucl.ac.uk/bartlett/casa), Bartlett Faculty of the Built Environment, UCL
 
 **Xinrui Qi** · Supervisor: Beatrice Taylor · 15 August 2026
 
@@ -37,9 +37,9 @@ The practical contribution is a **reproducible comparison framework**: each new 
 
 ## Research design
 
-Figure 3.1. Research design and forecasting workflow.
+<img src="./results/figures/fig_3_1_research_design.png" alt="Figure 3.1. Research design and forecasting workflow." width="100%">
 
-*Figure 3.1. Research design and forecasting workflow.*
+**Figure 3.1. Research design and forecasting workflow.**
 
 ### Information sets
 
@@ -78,9 +78,9 @@ Hyperparameters, encoder sizes and early-stopping settings: [Appendix C](docs/ap
 
 The target is the **global Brent benchmark**, not a local cargo price, so the study does not use a single study region. Spatial inputs come from **11 oil-infrastructure sites** (ports, refineries and export terminals) and **6 maritime chokepoints** (Strait of Hormuz, Suez Canal, Strait of Malacca, Bab el-Mandeb, Panama Canal, Cape of Good Hope). The Deep shipping graph has **17 nodes**, with weekly dynamic voyage edges among the 11 sites and fixed corridor edges from sites to chokepoints on documented oil-trade routes.
 
-Figure 3.3. Spatial distribution of the 11 AOIs and 6 chokepoints.
+<img src="./results/figures/fig_3_3_study_sites_map.png" alt="Figure 3.3. Spatial distribution of the 11 AOIs and 6 chokepoints." width="100%">
 
-*Figure 3.3. Spatial distribution of the 11 AOIs and 6 chokepoints.*
+**Figure 3.3. Spatial distribution of the 11 AOIs and 6 chokepoints.**
 
 
 | Block          | Flat representation                                                        | Deep representation                                                                                                      | Sources                                                                                                                                                                                                                                               |

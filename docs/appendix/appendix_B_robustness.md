@@ -17,7 +17,7 @@ Positive values indicate lower RMSE than the no-change benchmark.
 | ---------------------------- | ------ | --------- | --------------- |
 | S2 (finance + RS)            | −2.01  | −2.43     | −5.87           |
 | **S3 (finance + shipping)**  | −0.22  | **+0.15** | **+1.00**       |
-| S4 (finance + RS + shipping) | −8.30  | −0.68     | +0.19           |
+| S4 (finance + RS + shipping) | −8.30  | −0.67     | +0.19           |
 
 
 M0 is cleared only where shipping is present. S2 never beats M0.
