@@ -2,7 +2,7 @@
 
 **Using Maritime Networks, Satellite Imagery and Financial Time Series**
 
-CASA0004 MSc dissertation · [Centre for Advanced Spatial Analysis (CASA)](https://www.ucl.ac.uk/bartlett/casa), Bartlett Faculty of the Built Environment, UCL
+CASA0010 MSc dissertation · [Centre for Advanced Spatial Analysis (CASA)](https://www.ucl.ac.uk/bartlett/casa), Bartlett Faculty of the Built Environment, UCL
 
 **Xinrui Qi** · Supervisor: Beatrice Taylor · 15 August 2026
 
@@ -25,8 +25,6 @@ The practical contribution is a **reproducible comparison framework**: each new 
 
 ---
 
-
-
 ## Research questions
 
 **RQ1.** Compared with models using only financial time-series data, do remote-sensing and shipping data improve one-week-ahead Brent price forecasts?
@@ -37,11 +35,9 @@ The practical contribution is a **reproducible comparison framework**: each new 
 
 ---
 
-
-
 ## Research design
 
-
+Figure 3.1. Research design and forecasting workflow.
 
 *Figure 3.1. Research design and forecasting workflow.*
 
@@ -78,13 +74,11 @@ Hyperparameters, encoder sizes and early-stopping settings: [Appendix C](docs/ap
 
 ---
 
-
-
 ## Data
 
 The target is the **global Brent benchmark**, not a local cargo price, so the study does not use a single study region. Spatial inputs come from **11 oil-infrastructure sites** (ports, refineries and export terminals) and **6 maritime chokepoints** (Strait of Hormuz, Suez Canal, Strait of Malacca, Bab el-Mandeb, Panama Canal, Cape of Good Hope). The Deep shipping graph has **17 nodes**, with weekly dynamic voyage edges among the 11 sites and fixed corridor edges from sites to chokepoints on documented oil-trade routes.
 
-
+Figure 3.3. Spatial distribution of the 11 AOIs and 6 chokepoints.
 
 *Figure 3.3. Spatial distribution of the 11 AOIs and 6 chokepoints.*
 
@@ -96,13 +90,11 @@ The target is the **global Brent benchmark**, not a local cargo price, so the st
 | Shipping       | PortWatch tanker flows and GFW vessel-activity features                    | 17-node graph: node attributes, dynamic voyage edges, fixed corridor edges                                               | [IMF PortWatch](https://portwatch.imf.org/), [Global Fishing Watch](https://globalfishingwatch.org/our-apis/)                                                                                                                                         |
 
 
-All series are aligned to the Friday weekly calendar with source-specific **publication-lag buffers** so that each forecast uses only information treated as available at the origin. Variable dictionaries, lags, AOIs and graph edges: [Appendix A](docs/appendix/appendix_A_data_EN.md). Source licences and download notes: [`data/sources.md`](data/sources.md).
+All series are aligned to the Friday weekly calendar with source-specific **publication-lag buffers** so that each forecast uses only information treated as available at the origin. Variable dictionaries, lags, AOIs and graph edges: [Appendix A](docs/appendix/appendix_A_data_EN.md). Source licences and download notes: `[data/sources.md](data/sources.md)`.
 
 Raw downloads live in `data/raw/` (gitignored). Modelling reads the processed weekly products already in the repository.
 
 ---
-
-
 
 ## Main findings
 
@@ -125,8 +117,6 @@ Interpretation: monitoring value and predictive value should be assessed separat
 
 ---
 
-
-
 ## Repository layout
 
 ```text
@@ -146,13 +136,11 @@ Interpretation: monitoring value and predictive value should be assessed separat
     └── appendix/             A–D (data, robustness, hyperparameters, log)
 ```
 
-
-
 ### Files required to reproduce the main tables
 
 
-| File                                                                                      | Role                                              |
-| ----------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| File                                                                                   | Role                                              |
+| -------------------------------------------------------------------------------------- | ------------------------------------------------- |
 | `data/processed/merge/outputs/weekly_feature_matrix.csv`                               | Shared weekly matrix for Flat and Deep            |
 | `data/processed/merge/outputs/weekly_feature_dictionary.csv`                           | Feature dictionary                                |
 | `data/processed/M3/outputs/m3_graph17_tensors.npz`                                     | Deep 17-node shipping graph                       |
@@ -161,8 +149,6 @@ Interpretation: monitoring value and predictive value should be assessed separat
 
 
 ---
-
-
 
 ## Reproduce the main tables
 
@@ -191,13 +177,11 @@ python3 code/scripts/deep/run_deep_interpret.py --seeds 42,1,2 --lookback 4
 
 Outputs: `results/baselines/Flat/M*_Flat/` and `results/baselines/Deep/_cross/`.
 
-Full command list, flags, robustness scripts and optional rebuild-from-raw: [`code/README.md`](code/README.md). Submission-facing checklist: [`docs/reproducibility.md`](docs/reproducibility.md).
+Full command list, flags, robustness scripts and optional rebuild-from-raw: `[code/README.md](code/README.md)`. Submission-facing checklist: `[docs/reproducibility.md](docs/reproducibility.md)`.
 
 Rebuild from raw is optional and needs local `data/raw/`. Prithvi embedding export is a one-off offline step outside this `requirements.txt` environment.
 
 ---
-
-
 
 ## Software environment
 
@@ -220,46 +204,22 @@ The Deep remote-sensing branch uses pre-computed frozen Prithvi-EO-2.0 embedding
 
 ---
 
-
-
 ## Ethics and data use
 
 The study uses only secondary, aggregate data and does not involve human participants. It received approval through UCL’s low-risk ethics process. Datasets were used under their published licences and terms, including the Copernicus open licence for Sentinel-2 and the research-use terms of IMF PortWatch and Global Fishing Watch. Remote-sensing and vessel-activity variables are analysed only at site or chokepoint level; the code does not identify individual vessels, operators or persons.
 
 ---
 
-
-
-## Citation
-
-Qi, X. (2026). *A modality-aware spatiotemporal fusion framework for Brent crude oil forecasting: Using maritime networks, satellite imagery and financial time series* (CASA0004 MSc dissertation). Centre for Advanced Spatial Analysis, University College London. [https://github.com/XINRUIQI/CASA0004-Dissertation](https://github.com/XINRUIQI/CASA0004-Dissertation)
-
-```bibtex
-@mastersthesis{qi2026brent,
-  author  = {Qi, Xinrui},
-  title   = {A Modality-Aware Spatiotemporal Fusion Framework for {Brent} Crude Oil Forecasting: Using Maritime Networks, Satellite Imagery and Financial Time Series},
-  school  = {Centre for Advanced Spatial Analysis, University College London},
-  year    = {2026},
-  month   = {8},
-  type    = {MSc dissertation},
-  url     = {https://github.com/XINRUIQI/CASA0004-Dissertation}
-}
-```
-
----
-
-
-
 ## Document index
 
 
-| Purpose | Path |
-| --- | --- |
-| Code runbook | [`code/README.md`](code/README.md) |
-| Reproducibility checklist | [`docs/reproducibility.md`](docs/reproducibility.md) |
-| Appendix A — data, AOIs, lags, graph | [`docs/appendix/appendix_A_data_EN.md`](docs/appendix/appendix_A_data_EN.md) |
-| Appendix B — robustness | [`docs/appendix/appendix_B_robustness_EN.md`](docs/appendix/appendix_B_robustness_EN.md) |
-| Appendix C — hyperparameters | [`docs/appendix/appendix_C_config_EN.md`](docs/appendix/appendix_C_config_EN.md) |
-| External data sources | [`data/sources.md`](data/sources.md) |
+| Purpose                              | Path                                                                                     |
+| ------------------------------------ | ---------------------------------------------------------------------------------------- |
+| Code runbook                         | `[code/README.md](code/README.md)`                                                       |
+| Reproducibility checklist            | `[docs/reproducibility.md](docs/reproducibility.md)`                                     |
+| Appendix A — data, AOIs, lags, graph | `[docs/appendix/appendix_A_data_EN.md](docs/appendix/appendix_A_data_EN.md)`             |
+| Appendix B — robustness              | `[docs/appendix/appendix_B_robustness_EN.md](docs/appendix/appendix_B_robustness_EN.md)` |
+| Appendix C — hyperparameters         | `[docs/appendix/appendix_C_config_EN.md](docs/appendix/appendix_C_config_EN.md)`         |
+| External data sources                | `[data/sources.md](data/sources.md)`                                                     |
 
 
